@@ -1410,7 +1410,6 @@ class ReceiptController extends Controller
         $uri = $location;
         $post_data = file_get_contents($uri);
 
-        dd($post_data);
         //ocr the file
         $document_model = $receipt->options['document_model'];
         $ocr_receipt_extracted = $this->azure_receipts($post_data, $doc_type, $document_model);
@@ -1571,6 +1570,7 @@ class ReceiptController extends Controller
         //start OCR
         $ch = curl_init();
         $post = $post_data;
+        dd([$document_model, $doc_type]);
         $document_model = $document_model; //lol WHY!?
         $azure_api_key = env('AZURE_RECEIPTS_KEY');
         $azure_api_version = env('AZURE_RECEIPTS_VERSION');

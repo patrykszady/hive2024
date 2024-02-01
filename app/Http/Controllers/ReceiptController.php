@@ -1573,7 +1573,6 @@ class ReceiptController extends Controller
         // $document_model = $document_model; //lol WHY!?
         $azure_api_key = env('AZURE_RECEIPTS_KEY');
         $azure_api_version = env('AZURE_RECEIPTS_VERSION');
-        dd("https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
         curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         curl_setopt($ch, CURLOPT_POST, true);

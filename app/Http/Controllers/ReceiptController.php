@@ -498,7 +498,7 @@ class ReceiptController extends Controller
         $token_uri = 'https://oauth2.googleapis.com/token';
         $auth_provider_x509_cert_url = 'https://www.googleapis.com/oauth2/v1/certs';
         $client_secret = env('GOOGLE_CLOUD_CLIENT_SECRET');
-        
+
         if(env('APP_ENV') == 'production'){
             $redirect_uris = ['https://dashboard.hive.contractors/receipts/google_cloud_auth_response'];
         }else{
@@ -704,6 +704,8 @@ class ReceiptController extends Controller
             ->setReturnType(Model\User::class)
             ->execute();
 
+        // dd($user);
+
         $existing_company_emails = CompanyEmail::withoutGlobalScopes()->where('email', $user->getMail())->get();
         if(!$existing_company_emails->isEmpty()){
             //return back with error
@@ -846,7 +848,7 @@ class ReceiptController extends Controller
                     "/me/mailFolders/inbox/messages?filter=from/emailAddress/address eq 'noreply@print.epsonconnect.com' and subject eq 'Receipt Scans'")
                     ->setReturnType(Message::class)
                     ->execute();
-
+            // dd($receipts_emails);
             foreach($receipts_emails as $index => $message){
                 if($message->getHasAttachments()){
                     $attachments =
@@ -1557,8 +1559,8 @@ class ReceiptController extends Controller
             $doc_content_type = 'Content-Type: image/jpeg';
         }elseif($doc_type == '.pdf'){
             $doc_content_type = 'Content-Type: application/pdf';
-        // }elseif($doc_type == '.png'){
-        //     $doc_content_type = 'Content-Type: image/png';
+        }elseif($doc_type == '.png'){
+            $doc_content_type = 'Content-Type: image/png';
         }else{
             //LOG
             //MOVE EMAIL
@@ -1589,7 +1591,10 @@ class ReceiptController extends Controller
         $re = '/(\d|\D){8}-(\d|\D){4}-(\d|\D){4}-(\d|\D){4}-(\d|\D){12}/m';
         $str = $location_result;
         preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+        dd($matches);
         $operation_location_id = $matches[0][0];
+
+        dd($operation_location_id);
 
         //get OCR result
         //&pages=[1]d

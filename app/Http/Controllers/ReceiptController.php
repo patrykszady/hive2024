@@ -1592,8 +1592,6 @@ class ReceiptController extends Controller
         preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
         $operation_location_id = $matches[0][0];
 
-        dd($operation_location_id);
-
         //get OCR result
         //&pages=[1]d
         $result = exec('curl -v -X GET "https://' . env('AZURE_RECEIPTS_URL') . '/formrecognizer/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"');

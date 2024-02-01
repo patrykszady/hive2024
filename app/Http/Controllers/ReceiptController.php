@@ -1590,7 +1590,6 @@ class ReceiptController extends Controller
         $re = '/(\d|\D){8}-(\d|\D){4}-(\d|\D){4}-(\d|\D){4}-(\d|\D){12}/m';
         $str = $location_result;
         preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
-        dd($matches);
         $operation_location_id = $matches[0][0];
 
         dd($operation_location_id);

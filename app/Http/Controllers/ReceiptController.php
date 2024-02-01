@@ -1410,6 +1410,7 @@ class ReceiptController extends Controller
         $uri = $location;
         $post_data = file_get_contents($uri);
 
+        dd($post_data);
         //ocr the file
         $document_model = $receipt->options['document_model'];
         $ocr_receipt_extracted = $this->azure_receipts($post_data, $doc_type, $document_model);

@@ -1565,7 +1565,7 @@ class ReceiptController extends Controller
             //LOG
             //MOVE EMAIL
             //DO NOT DD FAILED
-            // dd('FAILED ReceiptController azure_receips first else');
+            //dd('FAILED ReceiptController azure_receips first else');
         }
         //start OCR
         $ch = curl_init();

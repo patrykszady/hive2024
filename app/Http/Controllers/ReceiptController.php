@@ -1586,6 +1586,8 @@ class ReceiptController extends Controller
             ));
 
         $location_result = curl_exec($ch);
+
+        dd($location_result);
         curl_close($ch);
 
         $re = '/(\d|\D){8}-(\d|\D){4}-(\d|\D){4}-(\d|\D){4}-(\d|\D){12}/m';

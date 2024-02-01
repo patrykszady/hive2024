@@ -1570,12 +1570,11 @@ class ReceiptController extends Controller
         //start OCR
         $ch = curl_init();
         $post = $post_data;
-        dd([$document_model, $doc_type]);
-        $document_model = $document_model; //lol WHY!?
+        // $document_model = $document_model; //lol WHY!?
         $azure_api_key = env('AZURE_RECEIPTS_KEY');
         $azure_api_version = env('AZURE_RECEIPTS_VERSION');
-
-        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version . " ");
+        dd("https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
+        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");

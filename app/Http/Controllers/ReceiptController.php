@@ -499,11 +499,13 @@ class ReceiptController extends Controller
         $auth_provider_x509_cert_url = 'https://www.googleapis.com/oauth2/v1/certs';
         $client_secret = env('GOOGLE_CLOUD_CLIENT_SECRET');
 
-        if(env('APP_ENV') == 'production'){
-            $redirect_uris = ['https://dashboard.hive.contractors/receipts/google_cloud_auth_response'];
-        }else{
-            $redirect_uris = ['http://localhost:8000/receipts/google_cloud_auth_response'];
-        }
+        $redirect_uris = [env('GOOGLE_CLOUD_REDIRECT')];
+
+        // if(env('APP_ENV') == 'production'){
+        //     $redirect_uris = ['https://dashboard.hive.contractors/receipts/google_cloud_auth_response'];
+        // }else{
+        //     $redirect_uris = ['http://localhost:8000/receipts/google_cloud_auth_response'];
+        // }
 
         $client_credentials = ["web" => [
             "client_id" => $client_id,

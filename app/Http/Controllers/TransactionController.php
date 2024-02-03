@@ -1413,6 +1413,7 @@ class TransactionController extends Controller
     //find expenses with NO VENDOR that match transactions
     public function add_transaction_to_expenses_sin_vendor(){
         $expenses = Expense::where('vendor_id', 0)->get();
+        // dd($expenses);
 
         foreach($expenses as $expense){
             $matching_transaction =
@@ -1425,7 +1426,7 @@ class TransactionController extends Controller
                     ->sortBy('date_diff')
                     ->first();
 
-            if(isset($matching_transaction)){
+            if(isset($matching_transaction->vendor_id)){
                 $expense->vendor_id = $matching_transaction->vendor_id;
                 $expense->save();
 

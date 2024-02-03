@@ -30,7 +30,7 @@ class VendorSheetsTypeIndex extends Component
 
         $this->dispatch('notify',
             type: 'success',
-            content: $vendor->name . ' Changed'
+            content: $vendor->name . ' Sheet Type Changed'
         );
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Sheets;
 
+use App\Models\Sheet;
 use App\Models\Expense;
 use App\Models\Check;
 use App\Models\Payment;
@@ -9,9 +10,12 @@ use App\Models\Vendor;
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SheetsIndex extends Component
 {
+    use AuthorizesRequests;
+
     public $year = 2024;
     public $cost_of_labor = 0;
     public $cost_of_materials = 0;
@@ -66,6 +70,8 @@ class SheetsIndex extends Component
     #[Title('Sheets')]
     public function render()
     {
+        $this->authorize('viewAny', Sheet::class);
+
         return view('livewire.sheets.index');
     }
 }

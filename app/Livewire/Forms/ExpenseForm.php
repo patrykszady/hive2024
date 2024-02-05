@@ -310,6 +310,7 @@ class ExpenseForm extends Form
                         'note' => isset($split['note']) ? $split['note'] : NULL,
                         'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
                         'created_by_user_id' => auth()->user()->id,
+                        'receipt_items' => (object)$split['items'],
                     ]);
                 }else{
                     $split = ExpenseSplits::create([
@@ -321,6 +322,7 @@ class ExpenseForm extends Form
                         'note' => isset($split['note']) ? $split['note'] : NULL,
                         'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
                         'created_by_user_id' => auth()->user()->id,
+                        'receipt_items' => (object)$split['items'],
                     ]);
                 }
             }

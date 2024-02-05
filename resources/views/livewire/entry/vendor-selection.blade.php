@@ -102,7 +102,7 @@
     <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
         <button
             x-data=""
-            wire:click="$dispatchTo('vendors.vendor-create', 'vendorModal')"
+            {{-- wire:click="$dispatchTo('vendors.vendor-create', 'vendorModal')" --}}
             type="button"
             class="relative block w-full p-12 text-center border-2 border-indigo-400 rounded-lg hover:ring-3 hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-800"
             >

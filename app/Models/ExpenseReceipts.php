@@ -50,6 +50,49 @@ class ExpenseReceipts extends Model
             $receipt_items = NULL;
         }else{
             $receipt_items = json_decode($value);
+            if(!is_null($receipt_items->items)){
+                foreach($receipt_items->items as $item){
+                    if(isset($item->valueObject->Price->valueNumber)){
+                        $item->price_each = $item->valueObject->Price->valueNumber;
+                    }elseif(isset($item->valueObject->TotalPrice->valueNumber)){
+                        $item->price_each = $item->valueObject->TotalPrice->valueNumber;
+                    }elseif(isset($item->valueObject->UnitPrice->valueCurrency)){
+                        $item->price_each = $item->valueObject->UnitPrice->valueCurrency->amount;
+                    }else{
+                        $item->price_each = NULL;
+                    }
+
+                    if(isset($item->valueObject->TotalPrice)){
+                        $item->price_total = $item->valueObject->TotalPrice->valueNumber;
+                    }elseif(isset($item->valueObject->Amount)){
+                        $item->price_total = $item->valueObject->Amount->valueCurrency->amount;
+                    }else{
+                        $item->price_total = NULL;
+                    }
+
+                    if(isset($item->valueObject->Quantity->valueNumber)){
+                        $item->quantity = $item->valueObject->Quantity->valueNumber;
+                    }else{
+                        if($item->price_each == $item->price_total){
+                            $item->quantity = 1;
+                        }else{
+                            if(!is_null($item->price_total) && !is_null($item->price_each)){
+                                $item->quantity = $item->price_total / $item->price_each;
+                            }else{
+                                $item->quantity = 0;
+                            }
+                        }
+                    }
+
+                    if(isset($item->valueObject->Description)){
+                        $item->desc = $item->valueObject->Description->valueString;
+                    }else{
+                        $item->desc = $item->content;
+                    }
+
+                    $item->product_code = isset($item->valueObject->ProductCode->valueString) ? '# ' . $item->valueObject->ProductCode->valueString : NULL;
+                }
+            }
         }
 
         return $receipt_items;

@@ -89,8 +89,9 @@ class ExpenseCreate extends Component
     //$saved_splits
     public function hasSplits($saved_splits)
     {
+        // dd($saved_splits);
         $this->expense_splits = $saved_splits;
-
+        // dd($this->expense_splits);
         $this->splits = TRUE;
         $this->split = TRUE;
     }
@@ -231,6 +232,13 @@ class ExpenseCreate extends Component
 
     public function edit()
     {
+        // foreach(collect($this->expense_splits) as $split){
+        //     $expense_items = json_encode((object)$split['items']);
+        //     dd($expense_items);
+        //     dd($split);
+        // }
+
+        // dd('too far');
         $expense = $this->form->update();
 
         $this->modal_show = FALSE;
@@ -272,6 +280,7 @@ class ExpenseCreate extends Component
     public function save()
     {
         // return $this->dispatch('validateCheck')->to(CheckCreate::class);
+        // dd(collect($this->expense_splits));
         $expense = $this->form->store();
 
         $this->modal_show = FALSE;
@@ -316,9 +325,9 @@ class ExpenseCreate extends Component
             Project::
                 // where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
                 orderBy('created_at', 'DESC')
-                // ->whereHas('project_status', function ($query) {
-                //     $query->whereIn('project_status.title', ['Active', 'Complete']);
-                // })
+                ->whereHas('project_status', function ($query) {
+                    $query->whereIn('project_status.title', ['Active', 'Complete']);
+                })
                 ->get();
         $distributions = Distribution::all(['id', 'name']);
         $team_members = auth()->user()->vendor->users()->employed();

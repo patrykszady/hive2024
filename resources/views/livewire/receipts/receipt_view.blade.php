@@ -1,61 +1,9 @@
 @if(isset($item->valueObject))
     @php
-        $quantity = isset($item->valueObject->Quantity->valueNumber) ? $item->valueObject->Quantity->valueNumber : NULL;
-
-        if(isset($item->valueObject->Price->valueNumber)){
-            $price_each = $item->valueObject->Price->valueNumber;
-        }elseif(isset($item->valueObject->TotalPrice->valueNumber)){
-            $price_each = $item->valueObject->TotalPrice->valueNumber;
-        }elseif(isset($item->valueObject->UnitPrice->valueCurrency)){
-            $price_each = $item->valueObject->UnitPrice->valueCurrency->amount;
-        }else{
-            $price_each = NULL;
-        }
-
-        if(isset($item->valueObject->TotalPrice)){
-            $price_total = $item->valueObject->TotalPrice->valueNumber;
-        }elseif(isset($item->valueObject->Amount)){
-            $price_total = $item->valueObject->Amount->valueCurrency->amount;
-        }else{
-            $price_total = NULL;
-        }
-
-        if(is_null($quantity)){
-            if($price_each == $price_total){
-                $quantity = 1;
-            }else{
-                if(!is_null($price_total) && !is_null($price_each)){
-                    $quantity = $price_total / $price_each;
-                }else{
-                    $quantity = 1;
-                }
-            }
-        }
-
-        if(!is_null($price_total)){
-            $price_total = money($price_total);
-        }
-
-        if(!is_null($price_each)){
-            $price_each = money($price_each);
-        }
-
-        if(isset($item->valueObject->ProductCode->valueString)){
-            $product_code = '# ' . $item->valueObject->ProductCode->valueString;
-        }else{
-            $product_code = NULL;
-        }
-
-        if(isset($item->valueObject->Description)){
-            $desc = $item->valueObject->Description->valueString;
-        }else{
-            $desc = $item->content;
-        }
-
         $line_details = [
         1 => [
             //$item->valueObject->Quantity->valueNumber . ' @ ' . $item->valueObject->Price->valueNumber . ' = ' . money($item->valueObject->TotalPrice->valueNumber)
-            'text' => $quantity . ' @ ' . $price_each . ' = ' . $price_total,
+            'text' => $item->quantity . ' @ ' . money($item->price_each) . ' = ' . money($item->price_total),
                 // isset($item->valueObject->Quantity) ? $item->valueObject->Quantity->valueNumber : ''
                 // . ' @ ' .
                 // isset($item->valueObject->Price) ? $item->valueObject->Price->valueNumber : ''
@@ -65,7 +13,7 @@
             ],
         2 => [
             //$item->valueObject->Quantity->valueNumber . ' @ ' . $item->valueObject->Price->valueNumber . ' = ' . money($item->valueObject->TotalPrice->valueNumber)
-            'text' => $product_code,
+            'text' => $item->product_code,
             'icon' => NULL,
                 // isset($item->valueObject->Quantity) ? $item->valueObject->Quantity->valueNumber : ''
                 // . ' @ ' .
@@ -76,9 +24,10 @@
             ],
         ];
     @endphp
+
     <x-lists.search_li
         {{-- :basic=true --}}
-        :line_title="$desc"
+        :line_title="$item->desc"
         :line_details="$line_details"
         >
     </x-lists.search_li>

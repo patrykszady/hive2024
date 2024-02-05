@@ -390,7 +390,6 @@
 
                             {{-- FOREACH --}}
                             @foreach($receipt->receipt_items->items as $item)
-                            {{-- ->Description --}}
                                 @if(isset($item->valueObject))
                                     @include('livewire.receipts.receipt_view')
                                 @endif

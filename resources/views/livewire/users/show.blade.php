@@ -8,92 +8,92 @@
     </x-page.top>
 
 	<div class="grid max-w-xl grid-cols-4 gap-4 mx-auto lg:max-w-5xl sm:px-6">
-        <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
+        <div class="col-span-4 space-y-4 lg:col-span-2 lg:top-5">
             {{-- USER DETAILS --}}
             <div class="col-span-4 lg:col-span-2">
                 <x-cards.wrapper>
-                        <x-cards.heading>
-                            <x-slot name="left">
-                                <h1 class="text-lg">User Details</h1>
-                                {{-- @if($registration)
-                                    <p class="max-w-2xl mt-1 text-sm text-gray-500">Confirm {{$vendor->business_name}} information.</p>
-                                @endif --}}
+                    <x-cards.heading>
+                        <x-slot name="left">
+                            <h1 class="text-lg">User Details</h1>
+                            {{-- @if($registration)
+                                <p class="max-w-2xl mt-1 text-sm text-gray-500">Confirm {{$vendor->business_name}} information.</p>
+                            @endif --}}
+                        </x-slot>
+
+                        @can('update', $user)
+                            <x-slot name="right">
+                                <x-cards.button
+                                    {{-- wire:click="$dispatchTo('vendors.vendor-create', 'editVendor', { vendor: {{$vendor->id}} })" --}}
+                                    >
+                                    Edit User
+                                </x-cards.button>
+                                {{-- <livewire:vendor-docs.vendor-doc-create /> --}}
                             </x-slot>
+                        @endcan
+                    </x-cards.heading>
 
-                            @can('update', $user)
-                                <x-slot name="right">
-                                    <x-cards.button
-                                        {{-- wire:click="$dispatchTo('vendors.vendor-create', 'editVendor', { vendor: {{$vendor->id}} })" --}}
-                                        >
-                                        Edit User
-                                    </x-cards.button>
-                                    {{-- <livewire:vendor-docs.vendor-doc-create /> --}}
-                                </x-slot>
-                            @endcan
-                        </x-cards.heading>
+                    <x-cards.body>
+                        <x-lists.ul>
+                            <x-lists.search_li
+                                :basic=true
+                                :line_title="'Name'"
+                                :line_data="$user->full_name"
+                                {{-- :bubble_message="'Success'" --}}
+                                >
+                            </x-lists.search_li>
 
-                        <x-cards.body>
-                            <x-lists.ul>
+                            <x-lists.search_li
+                                :basic=true
+                                :line_title="'Email'"
+                                :line_data="$user->email"
+                                >
+                            </x-lists.search_li>
+
+                            {{-- Retail --}}
+                            {{-- @if($vendor->business_type != 'Retail')
                                 <x-lists.search_li
                                     :basic=true
-                                    :line_title="'Name'"
-                                    :line_data="$user->full_name"
-                                    {{-- :bubble_message="'Success'" --}}
+                                    :line_title="'Vendor Address'"
+                                    href="{{$vendor->getAddressMapURI()}}"
+                                    :href_target="'blank'"
+                                    :line_data="$vendor->full_address"
                                     >
                                 </x-lists.search_li>
+                            @endif
+                            --}}
+                            <x-lists.search_li
+                                :basic=true
+                                :line_title="'Cell Phone'"
+                                :line_data="$user->cell_phone"
+                                >
+                            </x-lists.search_li>
 
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Email'"
-                                    :line_data="$user->email"
-                                    >
-                                </x-lists.search_li>
-
-                                {{-- Retail --}}
-                                {{-- @if($vendor->business_type != 'Retail')
+                            @if($user->this_vendor)
+                                @can('update', $user)
                                     <x-lists.search_li
                                         :basic=true
-                                        :line_title="'Vendor Address'"
-                                        href="{{$vendor->getAddressMapURI()}}"
-                                        :href_target="'blank'"
-                                        :line_data="$vendor->full_address"
+                                        :line_title="'Start Date'"
+                                        :line_data="$user->this_vendor->pivot->start_date->format('m/d/Y')"
                                         >
                                     </x-lists.search_li>
-                                @endif
-                                --}}
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Cell Phone'"
-                                    :line_data="$user->cell_phone"
-                                    >
-                                </x-lists.search_li>
-
-                                @if($user->this_vendor)
-                                    @can('update', $user)
-                                        <x-lists.search_li
-                                            :basic=true
-                                            :line_title="'Start Date'"
-                                            :line_data="$user->this_vendor->pivot->start_date->format('m/d/Y')"
-                                            >
-                                        </x-lists.search_li>
-
-                                        <x-lists.search_li
-                                            :basic=true
-                                            :line_title="'Hourly Rate'"
-                                            :line_data="money($user->this_vendor->pivot->hourly_rate)"
-                                            >
-                                        </x-lists.search_li>
-                                    @endcan
 
                                     <x-lists.search_li
                                         :basic=true
-                                        :line_title="'Vendor Role'"
-                                        :line_data="$user->getVendorRole($user->this_vendor->id)"
+                                        :line_title="'Hourly Rate'"
+                                        :line_data="money($user->this_vendor->pivot->hourly_rate)"
                                         >
                                     </x-lists.search_li>
-                                @endif
-                            </x-lists.ul>
-                        </x-cards.body>
+                                @endcan
+
+                                <x-lists.search_li
+                                    :basic=true
+                                    :line_title="'Vendor Role'"
+                                    :line_data="$user->getVendorRole($user->this_vendor->id)"
+                                    >
+                                </x-lists.search_li>
+                            @endif
+                        </x-lists.ul>
+                    </x-cards.body>
                 </x-cards.wrapper>
             </div>
         </div>
@@ -105,13 +105,83 @@
             </div>
         @endif
 
+        {{-- USER / VENDOR FINANCES --}}
+        @can('update', $user)
+            <div class="col-span-4 space-y-4 top-5">
+                <div class="col-span-4">
+                    <x-cards.wrapper>
+                        <x-cards.heading>
+                            <x-slot name="left">
+                                <h1 class="text-lg">User Finances</h1>
+                            </x-slot>
+                        </x-cards.heading>
 
-        {{-- VENDOR TEAM MEMBERS --}}
-        {{-- @if($vendor->business_type != 'Retail')
-            <div class="col-span-4 lg:col-span-2">
-                <livewire:users.team-members :vendor="$vendor">
+                        <x-cards.body>
+                            <div class="px-4 sm:px-6 lg:px-8">
+                                <div class="flow-root mt-8">
+                                    <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                                            <table class="min-w-full divide-y divide-gray-300">
+                                                <thead>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <th scope="col"
+                                                            class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                                                        <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">{{$year}}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="bg-white divide-y divide-gray-200">
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            Timesheets Paid</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($timesheets_paid)}}</td>
+                                                    </tr>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            Timesheets Paid By</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($timesheets_paid_by)}}</td>
+                                                    </tr>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            Timesheets Paid Others</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($timesheets_paid_others)}}</td>
+                                                    </tr>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            Expenses Paid</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($expenses_paid)}}</td>
+                                                    </tr>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            Distribution Checks</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($distribution_checks)}}</td>
+                                                    </tr>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            Checks Written</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($checks_written)}}</td>
+                                                    </tr>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            DIFFERENCE</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($checks_written - $distribution_checks - $expenses_paid - $timesheets_paid_others - $timesheets_paid_by - $timesheets_paid)}}</td>
+                                                    </tr>
+                                                    <tr class="divide-x divide-gray-200">
+                                                        <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
+                                                            Distribution Expenses</td>
+                                                        <td class="p-4 text-sm text-gray-500 whitespace-nowrap">{{money($distribution_expenses)}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </x-cards.body>
+                    </x-cards.wrapper>
+                </div>
             </div>
-        @endif --}}
+        @endcan
 	</div>
+
     <livewire:vendors.vendor-create />
 </div>

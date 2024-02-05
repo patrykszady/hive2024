@@ -23,6 +23,7 @@ class ExpenseSplitForm extends Form
             'expense_splits.*.project_id' => 'required',
             'expense_splits.*.reimbursment' => 'nullable',
             'expense_splits.*.note' => 'nullable',
+            'expense_splits.*.items.*.checkbox' => 'nullable',
         ];
     }
 
@@ -46,6 +47,8 @@ class ExpenseSplitForm extends Form
         // $this->authorize('create', Expense::class);
         // dd($this);
         $this->validate();
+
+        return $this->expense_splits;
 
         //only
         // ExpenseSplit::create($this->all());

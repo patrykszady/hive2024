@@ -30,7 +30,7 @@ class ExpenseSplitsCreate extends Component
     public function rules()
     {
         return [
-            'expense_splits.*.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
+            'expense_splits.*.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/|not_in:0',
             'expense_splits.*.project_id' => 'required',
             'expense_splits.*.reimbursment' => 'nullable',
             'expense_splits.*.note' => 'nullable',
@@ -55,24 +55,31 @@ class ExpenseSplitsCreate extends Component
                 $this->expense_line_items->items[$matches[0][1]]->split_index = NULL;
             }
 
-            //need to accoubt for tax
+            //need to account for tax
             $items = collect($this->expense_line_items->items);
-            $tax_rate = $this->expense_line_items->total / $this->expense_line_items->total_tax;
-            $tax_rate = (int)$tax_rate;
+            $tax_rate = round($this->expense_line_items->total_tax / $this->expense_line_items->subtotal, 3);
+            $tax_rate = 1 + $tax_rate;
             $expense_total = $this->expense_line_items->total;
 
             $this->expense_splits->transform(function ($split, $key) use ($items, $tax_rate, $expense_total){
                 $items_total = $items->where('split_index', $key)->whereNotNull('split_index')->sum('price_total');
-                $total_with_tax = $items_total * ($tax_rate / 10);
+                $total_with_tax = $items_total * $tax_rate;
 
                 //if last item without amount? check total...
                 //last one. Adjust a penny $0.01 if $expense->amount != getSplitsSumProperty
                 if($items->whereNull('split_index')->count() == 0){
-
-                    // $this->getSplitsSumProperty()
+                    // dd($this->getSplitsSumProperty());
+                    // $difference = $expense_total - ($this->getSplitsSumProperty() + $split['amount']);
+                    // dd($difference);
                     $split['amount'] = round($total_with_tax, 2);
-                    // dd([$expense_total, $this->getSplitsSumProperty() + $split['amount']]);
+                    // $this->splits_total = collect($this->expense_splits)->where('amount', '!=', '')->sum('amount');
+                    // $split['amount'] = $this->getSplitsSumProperty();
+                    // dd([$expense_total, ]);
+                    // dd($expense_total - $this->getSplitsSumProperty());
+                    // dd($split['amount'] + $this->getSplitsSumProperty());
                     //$this->getSplitsSumProperty()
+                    // $difference = $this->getSplitsSumProperty();
+                    // dd($difference);
 
                 }else{
                     $split['amount'] = round($total_with_tax, 2);
@@ -85,17 +92,8 @@ class ExpenseSplitsCreate extends Component
         $this->validateOnly($field);
     }
 
-    // public function getSplitAmountProperty()
-    // {
-    //     dd($split_index);
-    //     // dd($this->expense_line_items->items);
-    //     // $this->splits_total = collect($this->form->expense_splits)->where('amount', '!=', '')->sum('amount');
-    //     // return round($this->expense_total - $this->splits_total, 2);
-    // }
-
     public function getSplitsSumProperty()
     {
-        // dd($this->expense_line_items->items);
         $this->splits_total = collect($this->expense_splits)->where('amount', '!=', '')->sum('amount');
         return round($this->expense_total - $this->splits_total, 2);
     }
@@ -107,7 +105,6 @@ class ExpenseSplitsCreate extends Component
 
         if(!is_null($receipt) && !is_null($receipt->receipt_items->items)){
             $this->expense_line_items = $receipt->receipt_items;
-            // $receipt_items_count = count($this->expense_line_items->items);
 
             $items = [];
             foreach($this->expense_line_items->items as $item_index => $line_item){
@@ -137,9 +134,17 @@ class ExpenseSplitsCreate extends Component
             $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items]);
             $this->splits_count = 2;
         }else{
-            foreach($this->expense_splits as $split){
-                $split->items = $split->receipt_items;
+            foreach($this->expense_splits as $split_index => $split){
+                if(isset($split->receipt_items)){
+                    $split->items = $split->receipt_items;
+                    foreach($split->items as $item_index => $item){
+                        if($item['checkbox'] == true){
+                            $this->expense_line_items->items[$item_index]->split_index = $split_index;
+                        }
+                    }
+                }
             }
+
             $this->splits_count = count($this->expense_splits) - 1;
         }
 
@@ -159,9 +164,7 @@ class ExpenseSplitsCreate extends Component
 
         if(!is_null($receipt) && !is_null($receipt->receipt_items->items)){
             $this->expense_line_items = $receipt->receipt_items;
-            // $receipt_items_count = count($this->expense_line_items->items);
 
-            $items = [];
             foreach($this->expense_line_items->items as $item_index => $line_item){
                 $items[$item_index] = array('checkbox' => false);
             }
@@ -191,13 +194,9 @@ class ExpenseSplitsCreate extends Component
     {
         $this->splits_count = 0;
         $this->splits_total = 0;
+        $this->expense_total = 0;
         $this->expense_splits = [];
-        // $this->form->reset();
-
-        // if(empty($this->expense_splits)){
-        //     $this->splits_count = 0;
-        //     $this->expense_splits = [];
-        // }
+        $this->expense_line_items = [];
     }
 
     public function split_store()

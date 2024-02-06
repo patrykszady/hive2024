@@ -99,6 +99,7 @@ class ExpenseCreate extends Component
     public function newExpense($amount)
     {
         $this->resetModal();
+        $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->form->amount = $amount;
         $this->view_text = [
             'card_title' => 'Create Expense',
@@ -112,6 +113,7 @@ class ExpenseCreate extends Component
     public function editExpense(Expense $expense)
     {
         $this->resetModal();
+        $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
 
         $this->expense = $expense;
         $this->expense_update = TRUE;
@@ -134,6 +136,7 @@ class ExpenseCreate extends Component
     public function resetModal()
     {
         $this->form->reset();
+        $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->split = FALSE;
         $this->splits = FALSE;
         $this->expense_splits = [];
@@ -155,6 +158,7 @@ class ExpenseCreate extends Component
     public function createExpenseFromTransaction(Transaction $transaction)
     {
         $this->resetModal();
+        $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         // {
             //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
             //create Retail vendor here if doesnt exist yet
@@ -244,6 +248,7 @@ class ExpenseCreate extends Component
         $this->modal_show = FALSE;
         $this->resetModal();
 
+        $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->dispatch('refreshComponent')->to('expenses.expense-show');
         $this->dispatch('refreshComponent')->to('expenses.expense-index');
 
@@ -305,7 +310,8 @@ class ExpenseCreate extends Component
         // $this->dispatch('resetSplits');
 
         //emit and refresh so expenses-new-form removes/refreshes
-        //1-13-2023 coming from different components expenses-show, expenses-index....
+        //coming from different components expenses-show, expenses-index....
+        $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->dispatch('refreshComponent')->to('expenses.expense-show');
         $this->dispatch('refreshComponent')->to('expenses.expense-index');
 

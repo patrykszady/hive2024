@@ -103,8 +103,9 @@
                                                                     @endif
 
                                                                     <input
+                                                                        {{-- || $line_item->split_index == NULL --}}
                                                                         type="checkbox"
-                                                                        @disabled(isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL : FALSE)
+                                                                        @disabled(isset($line_item->split_index) ? $line_item->split_index != $index : FALSE)
                                                                         wire:model.live="expense_splits.{{$index}}.items.{{$line_item_index}}.checkbox"
                                                                         class="absolute w-4 h-4 -mt-2 text-indigo-600  {{isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'border-gray-200' : 'border-gray-300' : 'border-gray-300'}} rounded left-4 top-1/2 focus:ring-indigo-600"
                                                                     >

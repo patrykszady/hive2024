@@ -79,12 +79,12 @@ class UserShow extends Component
 
         $this->expenses_paid =
             Expense::
-                where('paid_by', $this->user->id)
+                where('paid_by', $this->user->id)->whereYear('date', $year)
                 ->whereHas('check', function ($query) use($year) {
                     return $query->whereYear('date', $year);
                 })
                 ->sum('amount');
-
+        // dd($this->expenses_paid);
         // when(!is_null($user_distribution), function ($query) use ($user_distribution) {
         //     $query->where('distribution_id', $user_distribution);
         // })
@@ -101,17 +101,22 @@ class UserShow extends Component
             $this->distribution_checks = 0.00;
         }
 
+        // dd($this->distribution_checks);
+
         $this->checks_written =
             Check::
                 where('user_id', $this->user->id)
+                ->whereYear('date', $this->year)
                 ->where('belongs_to_vendor_id', $this->user->this_vendor->id)
-                ->pluck('id');
-
-        $this->checks_written =
-            Transaction::
-                whereIn('check_id', $this->checks_written)
-                ->whereYear('transaction_date', $this->year)
                 ->sum('amount');
+
+        // $this->checks_written =
+        //     Transaction::
+        //         whereIn('check_id', $this->checks_written)
+        //         ->whereYear('transaction_date', $this->year)
+        //         ->sum('amount');
+
+        // dd($this->checks_written);
 
         if($user_distribution){
             $this->distribution_expenses =

@@ -40,56 +40,6 @@ class MoveController extends Controller
 {
     public function move()
     {
-        $transactions = Transaction::whereNotNull('details')->get();
-        $categories = Category::all();
-
-        foreach($transactions as $transaction){
-            if($transaction->expense){
-                if(!$transaction->expense->category){
-                    $transaction_category = $transaction->details['personal_finance_category']['detailed'];
-                    $category = $categories->where('detailed', $transaction_category)->first();
-
-                    $transaction->expense->category()->associate($category);
-                    $transaction->expense->timestamps = false;
-                    $transaction->expense->save();
-                }
-            }
-
-            if($transaction->check){
-                foreach($transaction->check->expenses as $expense){
-                    if(!$expense->category){
-                        $transaction_category = $transaction->details['personal_finance_category']['detailed'];
-                        $category = $categories->where('detailed', $transaction_category)->first();
-
-                        $expense->category()->associate($category);
-                        $expense->timestamps = false;
-                        $expense->save();
-                    }
-                }
-            }
-        }
-
-        $vendors_expenses = Expense::whereBetween('date', ['2022-10-01', Carbon::now()->subDays(14)->format('Y-m-d')])->whereDoesntHave('category')->get()->groupBy('vendor_id');
-        foreach($vendors_expenses as $vendor_id => $vendor_expenses){
-            $expenses = Expense::whereBetween('date', ['2022-10-01', Carbon::now()->subDays(14)->format('Y-m-d')])->whereDoesntHave('category')->where('vendor_id', $vendor_id);
-            // get $cagetory id of most used category for this vendor
-            $category =
-                Expense::where('vendor_id', $vendor_id)
-                    ->whereHas('category')
-                    ->get()
-                    ->groupBy('category_id')
-                    ->map(function($category) {
-                        return $category->count();
-                    })
-                    ->sort()->keys()->last();
-
-            $expenses->timestamps = false;
-            $expenses->update(['category_id' => $category]);
-        }
-
-        dd('done');
-
-
         // $categories = Category::all();
         // foreach($categories as $category){
         //     $primary_friendly = ucwords(strtolower(str_replace('_', ' ', $category->primary)));

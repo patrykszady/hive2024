@@ -2254,17 +2254,6 @@ class ReceiptController extends Controller
         dd('done');
     }
 
-    //01-18-20233 transitioning all to $this->azure_receipts
-    //06-21-2022 USING BOTH NEW_OCR AND OCR_SPACE.. why?.
-    public function new_ocr_status()
-    {
-        //public function new_ocr($ocr_filename)
-        //ocr_space($ocr_filename)
-
-        //Show OCR left before buying more
-        dd(exec('curl http://api.newocr.com/v1/key/status?key='. env('NEW_OCR_API')));
-    }
-
     //1-18-2023 combine the next 2 functions into one. Pass type = original or temp
     //Show full-size receipt to anyone with a link
     // No Middleware or Policies
@@ -2297,5 +2286,16 @@ class ReceiptController extends Controller
         }
 
         return $response;
+    }
+
+    //01-18-2023 transitioning all to $this->azure_receipts
+    //06-21-2022 USING BOTH NEW_OCR AND OCR_SPACE.. why?.
+    public function new_ocr_status()
+    {
+        //public function new_ocr($ocr_filename)
+        //ocr_space($ocr_filename)
+
+        //Show OCR left before buying more
+        dd(exec('curl http://api.newocr.com/v1/key/status?key='. env('NEW_OCR_API')));
     }
 }

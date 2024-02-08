@@ -138,6 +138,7 @@ Route::get('add_payments_to_transaction', [TransactionController::class, 'add_pa
 Route::get('add_transaction_to_expenses_sin_vendor', [TransactionController::class, 'add_transaction_to_expenses_sin_vendor']);
 Route::get('find_credit_payments_on_debit', [TransactionController::class, 'find_credit_payments_on_debit']);
 Route::get('transactions_sum_not_expense_amount', [TransactionController::class, 'transactions_sum_not_expense_amount']);
+Route::get('add_category_to_expense', [TransactionController::class, 'add_category_to_expense']);
 
 Route::get('receipts/amazon_login', [ReceiptController::class, 'amazon_login'])->name('amazon_login');
 Route::get('receipts/amazon_auth_response', [ReceiptController::class, 'amazon_auth_response']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Bank;
+use App\Models\Category;
 use App\Models\Check;
 use App\Models\Expense;
 use App\Models\ExpenseSplits;
@@ -656,6 +657,98 @@ class TransactionController extends Controller
         }
 
         dd('done');
+    }
+
+    public function add_category_to_expense()
+    {
+        $hive_vendors = Vendor::hiveVendors()->get();
+        $categories = Category::all();
+        foreach($hive_vendors as $hive_vendor){
+            $hive_vendor_bank_account_ids = $hive_vendor->bank_accounts->pluck('id');
+            $transactions =
+                Transaction::
+                    withoutGlobalScopes()
+                    ->whereIn('bank_account_id', $hive_vendor_bank_account_ids)
+                    ->whereNotNull('details')
+                    ->whereHas('expense', function ($query) {
+                        return $query->whereDoesntHave('category');
+                    })
+                    ->get();
+
+            foreach($transactions as $transaction){
+                if($transaction->expense){
+                    if(!$transaction->expense->category){
+                        $transaction_category = $transaction->details['personal_finance_category']['detailed'];
+                        $category = $categories->where('detailed', $transaction_category)->first();
+
+                        $transaction->expense->category()->associate($category);
+                        $transaction->expense->timestamps = false;
+                        $transaction->expense->save();
+                    }
+                }
+
+                if($transaction->check){
+                    foreach($transaction->check->expenses as $expense){
+                        if(!$expense->category){
+                            $transaction_category = $transaction->details['personal_finance_category']['detailed'];
+                            $category = $categories->where('detailed', $transaction_category)->first();
+
+                            $expense->category()->associate($category);
+                            $expense->timestamps = false;
+                            $expense->save();
+                        }
+                    }
+                }
+            }
+
+            $vendors_expenses =
+                Expense::
+                    withoutGlobalScopes()
+                    ->where('belongs_to_vendor_id', $hive_vendor->id)
+                    ->whereBetween('date', ['2023-10-01', Carbon::now()->subDays(6)->format('Y-m-d')])
+                    ->whereDoesntHave('category')
+                    ->get()
+                    ->groupBy('vendor_id');
+
+            // dd($vendors_expenses);
+
+            foreach($vendors_expenses as $vendor_id => $vendor_expenses){
+                $expenses =
+                    Expense::
+                        withoutGlobalScopes()
+                        ->where('belongs_to_vendor_id', $hive_vendor->id)
+                        ->whereBetween('date', ['2023-10-01', Carbon::now()->subDays(6)->format('Y-m-d')])
+                        ->whereDoesntHave('category')
+                        ->where('vendor_id', $vendor_id);
+                // $expenses = $vendors_expenses[$vendor_id];
+                // get $cagetory id of most used category for this vendor
+                $category =
+                    Expense::
+                        withoutGlobalScopes()
+                        ->where('vendor_id', $vendor_id)
+                        ->whereHas('category')
+                        ->get()
+                        ->groupBy('category_id')
+                        ->map(function($category) {
+                            return $category->count();
+                        })
+                        ->sort()->keys()->last();
+
+                // $expenses->each(function($expense, $key) use($category) {
+                //     // $expense->timestamps = false;
+                //     $expense->update(['category_id' => $category]);
+                //     $expense->save();
+                // });
+
+                // foreach($expenses as $expense){
+                //     $expense->timestamps = false;
+                //     $expense->update(['category_id' => $category]);
+                // }
+
+                $expenses->timestamps = false;
+                $expenses->update(['category_id' => $category]);
+            }
+        }
     }
 
     public function add_vendor_to_transactions()

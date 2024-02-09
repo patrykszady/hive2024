@@ -14,7 +14,7 @@ class Vendor extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['business_name', 'business_type', 'sheets_type', 'address', 'address_2', 'city', 'state', 'zip_code', 'business_phone', 'business_email', 'created_at', 'updated_at'];
+    protected $fillable = ['business_name', 'business_type', 'sheets_type', 'category_id', 'address', 'address_2', 'city', 'state', 'zip_code', 'business_phone', 'business_email', 'created_at', 'updated_at'];
 
     protected $appends = ['name'];
 
@@ -37,6 +37,11 @@ class Vendor extends Model
     public function estimates()
     {
         return $this->belongsToMany(Estimate::class)->withTimestamps();
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function vendor()

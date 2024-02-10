@@ -552,14 +552,12 @@ class ReceiptController extends Controller
 
     public function google_cloud_auth_response()
     {
-        // dd(request()->query());
         if(isset(request()->query()['code'])){
             $code = request()->query()['code'];
         }else{
             return redirect(route('company_emails.index'));
         }
 
-        // dd($code);
         $client = $this->google_cloud_client();
 
         $accessToken = $client->fetchAccessTokenWithAuthCode($code);
@@ -567,7 +565,7 @@ class ReceiptController extends Controller
 
         $oauth2 = new \Google\Service\Oauth2($client);
         $user_info = $oauth2->userinfo->get();
-        dd($user_info);
+        // dd($user_info);
 
         $existing_company_emails = CompanyEmail::withoutGlobalScopes()->where('email', $user_info->email)->get();
         if(!$existing_company_emails->isEmpty()){

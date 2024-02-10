@@ -167,8 +167,11 @@ class EstimateShow extends Component
     }
 
 
-    public function print()
+    //$type = [estimate, invoice]
+    public function print($type)
     {
+        $type = ucfirst($type);
+
         $estimate = $this->estimate;
         $vendor = $estimate->project->vendor;
         $sections = $this->sections;
@@ -182,10 +185,10 @@ class EstimateShow extends Component
 
         // $title = $vendor->business_name . ' | Estimate | ' . $estimate->project->client->name . ' | ' . $estimate->project->project_name . ' | ' . $estimate->number;
         // $title_file = $vendor->business_name . ' - Estimate - ' . $estimate->project->client->name . ' - ' . $estimate->project->project_name . ' - ' . $estimate->number;
-        $title = $estimate->project->client->name . ' | Estimate | ' . $estimate->project->project_name . ' | ' . $estimate->number;
-        $title_file = $estimate->project->client->name . ' - Estimate - ' . $estimate->project->project_name . ' - ' . $estimate->number;
+        $title = $estimate->project->client->name . ' | ' . $type . ' | ' . $estimate->project->project_name . ' | ' . $estimate->number;
+        $title_file = $estimate->project->client->name . ' - ' . $type . ' - ' . $estimate->project->project_name . ' - ' . $estimate->number;
 
-        $view = view('misc.estimate', compact(['estimate', 'vendor', 'sections', 'title', 'estimate_total', 'estimate_total_words']))->render();
+        $view = view('misc.estimate', compact(['estimate', 'vendor', 'sections', 'title', 'estimate_total', 'estimate_total_words', 'type']))->render();
         $location = storage_path('files/pdfs/' . $title_file . '.pdf');
         Browsershot::html($view)
             ->newHeadless()

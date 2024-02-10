@@ -491,7 +491,7 @@ class ReceiptController extends Controller
         // load our config.json that contains our credentials for accessing google's api as a json string
         // $configJson = storage_path('files/client_secret.json');
 
-        $applicationName = 'hivecontractors';
+        $applicationName = 'hive-contractors';
         $client_id = env('GOOGLE_CLOUD_CLIENT_ID');
         $project_id = 'hive-contractors';
         $auth_uri = 'https://accounts.google.com/o/oauth2/auth';
@@ -551,6 +551,7 @@ class ReceiptController extends Controller
 
     public function google_cloud_auth_response()
     {
+        dd(request()->query());
         if(isset(request()->query()['code'])){
             $code = request()->query()['code'];
         }else{

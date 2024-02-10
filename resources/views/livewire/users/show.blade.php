@@ -106,6 +106,7 @@
         @endif
 
         {{-- USER / VENDOR FINANCES --}}
+        @if(!is_null($user->this_vendor))
         @can('update', $user)
             <div class="col-span-4 lg:col-span-2">
                 <div
@@ -281,6 +282,7 @@
                 </div>
             </div>
         @endcan
+        @endif
 	</div>
 
     <livewire:vendors.vendor-create />

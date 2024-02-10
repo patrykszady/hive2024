@@ -559,12 +559,12 @@ class ReceiptController extends Controller
             return redirect(route('company_emails.index'));
         }
 
-        dd($code);
+        // dd($code);
         $client = $this->google_cloud_client();
 
         $accessToken = $client->fetchAccessTokenWithAuthCode($code);
         $client->setAccessToken($accessToken);
-
+        dd($client);
         $oauth2 = new \Google\Service\Oauth2($client);
         $user_info = $oauth2->userinfo->get();
 

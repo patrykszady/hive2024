@@ -524,7 +524,7 @@ class ReceiptController extends Controller
         $client->setAuthConfig($client_credentials);
 
         $client->setAccessType('offline'); // necessary for getting the refresh token
-        $client->setApprovalPrompt('force'); // necessary for getting the refresh token
+        // $client->setApprovalPrompt('force'); // necessary for getting the refresh token
         // scopes determine what google endpoints we can access. keep it simple for now.
         $client->setScopes(
             [
@@ -546,18 +546,20 @@ class ReceiptController extends Controller
         //https://console.cloud.google.com/apis/credentials/oauthclient
         $authUrl = $client->createAuthUrl();
 
+        // dd($authUrl);
         return redirect($authUrl);
     }
 
     public function google_cloud_auth_response()
     {
-        dd(request()->query());
+        // dd(request()->query());
         if(isset(request()->query()['code'])){
             $code = request()->query()['code'];
         }else{
             return redirect(route('company_emails.index'));
         }
 
+        dd($code);
         $client = $this->google_cloud_client();
 
         $accessToken = $client->fetchAccessTokenWithAuthCode($code);

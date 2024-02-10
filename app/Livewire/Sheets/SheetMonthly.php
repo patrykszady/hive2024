@@ -21,7 +21,6 @@ class SheetMonthly extends Component
 
     public function mount()
     {
-        //get last 6 months
         $end_date = Carbon::now();
         $start_date = $end_date->copy()->subMonths(11);
 

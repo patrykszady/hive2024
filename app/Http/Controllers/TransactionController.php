@@ -665,9 +665,31 @@ class TransactionController extends Controller
         $categories = Category::all();
         foreach($hive_vendors as $hive_vendor){
             $hive_vendor_bank_account_ids = $hive_vendor->bank_accounts->pluck('id');
+            $vendors_with_category = Vendor::withoutGlobalScopes()->whereHas('category')->get();
+
             $transactions =
                 Transaction::
                     withoutGlobalScopes()
+                    ->whereNull('deleted_at')
+                    ->whereIn('bank_account_id', $hive_vendor_bank_account_ids)
+                    ->whereIn('vendor_id', $vendors_with_category->pluck('id'))
+                    ->whereHas('expense', function ($query) {
+                        return $query->whereDoesntHave('category');
+                    })
+                    ->get();
+
+            foreach($transactions as $transaction){
+                if($transaction->expense){
+                    $transaction->expense->category()->associate($vendors_with_category->find($transaction->expense->vendor_id)->category);
+                    $transaction->expense->timestamps = false;
+                    $transaction->expense->save();
+                }
+            }
+
+            $transactions =
+                Transaction::
+                    withoutGlobalScopes()
+                    ->whereNull('deleted_at')
                     ->whereIn('bank_account_id', $hive_vendor_bank_account_ids)
                     ->whereNotNull('details')
                     ->whereHas('expense', function ($query) {
@@ -704,20 +726,19 @@ class TransactionController extends Controller
             $vendors_expenses =
                 Expense::
                     withoutGlobalScopes()
+                    ->whereNull('deleted_at')
                     ->where('belongs_to_vendor_id', $hive_vendor->id)
-                    ->whereBetween('date', ['2023-10-01', Carbon::now()->subDays(6)->format('Y-m-d')])
+                    ->whereBetween('date', ['2021-01-01', Carbon::now()->subDays(6)->format('Y-m-d')])
                     ->whereDoesntHave('category')
                     ->get()
                     ->groupBy('vendor_id');
-
-            // dd($vendors_expenses);
 
             foreach($vendors_expenses as $vendor_id => $vendor_expenses){
                 $expenses =
                     Expense::
                         withoutGlobalScopes()
                         ->where('belongs_to_vendor_id', $hive_vendor->id)
-                        ->whereBetween('date', ['2023-10-01', Carbon::now()->subDays(6)->format('Y-m-d')])
+                        ->whereBetween('date', ['2021-01-01', Carbon::now()->subDays(6)->format('Y-m-d')])
                         ->whereDoesntHave('category')
                         ->where('vendor_id', $vendor_id);
                 // $expenses = $vendors_expenses[$vendor_id];

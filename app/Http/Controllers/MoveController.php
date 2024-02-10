@@ -40,6 +40,44 @@ class MoveController extends Controller
 {
     public function move()
     {
+        // //expenses where transaction->vendor != expense->vendor
+        // $expenses =
+        //     Expense::
+        //         with('transactions')
+        //         ->whereHas('transactions', function ($query) {
+        //             $query->whereNull('deposit')->whereNull('check_id');
+        //         })->get();
+
+        // $expense_transaction_vendor_mismatch = [];
+        // foreach($expenses as $expense){
+        //     $transactions = $expense->transactions->where('vendor_id', '!=', $expense->vendor_id);
+        //     if(!$transactions->isEmpty()){
+        //         $expense_transaction_vendor_mismatch[] = $expense->id;
+        //         // dd($expense_transaction_vendor_mismatch);
+        //     }
+        // }
+
+        // dd($expense_transaction_vendor_mismatch);
+
+        // $expenses =
+        //     Expense::
+        //         whereHas('transactions', function($query) use ($cuisineId) {
+        //             return $query->where('id', $cuisineId);
+        //         })
+        //         // with(['transactions' => function($query) use ($transaction){
+        //         //     $query->where('vendor_id', $subitem_id)
+        //         // }])
+        //         // whereHas('transactions')
+
+        //         // ->each(function($expense, $key) {
+        //         //     dd($expense);
+        //         //     $user->update(['last_login' => Carbon::now()]);
+        //         // })
+
+        //         ->get();
+
+        // dd($expenses);
+
         // $categories = Category::all();
         // foreach($categories as $category){
         //     $primary_friendly = ucwords(strtolower(str_replace('_', ' ', $category->primary)));

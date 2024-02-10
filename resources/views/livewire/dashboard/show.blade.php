@@ -20,6 +20,15 @@
         <div class="space-y-6 lg:col-start-4 lg:col-span-3">
             <livewire:users.team-members :vendor="$user->vendor">
         </div>
+
+        @if($user->vendor->user_role == 'Admin')
+            <div class="space-y-6 lg:col-start-1 lg:col-span-6">
+                <livewire:sheets.sheet-monthly />
+            </div>
+        @endif
     </div>
+
     <livewire:vendors.vendor-create />
 </div>
+
+

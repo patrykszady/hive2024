@@ -109,6 +109,7 @@
         @can('update', $user)
             <div class="col-span-4 lg:col-span-2">
                 <div
+                    class="w-full"
                     x-data="{
                         init() {
                             let chart = new Chart(this.$refs.canvas.getContext('2d'), {
@@ -168,7 +169,6 @@
                             })
                         }
                     }"
-                    class="w-full"
                     >
                     <canvas x-ref="canvas" class="bg-transparent rounded-lg"></canvas>
                 </div>
@@ -191,7 +191,7 @@
                                                 <thead>
                                                     <tr class="divide-x divide-gray-200">
                                                         <th scope="col"
-                                                            class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                                                            class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-0"></th>
                                                         <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">{{$year}}</th>
                                                     </tr>
                                                 </thead>
@@ -280,7 +280,6 @@
                     </x-cards.wrapper>
                 </div>
             </div>
-
         @endcan
 	</div>
 

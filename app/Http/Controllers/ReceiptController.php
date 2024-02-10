@@ -524,7 +524,7 @@ class ReceiptController extends Controller
         $client->setAuthConfig($client_credentials);
 
         $client->setAccessType('offline'); // necessary for getting the refresh token
-        // $client->setApprovalPrompt('force'); // necessary for getting the refresh token
+        $client->setApprovalPrompt('consent'); // necessary for getting the refresh token
         // scopes determine what google endpoints we can access. keep it simple for now.
         $client->setScopes(
             [
@@ -564,10 +564,10 @@ class ReceiptController extends Controller
 
         $accessToken = $client->fetchAccessTokenWithAuthCode($code);
         $client->setAccessToken($accessToken);
-        dd($client);
+
         $oauth2 = new \Google\Service\Oauth2($client);
         $user_info = $oauth2->userinfo->get();
-
+        dd($user_info);
         $existing_company_emails = CompanyEmail::withoutGlobalScopes()->where('email', $user_info->email)->get();
         if(!$existing_company_emails->isEmpty()){
             //return back with error

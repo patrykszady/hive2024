@@ -522,7 +522,7 @@ class ReceiptController extends Controller
 
         // $client->setAuthConfig($configJson);
         $client->setAuthConfig($client_credentials);
-        $client->setPrompt('consent');
+        // $client->setPrompt('consent');
         $client->setAccessType('offline'); // necessary for getting the refresh token
         $client->setApprovalPrompt('force'); // necessary for getting the refresh token
         // scopes determine what google endpoints we can access. keep it simple for now.

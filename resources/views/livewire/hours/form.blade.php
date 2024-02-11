@@ -52,34 +52,51 @@
 
 		<div class="col-span-4 space-y-2 lg:col-span-2">
 			{{-- @if(!$days->where('format', $this->selected_date->format('Y-m-d'))->first()['confirmed_date']) --}}
-				@foreach ($projects as $index => $project)
-					<x-cards.wrapper>
-						{{-- <x-cards.heading>
-							<x-slot name="left">
-								<h1>{{$project->name}}</h1>
-							</x-slot>
+            <x-cards.wrapper>
+                <x-cards.body :class="'space-y-2 my-2'">
+                    {{-- PROJECT HOUR AMOUNT --}}
+                    @foreach ($projects as $index => $project)
+                        <x-forms.row
+                            wire:model.live="form.projects.{{$index}}.hours"
+                            errorName="form.projects.{{$index}}.hours"
+                            name="form.projects.{{$index}}.hours"
+                            text="{{$project->name}}"
+                            type="number"
+                            hint="Hours"
+                            textSize="xl"
+                            placeholder="1.00"
+                            inputmode="decimal"
+                            step="0.25"
+                            >
+                        </x-forms.row>
 
-							<x-slot name="right">
-							</x-slot>
-						</x-cards.heading> --}}
-						<x-cards.body :class="'space-y-2 my-2'">
-							{{-- PROJECT HOUR AMOUNT --}}
-							<x-forms.row
-								wire:model.live="form.projects.{{$index}}.hours"
-								errorName="form.projects.{{$index}}.hours"
-								name="form.projects.{{$index}}.hours"
-								text="{{$project->name}}"
-								type="number"
-								hint="Hours"
-								textSize="xl"
-								placeholder="1.00"
-								inputmode="decimal"
-								step="0.25"
-								>
-							</x-forms.row>
-						</x-cards.body>
-					</x-cards.wrapper>
-				@endforeach
+                        @if(!$loop->last)
+                            <hr>
+                        @endif
+                    @endforeach
+                </x-cards.body>
+            </x-cards.wrapper>
+
+            <x-cards.wrapper>
+                <x-cards.body :class="'space-y-2 my-2'">
+                    <x-forms.row
+                        wire:model.live="new_project_id"
+                        errorName="new_project_id"
+                        name="new_project_id"
+                        text="Another Project"
+                        type="dropdown"
+                        buttonHint="Add"
+                        buttonClick="add_project"
+                        >
+
+                        <option value="" readonly>Select Project</option>
+                        @foreach ($other_projects as $index => $project)
+                            <option value="{{$project->id}}">{{$project->name}}</option>
+                        @endforeach
+                    </x-forms.row>
+                </x-cards.body>
+            </x-cards.wrapper>
+
 			{{-- @else
 				<x-cards.wrapper>
 					<x-cards.heading>

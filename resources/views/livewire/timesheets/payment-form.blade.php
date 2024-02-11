@@ -83,11 +83,11 @@
                                 @php
                                     $line_details = [
                                         1 => [
-                                            'text' => $project_timesheet->hours,
+                                            'text' => (float)$project_timesheet->hours,
                                             'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
                                             ],
                                         2 => [
-                                            'text' => $project_timesheet->project->project_name,
+                                            'text' => $project_timesheet->project->name,
                                             'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
                                             ],
                                         ];
@@ -100,7 +100,9 @@
                                 @endphp
 
                                 <x-lists.search_li
-                                    :line_title="money($project_timesheet->amount) . ' | ' . $line_details[1]['text'] . ' Hours | ' . $line_details[2]['text']"
+                                    {{-- :line_title="money($project_timesheet->amount) . ' | ' . $line_details[1]['text'] . ' Hours | ' . $line_details[2]['text']" --}}
+                                    :line_title="money($project_timesheet->amount)"
+                                    :line_details="$line_details"
                                     :bubble_message="'Project'"
                                     :checkbox="$checkbox"
                                     >
@@ -127,7 +129,6 @@
                             :no_hover=true
                             :line_title="'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString() . ' | ' . money($weekly_project_timesheets->sum('amount'))"
                             :bubble_message="'Timesheets'"
-                            {{-- :class="'pointer-events-none'" --}}
                             >
                         </x-lists.search_li>
                             {{-- 7-15-2022 Each foreach li shoud be a checkbox wherever it is clicked like an href --}}
@@ -135,14 +136,19 @@
                                 @php
                                     $line_details = [
                                         1 => [
-                                            'text' => $project_timesheet->hours,
-                                            'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
+                                            'text' => $project_timesheet->user->first_name,
+                                            'icon' => 'M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z'
                                             ],
                                         2 => [
-                                            'text' => $project_timesheet->project->project_name,
+                                            'text' => $project_timesheet->project->name,
                                             'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
                                             ],
+                                        3 => [
+                                            'text' => (float)$project_timesheet->hours,
+                                            'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
+                                            ],
                                         ];
+
                                     //radio button
                                     $checkbox = [
                                         // checked vs unchecked
@@ -152,10 +158,11 @@
                                 @endphp
 
                                 <x-lists.search_li
-                                    {{-- :line_details="$line_details" --}}
-                                    href="{{route('timesheets.show', $project_timesheet->id)}}"
-                                    :href_target="'_blank'"
-                                    :line_title="money($project_timesheet->amount) . ' | ' . $project_timesheet->user->first_name . ' | ' . $line_details[1]['text'] . ' Hours | ' . $line_details[2]['text']"
+                                    :line_title="money($project_timesheet->amount)"
+                                    :line_details="$line_details"
+                                    {{-- href="{{route('timesheets.show', $project_timesheet->id)}}"
+                                    :href_target="'_blank'" --}}
+
                                     :bubble_message="'Project'"
                                     :checkbox="$checkbox"
                                     >

@@ -5,10 +5,12 @@
     'type' => 'text',
     'hint' => null,
     'radioHint' => null,
+    'buttonHint' => null,
     'textSize' => 'sm',
     'titleslot' => null,
     'rowslot' => null,
     'buttonText' => null,
+    'buttonClick' => null,
     'bottom' => null,
     'hint_dropdown' => null,
 ])
@@ -24,11 +26,11 @@
         $input_classes .= ' hover:bg-gray-50';
     }
 
-    if($hint && $radioHint){
+    if($hint && ($radioHint || $buttonHint)){
         $input_classes .= ' ';
     }elseif($hint){
         $input_classes .= ' rounded-r-md';
-    }elseif($radioHint){
+    }elseif($radioHint || $buttonHint){
         $input_classes .= ' rounded-l-md';
     }else{
         $input_classes .= ' rounded-md';
@@ -274,6 +276,10 @@
                         {{$radioHint}}
                         {{$radio}}
                     </span>
+                @elseif($buttonHint)
+                    <button type="button" wire:click="{{$buttonClick}}" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100">
+                        {{$buttonHint}}
+                    </button>
                 @endif
             </div>
 

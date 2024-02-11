@@ -14,14 +14,18 @@ use Livewire\Attributes\Title;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 
+use Livewire\Attributes\Rule;
+
 class HourCreate extends Component
 {
     public HourForm $form;
 
     public $projects = [];
+    public $other_projects = [];
     public $days = [];
     public $hours_count_store = 0;
     public $selected_date = NULL;
+    public $new_project_id = NULL;
 
     public $view_text = [
         'card_title' => 'Create Daily Hours',
@@ -31,17 +35,25 @@ class HourCreate extends Component
 
     protected $listeners = ['refreshComponent' => '$refresh', 'selectedDate'];
 
+    public function rules()
+    {
+        return [
+            'new_project_id' => 'nullable',
+        ];
+    }
+
     public function mount()
     {
         $this->projects = Project::active()->orderBy('created_at', 'DESC')->get();
+        $this->other_projects = Project::whereNotIn('id', $this->projects->pluck('id'))->orderBy('created_at', 'DESC')->get();
 
         $confirmed_weeks =
-        Timesheet::
-            orderBy('date', 'DESC')
-            ->where('user_id', auth()->user()->id)
-            ->where('date', '>', today()->subWeeks(3))
-            ->get()
-            ->groupBy('date');
+            Timesheet::
+                orderBy('date', 'DESC')
+                ->where('user_id', auth()->user()->id)
+                ->where('date', '>', today()->subWeeks(3))
+                ->get()
+                ->groupBy('date');
 
         if(!$confirmed_weeks->isEmpty()){
             foreach($confirmed_weeks as $confirmed_week)
@@ -76,7 +88,7 @@ class HourCreate extends Component
         $this->form->setProjects($this->projects->toArray());
     }
 
-    public function updated($field)
+    public function updated()
     {
         $this->validate();
     }
@@ -99,10 +111,15 @@ class HourCreate extends Component
     public function selectedDate($date)
     {
         //if current User doesnt have any hours for this date let them add new project, if they do let them edit if not yet paid (or timesheet created)
-        //if week already paid, dont show.
         $this->selected_date = Carbon::parse($date);
 
         $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $date)->get();
+
+        $projects = Project::active()->orderBy('created_at', 'DESC')->get();
+        $other_projects = $this->other_projects->whereIn('id', $user_day_hours->pluck('project_id'));
+        $merged_projects = $projects->merge($other_projects);
+
+        $this->projects = $merged_projects;
 
         $this->resetValidation();
 
@@ -132,6 +149,18 @@ class HourCreate extends Component
         }
 
         $this->form->setProjects($this->projects->toArray());
+    }
+
+    public function add_project()
+    {
+        $project = $this->other_projects->where('id', $this->new_project_id);
+        $this->projects->add($project->first());
+
+        $this->form->projects[] = $project->first()->toArray();
+
+        $this->other_projects->forget($project->keys()->first());
+        $this->new_project_id = NULL;
+        $this->render();
     }
 
     public function save()

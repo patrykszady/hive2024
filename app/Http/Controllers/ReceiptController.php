@@ -546,7 +546,6 @@ class ReceiptController extends Controller
         //https://console.cloud.google.com/apis/credentials/oauthclient
         $authUrl = $client->createAuthUrl();
 
-        // dd($authUrl);
         return redirect($authUrl);
     }
 

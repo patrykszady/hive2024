@@ -33,7 +33,7 @@
                                                         ],
                                                         label: 'Payments',
                                                         borderColor: [
-                                                            '#2E2B78',
+                                                            '#38B000',
                                                         ],
                                                         tension: 0.1
                                                     },

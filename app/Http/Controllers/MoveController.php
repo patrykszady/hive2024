@@ -40,6 +40,15 @@ class MoveController extends Controller
 {
     public function move()
     {
+        $statuses = ProjectStatus::all();
+
+        foreach($statuses as $status){
+            $status->start_date = $status->created_at->format('Y-m-d');
+            $status->timestamps = false;
+            $status->save();
+        }
+
+        dd('done');
         // //expenses where transaction->vendor != expense->vendor
         // $expenses =
         //     Expense::

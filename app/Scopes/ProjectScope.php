@@ -20,12 +20,14 @@ class ProjectScope implements Scope
             $query->where('vendor_id', $user->vendor->id);
         });
 
+        //where client/vendor
         //Admin
         if($user_vendor_pivot->role_id == 1){
+            // dd($user_vendor_pivot);
+            $builder->where('belongs_to_vendor_id', $user->primary_vendor_id);
+
             //shows all projects
-            //where client/vendor
-            // $builder->where('belongs_to_vendor_id', $user->primary_vendor_id);
-            $builder;
+            // $builder;
         //Member
         }elseif($user_vendor_pivot->role_id == 2){
             //03-15-2023  and any active projects despite how long ago they were created...

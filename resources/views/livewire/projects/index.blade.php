@@ -118,7 +118,7 @@
                     hrefTarget="_blank"
                     :line_details="$line_details"
                     :line_title="$project->name"
-                    :bubble_message="$project->project_status->title"
+                    :bubble_message="$project->last_status->title"
                     >
 
                 </x-lists.search_li>

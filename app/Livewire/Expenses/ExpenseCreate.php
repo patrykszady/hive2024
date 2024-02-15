@@ -331,7 +331,7 @@ class ExpenseCreate extends Component
             Project::
                 // where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
                 orderBy('created_at', 'DESC')
-                ->whereHas('project_status', function ($query) {
+                ->whereHas('statuses', function ($query) {
                     $query->whereIn('project_status.title', ['Active', 'Complete']);
                 })
                 ->get();

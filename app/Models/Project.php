@@ -54,7 +54,6 @@ class Project extends Model
     public function clients()
     {
         //through project_vendor->client_id
-        // return $this->belongsToMany(Client::class)->withTimestamps();
         return $this->belongsToMany(Client::class)->withTimestamps();
     }
 
@@ -78,15 +77,22 @@ class Project extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function project_status()
+    public function statuses()
     {
-        return $this->hasOne(ProjectStatus::class);
+        return $this->hasMany(ProjectStatus::class);
     }
 
-    //7-19-2022: when we make multiple project statuses/stages/timelines again
-    // public function getProjectStatusAttribute()
+    public function last_status(){
+        return $this->hasOne(ProjectStatus::class)->orderBy('start_date', 'DESC')->latest(); //->first()->title_id
+    }
+
+    public function scopeStatus($query, $status){
+        return $query->with('last_status')->get()->where('last_status.title', $status);
+    }
+
+    // public function getStatusAttribute()
     // {
-    //     return $this->project_statuses()->latest()->first()->title;
+    //     return $this->statuses()->orderBy('created_at', 'DESC')->first();
     // }
 
     public function getFullAddressAttribute()
@@ -172,10 +178,17 @@ class Project extends Model
         // return $name;
     }
 
-    public function scopeActive($query)
-    {
-        $query->whereHas('project_status', function ($q) {
-            $q->where('project_status.title', 'Active');
-        });
-    }
+    // public function scopeActive($query)
+    // {
+    //     // dd($query->with('statuses')->get());
+    //     // dd($query->whereHas('statuses')->get());
+    //     // $posts = Post::whereHas('comments', function (Builder $query) {
+    //     //     $query->where('content', 'like', 'code%');
+    //     // })->get();
+
+    //     $query->whereHas('statuses', function($q){
+    //         dd($q->get()->groupBy('project_id'));
+    //         $q->where('start_date', '>=', '2015-01-01');
+    //     })->get();
+    // }
 }

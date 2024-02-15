@@ -8,13 +8,14 @@ use App\Models\Timesheet;
 
 use App\Livewire\Forms\HourForm;
 
+use Illuminate\Database\Eloquent\Builder;
+
 use Livewire\Component;
+use Livewire\Attributes\Rule;
 use Livewire\Attributes\Title;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
-
-use Livewire\Attributes\Rule;
 
 class HourCreate extends Component
 {
@@ -44,7 +45,8 @@ class HourCreate extends Component
 
     public function mount()
     {
-        $this->projects = Project::active()->orderBy('created_at', 'DESC')->get();
+        $this->projects = Project::status('Active')->sortByDesc('last_status.start_date');
+
         $this->other_projects = Project::whereNotIn('id', $this->projects->pluck('id'))->orderBy('created_at', 'DESC')->get();
 
         $confirmed_weeks =
@@ -115,7 +117,8 @@ class HourCreate extends Component
 
         $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $date)->get();
 
-        $projects = Project::active()->orderBy('created_at', 'DESC')->get();
+        //Project::active()->orderBy('created_at', 'DESC')->get();
+        $projects = $this->projects;
         $other_projects = $this->other_projects->whereIn('id', $user_day_hours->pluck('project_id'));
         $merged_projects = $projects->merge($other_projects);
 

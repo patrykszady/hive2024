@@ -13,7 +13,12 @@ class ProjectStatus extends Model
 
     protected $table = 'project_status';
 
-    protected $fillable = ['project_id', 'belongs_to_vendor_id', 'title', 'created_at', 'updated_at'];
+    protected $fillable = ['project_id', 'belongs_to_vendor_id', 'start_date', 'end_date', 'title', 'created_at', 'updated_at'];
+
+    protected $casts = [
+        'start_date' => 'date:Y-m-d',
+        'end_date' => 'date:Y-m-d',
+    ];
 
     protected static function booted()
     {

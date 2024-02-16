@@ -220,7 +220,7 @@ class ExpenseForm extends Form
             $this->project_id = $expense->project_id;
             //if existing project is not SPLIT
             if(!is_null($this->project_id) && $this->project_id != 0){
-                $project_title = Project::findOrFail($this->project_id)->project_status->title;
+                $project_title = $this->component->projects->where('id', $this->project_id)->first()->last_status->title;
                 if($project_title == 'Complete'){
                     $this->project_completed = TRUE;
                 }

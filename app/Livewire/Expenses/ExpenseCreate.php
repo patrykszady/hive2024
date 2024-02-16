@@ -39,12 +39,24 @@ class ExpenseCreate extends Component
     public $expense = NULL;
     public $expense_update = FALSE;
     public $expense_splits = [];
+    public $projects = [];
 
     // public $via_vendor_employees = NULL;
 
     public $modal_show = FALSE;
 
     protected $listeners = ['resetModal', 'editExpense', 'newExpense', 'createExpenseFromTransaction', 'hasSplits'];
+
+    public function mount()
+    {
+        $this->projects = Project::
+            // where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
+            orderBy('created_at', 'DESC')
+            ->whereHas('statuses', function ($query) {
+                $query->whereIn('project_status.title', ['Active', 'Complete']);
+            })
+            ->get();
+    }
 
     public function updated($field, $value)
     {
@@ -73,7 +85,8 @@ class ExpenseCreate extends Component
         }
 
         if($field == 'form.project_id' && is_numeric($value)){
-            $project_title = Project::findOrFail($value)->project_status->title;
+            $project_title = $this->projects->where('id', $value)->first()->last_status->title;
+
             if($project_title == 'Complete'){
                 $this->form->project_completed = TRUE;
             }else{
@@ -327,14 +340,7 @@ class ExpenseCreate extends Component
         $this->authorize('create', Expense::class);
 
         $vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
-        $projects =
-            Project::
-                // where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
-                orderBy('created_at', 'DESC')
-                ->whereHas('statuses', function ($query) {
-                    $query->whereIn('project_status.title', ['Active', 'Complete']);
-                })
-                ->get();
+
         $distributions = Distribution::all(['id', 'name']);
         $team_members = auth()->user()->vendor->users()->employed();
         $employees = $team_members->get();
@@ -351,7 +357,7 @@ class ExpenseCreate extends Component
 
         return view('livewire.expenses.form', [
             'vendors' => $vendors,
-            'projects' => $projects,
+            // 'projects' => $projects,
             'distributions' => $distributions,
             'employees' => $employees,
             'via_vendor_employees' => $via_vendor_employees,

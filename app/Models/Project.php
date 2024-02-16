@@ -87,7 +87,7 @@ class Project extends Model
     }
 
     public function scopeStatus($query, $status){
-        return $query->with('last_status')->get()->where('last_status.title', $status);
+        return $query->with('last_status')->get()->whereIn('last_status.title', $status);
     }
 
     // public function getStatusAttribute()

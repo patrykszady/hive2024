@@ -31,11 +31,12 @@ class SheetMonthly extends Component
             $this->months[] = $month->format('M y');
         }
 
-        // $this->months = array_reverse($this->months);
+        $this->months = array_reverse($this->months);
 
         $this->monthly_payments =
             Payment::
                 whereBetween('date', [$start_date, $end_date])
+                ->orderBy('date', 'DESC')
                 ->get()
                 ->groupBy(function ($payment) {
                     return $payment->date->format('M y');
@@ -45,6 +46,7 @@ class SheetMonthly extends Component
         $this->monthly_expenses =
             Expense::
                 whereBetween('date', [$start_date, $end_date])
+                ->orderBy('date', 'DESC')
                 ->get()
                 ->groupBy(function ($expense) {
                     return $expense->date->format('M y');
@@ -56,6 +58,7 @@ class SheetMonthly extends Component
                 whereHas('hours', function ($query) use($start_date, $end_date) {
                     return $query->whereBetween('date', [$start_date, $end_date]);
                 })
+                ->orderBy('date', 'DESC')
                 ->get()
                 ->groupBy(function ($timesheet) {
                     return $timesheet->date->format('M y');

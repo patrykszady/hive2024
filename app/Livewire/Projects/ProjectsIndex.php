@@ -64,11 +64,12 @@ class ProjectsIndex extends Component
             })
             ->where('address', 'like', "%{$this->project_name_search}%")
             ->when($this->project_status_title != NULL, function($query) {
-                return $query->status($this->project_status_title);
+                return $query->status($this->project_status_title)->sortByDesc('last_status.start_date');
             })
             ->when($client_id != NULL, function ($query) use ($client_ids) {
                 return $query->whereIn('client_id', $client_ids);
             })
+
             ->paginate(10);
 
         // dd($projects);

@@ -12,6 +12,7 @@
                 <li class="relative flex gap-x-4">
                     <div class="absolute top-0 left-0 flex justify-center w-6 -bottom-6">
                         <div class="w-px bg-gray-200"></div>
+
                     </div>
                     <div class="relative flex items-center justify-center flex-none w-6 h-6 bg-white">
                         @if($loop->last)
@@ -29,8 +30,10 @@
                             {{$status->title}}
                         </span>
                         {{$status->start_date->format('m/d/y')}}
+                        {{-- <br>
+                        <span class="mb-0 ml-4 text-indigo-800"><i>2 months later</i></span> --}}
                     </p>
-                    <time datetime="{{$status->start_date}}" class="flex-none py-0.5 text-xs leading-5 text-gray-500">{{$status->start_date->diffForHumans(now(), Carbon\CarbonInterface::DIFF_ABSOLUTE)}}</time>
+                    <time datetime="{{$status->start_date}}" class="flex-none py-0.5 text-xs leading-5 text-gray-500">{{$status->start_date->diffForHumans()}}</time>
                 </li>
             @endforeach
 

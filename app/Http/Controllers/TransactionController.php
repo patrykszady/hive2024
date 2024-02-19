@@ -1526,15 +1526,29 @@ class TransactionController extends Controller
 
     //find expenses with NO VENDOR that match transactions
     public function add_transaction_to_expenses_sin_vendor(){
-        $expenses = Expense::where('vendor_id', 0)->get();
-        // dd($expenses);
+        $expenses = Expense::with('receipts')->where('vendor_id', 0)->get();
 
+        $vendor_desc = VendorTransaction::all();
         foreach($expenses as $expense){
+            $receipt = $expense->receipts()->latest()->first();
+            if(isset($receipt->receipt_items->merchant_name)){
+                $merchant_name = $receipt->receipt_items->merchant_name;
+                // $vendor = $vendor_desc->where('desc', 'LIKE', '%' . $merchant_name . '%')->first();
+                // dd($vendor);
+                $vendor = $vendor_desc->where('desc', $merchant_name)->first();
+
+                if($vendor){
+                    $expense->vendor_id = $vendor->vendor_id;
+                    $expense->save();
+                    continue;
+                }
+            }
+
             $matching_transaction =
                 Transaction::where('amount', $expense->amount)
                     ->whereNull('expense_id')
                     ->get()
-                    ->each(function ($item) use($expense)  {
+                    ->each(function($item) use($expense){
                         $item->date_diff = $expense->date->floatDiffInDays($item->transaction_date);
                     })
                     ->sortBy('date_diff')

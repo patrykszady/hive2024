@@ -244,6 +244,86 @@
             </x-slot>
         </x-cards.heading>
 
+        <hr class="border-indigo-700 border-b-1">
+        <x-cards.heading>
+            <x-slot name="left">
+                <h1>Estimate Duration:</h1>
+                <span><i>Start and End date to include in contract.</i></span>
+            </x-slot>
+        </x-cards.heading>
+        <x-cards.body>
+            <div class="px-4 sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr>
+                            <td
+                                class="w-full py-4 pl-4 pr-3 font-medium text-gray-900 text-md max-w-0 sm:w-auto sm:max-w-none sm:pl-0"
+                                >
+                                Start Date
+                                <dl class="font-normal lg:hidden">
+                                    <dt class="sr-only sm:hidden">Bid</dt>
+                                    <dd class="mt-1 text-gray-500 truncate sm:hidden">
+                                        <input
+                                            type="date"
+                                            wire:model.live="start_date"
+                                            name="start_date"
+                                            id="start_date"
+                                            autocomplete="start_date"
+                                            placeholder="1000"
+                                            class="flex-1 block w-full min-w-0 placeholder-gray-200 border-gray-300 rounded-md sm:text-sm hover:bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500"
+                                        >
+                                    </dd>
+                                </dl>
+                            </td>
+                            <td class="hidden px-3 py-4 ml-2 text-gray-500 text-md sm:table-cell">
+                                <input
+                                    type="date"
+                                    wire:model.live="start_date"
+                                    name="start_date"
+                                    id="start_date"
+                                    autocomplete="start_date"
+                                    placeholder="1000"
+                                    class="flex-1 block w-full min-w-0 placeholder-gray-200 border-gray-300 rounded-md sm:text-sm hover:bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                            </td>
+                        </tr>
+                        <tr>
+                            <td
+                                class="w-full py-4 pl-4 pr-3 font-medium text-gray-900 text-md max-w-0 sm:w-auto sm:max-w-none sm:pl-0"
+                                >
+                                End Date
+                                <dl class="font-normal lg:hidden">
+                                    <dt class="sr-only sm:hidden">Bid</dt>
+                                    <dd class="mt-1 text-gray-500 truncate sm:hidden">
+                                        <input
+                                            type="date"
+                                            wire:model.live="end_date"
+                                            name="end_date"
+                                            id="end_date"
+                                            autocomplete="end_date"
+                                            placeholder="1000"
+                                            class="flex-1 block w-full min-w-0 placeholder-gray-200 border-gray-300 rounded-md sm:text-sm hover:bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500"
+                                        >
+                                    </dd>
+                                </dl>
+                            </td>
+                            <td class="hidden px-3 py-4 ml-2 text-gray-500 text-md sm:table-cell">
+                                <input
+                                    type="date"
+                                    wire:model.live="end_date"
+                                    name="end_date"
+                                    id="end_date"
+                                    autocomplete="end_date"
+                                    placeholder="1000"
+                                    class="flex-1 block w-full min-w-0 placeholder-gray-200 border-gray-300 rounded-md sm:text-sm hover:bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500"
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </x-cards.body>
+
         <x-cards.footer>
             <button
                 type="button"

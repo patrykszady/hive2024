@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+use Carbon\Carbon;
+
 class Estimate extends Model
 {
     use HasFactory, SoftDeletes;
@@ -18,6 +20,8 @@ class Estimate extends Model
 
     protected $casts = [
         'options' => 'array',
+        // 'options.start_date' => 'date:Y-m-d',
+        // 'options.end_date' => 'date:Y-m-d',
     ];
 
     protected static function booted()
@@ -66,6 +70,24 @@ class Estimate extends Model
     //     // }
     //     // return json_decode($value, true);
     // }
+
+    public function getStartDateAttribute()
+    {
+        if(isset($this->options['start_date'])){
+            return Carbon::parse($this->options['start_date']);
+        }else{
+            return NULL;
+        }
+    }
+
+    public function getEndDateAttribute()
+    {
+        if(isset($this->options['end_date'])){
+            return Carbon::parse($this->options['end_date']);
+        }else{
+            return NULL;
+        }
+    }
 
     public function getReimbursmentsAttribute()
     {

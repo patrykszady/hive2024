@@ -19,6 +19,8 @@ class EstimateAccept extends Component
     public $payments = [];
     public $payments_outstanding = 0;
     public $include_reimbursement = FALSE;
+    public $start_date = NULL;
+    public $end_date = NULL;
 
     public $modal_show = FALSE;
 
@@ -31,6 +33,8 @@ class EstimateAccept extends Component
             'payments.*.description' => 'required|min:3',
             'payments.*.amount' => 'nullable',
             'include_reimbursement' => 'nullable',
+            'start_date' => 'nullable',
+            'end_date' => 'nullable',
         ];
     }
 
@@ -57,6 +61,14 @@ class EstimateAccept extends Component
         }
 
         $bids = $this->bids;
+
+        if(isset($this->estimate->options['start_date'])){
+            $this->start_date = $estimate->options['start_date'];
+        }
+
+        if(isset($this->estimate->options['end_date'])){
+            $this->end_date = $estimate->options['end_date'];
+        }
 
         $this->sections =
             $this->estimate
@@ -134,26 +146,30 @@ class EstimateAccept extends Component
 
     public function save()
     {
+        // dd($this);
+
         if($this->payments_outstanding < 0){
             $this->addError('payments_remaining_error', 'Amount Remaining cannot be less than $0.00');
         }else{
+            $estimate = $this->estimate;
+            $estimate_options = $this->estimate->options;
+
             if($this->include_reimbursement){
-                $this->estimate->options = ['include_reimbursement' => TRUE];
-                $this->estimate->save();
+                $estimate_options['include_reimbursement'] = TRUE;
             }else{
-                $this->estimate->options = ['include_reimbursement' => FALSE];
-                $this->estimate->save();
+                $estimate_options['include_reimbursement'] = FALSE;
             }
 
             if($this->payments->where('amount', '!=', '')->sum('amount') != 0){
-                $estimate = $this->estimate;
-                $estimate_options = $this->estimate->options;
                 $estimate_options['payments'] = $this->payments->toArray();
-                $estimate->options = $estimate_options;
-                $estimate->save();
             }
 
-            // dd($this->project->finances['reimbursments']);
+            $estimate_options['start_date'] = $this->start_date;
+            $estimate_options['end_date'] = $this->end_date;
+
+            $estimate->options = $estimate_options;
+            $estimate->save();
+
             foreach($this->bids as $bid_index => $bid){
                 $bid_sections = $this->sections->whereNotNull('bid_index')->where('bid_index', $bid_index);
 

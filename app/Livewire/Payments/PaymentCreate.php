@@ -48,13 +48,11 @@ class PaymentCreate extends Component
             Project::where('created_at', '>', Carbon::now()->subYears(2)->format('Y-m-d'))
                 ->where('client_id', $this->client->id)
                 ->orderBy('created_at', 'DESC')
-                ->whereHas('project_status', function ($query) {
-                    $query->whereIn('project_status.title', ['Active', 'Complete']);
-                })
+                ->status(['Active', 'Complete'])->sortByDesc('last_status.start_date')
                 // ->with(['expenses' => function ($query) {
                 //     return $query->where('vendor_id', '4');
                 //     }])
-                ->get()
+                // ->get()
                 ->each(function ($item, $key) {
                     $item->show = false;
                     // $item->show_timestamp = now();

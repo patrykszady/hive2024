@@ -344,7 +344,7 @@
                         <p>The Owner is responsible for all finish materials unless otherwire noted in the Estimate.</p>
                         <br>
                         <h2 class="text-lg font-semibold">ARTICLE 2. TIME OF COMPLETION</h2>
-                        <p>The work to be performed under this Contract shall be commenced on or before {project_assignment_datetime}, provided all permits are approved in a timely manner prior to the start date and all finish material is available. The work shall be substantially completed {project_assignment_end_datetime}, provided no Change Orders are added to this estimate, inspections are readily available, and all finish material is available. Such changes will alter the completion date.</p>
+                        <p>The work to be performed under this Contract shall be commenced on or before {{$estimate->start_date ? $estimate->start_date->format('m/d/Y') : 'START_DATE_HERE'}}, provided all permits are approved in a timely manner prior to the start date and all finish material is available. The work shall be substantially completed {{$estimate->end_date ? $estimate->end_date->format('m/d/Y') : 'END_DATE_HERE'}}, provided no Change Orders are added to this estimate, inspections are readily available, and all finish material is available. Such changes will alter the completion date.</p>
                         <br>
                         <h2 class="text-lg font-semibold">ARTICLE 3. THE CONTRACT PRICE</h2>
                         <p>The owner shall pay the Contractor for the material and labor to be performed under the Contract the sum of ---{{money($estimate_total)}}--- Dollars ($), {{$estimate_total_words}}, subject to additions and deductions pursuant to authorized change orders. </p>

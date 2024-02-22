@@ -80,7 +80,7 @@
                         x-transition.duration.250ms
                         {{-- x-text="$wire.vendor_name" --}}
                         type="submit"
-                        class="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        class="inline-flex justify-center px-4 py-2 ml-3 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                         {{$vendor_name}}
                         {{-- {{ isset($vendor_id) ? 'Login to ' . $vendor->business_name : '' }} --}}

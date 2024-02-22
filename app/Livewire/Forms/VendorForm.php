@@ -75,6 +75,8 @@ class VendorForm extends Form
             'city' => $this->city,
             'state' => $this->state,
             'zip_code' => $this->zip_code,
+            'business_phone' => $this->business_phone,
+            'business_email' => $this->business_email,
         ]);
 
         return $this->vendor;

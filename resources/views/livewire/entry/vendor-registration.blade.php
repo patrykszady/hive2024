@@ -30,8 +30,8 @@
 	</div>
 
     <div class="grid max-w-3xl grid-cols-1 gap-6 mx-auto mt-8 sm:px-6 lg:max-w-7xl lg:grid-cols-5">
+        {{-- PROGRESS --}}
         <div class="space-y-4 lg:col-start-1 lg:col-span-2">
-            {{-- PROGRESS --}}
             <x-sections.section cols="1" class="sticky top-5">
                 <x-slot name="heading">
                     <h2
@@ -78,7 +78,7 @@
                                 <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                                 <div class="relative flex space-x-3">
                                 <div>
-                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['vendor_info'] === false && $this->registration['team_members'] === false ? 'bg-blue-500' : ($this->registration['vendor_info'] === true ? 'bg-green-500' : 'bg-gray-500')}} rounded-full ring-8 ring-white">
+                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['vendor_info'] === false && $this->registration['team_members'] === false ? 'bg-indigo-500' : ($this->registration['vendor_info'] === true ? 'bg-green-500' : 'bg-gray-500')}} rounded-full ring-8 ring-white">
                                     <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path d="{{$icons['vendor']}}"/>
                                     </svg>
@@ -98,7 +98,7 @@
                                 <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                                 <div class="relative flex space-x-3">
                                 <div>
-                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['team_members'] === false && $this->registration['vendor_info'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-blue-500')}} rounded-full ring-8 ring-white">
+                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['team_members'] === false && $this->registration['vendor_info'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
                                     <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="{{$icons['user_add']}}" clip-rule="evenodd" />
                                     </svg>
@@ -118,7 +118,7 @@
                                 <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                                 <div class="relative flex space-x-3">
                                 <div>
-                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['team_members'] === false && $this->registration['vendor_info'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-blue-500')}} rounded-full ring-8 ring-white">
+                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['team_members'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
                                     <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="{{$icons['distributions']}}" clip-rule="evenodd" />
                                     </svg>
@@ -138,7 +138,7 @@
                                 <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                                 <div class="relative flex space-x-3">
                                 <div>
-                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['emails_registered'] === false && $this->registration['team_members'] === false ? 'bg-gray-500' : ($this->registration['team_members'] === true && $this->registration['emails_registered'] === true ? 'bg-green-500' : 'bg-blue-500')}} rounded-full ring-8 ring-white">
+                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['emails_registered'] === false && $this->registration['team_members'] === false ? 'bg-gray-500' : ($this->registration['team_members'] === true && $this->registration['emails_registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
                                     <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path d="{{$icons['email']}}" />
                                     </svg>
@@ -158,7 +158,7 @@
                             <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                             <div class="relative flex space-x-3">
                             <div>
-                                <span class="flex items-center justify-center w-8 h-8 {{$this->registration['banks_registered'] === false && $this->registration['emails_registered'] === false ? 'bg-gray-500' : ($this->registration['emails_registered'] === true && $this->registration['banks_registered'] === true ? 'bg-green-500' : 'bg-blue-500')}} rounded-full ring-8 ring-white">
+                                <span class="flex items-center justify-center w-8 h-8 {{$this->registration['banks_registered'] === false && $this->registration['emails_registered'] === false ? 'bg-gray-500' : ($this->registration['emails_registered'] === true && $this->registration['banks_registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
                                 <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path d="{{$icons['credit_card']}}" />
                                 </svg>
@@ -177,7 +177,7 @@
                         <div class="relative pb-8">
                             <div class="relative flex space-x-3">
                                 <div>
-                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['registered'] === false && $this->registration['banks_registered'] === false ? 'bg-gray-500' : ($this->registration['banks_registered'] === true && $this->registration['registered'] === true ? 'bg-green-500' : 'bg-blue-500')}} rounded-full ring-8 ring-white">
+                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['registered'] === false && $this->registration['banks_registered'] === false ? 'bg-gray-500' : ($this->registration['banks_registered'] === true && $this->registration['registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
                                     <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path d="{{$icons['checkmark']}}" />
                                     </svg>
@@ -195,13 +195,12 @@
                 </div>
             </x-sections.section>
         </div>
-
         {{-- REGISTRATION ITEMS --}}
         <div class="space-y-4 lg:col-start-3 lg:col-span-3 xl:col-span-2">
             {{-- VENDOR DETAILS --}}
             <x-cards.wrapper>
 				<x-cards.body>
-					<livewire:vendors.vendor-details :vendor="$vendor" :registration="TRUE">
+					<livewire:vendors.vendor-details :vendor="$vendor" :registration="!$registration['vendor_info']">
 				</x-cards.body>
 			</x-cards.wrapper>
 
@@ -209,12 +208,13 @@
                 x-data="{ showMembers: @entangle('registration.vendor_info') }"
                 x-show="showMembers"
                 x-transition.duration.250ms
+                class="space-y-4"
                 >
 
                 {{-- VENDOR TEAM MEMBERS --}}
                 <x-cards.wrapper>
                     <x-cards.body>
-                        <livewire:users.team-members :vendor="$vendor" :registration="TRUE">
+                        <livewire:users.team-members :vendor="$vendor" :registration="!$registration['vendor_info']">
                     </x-cards.body>
                 </x-cards.wrapper>
 
@@ -226,9 +226,10 @@
                     x-transition.duration.250ms
                     >
 
-                    <div class="pt-4">
-                        <livewire:distributions.distributions-list />
+                    <div>
+                        <livewire:distributions.distributions-list :registration="TRUE">
                     </div>
+
                     <livewire:company-emails.company-emails-index :view="'vendor-registration'">
                 </div>
 
@@ -238,7 +239,7 @@
                     x-show="showBanks"
                     x-transition.duration.250ms
                     >
-                    <div class="pt-4">
+                    <div>
                         <livewire:banks.bank-index :view="'vendor-registration'">
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 {{-- form classes divide-y divide-gray-200 --}}
 <form wire:submit="{{$view_text['form_submit']}}">
-    <x-cards.wrapper class="mx-auto max-w-2xl">
+    <x-cards.wrapper class="max-w-2xl mx-auto">
         {{-- HEADER --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -13,12 +13,12 @@
 
         {{-- ROWS --}}
         <x-cards.body :class="'space-y-4 my-4'">
-  
+
             {{-- USER --}}
-            <x-forms.row 
-                wire:model.live.debounce.250ms="user_id" 
-                errorName="user_id" 
-                name="user_id" 
+            <x-forms.row
+                wire:model.live.debounce.250ms="user_id"
+                errorName="user_id"
+                name="user_id"
                 text="User"
                 type="dropdown"
                 >
@@ -30,19 +30,19 @@
 
             </x-forms.row>
         </x-cards.body>
-        
+
         {{-- FOOTER --}}
         <x-cards.footer>
-            <button 
+            <button
                 type="button"
-                {{-- class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" --}}
-                > 
+                {{-- class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" --}}
+                >
                 {{-- Cancel --}}
             </button>
-            <button 
+            <button
                 type="submit"
                 {{-- x-bind:disabled="expense.project_id" --}}
-                class="ml-3 inline-flex justify-center disabled:opacity-50 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                class="inline-flex justify-center px-4 py-2 ml-3 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 {{$view_text['button_text']}}
             </button>
         </x-cards.footer>

@@ -11,6 +11,7 @@ class DistributionsList extends Component
     protected $listeners = ['refreshComponent' => '$refresh', 'refreshForce'];
 
     public $distributions = [];
+    public $registration = FALSE;
 
     public function mount()
     {

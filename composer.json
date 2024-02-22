@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "2captcha/2captcha": "^1.0",
         "aws/aws-sdk-php": "^3.247",
         "barryvdh/laravel-snappy": "^1.0",
@@ -19,6 +19,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "h4cc/wkhtmltoimage-amd64": "0.12.x",
         "h4cc/wkhtmltopdf-amd64": "0.12.x",
+        "helvetitec/lagoon-charts": "~2.0",
         "ilovepdf/ilovepdf-php": "^1.2",
         "intervention/image": "^2.7",
         "itsgoingd/clockwork": "^5.1",

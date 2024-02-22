@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "67d06766985473d82d05592887f8cb9b",
+    "content-hash": "c97b654333c0b101f175794c4d0e8e92",
     "packages": [
         {
             "name": "2captcha/2captcha",
@@ -2510,6 +2510,47 @@
                 "source": "https://github.com/h4cc/wkhtmltopdf-amd64/tree/master"
             },
             "time": "2018-01-15T06:57:33+00:00"
+        },
+        {
+            "name": "helvetitec/lagoon-charts",
+            "version": "v2.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Helvetitec/lagoon-charts.git",
+                "reference": "9fe9c4af1b6dca355d6f14b0dcf15186830ac4be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Helvetitec/lagoon-charts/zipball/9fe9c4af1b6dca355d6f14b0dcf15186830ac4be",
+                "reference": "9fe9c4af1b6dca355d6f14b0dcf15186830ac4be",
+                "shasum": ""
+            },
+            "require-dev": {
+                "orchestra/testbench": "7"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Helvetitec\\LagoonCharts\\LagoonServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Helvetitec\\LagoonCharts\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "description": "Google Charts for Laravel Livewire 3",
+            "support": {
+                "issues": "https://github.com/Helvetitec/lagoon-charts/issues",
+                "source": "https://github.com/Helvetitec/lagoon-charts/tree/v2.2.3"
+            },
+            "time": "2023-08-17T16:24:00+00:00"
         },
         {
             "name": "ilovepdf/ilovepdf-php",
@@ -12598,7 +12639,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3|^8.0"
+        "php": "^8.2"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"

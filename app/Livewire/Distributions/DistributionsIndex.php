@@ -28,17 +28,14 @@ class DistributionsIndex extends Component
             Project::with('distributions')
                 ->whereHas('distributions')
                 ->orderBy('created_at', 'DESC')
-                ->paginate(5, ['*'], 'projectYesDistributions');
+                ->paginate(5, pageName: 'projects-with-distributions');
 
         //where status = Complete
         $projects_doesnt_dis =
-            Project::with(['distributions', 'project_status'])
-                ->whereDoesntHave('distributions')
-                ->whereHas('project_status', function($query) {
-                    $query->where('title', 'Complete');
-                })
-                ->orderBy('created_at', 'DESC')
-                ->paginate(5, ['*'], 'projectNoDistributions');
+            Project::whereDoesntHave('distributions')
+                ->status(['Complete'])
+                ->sortByDesc('last_status.start_date')
+                ->paginate(5, pageName: 'projects-no-distributions');
 
         return view('livewire.distributions.index', [
             'projects_has_dis' => $projects_has_dis,

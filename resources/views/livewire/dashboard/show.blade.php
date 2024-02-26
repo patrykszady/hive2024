@@ -21,7 +21,7 @@
             <livewire:users.team-members :vendor="$user->vendor">
         </div>
 
-        @if($user->vendor->user_role == 'Admin')
+        @if($user->primary_vendor->pivot->role_id == 1)
             <div class="space-y-6 lg:col-start-1 lg:col-span-6">
                 <livewire:sheets.sheet-monthly />
             </div>

@@ -37,8 +37,8 @@
                                         <x-lists.search_li
                                             :basic=true
                                             :line_title="'Project Contractor'"
-                                            href="{{route('vendors.show', $vendor)}}"
-                                            :line_data="$vendor->business_name"
+                                            href="{{route('vendors.show', $estimate->vendor)}}"
+                                            :line_data="$estimate->vendor->business_name"
                                             >
                                         </x-lists.search_li>
 
@@ -46,7 +46,7 @@
                                             :basic=true
                                             :line_title="'Address'"
                                             :href_target="'blank'"
-                                            :line_data="$vendor->full_address"
+                                            :line_data="$estimate->vendor->full_address"
                                             >
                                         </x-lists.search_li>
                                     </x-lists.ul>
@@ -70,8 +70,8 @@
                                         <x-lists.search_li
                                             :basic=true
                                             :line_title="'Project Homeowner'"
-                                            href="{{route('clients.show', $estimate->project->client)}}"
-                                            :line_data="$estimate->project->client->name"
+                                            href="{{route('clients.show', $estimate->client)}}"
+                                            :line_data="$estimate->client->name"
                                             >
                                         </x-lists.search_li>
 
@@ -95,7 +95,7 @@
                                         <x-lists.search_li
                                             :basic=true
                                             :line_title="'Billing Address'"
-                                            :line_data="$estimate->project->client->full_address"
+                                            :line_data="$estimate->client->full_address"
                                             >
                                         </x-lists.search_li>
 
@@ -293,7 +293,7 @@
                                     </x-lists.search_li>
 
                                     {{-- @if($estimate->project->payments->isEmpty()) --}}
-                                    @foreach($estimate->project->payments as $payment)
+                                    @foreach($payments as $payment)
                                         <x-lists.search_li
                                             :basic=true
                                             :line_title="'Payment ' . $payment->reference"
@@ -307,7 +307,7 @@
                                         :bold="TRUE"
                                         {{-- make gray --}}
                                         :line_title="'TOTAL PAYMENTS'"
-                                        :line_data="money($estimate->project->payments->sum('amount'))"
+                                        :line_data="money($payments->sum('amount'))"
                                         >
                                     </x-lists.search_li>
 
@@ -316,7 +316,7 @@
                                         :bold="TRUE"
                                         {{-- make gray --}}
                                         :line_title="'BALANCE'"
-                                        :line_data="money(($estimate_total + $estimate->reimbursments) - $estimate->project->payments->sum('amount'))"
+                                        :line_data="money(($estimate_total + $estimate->reimbursments) - $payments->sum('amount'))"
                                         >
                                     </x-lists.search_li>
                                     {{-- @endif --}}
@@ -329,12 +329,12 @@
                 @if($type == 'Estimate')
                     <div style="page-break-before: always;"> </div>
                     <div>
-                        @if(!$estimate->payments)
+                        @if(!$payments)
                             <p><b><i>*The below Contract is a sample. It is not meant to be signed until a finalized Estimate is avaliable.</i></b></p>
                             <br>
                         @endif
                         <h1 class="text-xl font-bold">CONTRACTOR AGREEMENT</h1>
-                        <p>THIS AGREEMENT made on {{today()->format('m/d/Y')}}, by and between {{$vendor->business_name}}, hereinafter called the Contractor, and {{$estimate->project->client->name}}, hereinafter called the Owner. WITNESSETH, that the Contractor and the Owner for the consideration named herein agree as follows:</p>
+                        <p>THIS AGREEMENT made on {{today()->format('m/d/Y')}}, by and between {{$estimate->vendor->business_name}}, hereinafter called the Contractor, and {{$estimate->client->name}}, hereinafter called the Owner. WITNESSETH, that the Contractor and the Owner for the consideration named herein agree as follows:</p>
                         <br>
                         <h2 class="text-lg font-semibold">ARTICLE 1. SCOPE OF THE WORK</h2>
                         <p>The Contractor shall furnish all the construction materials and perform all of the work shown on the drawings and/or described in the specifications entitled Estimate {{$estimate->number}}, as annexed hereto as it pertains to work to be performed on property located at: </p>
@@ -353,7 +353,7 @@
                         <p>Payments of the Contract price shall be paid in the manner following and shall not be unreasonably withheld.</p>
                         <p>Construction Payments:</p>
 
-                        @if($estimate->payments)
+                        @if($payments)
                             <x-cards.body>
                                 <div class="grid grid-cols-4 gap-4">
                                     <div class="col-span-3">
@@ -382,13 +382,15 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-gray-200">
-                                                @foreach($estimate->payments as $key => $payment)
-                                                    <tr>
-                                                        <td class="px-3 py-2 text-sm text-gray-900 whitespace-nowrap">Payment {{$key + 1}}</td>
-                                                        <td class="px-3 py-2 text-sm text-gray-900 whitespace-nowrap">{{$payment['description']}}</td>
-                                                        <td class="px-3 py-2 text-sm text-gray-900 whitespace-nowrap">@if($loop->last && $payment['amount'] == '') Balance @else {{money($payment['amount'])}} @endif</td>
-                                                    </tr>
-                                                @endforeach
+                                                @if($estimate->payments)
+                                                    @foreach($estimate->payments as $key => $payment)
+                                                        <tr>
+                                                            <td class="px-3 py-2 text-sm text-gray-900 whitespace-nowrap">Payment {{$key + 1}}</td>
+                                                            <td class="px-3 py-2 text-sm text-gray-900 whitespace-nowrap">{{$payment['description']}}</td>
+                                                            <td class="px-3 py-2 text-sm text-gray-900 whitespace-nowrap">@if($loop->last && $payment['amount'] == '') Balance @else {{money($payment['amount'])}} @endif</td>
+                                                        </tr>
+                                                    @endforeach
+                                                @endif
                                             </tbody>
                                         </table>
                                     </div>

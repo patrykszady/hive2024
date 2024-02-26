@@ -41,7 +41,7 @@ class ClientPolicy
      */
     public function create(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }
@@ -55,7 +55,7 @@ class ClientPolicy
      */
     public function update(User $user, Client $client)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }

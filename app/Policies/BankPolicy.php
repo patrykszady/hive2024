@@ -18,7 +18,7 @@ class BankPolicy
      */
     public function viewAny(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }
@@ -33,7 +33,7 @@ class BankPolicy
     public function view(User $user, Bank $bank)
     {
         return true;
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }
@@ -46,7 +46,7 @@ class BankPolicy
      */
     public function create(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }
@@ -60,7 +60,7 @@ class BankPolicy
      */
     public function update(User $user, Bank $bank)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }

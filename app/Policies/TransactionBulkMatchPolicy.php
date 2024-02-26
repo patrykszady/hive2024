@@ -18,7 +18,7 @@ class TransactionBulkMatchPolicy
      */
     public function viewAny(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }

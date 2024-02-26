@@ -20,8 +20,12 @@ class ClientScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        $builder->whereHas('vendors', function($q){
-            $q->where('vendor_id', '=', auth()->user()->vendor->id);
-        });
+        if(auth()->guest()){
+
+        }else{
+            $builder->whereHas('vendors', function($q){
+                $q->where('vendor_id', '=', auth()->user()->vendor->id);
+            });
+        }
     }
 }

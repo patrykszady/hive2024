@@ -44,7 +44,7 @@ class ProjectPolicy
      */
     public function create(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }
@@ -58,7 +58,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }

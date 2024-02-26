@@ -13,7 +13,7 @@ class LineItemPolicy
      */
     public function viewAny(User $user): bool
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;
@@ -25,7 +25,7 @@ class LineItemPolicy
      */
     public function view(User $user, LineItem $lineItem): bool
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;
@@ -37,7 +37,7 @@ class LineItemPolicy
      */
     public function create(User $user): bool
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;

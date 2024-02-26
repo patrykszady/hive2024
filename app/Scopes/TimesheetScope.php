@@ -10,13 +10,17 @@ class TimesheetScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        $user = auth()->user();
+        if(auth()->guest()){
 
-        //if Admin..all Expenses ... if Member...only expenses the User Paid For....?
-        if($user->vendor->user_role == 'Admin'){
-            $builder->where('vendor_id', $user->primary_vendor_id);
-        }elseif($user->vendor->user_role == 'Member'){
-            $builder->where('vendor_id', $user->primary_vendor_id)->where('user_id', $user->id);
+        }else{
+            $user = auth()->user();
+
+            //if Admin..all Expenses ... if Member...only expenses the User Paid For....?
+            if($user->primary_vendor->pivot->role_id == 1){
+                $builder->where('vendor_id', $user->primary_vendor_id);
+            }elseif($user->primary_vendor->pivot->role_id == 2){
+                $builder->where('vendor_id', $user->primary_vendor_id)->where('user_id', $user->id);
+            }
         }
     }
 }

@@ -10,7 +10,12 @@ class UserVendor extends Pivot
         'start_date' => 'date:Y-m-d',
         'end_date' => 'date:Y-m-d',
     ];
-    //via_vendor
+
+    //  public function via_vendor()
+    // {
+    //     return $this->belongsTo(Vendor::class, 'via_vendor_id')->withoutGlobalScopes();
+    // }
+
     // public function via_vendor()
     // {
     //     return $this->belongsTo(Vendor::class, 'via_vendor_id')->withoutGlobalScopes();

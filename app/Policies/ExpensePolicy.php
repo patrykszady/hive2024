@@ -27,7 +27,7 @@ class ExpensePolicy
      */
     public function view(User $user, Expense $expense)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         //if expense paid_by user
         }elseif($expense->belongs_to_vendor_id == $user->primary_vendor_id && $expense->paid_by == $user->id){
@@ -45,7 +45,7 @@ class ExpensePolicy
      */
     public function create(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }
@@ -59,7 +59,7 @@ class ExpensePolicy
      */
     public function update(User $user, Expense $expense)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }

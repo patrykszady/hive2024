@@ -22,20 +22,21 @@ class Client extends Model
         static::addGlobalScope(new ClientScope);
     }
 
-    public function projects()
-    {
-        return $this->hasMany(Project::class);
-    }
+    // public function projects()
+    // {
+    //     // return $this->belongsToMany(Project::class, 'project_vendor_pivot', 'client_id', 'project_id');
+    //     return $this->hasMany(Project::class);
+    // }
 
     public function users()
     {
         return $this->belongsToMany(User::class);
     }
 
-    public function vendor()
-    {
-        return $this->belongsTo(Vendor::class)->withoutGlobalScope(VendorScope::class);
-    }
+    // public function vendor()
+    // {
+    //     return $this->belongsTo(Vendor::class)->withoutGlobalScope(VendorScope::class);
+    // }
 
     public function vendors()
     {

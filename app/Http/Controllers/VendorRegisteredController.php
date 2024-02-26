@@ -90,6 +90,7 @@ class VendorRegisteredController extends Controller
             'project_id' => $project_id,
             'belongs_to_vendor_id' => $vendor_id,
             'title' => $title,
+            'start_date' => today()->format('Y-m-d')
         ]);
     }
 }

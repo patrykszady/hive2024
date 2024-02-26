@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\User;
-
 use App\Models\Scopes\VendorScope;
 use App\Models\Scopes\ClientScope;
 
@@ -127,33 +125,6 @@ class Vendor extends Model
     public function client()
     {
         return $this->hasOne(Client::class)->withoutGlobalScope(ClientScope::class);
-    }
-
-    public function auth_user_role()
-    {
-        return $this->belongsToMany(User::class)->withPivot(['is_employed', 'role_id', 'via_vendor_id', 'start_date', 'end_date', 'hourly_rate'])->wherePivot('user_id', auth()->user()->id);
-    }
-
-    public function getUserRoleAttribute()
-    {
-        $role_id = $this->auth_user_role->first()->pivot->role_id;
-
-        if($role_id == 1){
-            $role = 'Admin';
-        }elseif($role_id == 2){
-            $role = 'Member';
-        }else{
-            $role = 'No Role';
-        }
-
-        return $role;
-    }
-
-    public function getViaVendorAttribute()
-    {
-        $via_vendor = $this->auth_user_role->first()->pivot->via_vendor_id;
-
-        return $via_vendor;
     }
 
     public function getRegistrationAttribute($value)

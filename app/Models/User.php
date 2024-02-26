@@ -48,7 +48,20 @@ class User extends Authenticatable
     //User's default/logged in vendor
     public function vendor()
     {
+        // dd($this->vendors()->find($this->primary_vendor_id));
+        // return $this->vendors()->find($this->primary_vendor_id);
         return $this->belongsTo(Vendor::class, 'primary_vendor_id')->withoutGlobalScopes();
+    }
+
+    // public function primary_vendor()
+    // {
+    //     // return $this->belongsTo(Vendor::class, 'primary_vendor_id');
+    //     return $this->vendor->users()->find($this->primary_vendor);
+    // }
+
+    public function getPrimaryVendorAttribute()
+    {
+        return $this->vendor->users()->find($this->id);
     }
 
     //via_vendor
@@ -74,9 +87,9 @@ class User extends Authenticatable
 
     public function getVendorRoleAttribute()
     {
-        $vendor_id = $this->pivot->vendor_id;
-
-        $role_id = $this->vendors()->where('vendors.id', $vendor_id)->first()->pivot->role_id;
+        // $vendor_id = $this->pivot->vendor_id;
+        // $role_id = $this->vendors()->where('vendors.id', $vendor_id)->first()->pivot->role_id;
+        $role_id = $this->primary_vendor->pivot->role_id;
 
         if($role_id == 1){
             $role = 'Admin';

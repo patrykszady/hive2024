@@ -13,7 +13,7 @@ class EstimatePolicy
      */
     public function viewAny(User $user): bool
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;
@@ -25,7 +25,7 @@ class EstimatePolicy
      */
     public function view(User $user, Estimate $estimate): bool
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;

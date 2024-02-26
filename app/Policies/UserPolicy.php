@@ -48,14 +48,14 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }
     }
 
     public function create_team_member(User $user, $vendor_id)
     {
-        if($user->vendor->user_role == 'Admin' && in_array($user->vendor->business_type, ['Sub', 'DBA']) && $user->vendor->id == $vendor_id){
+        if($user->primary_vendor->pivot->role_id == 1 && in_array($user->vendor->business_type, ['Sub', 'DBA']) && $user->vendor->id == $vendor_id){
             return true;
         }
     }
@@ -65,7 +65,7 @@ class UserPolicy
         if($client->vendor()->exists()){
             return false;
         }else{
-            if($user->vendor->user_role == 'Admin' && in_array($user->vendor->business_type, ['Sub', 'DBA'])){
+            if($user->primary_vendor->pivot->role_id == 1 && in_array($user->vendor->business_type, ['Sub', 'DBA'])){
                 return true;
             }else{
                 return false;
@@ -85,7 +85,7 @@ class UserPolicy
         if($user->id == $model->id){
             return true;
         }else{
-            if($user->vendor->user_role == 'Admin'){
+            if($user->primary_vendor->pivot->role_id == 1){
                 return true;
             }else{
                 return false;

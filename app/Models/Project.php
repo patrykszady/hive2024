@@ -43,7 +43,15 @@ class Project extends Model
 
     public function vendor()
     {
-        return $this->belongsTo(Vendor::class, 'belongs_to_vendor_id');
+        // dd($this);
+        //project has one vendor via the project_vendor pivot table
+        // return $this->belongsTo(Vendor::class);
+        return $this->belongsToMany(Vendor::class)->withPivot('client_id')->withTimestamps();
+    }
+
+    public function getVendorAttribute()
+    {
+        return $this->vendor()->first();
     }
 
     public function expenseSplits()
@@ -54,7 +62,21 @@ class Project extends Model
     public function clients()
     {
         //through project_vendor->client_id
-        return $this->belongsToMany(Client::class)->withTimestamps();
+
+        return $this->belongsToMany(Client::class, 'project_vendor')->withPivot('vendor_id')->withTimestamps();
+    }
+
+    public function client()
+    {
+        //project has one client via the project_vendor pivot table client_id
+        // return $this->hasOneThrough(Client::class, 'project_vendor_pivot', 'project_id', 'client_id');
+        //->using(ProjectVendor::class)
+        return $this->belongsToMany(Client::class, 'project_vendor')->withPivot('vendor_id')->withTimestamps();
+    }
+
+    public function getClientAttribute()
+    {
+        return $this->client()->wherePivot('vendor_id', $this->vendor->id)->first();
     }
 
     public function estimates()
@@ -83,16 +105,45 @@ class Project extends Model
     }
 
     public function last_status(){
-        return $this->hasOne(ProjectStatus::class)->orderBy('start_date', 'DESC')->latest(); //->first()->title_id
+        return $this->hasOne(ProjectStatus::class)->orderBy('start_date', 'DESC')->latest();
     }
 
     public function scopeStatus($query, $status){
         return $query->with('last_status')->get()->whereIn('last_status.title', $status);
     }
 
+    // public function getClientAttribute()
+    // {
+    //     // dd(Client::findOrFail($this->vendors()->first()->pivot->client_id));
+    //     // dd($this->clients);
+    //     dd($this->vendors);
+    //     // return Client::withoutGlobalScopes()->findOrFail($this->clients()->first()->id);
+    //     $vendor = $this->vendors()->first();
+    //     // dd($vendor);
+    //     if($this->belongs_to_vendor_id == $vendor->id){
+    //         return Client::findOrFail($vendor->pivot->client_id);
+    //     }else{
+    //         return Client::findOrFail($vendor->pivot->client_id);
+    //     }
+    // }
+
     // public function getStatusAttribute()
     // {
     //     return $this->statuses()->orderBy('created_at', 'DESC')->first();
+    // }
+
+    // public function scopeActive($query)
+    // {
+    //     // dd($query->with('statuses')->get());
+    //     // dd($query->whereHas('statuses')->get());
+    //     // $posts = Post::whereHas('comments', function (Builder $query) {
+    //     //     $query->where('content', 'like', 'code%');
+    //     // })->get();
+
+    //     $query->whereHas('statuses', function($q){
+    //         dd($q->get()->groupBy('project_id'));
+    //         $q->where('start_date', '>=', '2015-01-01');
+    //     })->get();
     // }
 
     public function getFullAddressAttribute()
@@ -136,18 +187,6 @@ class Project extends Model
         return $url;
     }
 
-    public function getClientAttribute()
-    {
-        // dd('jhere forsure');
-        // dd($this->clients);
-        // return Client::withoutGlobalScopes()->findOrFail($this->clients()->first()->id);
-        if($this->belongs_to_vendor_id == auth()->user()->vendor->id) {
-            return Client::findOrFail($this->vendors()->first()->pivot->client_id);
-        } else{
-            return Client::where('vendor_id', $this->belongs_to_vendor_id)->first();
-        }
-    }
-
     public function getNameAttribute()
     {
         if($this->project_name == 'EXPENSE SPLIT' || $this->project_name == 'NO PROJECT'){
@@ -159,36 +198,5 @@ class Project extends Model
         }
 
         return $name;
-
-        // if($this->project_name == 'Expense is Split' || $this->project_name == 'No Project'){
-        //     $name = $this->project_name;
-        // }else{
-        //     $address = $this->address;
-
-        //     //find S/N/W/E and delete it..
-        //     //find first space after numbers
-        //     //find first space
-        //     $last_space_position = strrpos($address, ' ');
-        //     $address = substr($address, 0, $last_space_position);
-
-        //     //remove last word of string
-        //     $name = $address . ' | ' . $this->project_name;
-        // }
-
-        // return $name;
     }
-
-    // public function scopeActive($query)
-    // {
-    //     // dd($query->with('statuses')->get());
-    //     // dd($query->whereHas('statuses')->get());
-    //     // $posts = Post::whereHas('comments', function (Builder $query) {
-    //     //     $query->where('content', 'like', 'code%');
-    //     // })->get();
-
-    //     $query->whereHas('statuses', function($q){
-    //         dd($q->get()->groupBy('project_id'));
-    //         $q->where('start_date', '>=', '2015-01-01');
-    //     })->get();
-    // }
 }

@@ -13,7 +13,7 @@ class VendorDocPolicy
      */
     public function viewAny(User $user): bool
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;
@@ -25,7 +25,7 @@ class VendorDocPolicy
      */
     public function view(User $user, VendorDoc $vendorDoc): bool
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;

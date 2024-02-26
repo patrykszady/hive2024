@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Client;
+
 use App\Models\Scopes\EstimateScope;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -71,6 +73,15 @@ class Estimate extends Model
     //     // return json_decode($value, true);
     // }
 
+    public function getClientAttribute()
+    {
+        return $this->project->clients()->wherePivot('vendor_id', $this->belongs_to_vendor_id)->first();
+    }
+    // public function getClient($vendor)
+    // {
+    //     dd($vendor);
+    // }
+
     public function getStartDateAttribute()
     {
         if(isset($this->options['start_date'])){
@@ -110,8 +121,8 @@ class Estimate extends Model
     public function getNumberAttribute()
     {
         $number =
-            $this->project->belongs_to_vendor_id . '-' .
-            $this->project->client_id . '-' .
+            $this->belongs_to_vendor_id . '-' .
+            $this->client->id . '-' .
             $this->project->id . '-' .
             $this->id;
 

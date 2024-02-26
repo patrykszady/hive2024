@@ -12,8 +12,12 @@ class BidScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        $project_ids = Project::pluck('id')->toArray();
+        if(auth()->guest()){
 
-        $builder->whereIn('project_id', $project_ids)->where('vendor_id', auth()->user()->vendor->id);
+        }else{
+            $project_ids = Project::pluck('id')->toArray();
+
+            $builder->whereIn('project_id', $project_ids)->where('vendor_id', auth()->user()->vendor->id);
+        }
     }
 }

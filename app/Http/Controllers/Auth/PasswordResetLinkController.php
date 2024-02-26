@@ -19,7 +19,7 @@ class PasswordResetLinkController extends Controller
     {
         return view('auth.forgot-password');
     }
-
+    // @section('title', 'Hive Contractors | Forgot Password')
     /**
      * Handle an incoming password reset link request.
      *
@@ -51,12 +51,12 @@ class PasswordResetLinkController extends Controller
                                 : back()->withInput($request->only('email'))
                                         ->withErrors(['email' => __($status)]);
                 }
-            }            
+            }
+        }else{
+            //send error and prompt to register
+            //validatin error in bag...
+
+            return back()->withErrors(['email_not_registered' => 'This email is not registered.']);
         }
-
-        //send error and prompt to register
-        //validatin error in bag...
-
-        return back()->withErrors(['email_not_registered' => 'This email is not registered.']);
     }
 }

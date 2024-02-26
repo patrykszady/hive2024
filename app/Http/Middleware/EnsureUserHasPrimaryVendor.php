@@ -20,7 +20,7 @@ class EnsureUserHasPrimaryVendor
         //     // Redirect...
         // }
         $user = auth()->user();
-        // dd($user);
+        // dd($user->primary_vendor);
 
         //if user has a primary_vendor_id = continue, otherwise send to vendor_selection view, if vendor is not registered yet
         if(!$user->primary_vendor_id) {

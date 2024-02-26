@@ -51,7 +51,7 @@
 
                                 <div id="server-size-{{$vendor->id}}-description-1"
                                     class="flex mt-2 text-sm sm:mt-0 sm:block sm:ml-4 sm:text-right">
-                                    <div class="font-medium text-gray-900">{{ $vendor->user_role }}</div>
+                                    <div class="font-medium text-gray-900">{{ $user->getVendorRole($vendor->id) }}</div>
                                     {{-- <div class="ml-1 text-gray-500 sm:ml-0">Vendor role</div> --}}
                                 </div>
                                 <!--

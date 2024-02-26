@@ -50,6 +50,8 @@ class Kernel extends ConsoleKernel
         //Laravel 10+ requires this
             //https://laravel.com/docs/10.x/upgrade#redis-cache-tags
         $schedule->command('cache:prune-stale-tags')->hourly();
+
+        $schedule->command('horizon:snapshot')->everyFiveMinutes();
         // dd($schedule->events());
 
         // $schedule->call('\App\Http\Controllers\TransactionController@plaid_item_error_update')->hourly();

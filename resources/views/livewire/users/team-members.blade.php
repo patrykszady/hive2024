@@ -29,7 +29,7 @@
                 href="{{route('users.show',  $user_vendor->id)}}"
                 :line_details="$line_details"
                 :line_title="$user_vendor->full_name"
-                :bubble_message="$user_vendor->vendor_role"
+                :bubble_message="$user_vendor->getVendorRole($vendor->id)"
                 >
             </x-lists.search_li>
 

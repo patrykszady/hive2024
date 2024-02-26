@@ -6,13 +6,14 @@ use App\Models\Estimate;
 use App\Models\EstimateSection;
 use App\Models\EstimateLineItem;
 
-use Livewire\Component;
-use Livewire\Attributes\Title;
+use App\Jobs\SendInitialEstimateEmail;
 
 use Spatie\Browsershot\Browsershot;
-use VerumConsilium\Browsershot\Facades\PDF;
 use Rmunate\Utilities\SpellNumber;
 use Illuminate\Support\Facades\Response;
+
+use Livewire\Component;
+use Livewire\Attributes\Title;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -170,12 +171,24 @@ class EstimateShow extends Component
     //$type = [estimate, invoice]
     public function print($type)
     {
-        $type = ucfirst($type);
+        if($type == 'estimate'){
+            SendInitialEstimateEmail::dispatch($this->estimate, $this->sections, $type);
+        }elseif($type == 'invoice'){
+            $data = $this->create_pdf($this->estimate, $this->sections, $type);
 
-        $estimate = $this->estimate;
-        $vendor = $estimate->project->vendor;
-        $sections = $this->sections;
+            $headers =
+                array(
+                    'Content-Type: application/pdf',
+                );
+
+            return Response::download($data[0], $data[1] . '.pdf', $headers);
+        }
+    }
+
+    public function create_pdf($estimate, $sections, $type)
+    {
         $estimate_total = $sections->sum('total');
+        $type = ucfirst($type);
 
         $estimate_total_words =
             SpellNumber::value($estimate_total)->locale('en')
@@ -183,13 +196,14 @@ class EstimateShow extends Component
                 ->fraction('cents')
                 ->toMoney();
 
-        // $title = $vendor->business_name . ' | Estimate | ' . $estimate->project->client->name . ' | ' . $estimate->project->project_name . ' | ' . $estimate->number;
-        // $title_file = $vendor->business_name . ' - Estimate - ' . $estimate->project->client->name . ' - ' . $estimate->project->project_name . ' - ' . $estimate->number;
-        $title = $estimate->project->client->name . ' | ' . $type . ' | ' . $estimate->project->project_name . ' | ' . $estimate->number;
-        $title_file = $estimate->project->client->name . ' - ' . $type . ' - ' . $estimate->project->project_name . ' - ' . $estimate->number;
+        $payments = $estimate->project->payments->where('belongs_to_vendor_id', $estimate->vendor->id);
 
-        $view = view('misc.estimate', compact(['estimate', 'vendor', 'sections', 'title', 'estimate_total', 'estimate_total_words', 'type']))->render();
+        $title = $estimate->client->name . ' | ' . $type . ' | ' . $estimate->project->project_name . ' | ' . $estimate->number;
+        $title_file = $estimate->client->name . ' - ' . $type . ' - ' . $estimate->project->project_name . ' - ' . $estimate->number;
+
+        $view = view('misc.estimate', compact(['estimate', 'sections', 'payments', 'title', 'estimate_total', 'estimate_total_words', 'type']))->render();
         $location = storage_path('files/pdfs/' . $title_file . '.pdf');
+
         Browsershot::html($view)
             ->newHeadless()
             ->scale(0.8)
@@ -200,12 +214,7 @@ class EstimateShow extends Component
             ->margins(10, 5, 10, 5)
             ->save($location);
 
-        $headers =
-            array(
-                'Content-Type: application/pdf',
-            );
-
-        return Response::download($location, $title_file . '.pdf', $headers);
+        return [$location, $title_file];
     }
 
     public function delete()

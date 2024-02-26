@@ -37,7 +37,7 @@ class TimesheetPolicy
         //$user->vendor->user_role == 'Admin'
 
         // dd($user->vendors()->where('vendors.id', $timesheet->vendor_id)->first()->pivot->user_id);
-        if($timesheet->user_id == $user->id || $user->vendor->user_role == 'Admin'){
+        if($timesheet->user_id == $user->id || $user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;
@@ -51,7 +51,7 @@ class TimesheetPolicy
 
     public function viewPayment(User $user)
     {
-        if($user->vendor->user_role == 'Admin'){
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
         }else{
             return false;

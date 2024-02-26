@@ -66,7 +66,7 @@ class SheetMonthly extends Component
                 ->toBase();
 
         foreach($this->months as $month){
-            $this->monthly_total_expenses[$month] = $this->monthly_timesheets[$month]->sum('amount') + $this->monthly_expenses[$month]->sum('amount');
+            $this->monthly_total_expenses[$month] = (isset($this->monthly_timesheets[$month]) ? $this->monthly_timesheets[$month]->sum('amount') : 0) + (isset($this->monthly_expenses[$month]) ? $this->monthly_expenses[$month]->sum('amount') : 0);
         }
     }
 

@@ -6,7 +6,7 @@ use App\Models\Project;
 use App\Models\Vendor;
 use App\Models\BankAccount;
 
-use App\Mail\VendorPaymentMade;
+use App\Jobs\SendVendorPaymentEmailJob;
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -176,11 +176,11 @@ class VendorPaymentCreate extends Component
             $check->amount = $check->expenses->sum('amount');
             $check->save();
 
-            if(env('APP_ENV') == 'production'){
-                Mail::to($this->vendor->business_email)
-                    ->cc([auth()->user()->vendor->business_email])
-                    ->send(new VendorPaymentMade($this->vendor, auth()->user()->vendor, $check));
-            }
+            //queue
+            $auth_user = auth()->user();
+            $vendor = $this->vendor;
+
+            SendVendorPaymentEmailJob::dispatch($auth_user, $vendor, $check);
 
             return redirect()->route('checks.show', $check->id);
         }else{

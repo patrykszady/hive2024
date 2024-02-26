@@ -33,10 +33,10 @@ class Client extends Model
         return $this->belongsToMany(User::class);
     }
 
-    // public function vendor()
-    // {
-    //     return $this->belongsTo(Vendor::class)->withoutGlobalScope(VendorScope::class);
-    // }
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class)->withoutGlobalScope(VendorScope::class);
+    }
 
     public function vendors()
     {

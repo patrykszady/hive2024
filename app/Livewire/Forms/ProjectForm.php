@@ -13,10 +13,10 @@ class ProjectForm extends Form
 {
     use AuthorizesRequests;
 
-    #[Rule('required', as: 'client')]
+    #[Rule('required', as: 'Client')]
     public $client_id = NULL;
 
-    #[Rule('required|min:3', as: 'project name')]
+    #[Rule('required|min:3', as: 'Project Name')]
     public $project_name = NULL;
 
     #[Rule('required|min:3')]
@@ -34,7 +34,7 @@ class ProjectForm extends Form
     #[Rule('required|digits:5', as: 'zip code')]
     public $zip_code = NULL;
 
-    #[Rule('required', as: 'address')]
+    #[Rule('required', as: 'Address')]
     public $project_existing_address = NULL;
 
     public function store()

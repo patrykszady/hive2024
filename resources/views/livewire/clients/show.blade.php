@@ -107,7 +107,7 @@
         {{-- show only Client Projects... --}}
         {{-- @if(!$client->projects->isEmpty()) --}}
             <div class="col-span-4 lg:col-span-3">
-                <livewire:projects.projects-index :client_id="$client->id" :view="true" />
+                <livewire:projects.projects-index :client="$client" :view="true" />
                 {{-- @livewire('expenses.expense-index', ['project' => $project->id]) --}}
             </div>
         {{-- @endif --}}

@@ -2,9 +2,9 @@
     <form wire:submit="{{$view_text['form_submit']}}">
         <x-cards.heading>
             <x-slot name="left">
-                    <h1>
-                        {{$view_text['card_title']}}
-                    </h1>
+                <h1>
+                    {{$view_text['card_title']}}
+                </h1>
             </x-slot>
 
             <x-slot name="right">
@@ -20,9 +20,11 @@
                 name="client_id"
                 text="Client"
                 type="dropdown"
-                {{-- :disabled="isset($client) ? isset($client['id']) ? true : false : false" --}}
+                {{-- :disabled="isset($view) ? true : false " --}}
                 {{-- x-bind:disabled="!vendor_id_disabled || business_type_disabled == '1099'" --}}
+                {{-- x-bind:disabled="true" --}}
                 >
+
                 <option value="" readonly>Select Client</option>
                 @foreach ($clients as $client)
                     <option value="{{$client->id}}">{{$client->name}}</option>
@@ -56,7 +58,7 @@
                     {{-- x-bind:disabled="!vendor_id_disabled || business_type_disabled == '1099'" --}}
                     >
                     <option value="" readonly>Select Address</option>
-                    @foreach ($client_addresses as $project_address)
+                    @foreach($client_addresses as $project_address)
                         @if(isset($project_address->id))
                             <option value="{{$project_address->id}}">{{$project_address->address}}</option>
                         @else

@@ -6,10 +6,11 @@
                 <h1>Projects</h1>
             </x-slot>
 
+            {{-- @dd(isset($client)) --}}
             <x-slot name="right">
                 @can('create', App\Models\Project::class)
                     <x-cards.button
-                        wire:click="$dispatchTo('projects.project-create', 'newProject')"
+                        wire:click="$dispatchTo('projects.project-create', 'newProject', { client_id: '{{$client_id}}' })"
                         >
                         Create Project
                     </x-cards.button>
@@ -19,7 +20,6 @@
 
         {{-- SUB-HEADING --}}
         <x-cards.heading>
-            {{-- main $slot --}}
             {{-- class="mt-3 sm:mt-0 sm:ml-4 --}}
             <div class="mx-auto">
                 {{-- <label for="mobile-search-candidate" class="sr-only">Search</label> --}}
@@ -78,7 +78,8 @@
                             wire:model.live="client_id"
                             id="client_id"
                             name="client_id"
-                            class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            >
                             <option value="" readonly>All Clients</option>
 
                             @foreach($clients as $client)

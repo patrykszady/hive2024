@@ -17,6 +17,7 @@ class ProjectsIndex extends Component
 
     public $project_name_search = '';
     public $client_id = '';
+    public $client = NULL;
     public $project_status_title = 'Active';
     public $view;
 
@@ -28,6 +29,10 @@ class ProjectsIndex extends Component
 
     public function mount()
     {
+        if($this->client){
+            $this->client_id = $this->client->id;
+        }
+
         if($this->view == TRUE){
             $this->project_status_title = NULL;
         }
@@ -41,20 +46,21 @@ class ProjectsIndex extends Component
     #[Title('Projects')]
     public function render()
     {
-        $this->authorize('viewAny', Project::class);
-        $client_id = $this->client_id;
 
-        if(!empty($client_id)){
-            $client = Client::findOrFail($client_id);
-            if(isset($client->vendor_id)){
+        $this->authorize('viewAny', Project::class);
+
+        if(!is_null($this->client)){
+            if(isset($this->client->vendor_id)){
                 //all clients(projects) with $client->vendor_id
-               $client_ids = Project::where('belongs_to_vendor_id', $client->vendor_id)->pluck('client_id')->toArray();
+                $client_ids = Project::where('belongs_to_vendor_id', $this->client->vendor_id)->pluck('client_id')->toArray();
             }else{
-                $client_ids = [$client->id];
+                $client_ids = [$this->client->id];
             }
         }else{
             $client_ids = [];
         }
+
+        // dd($this->client ? $this->client : NULL);
 
         $clients = Client::orderBy('created_at', 'DESC')->get();
 
@@ -66,7 +72,7 @@ class ProjectsIndex extends Component
             ->when($this->project_status_title != NULL, function($query) {
                 return $query->status($this->project_status_title)->sortByDesc('last_status.start_date');
             })
-            ->when($client_id != NULL, function ($query) use ($client_ids) {
+            ->when($this->client != NULL, function ($query) use ($client_ids) {
                 return $query->whereIn('client_id', $client_ids);
             })
 

@@ -55,23 +55,13 @@ class ProjectCreate extends Component
                                 'zip_code' => $client['zip_code'],
                             ])
                         ]);
-                        // Project::make([
-                        //     // 'CLIENT_PROJECT' => 'CLIENT_PROJECT',
-                        //     'address' => $client['address'],
-                        //     'address_2' => $client['address_2'],
-                        //     'city' => $client['city'],
-                        //     'state' => $client['state'],
-                        //     'zip_code' => $client['zip_code'],
-                        // ]);
                 }else{
-                    $this->client_addresses->unique('address');
+                    $this->client_addresses = $this->client_addresses->unique('address');
                 }
             }else{
                 $this->form->reset();
                 $this->resetValidation();
             }
-
-            // dd($this->client_addresses);
         }
 
         if($field == 'form.project_existing_address'){
@@ -81,8 +71,6 @@ class ProjectCreate extends Component
                 }else{
                     $project_address = $this->client_addresses->where('id', $value)->first();
                 }
-
-                // dd($project_address);
 
                 $this->form->address = $project_address['address'];
                 $this->form->address_2 = $project_address['address_2'];
@@ -110,16 +98,30 @@ class ProjectCreate extends Component
         $this->resetValidation();
     }
 
-    public function newProject()
+    public function newProject($client_id)
     {
         $this->resetModal();
+        $this->resetAddress();
 
-        // //coming from clients.show view / $client already set
-        // if(isset($client_id)){
-        //     $this->client = Client::find($client_id);
-        //     $this->getAddresses();
-        //     // $this->address = TRUE;
-        // }
+        $client = $this->clients->where('id', $client_id)->first();
+
+        if(!$client){
+            $this->form->client_id = NULL;
+            $this->client_addresses =
+                collect([
+                    collect([
+                        // 'CLIENT_PROJECT' => 'CLIENT_PROJECT',
+                        'address' => NULL,
+                        'address_2' =>NULL,
+                        'city' => NULL,
+                        'state' => NULL,
+                        'zip_code' => NULL,
+                    ])
+                ]);
+        }else{
+            $this->form->client_id = $client->id;
+            $this->client_addresses = $client->projects->unique('address');
+        }
 
         $this->modal_show = TRUE;
     }

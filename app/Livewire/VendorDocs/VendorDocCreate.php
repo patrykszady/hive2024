@@ -6,14 +6,13 @@ use App\Models\Agent;
 use App\Models\Vendor;
 use App\Models\VendorDoc;
 
+use App\Jobs\SendVendorDocRequestEmail;
+
 use Livewire\WithFileUploads;
 use Livewire\Component;
 
-use App\Mail\RequestInsurance;
-
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Mail;
 
 class VendorDocCreate extends Component
 {
@@ -73,10 +72,10 @@ class VendorDocCreate extends Component
                 $agent_email = $vendor->business_email;
             }
 
+            $requesting_vendor = auth()->user()->vendor;
+
             //send email to agent, vendor, and auth()->vendor() with all $agent_expired_docs
-            Mail::to($agent_email)
-                ->cc([$vendor->business_email, auth()->user()->vendor->business_email])
-                ->send(new RequestInsurance($agent_expired_docs, $vendor));
+            SendVendorDocRequestEmail::dispatch($agent_expired_docs, $vendor, $requesting_vendor, $agent_email);
 
             //notification
             $this->dispatch('notify',

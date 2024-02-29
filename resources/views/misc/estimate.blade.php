@@ -264,16 +264,17 @@
                                     <x-lists.search_li
                                         :basic=true
                                         :line_title="'Estimate'"
-                                        :line_data="money($estimate_total)"
+                                        :line_data="money($estimate->project->finances['estimate'])"
                                         >
                                     </x-lists.search_li>
 
-                                    {{-- <x-lists.search_li
+                                    <x-lists.search_li
                                         :basic=true
                                         :line_title="'Change Order'"
-                                        :line_data="money($project->finances['change_orders'])"
+                                        :line_data="money($estimate->project->finances['change_orders'])"
                                         >
-                                    </x-lists.search_li> --}}
+                                    </x-lists.search_li>
+
                                     @if($estimate->reimbursments)
                                         <x-lists.search_li
                                             :basic=true

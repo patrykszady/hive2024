@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @livewireStyles
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css">
-    @lagoonStyles
+    {{-- @lagoonStyles --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" /> --}}
 
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">

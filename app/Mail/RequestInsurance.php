@@ -27,12 +27,12 @@ class RequestInsurance extends Mailable
      * @return void
      */
     //Agent $agent,
-    public function __construct($agent_expired_docs, Vendor $vendor)
+    public function __construct($agent_expired_docs, Vendor $vendor, Vendor $requesting_vendor)
     {
         $this->agent_expired_docs = $agent_expired_docs;
         // $this->agent = $agent;
         $this->vendor = $vendor;
-        $this->requesting_vendor = auth()->user()->vendor;
+        $this->requesting_vendor = $requesting_vendor;
     }
 
     /**
@@ -56,7 +56,7 @@ class RequestInsurance extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.insurance_request'
+            markdown: 'emails.insurance_request'
         );
     }
 

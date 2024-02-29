@@ -30,6 +30,9 @@ class ExpenseForm extends Form
     public $amount = NULL;
 
     #[Validate]
+    public $split = FALSE;
+
+    #[Validate]
     public $date = NULL;
 
     #[Validate]
@@ -151,10 +154,10 @@ class ExpenseForm extends Form
 
     protected $messages =
     [
-        'expense.amount.regex' => 'Amount format is incorrect. Format is 2145.36. No commas and only two digits after decimal allowed. If amount is under $1.00, use 00.XX',
-        'expense.project_id.required_unless' => 'Project is required unless Expense is Split.',
-        'expense.date.before_or_equal' => 'Date cannot be in the future. Make sure Date is before or equal to today.',
-        'expense.date.after' => 'Date cannot be before the year 2017. Make sure Date is after or equal to 01/01/2017.',
+        'amount.regex' => 'Amount format is incorrect. Format is 2145.36. No commas and only two digits after decimal allowed. If amount is under $1.00, use 00.XX',
+        'project_id.required_unless' => 'Project is required unless Expense is Split.',
+        'date.before_or_equal' => 'Date cannot be in the future. Make sure Date is before or equal to today.',
+        'date.after' => 'Date cannot be before the year 2017. Make sure Date is after or equal to 01/01/2017.',
         'receipt_file.required_if' => 'Receipt is required if Expense is Reimbursed or has Splits',
     ];
 

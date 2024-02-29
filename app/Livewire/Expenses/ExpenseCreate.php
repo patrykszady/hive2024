@@ -63,7 +63,10 @@ class ExpenseCreate extends Component
         // if SPLIT checked vs if unchecked
         if($field == 'split'){
             if($this->split == TRUE){
+                $this->form->split = TRUE;
                 $this->form->project_id = NULL;
+            }else{
+                $this->form->split = FALSE;
             }
         }
 
@@ -249,6 +252,7 @@ class ExpenseCreate extends Component
 
     public function edit()
     {
+        // dd($this);
         // foreach(collect($this->expense_splits) as $split){
         //     $expense_items = json_encode((object)$split['items']);
         //     dd($expense_items);

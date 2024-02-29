@@ -37,7 +37,7 @@ class SendVendorDocRequestEmail implements ShouldQueue
     public function handle(): void
     {
         Mail::to($this->agent_email)
-            ->cc([$this->requesting_vendor->business_email])
+            ->cc([$this->vendor->business_email, $this->requesting_vendor->business_email])
             ->send(new RequestInsurance($this->agent_expired_docs, $this->vendor, $this->requesting_vendor));
     }
 }

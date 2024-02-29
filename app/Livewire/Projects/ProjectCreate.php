@@ -120,7 +120,23 @@ class ProjectCreate extends Component
                 ]);
         }else{
             $this->form->client_id = $client->id;
-            $this->client_addresses = $client->projects->unique('address');
+            $this->client_addresses = $client->projects;
+
+            if($this->client_addresses->isEmpty()){
+                $this->client_addresses =
+                    collect([
+                        collect([
+                            // 'CLIENT_PROJECT' => 'CLIENT_PROJECT',
+                            'address' => $client['address'],
+                            'address_2' => $client['address_2'],
+                            'city' => $client['city'],
+                            'state' => $client['state'],
+                            'zip_code' => $client['zip_code'],
+                        ])
+                    ]);
+            }else{
+                $this->client_addresses = $this->client_addresses->unique('address');
+            }
         }
 
         $this->modal_show = TRUE;

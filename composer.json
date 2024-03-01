@@ -100,7 +100,7 @@
             "Gmail"
         ],
         "aws/aws-sdk-php": [
-            "SignatureV4",
+            "Signature",
             "Credentials"
         ]
     },

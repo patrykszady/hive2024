@@ -28,8 +28,7 @@ class VendorDocCreate extends Component
     protected function rules()
     {
         return [
-            'doc_file' => 'required|mimes:pdf',
-            // 'type' => 'required',
+            'doc_file' => 'required|mimes:pdf,jpg,jpeg,png'
         ];
     }
 
@@ -90,16 +89,17 @@ class VendorDocCreate extends Component
     {
         $this->validate();
         // $this->authorize('update', $this->expense);
-;
+        $doc_type = $this->doc_file->getClientOriginalExtension();
+        $ocr_filename = $this->vendor->id . '-' . auth()->user()->vendor->id . '-' . date('Y-m-d-H-i-s') . '.' . $doc_type;
+        $file_location = 'files/vendor_docs/' . $ocr_filename;
         //save file for this->vendor
-        $ocr_filename = $this->vendor->id . '-' . auth()->user()->vendor->id . '-' . date('Y-m-d-H-i-s') . '.' . $this->doc_file->getClientOriginalExtension();
-        $ocr_path = 'files/vendor_docs/' . $ocr_filename;
         $this->doc_file->storeAs('vendor_docs', $ocr_filename, 'files');
+        $document_model = 'newOct2023';
 
-        //send for form recornizer ocr with file uri
-        $insurance_info = app('App\Http\Controllers\VendorDocsController')->find_insurance_data($ocr_path);
+        //send to form recornizer
+        $insurance_info = app('App\Http\Controllers\ReceiptController')->azure_docs_api($file_location, $document_model, $doc_type);
+        $insurance_info = $insurance_info['analyzeResult']['documents'][0]['fields'];
 
-        // dd($insurance_info);
         //save/update Agent from the certificate
         if(isset($insurance_info['agent_email']['valueString'])){
             $agent = Agent::where('email', $insurance_info['agent_email']['valueString'])->first();

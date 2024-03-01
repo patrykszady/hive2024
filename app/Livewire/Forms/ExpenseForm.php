@@ -6,14 +6,11 @@ use App\Models\Check;
 use App\Models\Distribution;
 use App\Models\Expense;
 use App\Models\ExpenseSplits;
-use App\Models\Project;
 
 use Illuminate\Validation\Rule;
 // use Livewire\Attributes\Validate;
 // use Livewire\Attributes\Rule;
 use Livewire\Form;
-
-use setasign\Fpdi\Fpdi;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -136,7 +133,7 @@ class ExpenseForm extends Form
                     }
                 }),
                 'nullable',
-                'mimes:jpeg,jpg,pdf'
+                'mimes:jpeg,jpg,pdf,png'
                 ],
         ];
     }
@@ -391,8 +388,6 @@ class ExpenseForm extends Form
         $this->authorize('create', Expense::class);
         $this->validate();
         //validate check...
-        // dd($this);
-
         $expense_details = $this->expenseDetails();
 
         if(empty($this->paid_by) && isset($this->bank_account_id)){
@@ -452,43 +447,17 @@ class ExpenseForm extends Form
 
     public function upload_receipt_file($expense_amount, $expense_id)
     {
-        $ocr_filename = date('Y-m-d-H-i-s') . '-' . rand(10,99) . '.' . $this->receipt_file->getClientOriginalExtension();
+        $doc_type = $this->receipt_file->getClientOriginalExtension();
+
+        $ocr_filename = date('Y-m-d-H-i-s') . '-' . rand(10,99) . '.' . $doc_type;
         $ocr_path = 'files/_temp_ocr/' . $ocr_filename;
         $this->receipt_file->storeAs('_temp_ocr', $ocr_filename, 'files');
 
-        $location = storage_path($ocr_path);
-        $post_data = file_get_contents($location);
-
-        $doc_type = $this->receipt_file->getClientOriginalExtension();
-        // dd($doc_type);
-
-        if($doc_type == 'pdf'){
-            //if $width under 180mm($width), prebuilt-receipt, otherwise if wider, use prebuilt-invoice
-            $pdf = new Fpdi();
-            $pdf->setSourceFile($location);
-            $pageId = $pdf->importPage(1);
-            //unit = mm
-            $width = $pdf->getTemplateSize($pageId)['width'];
-
-            //$document_model = based on file dimensions. receipt vs invoice
-            if($width < 180 ){
-                $document_model = 'prebuilt-receipt';
-            }else{
-                $document_model = 'prebuilt-invoice';
-            }
-        }else{
-            //13/13/23 if img file is invoice v/s receipt!
-            $document_model = 'prebuilt-receipt';
-        }
-
-        $doc_type = '.' . $doc_type;
+        $document_model = app('App\Http\Controllers\ReceiptController')->azure_document_model($doc_type, $ocr_path);
         //send to ReceiptController@azure_receipts with $location and $document_model
-        $ocr_receipt_extracted = app('App\Http\Controllers\ReceiptController')->azure_receipts($post_data, $doc_type, $document_model);
-        // dd($ocr_receipt_extracted);
-
+        $ocr_receipt_extracted = app('App\Http\Controllers\ReceiptController')->azure_receipts($ocr_path, $doc_type, $document_model);
         //pass receipt info to ocr_extract method
         $ocr_receipt_data = app('App\Http\Controllers\ReceiptController')->ocr_extract($ocr_receipt_extracted, $expense_amount);
-        // dd($ocr_receipt_data);
 
         //ATTACHMENT
         //send to ReceiptController@add_attachments_to_expense

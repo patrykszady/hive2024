@@ -33,11 +33,12 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
+// use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
 
 use File;
-// use Response;
 use Storage;
+// use Response;
 
 class ReceiptController extends Controller
 {
@@ -800,11 +801,10 @@ class ReceiptController extends Controller
     public function auto_receipt()
     {
         //09/22/2023 EACH FILE SHOULD BE UPLOADED TO ONEDRIVE AND NOT VIA EMAIL!
-            //get receipt from email/onedrive
+        //get receipt from email/onedrive
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
         foreach($company_emails as $company_email){
             $email_vendor = $company_email->vendor;
-            // $email_vendor = $company_email->vendor()->withoutGlobalScopes()->first();
             $email_vendor_bank_account_ids = $email_vendor->bank_accounts->pluck('id');
 
             //check if access_token is expired, if so get new access_token and refresh_token
@@ -848,7 +848,7 @@ class ReceiptController extends Controller
                     "/me/mailFolders/inbox/messages?filter=from/emailAddress/address eq 'noreply@print.epsonconnect.com' and subject eq 'Receipt Scans'")
                     ->setReturnType(Message::class)
                     ->execute();
-            // dd($receipts_emails);
+
             foreach($receipts_emails as $index => $message){
                 if($message->getHasAttachments()){
                     $attachments =
@@ -858,45 +858,26 @@ class ReceiptController extends Controller
 
                     foreach($attachments as $loop => $attachment_found){
                         //09/22/2023 EACH FILE SHOULD BE UPLOADED TO ONEDRIVE AND NOT VIA EMAIL!
+
                         //if is for testing only...
                         // if($loop == 2 - 1){
                             $attachment = $attachment_found;
 
-                            $ocr_filename = date('Y-m-d-H-i-s') . '-' . rand(10,99) . '.pdf';
+                            $doc_type = 'pdf';
+                            $ocr_filename = date('Y-m-d-H-i-s') . '-' . rand(10,99) . '.' . $doc_type;
                             $content_bytes = array_values((array) $attachment)[0]['contentBytes'];
                             $contents = base64_decode($content_bytes);
                             Storage::disk('files')->put('/_temp_ocr/' . $ocr_filename, $contents);
 
                             $ocr_path = 'files/_temp_ocr/' . $ocr_filename;
-                            $location = storage_path($ocr_path);
 
-                            $post_data = file_get_contents($location);
-                            $doc_type = '.pdf';
-
-                            //if $width under 180mm($width), prebuilt-receipt, otherwise if wider, use prebuilt-invoice
-                            $pdf = new Fpdi();
-                            $pdf->setSourceFile($location);
-                            $pageId = $pdf->importPage(1);
-                            //unit = mm
-                            $width = $pdf->getTemplateSize($pageId)['width'];
-
-                            //$document_model = based on file dimensions. receipt vs invoice
-                            if($width < 180 ){
-                                $document_model = 'prebuilt-receipt';
-                            }else{
-                                $document_model = 'prebuilt-invoice';
-                            }
-
-                            $ocr_receipt_extracted = $this->azure_receipts($post_data, $doc_type, $document_model);
-                            // dd($ocr_receipt_extracted);
-
+                            $document_model = $this->azure_document_model($doc_type, $ocr_path);
+                            $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
                             //pass receipt info from ocr_receipt_extracted to ocr_extract method
                             $ocr_receipt_data = $this->ocr_extract($ocr_receipt_extracted);
-                            // dd($ocr_receipt_data);
 
                             if(isset($ocr_receipt_data['error']) && $ocr_receipt_data['error'] == TRUE){
                                 //if error move this single $attachment to a folder for debug...
-                                //move _temp_ocr file to /files/receipts
                                 Storage::disk('files')->move('/_temp_ocr/' . $ocr_filename, '/auto_receipts_failed/' . $ocr_filename);
                                 continue;
                             }
@@ -915,7 +896,6 @@ class ReceiptController extends Controller
                                     ->where('amount', $ocr_receipt_data['fields']['total'])
                                     ->whereBetween('transaction_date', [$start_date, $end_date])
                                     ->get();
-                            // dd($transactions);
 
                             //create expense with or without Vendor_id and attach receipt
                             if($transactions->count() == 1){
@@ -938,7 +918,6 @@ class ReceiptController extends Controller
                                         ->whereBetween('transaction_date', [$start_date, $end_date])
                                         ->get();
 
-                                // dd($exisitng_transactions);
                                 $vendor_found_transactions = collect();
                                 $receipt_merchant_name = explode(",", $ocr_receipt_data['fields']['merchant_name'])[0];
 
@@ -975,8 +954,6 @@ class ReceiptController extends Controller
                                 }
                             }
 
-                            // dd($transaction);
-
                             $duplicate_start_date = Carbon::parse($ocr_receipt_data['fields']['transaction_date'])->subDays(1)->format('Y-m-d');
                             $duplicate_end_date = Carbon::parse($ocr_receipt_data['fields']['transaction_date'])->addDays(4)->format('Y-m-d');
                             //find duplicate expenses
@@ -992,8 +969,6 @@ class ReceiptController extends Controller
                                     where('amount', '!=', '0.00')->
                                     whereBetween('date', [$duplicate_start_date, $duplicate_end_date])->
                                     get();
-
-                            // dd($duplicates);
                             // if 1 duplicate attach expense_receipt info
                             if($duplicates->count() >= 1){
                                 foreach($duplicates as $duplicate){
@@ -1012,10 +987,6 @@ class ReceiptController extends Controller
                                     }
                                 }else{
                                     $expense = $expense_duplicate;
-                                    //if error move this single $attachment to a folder for debug...
-                                    //move _temp_ocr file to /files/receipts
-                                    // Storage::disk('files')->move('/_temp_ocr/' . $ocr_filename, '/auto_receipts_failed/' . $ocr_filename);
-                                    // continue;
                                 }
                             }elseif($duplicates->isEmpty()){
                                 if($transaction){
@@ -1029,7 +1000,6 @@ class ReceiptController extends Controller
                                 }
 
                                 $expense_vendor_id = !is_null($transaction_vendor_id) ? $transaction_vendor_id : (isset($vendor) ? $vendor->id : 0);
-                                // dd($expense_vendor_id);
 
                                 $expense = Expense::create([
                                     'amount' => $ocr_receipt_data['fields']['total'],
@@ -1045,7 +1015,7 @@ class ReceiptController extends Controller
                                 ]);
                             }
 
-                            $filename = $expense->id . '-' . date('Y-m-d-H-i-s') . $doc_type;
+                            $filename = $expense->id . '-' . date('Y-m-d-H-i-s') . '.' . $doc_type;
 
                             //SAVE expense_receipt_data for each attachment
                             $expense_receipt = new ExpenseReceipts;
@@ -1060,7 +1030,7 @@ class ReceiptController extends Controller
                                 $transaction->save();
                             }
 
-                            Storage::disk('files')->move('/_temp_ocr/' . $ocr_filename, '/receipts/' . $filename);
+                            Storage::disk('files')->copy('/_temp_ocr/' . $ocr_filename, '/receipts/' . $filename);
                         // } //if loop
                     }
                 }
@@ -1075,7 +1045,6 @@ class ReceiptController extends Controller
     {
         //6-28-2023 catch forwarded messages where From is in database table company_emails
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
-        // dd($company_emails);
 
         foreach($company_emails as $company_email){
             //check if access_token is expired, if so get new access_token and refresh_token
@@ -1200,7 +1169,7 @@ class ReceiptController extends Controller
                 $string = $message->getBody()->getContent();
 
                 //remove images
-                //ONLY IF {"receipt_image_regex":  is NOT set
+                //ONLY IF {"receipt_image_regex":}  is NOT set
                 if(!isset($receipt->options['receipt_image_regex'])){
                     $string = preg_replace("/<img[^>]+\>/i", "", $string);
                 }else{
@@ -1248,8 +1217,6 @@ class ReceiptController extends Controller
                 }
 
                 if(isset($receipt->options['receipt_end'])){
-                    // dd($receipt->options['receipt_end']);
-
                     //if receipt_end = array
                     //if false, look for next.
                     if(is_array($receipt->options['receipt_end'])){
@@ -1301,7 +1268,7 @@ class ReceiptController extends Controller
                     $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
                         ->attachBody(
                             array(
-                                //1-17-2023 or is send to "receipts@cliff.construction? .. Remove...
+                                //1-17-2023 or is send to "receipts@hive.contractors? .. Remove...
                                 'destinationId' => $company_email->api_json['hive_folder_duplicate']
                                 )
                             )
@@ -1325,7 +1292,7 @@ class ReceiptController extends Controller
                     $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
                         ->attachBody(
                             array(
-                                //1-17-2023 or is send to "receipts@cliff.construction? .. Remove...
+                                //1-17-2023 or is send to "receipts@hive.contractors? .. Remove...
                                 'destinationId' => $company_email->api_json['hive_folder_saved']
                                 )
                             )
@@ -1342,11 +1309,11 @@ class ReceiptController extends Controller
         $message_type = array_values((array) $message->getBody()->getContentType())[0];
 
         if(!isset($receipt->options['receipt_image_regex']) && !isset($receipt->options['pdf_html'])){
-            $doc_type = '.pdf';
-
+            $doc_type = 'pdf';
             $ocr_filename = date('Y-m-d-H-i-s') . '-' . rand(10,99) . '.pdf';
 
             $view = view('misc.create_pdf_receipt', compact(['receipt_html_main', 'message_type']))->render();
+            $ocr_path = 'files/_temp_ocr/' . $ocr_filename;
             $location = storage_path('files/_temp_ocr/' . $ocr_filename);
 
             Browsershot::html($view)
@@ -1354,7 +1321,7 @@ class ReceiptController extends Controller
                 ->format('A4')
                 ->save($location);
         }elseif(isset($receipt->options['pdf_html'])){
-            $doc_type = '.pdf';
+            $doc_type = 'pdf';
             //if no email text, use pdf as html_receipt
             //use first attachment
             if($message->getHasAttachments()){
@@ -1403,17 +1370,13 @@ class ReceiptController extends Controller
             $location = storage_path($ocr_path);
 
             Image::make($image_email_url)->save($location);
-            $doc_type = '.jpg';
+            $doc_type = 'jpg';
         }
-
-        //upload
-        $uri = $location;
-        $post_data = file_get_contents($uri);
 
         //ocr the file
         $document_model = $receipt->options['document_model'];
-        $ocr_receipt_extracted = $this->azure_receipts($post_data, $doc_type, $document_model);
-        // dd($ocr_receipt_extracted);
+        $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
+
         //pass receipt info to ocr_extract method
         $ocr_receipt_data = $this->ocr_extract($ocr_receipt_extracted, NULL, 'email');
 
@@ -1535,7 +1498,7 @@ class ReceiptController extends Controller
         $expense->reimbursment = NULL;
         $expense->project_id = $receipt_account->project_id;
         $expense->distribution_id = $receipt_account->distribution_id;
-        $expense->created_by_user_id = 0;//automated
+        $expense->created_by_user_id = 0; //automated
         $expense->date = $date;
         $expense->invoice = $invoice;
         $expense->vendor_id = $receipt->vendor_id; //Vendor_id of vendor being Queued
@@ -1551,30 +1514,57 @@ class ReceiptController extends Controller
         return $move_type;
     }
 
-    //send receipt location, document_model_type
-    public function azure_receipts($post_data, $doc_type, $document_model)
+    public function azure_document_model($doc_type, $ocr_path)
+    {
+        if($doc_type == 'pdf'){
+            //if $width under 180mm($width), prebuilt-receipt, otherwise if wider, use prebuilt-invoice
+            $pdf = new Fpdi();
+            $pdf->setSourceFile(storage_path($ocr_path));
+            $pageId = $pdf->importPage(1);
+            //unit = mm
+            $width = $pdf->getTemplateSize($pageId)['width'];
+
+            //$document_model = based on file dimensions. receipt vs invoice
+            if($width < 180 ){
+                $document_model = 'prebuilt-receipt';
+            }else{
+                $document_model = 'prebuilt-invoice';
+            }
+        }else{
+            //12/13/23 if img file is invoice v/s receipt!
+            $document_model = 'prebuilt-invoice';
+        }
+
+        return $document_model;
+    }
+
+    public function azure_docs_api($file_location, $document_model, $doc_type)
     {
         //jpg or jpeg
-        if($doc_type == '.jpg'){
+        if($doc_type == 'jpg'){
             $doc_content_type = 'Content-Type: image/jpeg';
-        }elseif($doc_type == '.pdf'){
+        }elseif($doc_type == 'pdf'){
             $doc_content_type = 'Content-Type: application/pdf';
-        }elseif($doc_type == '.png'){
+        }elseif($doc_type == 'png'){
             $doc_content_type = 'Content-Type: image/png';
         }else{
+            //RETURN ERROR
+
             //LOG
             //MOVE EMAIL
             //DO NOT DD FAILED
             //dd('FAILED ReceiptController azure_receips first else');
         }
+
+        $file = file_get_contents(storage_path($file_location));
+
         //start OCR
         $ch = curl_init();
-        $post = $post_data;
 
         $azure_api_key = env('AZURE_RECEIPTS_KEY');
         $azure_api_version = env('AZURE_RECEIPTS_VERSION');
         curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $file);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -1594,15 +1584,24 @@ class ReceiptController extends Controller
 
         //get OCR result
         //&pages=[1]d
-        $result = exec('curl -v -X GET "https://' . env('AZURE_RECEIPTS_URL') . '/formrecognizer/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"');
+        $uri =  env('AZURE_RECEIPTS_URL') . '/formrecognizer/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"';
+        $result = exec('curl -v -X GET "https://' . $uri);
         $result = json_decode($result, true);
 
         //wait but go as soon as done.
         while($result['status'] == "running" || $result['status'] == "notStarted"){
-            sleep(2);
-            $result = exec('curl -v -X GET "https://' . env('AZURE_RECEIPTS_URL') . '/formrecognizer/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"');
+            sleep(1);
+            $result = exec('curl -v -X GET "https://' . $uri);
             $result = json_decode($result, true);
         }
+
+        return $result;
+    }
+
+    //send receipt location, document_model_type
+    public function azure_receipts($ocr_path, $doc_type, $document_model)
+    {
+        $result = $this->azure_docs_api($ocr_path, $document_model, $doc_type);
 
         $all_fields = [];
         foreach($result['analyzeResult']['documents'] as $document){

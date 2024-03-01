@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d17593ba5703ef5ba061441e48daf368",
+    "content-hash": "d6ca3cdc8d23e62c28002a600126246d",
     "packages": [
         {
             "name": "2captcha/2captcha",
@@ -130,16 +130,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.300.8",
+            "version": "3.300.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "421be99f109a330acd4297abe2f41069eccbf447"
+                "reference": "2704b9b10b42d53066eb383f47541124296db77c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/421be99f109a330acd4297abe2f41069eccbf447",
-                "reference": "421be99f109a330acd4297abe2f41069eccbf447",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2704b9b10b42d53066eb383f47541124296db77c",
+                "reference": "2704b9b10b42d53066eb383f47541124296db77c",
                 "shasum": ""
             },
             "require": {
@@ -219,9 +219,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.300.8"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.300.9"
             },
-            "time": "2024-02-29T19:06:50+00:00"
+            "time": "2024-03-01T19:04:32+00:00"
         },
         {
             "name": "barryvdh/laravel-snappy",
@@ -4642,16 +4642,16 @@
         },
         {
             "name": "opcodesio/log-viewer",
-            "version": "v3.4.0",
+            "version": "v3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opcodesio/log-viewer.git",
-                "reference": "f1d89dc2e54e186f6852533a165fc49a6a83fff8"
+                "reference": "65d945fc36ab12a2a7588539bac3c367c6b41e16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opcodesio/log-viewer/zipball/f1d89dc2e54e186f6852533a165fc49a6a83fff8",
-                "reference": "f1d89dc2e54e186f6852533a165fc49a6a83fff8",
+                "url": "https://api.github.com/repos/opcodesio/log-viewer/zipball/65d945fc36ab12a2a7588539bac3c367c6b41e16",
+                "reference": "65d945fc36ab12a2a7588539bac3c367c6b41e16",
                 "shasum": ""
             },
             "require": {
@@ -4714,7 +4714,7 @@
             ],
             "support": {
                 "issues": "https://github.com/opcodesio/log-viewer/issues",
-                "source": "https://github.com/opcodesio/log-viewer/tree/v3.4.0"
+                "source": "https://github.com/opcodesio/log-viewer/tree/v3.5.0"
             },
             "funding": [
                 {
@@ -4726,7 +4726,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-02-14T15:14:59+00:00"
+            "time": "2024-03-01T18:01:18+00:00"
         },
         {
             "name": "opcodesio/mail-parser",

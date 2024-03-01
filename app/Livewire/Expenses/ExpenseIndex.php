@@ -52,9 +52,9 @@ class ExpenseIndex extends Component
 
     public function updated($field)
     {
-        if($field == 'project'){
-            $this->vendor = NULL;
-        }
+        // if($field == 'project'){
+        //     $this->vendor = NULL;
+        // }
 
         // if($field == 'vendor'){
         //     $this->project = NULL;
@@ -118,9 +118,6 @@ class ExpenseIndex extends Component
                     ->groupBy('owner')
                     ->pluck('owner')
                     ->toArray();
-            // dd($owner_transactions);
-
-            // $this->bank_owners = ['286', '4144', '3134'];
         }else{
             $this->bank_account_ids = array();
             $this->bank_owners = array();
@@ -150,7 +147,6 @@ class ExpenseIndex extends Component
                 ->whereNull('expense_id')
                 ->whereNull('check_id')
                 ->doesntHave('payments')
-                // ->get();
                 ->paginate($paginate_number, ['*'], 'transactions_page');
         }else{
             $transactions = collect();

@@ -73,7 +73,8 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "Google\\Task\\Composer::cleanup"
+            "Google\\Task\\Composer::cleanup",
+            "Aws\\Script\\Composer\\Composer::removeUnusedServices"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -97,6 +98,10 @@
             "Drive",
             "Oauth2",
             "Gmail"
+        ],
+        "aws/aws-sdk-php": [
+            "SignatureV4",
+            "Credentials"
         ]
     },
     "config": {

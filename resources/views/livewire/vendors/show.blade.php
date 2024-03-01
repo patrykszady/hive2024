@@ -15,11 +15,12 @@
             </div>
 
             {{-- INSURANCE --}}
-            @if(!$vendor->vendor_docs->isEmpty())
+            <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/>
+            {{-- @if(!$vendor->vendor_docs->isEmpty())
                 <div class="col-span-4 lg:col-span-2">
                     @include('livewire.vendors._insurance')
                 </div>
-            @endif
+            @endif --}}
         </div>
 
         {{-- VENDOR TEAM MEMBERS --}}
@@ -29,6 +30,6 @@
             </div>
         @endif
 	</div>
-    <livewire:vendor-docs.vendor-doc-create />
     <livewire:vendors.vendor-create />
+    <livewire:vendor-docs.vendor-doc-create />
 </div>

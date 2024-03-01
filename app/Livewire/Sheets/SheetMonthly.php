@@ -42,6 +42,7 @@ class SheetMonthly extends Component
                     return $payment->date->format('M y');
                 })
                 ->toBase();
+        // dd($this->monthly_payments);
 
         $this->monthly_expenses =
             Expense::

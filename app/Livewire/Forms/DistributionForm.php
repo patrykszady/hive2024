@@ -3,18 +3,18 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Distribution;
-// use Livewire\Attributes\Rule;
-use Livewire\Attributes\Validate;
+use Livewire\Attributes\Rule;
+// use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class DistributionForm extends Form
 {
     public $users = [];
 
-    #[Validate('required|integer')]
+    #[Rule('required|integer')]
     public $user_id = NULL;
 
-    #[Validate('required|min:3')]
+    #[Rule('required|min:3')]
     public $name = NULL;
 
     public function store()

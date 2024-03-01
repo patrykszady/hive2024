@@ -9,7 +9,8 @@ use App\Models\ExpenseSplits;
 use App\Models\Project;
 
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Validate;
+// use Livewire\Attributes\Validate;
+// use Livewire\Attributes\Rule;
 use Livewire\Form;
 
 use setasign\Fpdi\Fpdi;
@@ -26,60 +27,60 @@ class ExpenseForm extends Form
 
     public $receipts = FALSE;
 
-    #[Validate]
+    #[Rule]
     public $amount = NULL;
 
-    #[Validate]
-    public $split = FALSE;
+    // #[Rule]
+    // public $split = FALSE;
 
-    #[Validate]
+    #[Rule]
     public $date = NULL;
 
-    #[Validate]
+    #[Rule]
     public $vendor_id = NULL;
 
-    #[Validate]
+    #[Rule]
     public $project_id = NULL;
 
-    #[Validate]
+    #[Rule]
     public $project_completed = FALSE;
 
-    #[Validate]
+    #[Rule]
     public $reimbursment = NULL;
 
-    #[Validate]
+    #[Rule]
     public $invoice = NULL;
 
-    #[Validate]
+    #[Rule]
     public $note = NULL;
 
-    #[Validate]
+    #[Rule]
     public $paid_by = NULL;
 
-    #[Validate]
+    #[Rule]
     public $notes = NULL;
 
-    #[Validate]
+    #[Rule]
     public $merchant_name = NULL;
 
     // required_without:form.paid_by
-    #[Validate]
+    #[Rule]
     public $bank_account_id = NULL;
 
     // required_with:check.bank_account_id
-    #[Validate]
+    #[Rule]
     public $check_type = NULL;
 
     // required_if:check.check_type,Check
-    #[Validate]
+    #[Rule]
     public $check_number = NULL;
 
-    #[Validate]
+    #[Rule]
     public $transaction = NULL;
 
     // #[Rule('sometimes|required_unless:reimbursment,null|mimes:jpeg,jpg,png,pdf')]
     //('required_if:reimbursment,Client')
-    #[Validate]
+    #[Rule]
     public $receipt_file = NULL;
 
     public function rules()

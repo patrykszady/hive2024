@@ -15,10 +15,17 @@ class VendorDocsIndex extends Component
 {
     use AuthorizesRequests;
 
+    public $vendors = [];
     public $view = NULL;
     public $date = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
+
+    public function mount()
+    {
+        //where vendor has a check in the last year ...
+        $this->vendors = Vendor::has('vendor_docs')->with('vendor_docs')->get();
+    }
 
     #[Title('Certificates')]
     public function render()
@@ -30,7 +37,7 @@ class VendorDocsIndex extends Component
         // $checks = Check::whereBetween('date', [$this->date['start'], $this->date['end']])->whereNull('user_id')->get()->groupBy('vendor_id');
 
         // dd($checks);
-        //dont show where havent done business with / no checks in the last YTD
+
 
         //get latest for each type only
         //['vendor_id', 'type']
@@ -38,20 +45,18 @@ class VendorDocsIndex extends Component
         // $docs = VendorDoc::with('vendor')->orderBy('expiration_date', 'DESC')->get()->groupBy('vendor_id');
         // dd($docs);
 
-        $vendors = Vendor::has('vendor_docs')->with('vendor_docs')->get();
-        foreach($vendors as $vendor){
-            $doc_types = $vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type');
 
-            foreach($doc_types as $type_certificates)
-            {
-                if($type_certificates->first()->expiration_date <= today()){
-                    $vendor->expired_docs = TRUE;
-                }
-            }
-        }
-        //where vendor has a check in the last year ...
-        return view('livewire.vendor-docs.index', [
-            'vendors' => $vendors,
-        ]);
+        // foreach($vendors as $vendor){
+        //     $doc_types = $vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type');
+
+        //     foreach($doc_types as $type_certificates)
+        //     {
+        //         if($type_certificates->first()->expiration_date <= today()){
+        //             $vendor->expired_docs = TRUE;
+        //         }
+        //     }
+        // }
+
+        return view('livewire.vendor-docs.index');
     }
 }

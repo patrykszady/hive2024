@@ -153,7 +153,7 @@
 
                 <x-forms.row
                     wire:click="$dispatchTo('expenses.expense-splits-create', 'addSplits', { expense_total: total, expense: {{$expense}} })"
-                    errorName=""
+                    errorName="no_splits"
                     name=""
                     text="Splits"
                     type="button"
@@ -161,6 +161,7 @@
                     x-text="splits == true ? 'Edit Splits' : 'Add Splits'"
                     >
                 </x-forms.row>
+                {{-- <x-forms.error errorName="no_splits" /> --}}
 
                 {{-- SPLITS MODAL --}}
                 <livewire:expenses.expense-splits-create :projects="$projects" :distributions="$distributions" />
@@ -246,7 +247,6 @@
                     @endforeach
                 </x-forms.row>
             </div>
-            {{-- <x-forms.error errorName="testtest" /> --}}
 
             {{-- PO/INVOICE --}}
             <div

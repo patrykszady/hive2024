@@ -35,7 +35,7 @@
 
                             <button
                                 type="submit"
-                                class="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow focus:outline-none hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                class="w-full px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow focus:outline-none hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                 {{$view_text['button_text']}}
                             </button>
                         </div>
@@ -43,7 +43,7 @@
                 </x-cards.wrapper>
 
                 {{-- INSURANCE --}}
-                {{-- @include('livewire.vendors._insurance') --}}
+                <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/>
             </div>
             <div class="col-span-5 space-y-2 lg:col-span-3">
                 {{-- SELECT PROJECT --}}
@@ -81,7 +81,6 @@
                 </x-cards.wrapper>
 
                 {{-- PAYMENT PROJECTS --}}
-                {{-- ->sortByDesc('show_timestamp') --}}
                 @foreach($projects->where('show', true) as $project_id => $project)
                     <x-cards.wrapper>
                         <x-cards.heading>
@@ -91,11 +90,7 @@
 
                             <x-slot name="right">
                                 <x-cards.button
-                                    {{-- , {{$project['id']}}, {{$vendor->id}} --}}
-                                    {{-- , { project: {{$project->id}} --}}
                                     wire:click="$dispatchTo('bids.bid-create', 'addBids', { project: {{$project->id}} })"
-                                    {{-- name="add"
-                                    id="add{{$project_id}}" --}}
                                     >
                                     Edit Bid
                                 </x-cards.button>
@@ -122,7 +117,7 @@
                                 text="Total Bids"
                                 type="number"
                                 hint="$"
-                                disabled
+                                x-bind:disabled="true"
                                 >
                             </x-forms.row>
 
@@ -135,7 +130,7 @@
                                 text="Total Paid"
                                 type="number"
                                 hint="$"
-                                disabled
+                                x-bind:disabled="true"
                                 >
                             </x-forms.row>
 
@@ -165,22 +160,19 @@
                                 text="Balance"
                                 type="number"
                                 hint="$"
-                                disabled
+                                x-bind:disabled="true"
                                 >
                             </x-forms.row>
                             {{-- total paid, bid, balance rows DISABLED --}}
                         </x-cards.body>
                     </x-cards.wrapper>
-                    {{--  :project="$project" --}}
                 @endforeach
             </div>
         </div>
     </form>
 
-    {{-- @livewire('bids.bids-form') --}}
-    {{-- @livewire('vendor-docs.vendor-docs-form') --}}
-    {{-- :projects="$projects" :distributions="$distributions" --}}
     {{-- <livewire:bids.bid-create /> --}}
+    <livewire:vendor-docs.vendor-doc-create />
     <livewire:bids.bid-create :vendor="$vendor"/>
 </div>
 

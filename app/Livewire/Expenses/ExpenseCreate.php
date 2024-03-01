@@ -49,13 +49,7 @@ class ExpenseCreate extends Component
 
     public function mount()
     {
-        $this->projects = Project::
-            // where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
-            orderBy('created_at', 'DESC')
-            ->whereHas('statuses', function ($query) {
-                $query->whereIn('project_status.title', ['Active', 'Complete']);
-            })
-            ->get();
+        $this->projects = Project::status(['Active', 'Complete'])->sortByDesc('last_status.start_date');
     }
 
     public function updated($field, $value)
@@ -63,10 +57,10 @@ class ExpenseCreate extends Component
         // if SPLIT checked vs if unchecked
         if($field == 'split'){
             if($this->split == TRUE){
-                $this->form->split = TRUE;
+                // $this->form->split = TRUE;
                 $this->form->project_id = NULL;
             }else{
-                $this->form->split = FALSE;
+                // $this->form->split = FALSE;
             }
         }
 
@@ -252,14 +246,11 @@ class ExpenseCreate extends Component
 
     public function edit()
     {
-        // dd($this);
-        // foreach(collect($this->expense_splits) as $split){
-        //     $expense_items = json_encode((object)$split['items']);
-        //     dd($expense_items);
-        //     dd($split);
-        // }
+        //return with Error... splits needed if Project is SPLIT
+        if($this->split == TRUE && empty($this->expense_splits)){
+            return $this->addError('no_splits', 'Splits required if Project is Split');
+        }
 
-        // dd('too far');
         $expense = $this->form->update();
 
         $this->modal_show = FALSE;
@@ -301,6 +292,10 @@ class ExpenseCreate extends Component
 
     public function save()
     {
+        //return with Error... splits needed if Project is SPLIT
+        if($this->split == TRUE && empty($this->expense_splits)){
+            return $this->addError('no_splits', 'Splits required if Project is Split');
+        }
         // return $this->dispatch('validateCheck')->to(CheckCreate::class);
         // dd(collect($this->expense_splits));
         $expense = $this->form->store();

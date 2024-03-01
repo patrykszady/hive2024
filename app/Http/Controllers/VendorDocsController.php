@@ -14,16 +14,19 @@ class VendorDocsController extends Controller
 {
     public function find_insurance_data($ocr_path)
     {
+        // dd($ocr_path);
         //for uploaded file, find insurance types and Start and End dates.
-        $uri = file_get_contents(storage_path($ocr_path));
+        $post = file_get_contents(storage_path($ocr_path));
+
         //start OCR
         $ch = curl_init();
-        $post = '{"urlSource":"' . $uri . '"}';
+        // $post = '{"urlSource":"' . $uri . '"}';
         $document_model = 'newOct2023';
-        $azure_api_key = env('AZURE_RECEIPTS_KEY');
-        $azure_api_version = '2023-07-31';
 
-        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version . " ");
+        $azure_api_key = env('AZURE_RECEIPTS_KEY');
+        //'2023-07-31'
+        $azure_api_version = env('AZURE_RECEIPTS_VERSION');
+        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -40,6 +43,7 @@ class VendorDocsController extends Controller
         $re = '/(\d|\D){8}-(\d|\D){4}-(\d|\D){4}-(\d|\D){4}-(\d|\D){12}/m';
         $str = $location_result;
         preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+
         $operation_location_id = $matches[0][0];
 
         //get OCR result

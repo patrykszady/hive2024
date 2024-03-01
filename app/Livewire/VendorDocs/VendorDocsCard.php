@@ -16,14 +16,8 @@ class VendorDocsCard extends Component
     public function mount()
     {
         //dont show where havent done business with / no checks in the last YTD
-        $this->vendor_docs = $this->vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type')->toBase();
+        // $this->vendor->fresh();
 
-        foreach($this->vendor_docs as $type_certificates)
-        {
-            if($type_certificates->first()->expiration_date <= today()){
-                $this->vendor->expired_docs = TRUE;
-            }
-        }
 
         //->groupBy('type')->toBase()
         // $this->vendor_docs = $this->vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get();
@@ -40,6 +34,15 @@ class VendorDocsCard extends Component
 
     public function render()
     {
+        $this->vendor_docs = $this->vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type')->toBase();
+
+        foreach($this->vendor_docs as $type_certificates)
+        {
+            if($type_certificates->first()->expiration_date <= today()){
+                $this->vendor->expired_docs = TRUE;
+            }
+        }
+
         return view('livewire.vendor-docs.card');
     }
 }

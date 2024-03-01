@@ -88,9 +88,9 @@ class VendorDocCreate extends Component
 
     public function store()
     {
-        // $this->validate();
+        $this->validate();
         // $this->authorize('update', $this->expense);
-
+;
         //save file for this->vendor
         $ocr_filename = $this->vendor->id . '-' . auth()->user()->vendor->id . '-' . date('Y-m-d-H-i-s') . '.' . $this->doc_file->getClientOriginalExtension();
         $ocr_path = 'files/vendor_docs/' . $ocr_filename;
@@ -161,13 +161,11 @@ class VendorDocCreate extends Component
         $this->modal_show = FALSE;
         $this->doc_file = NULL;
 
-        $this->dispatch('refreshComponent')->to('vendors.vendor-show');
-        $this->dispatch('refreshComponent')->to('vendor-docs.vendor-docs-index');
+        $this->dispatch('refreshComponent')->to('vendor-docs.vendor-docs-card');
 
         $this->dispatch('notify',
             type: 'success',
             content: 'Vendor Document Added',
-            // route: 'expenses/' . $expense->id
         );
     }
 

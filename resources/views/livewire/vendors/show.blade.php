@@ -18,11 +18,6 @@
             @if($vendor->business_type != 'Retail')
                 <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/>
             @endif
-            {{-- @if(!$vendor->vendor_docs->isEmpty())
-                <div class="col-span-4 lg:col-span-2">
-                    @include('livewire.vendors._insurance')
-                </div>
-            @endif --}}
         </div>
 
         {{-- VENDOR TEAM MEMBERS --}}

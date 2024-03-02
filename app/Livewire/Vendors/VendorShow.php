@@ -22,15 +22,6 @@ class VendorShow extends Component
             return redirect(route('dashboard'));
         }
 
-        // $this->vendor_docs = $this->vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type')->toBase();
-
-        // foreach($this->vendor_docs as $type_certificates)
-        // {
-        //     if($type_certificates->first()->expiration_date <= today()){
-        //         $this->vendor->expired_docs = TRUE;
-        //     }
-        // }
-
         $this->users = $this->vendor->users()->where('is_employed', 1)->get();
     }
 

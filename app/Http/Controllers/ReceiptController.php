@@ -138,8 +138,6 @@ class ReceiptController extends Controller
             // Instantiate Client object with api key header.
             $client = new \GuzzleHttp\Client([
                 'headers' => [
-                    //api.business.amazon.com
-                    //na.business-api.amazon.com
                     'host' => 'api.business.amazon.com',
                     'x-amz-access-token' => $receipt_account->options['access_token'],
                     'x-amz-date' => Carbon::now()->toIso8601String(),
@@ -150,8 +148,8 @@ class ReceiptController extends Controller
             $url = 'https://na.business-api.amazon.com';
 
             // //FOR TESTING ONLY
-            //INDIVIDUAL ORDER
-                // $path = '/reports/2021-01-08/orders/112-0325143-0982626/';
+                //INDIVIDUAL ORDER
+                // $path = '/reports/2021-01-08/orders/113-5551823-8417801/';
 
                 // $params = array(
                 //     'includeCharges' => 'true',

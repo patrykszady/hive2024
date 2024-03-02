@@ -13,14 +13,14 @@ class CheckScope implements Scope
         //->getVendorRole(auth()->user()->vendor->id
         $user = auth()->user();
 
-        //if Check has Paid Employee TImesheets...they shoud show in the Employees Checks?
+        //if Check has Paid Employee Timesheets...they shoud show in the Employees Checks?
         if($user->primary_vendor->pivot->role_id == 1){
             $builder->where('belongs_to_vendor_id', $user->primary_vendor_id);
         }elseif($user->primary_vendor->pivot->role_id == 2){
             $builder->where('belongs_to_vendor_id', $user->primary_vendor_id)
                 ->where(function ($query) use ($user) {
-                    $query->where('user_id', $user->id)
-                    ->orWhere('vendor_id', $user->vendor->via_vendor);
+                    //->where('vendor_id', $user->vendor->via_vendor)
+                    $query->where('user_id', $user->id);
                 });
         }
     }

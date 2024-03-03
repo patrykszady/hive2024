@@ -20,11 +20,11 @@
                     <a href="{{route('registration')}}" class="inline-flex space-x-6">
                         <span
                             class="px-3 py-1 text-sm font-semibold leading-6 text-indigo-600 rounded-full bg-indigo-600/10 ring-1 ring-inset ring-indigo-600/10">
-                            Test Today
+                            Start Today
                         </span>
                         <span class="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
                             <span>
-                                Call Patryk to Setup
+                                See Why
                             </span>
                             <svg class="w-5 h-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd"
@@ -79,8 +79,9 @@
                                 Join Hive Contractors
                             </h2>
                         </a>
+
                         <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Project finances automated</p>
-                        <p class="mt-6 text-lg leading-8 text-gray-600">
+                        <p class="mt-6 text-lg font-normal leading-8 text-gray-600">
                             {{-- Automate your construction project finances. Your project finances sorted & organized automatically. Understand your project finances with ease. --}}
                             Simplify and streamline your construction project finances with Hive. Let Hive take care of sorting and organizing your project finances automatically, giving you a clear understanding of your financials effortlessly so you can focus on your projects.
                         </p>
@@ -93,7 +94,7 @@
                                     </svg>
                                     Receipts & invoices.
                                 </dt>
-                                <dd class="inline">
+                                <dd class="inline font-normal">
                                     No more sifting through piles of paperwork. Hive intelligently sorts and links your email and physical receipts with your bank transactions, ensuring all your financial records are in sync.
                                     {{-- Your email and physical receipts sorted and linked with your bank transactions. --}}
                                 </dd>
@@ -106,7 +107,7 @@
                                     </svg>
                                     Subcontractor bids & payments.
                                 </dt>
-                                <dd class="inline">
+                                <dd class="inline font-normal">
                                     Stay ahead of the game with seamless interconnectivity between General Contractors and Subcontractors. Hive allows everyone involved in each project to stay informed about upcoming payments and know exactly who is owed what.
                                     {{-- Interconnectivity between General Contractors and Subcontractors so everyone involved on each project is able to stay ahead, know what's coming in and who is owed. --}}
                                 </dd>
@@ -119,7 +120,7 @@
                                     </svg>
                                     Employee timesheets & payments.
                                 </dt>
-                                <dd class="inline">
+                                <dd class="inline font-normal">
                                     Track your employee's time dedicated to each project effortlessly. With just a click, you can generate accurate timesheets and pay your employees and subcontractors promptly.
                                 </dd>
                             </div>
@@ -131,10 +132,21 @@
                                     </svg>
                                     Audits & taxes.
                                 </dt>
-                                <dd class="inline">
+                                <dd class="inline font-normal">
                                     Say goodbye to the stress of preparing for audits and taxes. Hive automates the process by keeping track of certificates of insurance and expenses, making audits and taxes just a click away.
                                 </dd>
                             </div>
+                            <div class="relative pl-9">
+                                <dt class="inline font-semibold text-gray-900">
+                                    <svg class="absolute w-5 h-5 text-indigo-600 left-1 top-1" viewBox="0 0 20 20"
+                                        fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                    </svg>
+                                    Estimates
+                                </dt>
+                                <dd class="inline font-normal">
+                                    Create estimates in a flash on the go from your phone.
+                                </d>
                         </dl>
                     </div>
                     <div class="mt-8">
@@ -268,7 +280,7 @@
                     Leave bookkeeping to us.
                     {{-- We will take care of your bookkeeping. --}}
                 </h2>
-                <p class="max-w-xl mx-auto mt-6 text-lg leading-8 text-indigo-200">
+                <p class="max-w-xl mx-auto mt-6 text-lg font-normal leading-8 text-indigo-200">
                     Managing projects is hard enough. Let us take care of the details.
                 </p>
                 {{-- <p class="max-w-xl mx-auto mt-6 text-lg leading-8 text-indigo-200">

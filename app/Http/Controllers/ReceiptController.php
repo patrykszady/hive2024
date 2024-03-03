@@ -33,11 +33,11 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
-// use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Arr;
 
 use File;
-use Storage;
+// use Storage;
 // use Response;
 
 class ReceiptController extends Controller
@@ -107,9 +107,6 @@ class ReceiptController extends Controller
         $credentials = new \Aws\Credentials\Credentials(env('AMAZON_AWS_ACCESS_TOKEN'), env('AMAZON_AWS_SECRET_TOKEN'));
 
         foreach($receipt_accounts as $receipt_account){
-            // dd(Carbon::parse($company_email->options['expires_in'])->setTimezone('America/Chicago'));
-            // dd(Carbon::now()->addMinutes(55)->toIso8601String());
-
             //if NOW  is greater than > expires_in ... get new access_token
             //get new access_token valid for 1 hour and change 'expires_in' to 55 minutes from when submitted
             //ONLY if access token is expired....
@@ -174,8 +171,6 @@ class ReceiptController extends Controller
 
             //7-17-2023 find last amazon expenses date
             // '2023-10-14', '2023-10-14'
-
-            //Carbon::today()->subDays(14)->setTimezone('UTC'), Carbon::today()->setTimezone('UTC')
             $dates = CarbonPeriod::create(Carbon::today()->subDays(14)->setTimezone('UTC'), Carbon::today()->setTimezone('UTC'));
             foreach($dates as $date){
                 $today = $date;
@@ -198,7 +193,7 @@ class ReceiptController extends Controller
                 $response = $client->send($signedRequest);
 
                 $orders = collect(json_decode($response->getBody()->getContents(), true)['orders']);
-                // dd($orders);
+
                 foreach($orders as $key => $order){
                     //->setTimezone('America/Chicago')
                     $order_date = Carbon::parse($order['orderDate'])->setTimezone('America/Chicago')->format('Y-m-d');
@@ -216,7 +211,6 @@ class ReceiptController extends Controller
                             where('date', $order_date)->
                             get();
 
-                    // dd($duplicates);
                     //7-17-2023 duplicate by Invoice/ Order # only... see if Order status changed
                     if($duplicates->isEmpty()){
                         //create expense Model
@@ -224,7 +218,8 @@ class ReceiptController extends Controller
                         $expense = Expense::create([
                             'amount' => $order['orderNetTotal']['amount'],
                             'date' => $order_date,
-                            'project_id' => $receipt_account->project_id,
+                            // /$receipt_account->project_id
+                            'project_id' => NULL,
                             'distribution_id' => $receipt_account->distribution_id,
                             'created_by_user_id' => 0, //automated
                             'invoice' => $order['orderId'],
@@ -368,7 +363,8 @@ class ReceiptController extends Controller
                     $expense = Expense::create([
                         'amount' => '-' . $transaction['amount']['amount'],
                         'date' => $order_date,
-                        'project_id' => $receipt_account->project_id,
+                        // $receipt_account->project_id
+                        'project_id' => NULL,
                         'distribution_id' => $receipt_account->distribution_id,
                         'created_by_user_id' => 0, //automated
                         'invoice' => $order_id,
@@ -1385,12 +1381,6 @@ class ReceiptController extends Controller
             //01-26-2023 pass rest of receipt info to ocr_extract method
             if(!is_null($ocr_receipt_data['fields']['transaction_date'])){
                 $date = $ocr_receipt_data['fields']['transaction_date'];
-                // $date = Carbon::parse($date);
-                // if($date->year > now()->format('Y')){
-                //     $date = $date->year(now()->format('Y'));
-                // }else{
-                //     $date = $date->format('Y-m-d');
-                // }
             }else{
                 $date = $email_date;
             }
@@ -1410,7 +1400,7 @@ class ReceiptController extends Controller
                 preg_match_all($re, $str, $matches, PREG_SET_ORDER, 0);
 
                 if(empty($matches)){
-                    $receipt_number = NULL;
+                    $invoice = NULL;
                 }else{
                     // $receipt_number = str_replace(' ', '', $matches[count($matches) - 1][0]);
                     $invoice = trim($matches[count($matches) - 1][0]);
@@ -1475,11 +1465,10 @@ class ReceiptController extends Controller
 
         //CREATE NEW Expense
         //1-18-2023 FIX, 0 should be NULL on database!
-        // $expense->project_id = $receipt_account->project_id;
         //If PO matches a project, use that project
         if(isset($receipt_account->project_id)){
             if($receipt_account->project_id === 0){
-                $receipt_account->project = 0;
+                $receipt_account->project = NULL;
             }else{
                 $receipt_account->project = $receipt_account->project_id;
             }

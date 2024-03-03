@@ -17,7 +17,6 @@
         @endforeach
     </x-forms.row>
 
-
     <div
         x-data="{ bank_account: @entangle('form.bank_account_id') }"
         x-show="bank_account"

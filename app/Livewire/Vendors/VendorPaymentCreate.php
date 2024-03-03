@@ -147,7 +147,6 @@ class VendorPaymentCreate extends Component
     {
         $project = $this->projects->where('id', $project_id_to_remove)->first();
         $project->show = false;
-
         $this->form->project_id = "";
     }
 

@@ -59,7 +59,6 @@ class CheckCreate extends Component
         $this->validate();
         $this->form->store();
 
-
         if($this->payment_type->getTable() == 'vendors'){
             // dd($this->payment_type->getTable());
             // dd('vendors table');

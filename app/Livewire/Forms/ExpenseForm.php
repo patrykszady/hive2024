@@ -7,9 +7,9 @@ use App\Models\Distribution;
 use App\Models\Expense;
 use App\Models\ExpenseSplits;
 
-use Illuminate\Validation\Rule;
-// use Livewire\Attributes\Validate;
+// use Illuminate\Validation\Rule;
 // use Livewire\Attributes\Rule;
+use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -19,124 +19,111 @@ class ExpenseForm extends Form
     use AuthorizesRequests;
 
     public ?Expense $expense;
-
     public $expense_transactions_sum = FALSE;
-
+        // #[Validate]
+    public $project_completed = FALSE;
     public $receipts = FALSE;
 
-    #[Rule]
+    #[Validate]
+    public $split = FALSE;
+
+
+    #[Validate('required|numeric|regex:/^-?\d+(\.\d{1,2})?$/')]
     public $amount = NULL;
 
-    // #[Rule]
-    // public $split = FALSE;
-
-    #[Rule]
+    #[Validate('required|date|before_or_equal:today|after:2017-01-01')]
     public $date = NULL;
 
-    #[Rule]
+    #[Validate('required')]
     public $vendor_id = NULL;
 
-    #[Rule]
+    // required_unless:split,true
+    #[Validate('required_unless:split,true')]
     public $project_id = NULL;
 
-    #[Rule]
-    public $project_completed = FALSE;
-
-    #[Rule]
+    #[Validate]
     public $reimbursment = NULL;
 
-    #[Rule]
+    #[Validate]
     public $invoice = NULL;
 
-    #[Rule]
+    #[Validate]
     public $note = NULL;
 
-    #[Rule]
+    #[Validate]
     public $paid_by = NULL;
 
-    #[Rule]
-    public $notes = NULL;
-
-    #[Rule]
-    public $merchant_name = NULL;
-
     // required_without:form.paid_by
-    #[Rule]
+    #[Validate]
     public $bank_account_id = NULL;
 
-    // required_with:check.bank_account_id
-    #[Rule]
+    #[Validate('required_with:bank_account_id')]
     public $check_type = NULL;
 
-    // required_if:check.check_type,Check
-    #[Rule]
+    #[Validate('required_if:check_type,Check')]
     public $check_number = NULL;
 
-    #[Rule]
+
+
+    // #[Validate]
+    public $merchant_name = NULL;
+
+
+    // #[Validate]
     public $transaction = NULL;
 
-    // #[Rule('sometimes|required_unless:reimbursment,null|mimes:jpeg,jpg,png,pdf')]
+    // #[Validate('sometimes|required_unless:reimbursment,null|mimes:jpeg,jpg,png,pdf')]
     //('required_if:reimbursment,Client')
-    #[Rule]
+    // #[Validate]
     public $receipt_file = NULL;
 
-    public function rules()
-    {
-        return [
-            'amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
-            'date' => 'required|date|before_or_equal:today|after:2017-01-01',
-            'vendor_id' => 'required',
-            'project_id' => 'required_unless:split,true',
-            'reimbursment' => 'nullable',
-            'invoice' => 'nullable',
-            'project_completed' => 'nullable',
-            'note' => 'nullable',
-            'paid_by' => 'nullable',
-            'notes' => 'nullable',
-            'merchant_name' => 'nullable',
-            'bank_account_id' => 'nullable',
-            'check_type' => 'required_with:bank_account_id',
-            'check_number' => 'required_if:check_type,Check',
-            'transaction' => 'nullable',
-            // 'reimbursment' => [
-            //     Rule::requiredIf(function(){
-            //         //client_reimbursement
-            //         // dd($this->reimbursment == 'client_reimbursement');
-            //         // dd(Project::findOrFail($this->project_id)->project_status->title == "Complete");
-            //         $title = Project::findOrFail($this->project_id)->project_status->title;
+    // public function rules()
+    // {
+    //     return [
+    //         'project_id' => 'required_unless:split,true',
 
-            //         // return $title == 'Complete' && $this->reimbursment == 'client_reimbursement' ? false : true;
-            //         if($title == 'Complete' && $this->reimbursment == 'client_reimbursement'){
-            //             Rule::notIn(['client_reimbursement']);
-            //         }else{
-            //             //false = continue. true = validation error!
-            //             return false;
-            //             // || $this->split == true
-            //             // return $this->reimbursment != NULL ? true : false;
-            //         }
-            //     }),
-            //     // 'nullable',
-            //     // 'mimes:jpeg,jpg,png,pdf'
-            //     ],
-            // 'reimbursment' => [
-            //     Rule::notIn(['client_reimbursement']),
-            //     // 'nullable',
-            //     // 'mimes:jpeg,jpg,png,pdf'
-            //     ],
-            'receipt_file' => [
-                Rule::requiredIf(function(){
-                    if($this->receipts != FALSE){
-                        return false;
-                    }else{
-                        // || $this->split == true
-                        return $this->reimbursment != NULL && !is_numeric($this->reimbursment) ? true : false;
-                    }
-                }),
-                'nullable',
-                'mimes:jpeg,jpg,pdf,png'
-                ],
-        ];
-    }
+    //         'merchant_name' => 'nullable',
+
+    //         'transaction' => 'nullable',
+    //         // 'reimbursment' => [
+    //         //     Rule::requiredIf(function(){
+    //         //         //client_reimbursement
+    //         //         // dd($this->reimbursment == 'client_reimbursement');
+    //         //         // dd(Project::findOrFail($this->project_id)->project_status->title == "Complete");
+    //         //         $title = Project::findOrFail($this->project_id)->project_status->title;
+
+    //         //         // return $title == 'Complete' && $this->reimbursment == 'client_reimbursement' ? false : true;
+    //         //         if($title == 'Complete' && $this->reimbursment == 'client_reimbursement'){
+    //         //             Rule::notIn(['client_reimbursement']);
+    //         //         }else{
+    //         //             //false = continue. true = validation error!
+    //         //             return false;
+    //         //             // || $this->split == true
+    //         //             // return $this->reimbursment != NULL ? true : false;
+    //         //         }
+    //         //     }),
+    //         //     // 'nullable',
+    //         //     // 'mimes:jpeg,jpg,png,pdf'
+    //         //     ],
+    //         // 'reimbursment' => [
+    //         //     Rule::notIn(['client_reimbursement']),
+    //         //     // 'nullable',
+    //         //     // 'mimes:jpeg,jpg,png,pdf'
+    //         //     ],
+    //         'receipt_file' => [
+    //             Rule::requiredIf(function(){
+    //                 if($this->receipts != FALSE){
+    //                     return false;
+    //                 }else{
+    //                     // || $this->split == true
+    //                     return $this->reimbursment != NULL && !is_numeric($this->reimbursment) ? true : false;
+    //                 }
+    //             }),
+    //             'nullable',
+    //             'mimes:jpeg,jpg,pdf,png'
+    //             ],
+    //     ];
+    // }
 
     // $this->form->reimbursment
     // if($value == 'Client'){
@@ -150,19 +137,9 @@ class ExpenseForm extends Form
     //     }
     // }
 
-    protected $messages =
-    [
-        'amount.regex' => 'Amount format is incorrect. Format is 2145.36. No commas and only two digits after decimal allowed. If amount is under $1.00, use 00.XX',
-        'project_id.required_unless' => 'Project is required unless Expense is Split.',
-        'date.before_or_equal' => 'Date cannot be in the future. Make sure Date is before or equal to today.',
-        'date.after' => 'Date cannot be before the year 2017. Make sure Date is after or equal to 01/01/2017.',
-        'receipt_file.required_if' => 'Receipt is required if Expense is Reimbursed or has Splits',
-    ];
 
     //     return [
 
-    //         'split' => 'nullable',
-    //         'splits' => 'nullable',
     //         'amount_disabled' => 'nullable',
 
     //         //USED in MULTIPLE OF PLACES TimesheetPaymentForm and VendorPaymentForm
@@ -184,6 +161,16 @@ class ExpenseForm extends Form
     //         ],
     //         'via_vendor_employees' => 'nullable',
     //     ];
+
+
+    protected $messages =
+    [
+        'amount.regex' => 'Amount format is incorrect. Format is 2145.36. No commas and only two digits after decimal allowed. If amount is under $1.00, use 00.XX',
+        'project_id.required_unless' => 'Project is required unless Expense is Split.',
+        'date.before_or_equal' => 'Date cannot be in the future. Make sure Date is before or equal to today.',
+        'date.after' => 'Date cannot be before 2017. Make sure Date is after or equal to 01/01/2017.',
+        'receipt_file.required_if' => 'Receipt is required if Expense is Reimbursed or has Splits',
+    ];
 
     public function setExpense(Expense $expense)
     {

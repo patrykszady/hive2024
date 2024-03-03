@@ -57,10 +57,10 @@ class ExpenseCreate extends Component
         // if SPLIT checked vs if unchecked
         if($field == 'split'){
             if($this->split == TRUE){
-                // $this->form->split = TRUE;
+                $this->form->split = TRUE;
                 $this->form->project_id = NULL;
             }else{
-                // $this->form->split = FALSE;
+                $this->form->split = FALSE;
             }
         }
 
@@ -250,6 +250,8 @@ class ExpenseCreate extends Component
         if($this->split == TRUE && empty($this->expense_splits)){
             return $this->addError('no_splits', 'Splits required if Project is Split');
         }
+
+        // dd($this);
 
         $expense = $this->form->update();
 

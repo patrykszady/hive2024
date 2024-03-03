@@ -56,9 +56,7 @@
                             <div class="relative flex space-x-3">
                                 <div>
                                     <span class="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full ring-8 ring-white">
-                                    <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="{{$icons['user']}}" clip-rule="evenodd" />
-                                    </svg>
+                                        <x-heroicon-s-user-plus />
                                     </span>
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">

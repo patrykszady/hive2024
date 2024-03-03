@@ -32,7 +32,6 @@
                             </button>
 
                             <x-forms.error errorName="check_total_min" />
-
                             <button
                                 type="submit"
                                 class="w-full px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow focus:outline-none hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -70,6 +69,7 @@
                         </x-forms.row>
 
                         <x-forms.row
+                            {{-- wire:loading --}}
                             wire:click="$dispatch('addProject')"
                             type="button"
                             errorName="project_id_DONT_SHOW"

@@ -75,6 +75,7 @@ class VendorPaymentForm extends Form
     public function store()
     {
         $this->validate();
+
         //create expense for each $payment_projects. create one Check for all Expenses and associate with the Check.
         if(empty($this->paid_by)){
             $check = Check::create([

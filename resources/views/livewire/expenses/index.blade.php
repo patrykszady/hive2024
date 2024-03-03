@@ -40,7 +40,8 @@
                         </div>
                         {{-- 08-30-2023 combine into 1 --}}
                         <input
-                            wire:model.live.debounce.1000ms="amount"
+                            {{-- debounce.750ms --}}
+                            wire:model.live="amount"
                             type="number"
                             inputmode="decimal"
                             {{-- pattern="[-+,0-9.]*" --}}
@@ -52,7 +53,7 @@
                             autocomplete="mobile-search-candidate"
                             >
                         <input
-                            wire:model.live.debounce.1000ms="amount"
+                            wire:model.live="amount"
                             type="number"
                             inputmode="numeric"
                             step="0.01"

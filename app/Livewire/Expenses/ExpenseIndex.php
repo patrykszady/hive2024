@@ -78,7 +78,7 @@ class ExpenseIndex extends Component
         }
 
         $expenses = Expense::
-            orderBy('date', 'DESC')
+            orderBy('date', 'DESC')->orderBy('created_at', 'DESC')
             ->with(['project', 'distribution', 'vendor', 'splits', 'transactions', 'receipts'])
             // ->whereBetween('date', [today()->subYear(2), today()])
             ->where('amount', 'like', "{$this->amount}%")
@@ -87,7 +87,7 @@ class ExpenseIndex extends Component
             })
             ->when($this->project == 'NO_PROJECT', function ($query, $item) {
                 // $expense_ids_excluded += $
-                return $query->where('project_id', "0")->whereNull('distribution_id');
+                return $query->where('project_id', NULL)->whereNull('distribution_id')->doesntHave('splits');
             })
             ->when(substr($this->project, 0, 2) == "D-", function ($query) {
                 return $query->where('distribution_id', substr($this->project, 2));
@@ -152,13 +152,23 @@ class ExpenseIndex extends Component
             $transactions = collect();
         }
 
-        $expenses->getCollection()->each(function ($expense, $key) use ($expenses){
-            if($expense->transactions->isNotEmpty() && ($expense->project_id != "0" || $expense->project_id != NULL) || isset($expense->check_id)){
+        $expenses->getCollection()->each(function ($expense, $key){
+            //|| isset($expense->check_id)
+            // $expense->project_id != NULL || $expense->distribution != NULL ||
+            //|| $expense->splits->isNotEmpty()
+            if($expense->check){
+                if($expense->check->transactions->isNotEmpty()){
+                    $expense->status = 'Complete';
+                }else{
+                    $expense->status = 'No Transactions';
+                }
+            //|| isset($expense->check_id)
+            }elseif($expense->transactions->isNotEmpty() && $expense->project->project_name != 'NO PROJECT'){
                 $expense->status = 'Complete';
             }else{
-                if($expense->project_id != "0" && $expense->transactions->isEmpty()){
+                if($expense->project->project_name != 'NO PROJECT' && $expense->transactions->isEmpty()){
                     $expense->status = 'No Transactions';
-                }elseif($expense->project_id == "0" && $expense->transactions->isNotEmpty()){
+                }elseif($expense->project->project_name == 'NO PROJECT' && $expense->transactions->isNotEmpty()){
                     $expense->status = 'No Project';
                 }else{
                     $expense->status = 'Missing Info';
@@ -167,7 +177,8 @@ class ExpenseIndex extends Component
         });
 
         //where vendor is in result
-        if(is_null($this->project) || $this->project == ""){
+        // || $this->project == ""
+        if(is_null($this->project)){
             $vendors = Vendor::whereHas('expenses')->orWhereHas('transactions')->orderBy('business_name')->get();
         }else{
             //pluck all project expense vendors

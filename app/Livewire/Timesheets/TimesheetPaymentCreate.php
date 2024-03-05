@@ -153,6 +153,7 @@ class TimesheetPaymentCreate extends Component
 
     public function updated($field)
     {
+        // $this->validate();
         $this->validateOnly($field);
         // $this->validateOnly('form.bank_account_id');
         // $this->validateOnly('form.paid_by');

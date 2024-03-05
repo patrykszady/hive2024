@@ -292,7 +292,7 @@
                 >
                 Cancel
             </button>
-            @if($form->amount == '0.00' || ($form->expense_transactions_sum == FALSE && $form->transaction == NULL))
+            @if($form->amount == '0.00' || ($form->expense_transactions_sum == FALSE && $form->transaction == NULL && $form->bank_account_id == NULL))
                 <button
                     type="button"
                     wire:click="remove"

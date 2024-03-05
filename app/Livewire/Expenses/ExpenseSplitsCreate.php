@@ -103,7 +103,8 @@ class ExpenseSplitsCreate extends Component
         $this->expense = $expense;
         $receipt = $expense->receipts()->latest()->first();
 
-        if(!is_null($receipt) && !is_null($receipt->receipt_items->items)){
+        //!is_null($receipt->receipt_items->items
+        if(!is_null($receipt) && !is_null($receipt->receipt_items)){
             $this->expense_line_items = $receipt->receipt_items;
 
             $items = [];

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Opcodes\LogViewer\Facades\LogViewer;
+
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Collection;
@@ -49,6 +51,13 @@ class AppServiceProvider extends ServiceProvider
                     'pageName' => $pageName,
                 ]
             );
+        });
+
+        LogViewer::auth(function ($request) {
+            return $request->user()
+                && in_array($request->user()->email, [
+                    'patryk@gs.construction',
+                ]);
         });
 
         // Blade::component('mails.base', \App\View\Components\Base::class);

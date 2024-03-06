@@ -20,7 +20,7 @@ class ExpenseForm extends Form
 
     public ?Expense $expense;
     public $expense_transactions_sum = FALSE;
-        // #[Validate]
+
     public $project_completed = FALSE;
     public $receipts = FALSE;
 
@@ -37,7 +37,6 @@ class ExpenseForm extends Form
     #[Validate('required')]
     public $vendor_id = NULL;
 
-    // required_unless:split,true
     #[Validate('required_unless:split,true')]
     public $project_id = NULL;
 
@@ -63,11 +62,8 @@ class ExpenseForm extends Form
     #[Validate('required_if:check_type,Check')]
     public $check_number = NULL;
 
-
-
     // #[Validate]
     public $merchant_name = NULL;
-
 
     // #[Validate]
     public $transaction = NULL;
@@ -105,11 +101,7 @@ class ExpenseForm extends Form
     //         //     // 'nullable',
     //         //     // 'mimes:jpeg,jpg,png,pdf'
     //         //     ],
-    //         // 'reimbursment' => [
-    //         //     Rule::notIn(['client_reimbursement']),
-    //         //     // 'nullable',
-    //         //     // 'mimes:jpeg,jpg,png,pdf'
-    //         //     ],
+
     //         'receipt_file' => [
     //             Rule::requiredIf(function(){
     //                 if($this->receipts != FALSE){
@@ -181,7 +173,7 @@ class ExpenseForm extends Form
 
             if(!is_null($receipt)){
                 $this->receipts = TRUE;
-                $this->notes = $receipt->notes;
+                $this->note = $receipt->note;
                 // if(!is_null($receipt->receipt_html)){
                 // if(isset($receipt->receipt_items->handwritten_notes)){
                 //     $this->handwritten = implode(", ", $receipt->receipt_items->handwritten_notes);

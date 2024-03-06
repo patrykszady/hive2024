@@ -3,6 +3,7 @@
 namespace App\Livewire\Checks;
 
 use App\Models\BankAccount;
+use App\Models\Check;
 
 use Livewire\Component;
 use App\Livewire\Forms\CheckForm;
@@ -11,13 +12,21 @@ class CheckCreate extends Component
 {
     public CheckForm $form;
 
-    // public $check_input = NULL;
+    // public $expense_update = NULL;
 
     public $bank_accounts = [];
     public $employees = [];
+
+    public $check = NULL;
+    public $modal_show = FALSE;
+    public $view_text = [
+        'card_title' => 'Edit Check',
+        'button_text' => 'Update',
+        'form_submit' => 'edit',
+    ];
     // public $payment_type = NULL;
 
-    protected $listeners = ['validateCheck'];
+    protected $listeners = ['validateCheck', 'editCheck'];
 
     public function mount()
     {
@@ -29,28 +38,57 @@ class CheckCreate extends Component
         $this->employees = auth()->user()->vendor->users()->where('is_employed', 1)->whereNot('users.id', auth()->user()->id)->get();
     }
 
-    public function updated($field)
-    {
-        $this->validateOnly($field);
-    }
     // public function updated($field)
     // {
-    //     // if($field == 'check.check_type'){
-    //     //     if($this->check->check_type == 'Check'){
-    //     //         $this->check_input = TRUE;
-    //     //     }else{
-    //     //         $this->check->check_number = NULL;
-    //     //         $this->check_input = FALSE;
-    //     //     }
-    //     // }
-
-    //     $this->validateOnly($field);
+    //     $this->validate();
+    //     // $this->validateOnly($field);
     // }
+
+    public function updated($field)
+    {
+        // if($field = 'form.bank_account_id'){
+        //     $this->form->check_type = NULL;
+        //     $this->form->check_number = NULL;
+        // }
+
+        if($field == 'form.check_type'){
+            $this->form->check_number = NULL;
+            // if($this->check->check_type == 'Check'){
+
+            // }else{
+            //     $this->check->check_number = NULL;
+            // }
+        }
+
+        // $this->validate();
+        $this->validateOnly($field);
+    }
 
     public function validateCheck()
     {
         dd('in validateCheck');
         // $this->modal_show = TRUE;
+    }
+
+    public function editCheck(Check $check)
+    {
+        $this->check = $check;
+        $this->form->setCheck($check);
+        $this->modal_show = TRUE;
+    }
+
+    public function edit()
+    {
+        $check = $this->form->update();
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Check Updated',
+            route: 'checks/' . $check->id
+        );
+
+        $this->modal_show = FALSE;
+
+        $this->dispatch('refreshComponent')->to('checks.check-show');
     }
 
     public function store()
@@ -85,7 +123,6 @@ class CheckCreate extends Component
         //         'form_submit' => 'store',
         //     ];
 
-        //     $this->check_input = TRUE;
         // }else{
         //     $this->check = Check::make();
 
@@ -98,7 +135,7 @@ class CheckCreate extends Component
 
         // $employees = $this->user->vendor->users()->where('is_employed', 1)->whereNot('users.id', $this->user->id)->get();
 
-        return view('livewire.checks.form', [
+        return view('livewire.checks.new_form', [
             // 'bank_accounts' => $bank_accounts,
             // 'employees' => $employees,
         ]);

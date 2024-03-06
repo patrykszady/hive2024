@@ -4,7 +4,9 @@ namespace App\Livewire\Forms;
 
 use App\Models\Check;
 
-use Livewire\Attributes\Rule;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\Validate;
+
 use Livewire\Form;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -15,7 +17,7 @@ class CheckForm extends Form
 
     public ?Check $check;
 
-    #[Rule('nullable|date|before_or_equal:today|after:2017-01-01')]
+    #[Validate('nullable|date|before_or_equal:today|after:2017-01-01')]
     public $date = NULL;
 
     // required_without:check.bank_account_id
@@ -23,18 +25,17 @@ class CheckForm extends Form
     // public $paid_by = NULL;
 
     // required_without:check.paid_by
-    #[Rule('required', as: 'bank account')]
+    #[Validate('required', as: 'bank account')]
     public $bank_account_id = NULL;
 
     // required_with:check.bank_account_id
-    #[Rule('required', as: 'check type')]
+    #[Validate('required_with:bank_account_id')]
     public $check_type = NULL;
 
-    // required_if:check.check_type,Check
-    #[Rule('required', as: 'check number')]
+    // #[Validate('required_if:check_type,Check')]
     public $check_number = NULL;
 
-    // // required_with:check.paid_by
+    // required_with:check.paid_by
     // #[Rule('nullable')]
     // public $invoice = NULL;
 
@@ -42,6 +43,51 @@ class CheckForm extends Form
     // [
     //     'check.check_number' => 'Check Number is required if Payment Type is Check',
     // ];
+
+    public function rules()
+    {
+        return [
+            'check_number' => [
+                'required_if:check_type,Check',
+                'nullable',
+                'numeric',
+
+                //ignore if vendor_id of Check is same as request()->vendor_id
+                // ->ignore($this->check),
+                Rule::unique('checks', 'check_number')->where(function ($query) {
+                    //->where('vendor_id', '!=', $this->expense->vendor_id)
+
+                    //where per vendor bank_account ... all bank accounts that have the inst ID
+                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->bank_account_id);
+                })
+                ->ignore($this->check),
+            ],
+        ];
+    }
+
+    public function setCheck(Check $check)
+    {
+        $this->check = $check;
+
+        $this->bank_account_id = $this->check->bank_account_id;
+        $this->check_type = $this->check->check_type;
+        $this->check_number = $this->check->check_number;
+    }
+
+    public function update()
+    {
+        // dd($this);
+        // $this->authorize('create', Check::class);
+        $this->validate();
+
+        $this->check->update([
+            'bank_account_id' => $this->bank_account_id,
+            'check_type' => $this->check_type,
+            'check_number' => $this->check_number,
+        ]);
+
+        return $this->check;
+    }
 
     public function store()
     {

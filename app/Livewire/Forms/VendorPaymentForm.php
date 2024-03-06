@@ -5,34 +5,34 @@ namespace App\Livewire\Forms;
 use App\Models\Check;
 use App\Models\Expense;
 
-use Livewire\Attributes\Rule;
+use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class VendorPaymentForm extends Form
 {
-    #[Rule('nullable')]
+    #[Validate('nullable')]
     public $project_id = '';
 
-    #[Rule('required|date|before_or_equal:today|after:2017-01-01')]
+    #[Validate('required|date|before_or_equal:today|after:2017-01-01')]
     public $date = NULL;
 
     //required_without:check_form.bank_account_id'
-    #[Rule('required_without:form.bank_account_id')]
+    #[Validate('required_without:bank_account_id')]
     public $paid_by = NULL;
 
     // required_without:check.paid_by
-    #[Rule('required_without:form.paid_by')]
+    #[Validate('required_without:paid_by')]
     public $bank_account_id = NULL;
 
     // required_with:check.bank_account_id
-    #[Rule('required_with:form.bank_account_id')]
+    #[Validate('required_with:bank_account_id')]
     public $check_type = NULL;
 
     // required_if:check.check_type,Check
-    #[Rule('required_if:form.check_type,Check')]
+    #[Validate('required_if:check_type,Check')]
     public $check_number = NULL;
 
-    #[Rule('required_with:form.invoice')]
+    #[Validate('required_with:invoice')]
     public $invoice = NULL;
 
     // protected function rules()

@@ -17,16 +17,9 @@
 
                     <x-slot name="right">
                         <div class="space-x-2">
-                            {{-- 05-31-2023: used for testing only | kept for reference --}}
-                            {{-- @if($check->vendor_id)
-                                <x-cards.button
-                                    wire:click="email"
-                                    button_color=white
-                                    >
-                                    Email Details
-                                </x-cards.button>
-                            @endif --}}
-                            <x-cards.button href="{{route('checks.index')}}">
+                            <x-cards.button
+                                wire:click="$dispatchTo('checks.check-create', 'editCheck', { check: {{$check->id}}})"
+                                >
                                 Edit Check
                             </x-cards.button>
                         </div>
@@ -64,20 +57,20 @@
                             >
                         </x-lists.search_li>
 
-                        @if($check->check_number)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Check Number'"
-                                :line_data="$check->check_number"
-                                >
-                            </x-lists.search_li>
-                        @endif
-
                         @if($check->bank_account)
                             <x-lists.search_li
                                 :basic=true
                                 :line_title="'Check Bank'"
                                 :line_data="$check->bank_account->getNameAndType()"
+                                >
+                            </x-lists.search_li>
+                        @endif
+
+                        @if($check->check_number)
+                            <x-lists.search_li
+                                :basic=true
+                                :line_title="'Check Number'"
+                                :line_data="$check->check_number"
                                 >
                             </x-lists.search_li>
                         @endif
@@ -369,6 +362,7 @@
             @endif
         </div>
     </div>
+    <livewire:checks.check-create />
 </div>
 
 

@@ -99,9 +99,7 @@ class ExpenseCreate extends Component
     //$saved_splits
     public function hasSplits($saved_splits)
     {
-        // dd($saved_splits);
         $this->expense_splits = $saved_splits;
-        // dd($this->expense_splits);
         $this->splits = TRUE;
         $this->split = TRUE;
     }

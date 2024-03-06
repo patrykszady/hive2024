@@ -7,31 +7,19 @@ use App\Models\Check;
 use App\Models\Expense;
 use App\Models\Timesheet;
 
-use App\Mail\VendorPaymentMade;
-
 use Livewire\Component;
 use Livewire\Attributes\Title;
-
-use Illuminate\Support\Facades\Mail;
 
 class CheckShow extends Component
 {
     public Check $check;
     public $employee_timesheets_total = [];
 
+    protected $listeners = ['refreshComponent' => '$refresh'];
+
     public function mount()
     {
 
-    }
-
-    public function email()
-    {
-        $paying_vendor = Vendor::findOrFail($this->check->belongs_to_vendor_id);
-
-        //10-17-2023 move to a Mail method
-        Mail::to($this->check->vendor->business_email)
-            ->cc([$paying_vendor->business_email])
-            ->send(new VendorPaymentMade($this->check->vendor, $paying_vendor, $this->check));
     }
 
     #[Title('Check')]

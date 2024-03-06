@@ -1464,18 +1464,20 @@ class ReceiptController extends Controller
         }
 
         //CREATE NEW Expense
-        //1-18-2023 FIX, 0 should be NULL on database!
         //If PO matches a project, use that project
         if(isset($receipt_account->project_id)){
             if($receipt_account->project_id === 0){
-                $receipt_account->project = NULL;
+                $receipt_account->project_id = NULL;
             }else{
-                $receipt_account->project = $receipt_account->project_id;
+                $receipt_account->project_id = $receipt_account->project_id;
             }
 
             $receipt_account->distribution_id = NULL;
         }elseif(isset($receipt_account->distribution_id)){
             $receipt_account->distribution_id = $receipt_account->distribution_id;
+            $receipt_account->project_id = NULL;
+        }else{
+            $receipt_account->distribution_id = NULL;
             $receipt_account->project_id = NULL;
         }
 

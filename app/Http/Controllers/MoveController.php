@@ -40,15 +40,19 @@ class MoveController extends Controller
 {
     public function move()
     {
-        $statuses = ProjectStatus::all();
+        //where group count is grather than one
+        $checks = Check::select('check_number', DB::raw('COUNT(*) as count'))->groupBy('check_number')->get()->where('count', '>', 1)->keyBy('check_number');
 
-        foreach($statuses as $status){
-            $status->start_date = $status->created_at->format('Y-m-d');
-            $status->timestamps = false;
-            $status->save();
-        }
+        dd($checks);
+        // $statuses = ProjectStatus::all();
 
-        dd('done');
+        // foreach($statuses as $status){
+        //     $status->start_date = $status->created_at->format('Y-m-d');
+        //     $status->timestamps = false;
+        //     $status->save();
+        // }
+
+        // dd('done');
         // //expenses where transaction->vendor != expense->vendor
         // $expenses =
         //     Expense::

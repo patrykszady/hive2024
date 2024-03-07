@@ -41,9 +41,41 @@ class MoveController extends Controller
     public function move()
     {
         //where group count is grather than one
-        $checks = Check::select('check_number', DB::raw('COUNT(*) as count'))->groupBy('check_number')->get()->where('count', '>', 1)->keyBy('check_number');
+        //groupby of group
 
-        dd($checks);
+        //https://www.positronx.io/laravel-group-by-example-groupby-value-in-laravel/
+        //read://https_www.slingacademy.com/?url=https%3A%2F%2Fwww.slingacademy.com%2Farticle%2Flaravel-eloquent-using-groupby-to-group-results-by-a-column%2F%23Advanced_Grouping_with_Having
+
+        // $banks = Bank::all()->groupBy('plaid_ins_id')->map(fn($plaid_ins_id) => $plaid_ins_id->pluck('id'));
+        // // dd($banks);
+        // // $bank_account_ids =
+        // //all bank accounts that have the inst ID
+
+        // //check belongs to bank via bank account
+
+        // //orderBy('check_number')->
+        // $checks = Check::
+        //     where('check_type', 'Check')
+        //     ->select('id', 'bank_account_id', 'check_number', DB::raw('count(*) as total'))
+        //     // ->keyBy('check_number')
+
+        //     ->groupBy('bank_account_id', 'check_number')
+        //     ->get();
+
+        // // $checks = Check::with('')
+
+
+        // // $checks = Check::all()->groupBy(function($data) {
+        // //     return $data->get()->groupBy('bank_account_id');
+        // // });
+
+        // dd($checks->first());
+
+
+
+        // select('check_number', DB::raw('COUNT(*) as count'))->groupBy('check_number')->get()->where('count', '>', 1)->keyBy('check_number');
+
+        // dd($checks);
         // $statuses = ProjectStatus::all();
 
         // foreach($statuses as $status){

@@ -60,7 +60,7 @@
                             wire:model.live="form.projects.{{$index}}.hours"
                             errorName="form.projects.{{$index}}.hours"
                             name="form.projects.{{$index}}.hours"
-                            text="{{$project->name}}"
+                            text="{!! $project->name !!}"
                             type="number"
                             hint="Hours"
                             textSize="xl"

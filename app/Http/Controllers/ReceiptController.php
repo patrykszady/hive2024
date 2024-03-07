@@ -1313,6 +1313,8 @@ class ReceiptController extends Controller
             Browsershot::html($view)
                 ->newHeadless()
                 ->format('A4')
+                // ->margins($top, $right, $bottom, $left)
+                ->margins(20, 0, 20, 20)
                 ->save($location);
         }elseif(isset($receipt->options['pdf_html'])){
             $doc_type = 'pdf';

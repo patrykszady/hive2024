@@ -66,7 +66,11 @@ class Check extends Model
         if($this->vendor_id && $this->user_id){
             $owner = $this->user->full_name;
         }elseif($this->vendor_id){
-            $owner = $this->vendor->business_name;
+            if($this->vendor){
+                $owner = $this->vendor->business_name;
+            }else{
+                $owner = $this->vendor_id;
+            }
         }elseif($this->user_id){
             $owner = $this->user->full_name;
         }else{

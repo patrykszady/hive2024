@@ -9,6 +9,7 @@ use App\Models\Vendor;
 use App\Livewire\Forms\BidForm;
 
 use Livewire\Component;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BidCreate extends Component
@@ -17,6 +18,7 @@ class BidCreate extends Component
 
     public BidForm $form;
 
+    public $bids = [];
     public $project = NULL;
     public $vendor = NULL;
 
@@ -29,6 +31,14 @@ class BidCreate extends Component
     public $modal_show = FALSE;
 
     protected $listeners = ['addBids', 'addChangeOrder', 'removeChangeOrder'];
+
+    public function rules()
+    {
+        return [
+            // 'bids.*' => 'nullable',
+            'bids.*.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
+        ];
+    }
 
     public function mount(Vendor $vendor)
     {
@@ -43,16 +53,26 @@ class BidCreate extends Component
         //     $this->form->bids[$index]['amount'] = $value;
         // }
 
-        // dd($this->bids);
-        // $this->validateOnly($field);
+        $this->validateOnly($field);
+        // $this->validate();
     }
 
     public function addBids(Project $project)
     {
         $this->project = $project;
-        $this->form->bids = $this->project->bids()->vendorBids($this->vendor->id)->with('estimate_sections')->orderBy('type')->get();
+        $this->bids =
+            $this->project->bids()
+                ->vendorBids($this->vendor->id)
+                ->with('estimate_sections')
+                ->orderBy('type')
+                ->get()
+                ->each(function ($item, $key) {
+                    if($item->amount == 0.00){
+                        $item->amount = NULL;
+                    }
+                });
 
-        if($this->form->bids->isEmpty()){
+        if($this->bids->isEmpty()){
             $bid = Bid::create([
                 'amount' => 0.00,
                 'type' => 1,
@@ -60,7 +80,8 @@ class BidCreate extends Component
                 'vendor_id' =>  $this->vendor->id,
             ]);
 
-            $this->form->bids->push($bid);
+            $bid->amount = NULL;
+            $this->bids->push($bid);
         }
 
         $this->modal_show = TRUE;
@@ -68,7 +89,7 @@ class BidCreate extends Component
 
     public function addChangeOrder()
     {
-        $bid_index = count($this->form->bids);
+        $bid_index = count($this->bids);
 
         $bid = Bid::create([
             'amount' => 0.00,
@@ -78,14 +99,14 @@ class BidCreate extends Component
         ]);
 
         $bid->amount = NULL;
-        $this->form->bids->push($bid);
+        $this->bids->push($bid);
     }
 
     public function removeChangeOrder($index)
     {
-        $bid = $this->form->bids[$index];
+        $bid = $this->bids[$index];
         $bid->delete();
-        $this->form->bids->forget($index);
+        $this->bids->forget($index);
     }
 
     public function save()

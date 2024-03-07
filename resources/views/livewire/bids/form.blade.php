@@ -15,15 +15,15 @@
         </x-cards.heading>
 
         <x-cards.body :class="'space-y-2 my-2'">
-            @foreach($form->bids as $bid_index => $bid)
+            @foreach($bids as $bid_index => $bid)
                 <div
                     class="mt-2 space-y-2"
                     >
                     {{-- ROWS --}}
                     <x-forms.row
-                        wire:model.live="form.bids.{{$bid_index}}.amount"
-                        errorName="form.bids.{{$bid_index}}.amount"
-                        name="form.bids.{{$bid_index}}.amount"
+                        wire:model.live="bids.{{$bid_index}}.amount"
+                        errorName="bids.{{$bid_index}}.amount"
+                        name="bids.{{$bid_index}}.amount"
                         text="{{$bid->name}}"
                         type="number"
                         hint="$"

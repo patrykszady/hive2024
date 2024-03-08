@@ -998,7 +998,7 @@ class ReceiptController extends Controller
                                 $expense = Expense::create([
                                     'amount' => $ocr_receipt_data['fields']['total'],
                                     'date' => $ocr_receipt_data['fields']['transaction_date'],
-                                    'project_id' => 0,
+                                    'project_id' => NULL,
                                     'distribution_id' => NULL,
                                     'vendor_id' => $expense_vendor_id,
                                     'check_id' => NULL,

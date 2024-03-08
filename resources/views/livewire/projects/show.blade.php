@@ -127,7 +127,7 @@
                         <x-cards.body>
                             {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances wrapper--}}
                             <x-lists.ul
-                                wire:target="print"
+                                wire:target="print_reimbursements"
                                 wire:loading.attr="disabled"
                                 wire:loading.class="opacity-50 text-opacity-40"
                                 >
@@ -146,12 +146,9 @@
                                 </x-lists.search_li>
 
                                 <x-lists.search_li
-                                    wire:click="print"
+                                    wire:click="print_reimbursements"
                                     :basic=true
                                     :line_title="'Reimbursements'"
-                                    {{-- href="{{route('print_reimbursment', $project->id)}}" --}}
-                                    {{-- :href_target="'blank'" --}}
-                                    href="#"
                                     :line_data="money($project->finances['reimbursments'])"
                                     >
                                 </x-lists.search_li>

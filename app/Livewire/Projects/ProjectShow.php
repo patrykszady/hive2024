@@ -29,7 +29,7 @@ class ProjectShow extends Component
     // }
 
     //Reimbursement
-    public function print()
+    public function print_reimbursements()
     {
         //11-6-2022 QUEUE THIS??
         $this->authorize('view', $this->project);
@@ -65,9 +65,10 @@ class ProjectShow extends Component
         $location = storage_path('files/reimbursements/' . $title_file . '.pdf');
 
         Browsershot::html($view)
-            ->newHeadless()
+            // ->newHeadless()
             ->scale(0.8)
             ->showBrowserHeaderAndFooter()
+            ->showBackground()
             // ->headerHtml('Header')
             // ->footerHtml('<span class="pageNumber"></span>')
             //->margins($top, $right, $bottom, $left)

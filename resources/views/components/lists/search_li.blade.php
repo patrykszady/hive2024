@@ -10,8 +10,10 @@
     'bubbleMessage' => NULL,
     'bubbleColor' => 'indigo',
     'bold' => FALSE,
-    'span' => NULL
+    'span' => NULL,
+    'left_line' => FALSE,
     ])
+
 
 {{-- {{ $attributes->merge(['class' => 'divide-y divide-gray-200']) }}    (it works on lists.ul.blade) --}}
 <li @class([
@@ -19,6 +21,7 @@
     'hover:bg-gray-50 cursor-none' => $noHover == false
     ])
     >
+
     <a
         @if(isset($attributes['wire:click']))
             href="#"
@@ -36,8 +39,12 @@
         class="block"
         >
 
-        <div class="px-4 py-4 sm:px-6">
+        <div class="relative px-4 py-4 sm:px-6">
+            @if($left_line)
+                <div class="absolute inset-y-0 left-0 w-0.5 bg-indigo-600"></div>
+            @endif
             <div @class(['items-center', 'flex' => !$basic])>
+
                 @if($checkbox)
                     <input
                         wire:model.live="{{$checkbox['name']}}.{{$checkbox['id']}}.checkbox"

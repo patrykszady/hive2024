@@ -331,11 +331,11 @@
 					{{-- 10-17-2022..make this a modal --}}
 					@foreach($expense->receipts->whereNotNull('receipt_filename') as $original_receipt)
                         <x-cards.button
-                        href="{{ route('expenses.original_receipt', $original_receipt->receipt_filename) }}"
-                        target="_blank"
-                        >
-                        Receipt
-                    </x-cards.button>
+                            href="{{ route('expenses.original_receipt', $original_receipt->receipt_filename) }}"
+                            target="_blank"
+                            >
+                            Receipt
+                        </x-cards.button>
                     @endforeach
 				</x-slot>
 			</x-cards.heading>
@@ -356,8 +356,6 @@
 
                 <x-lists.ul>
                     <x-lists.search_li
-                        {{-- :noHover=true --}}
-
                         :line_details="$line_details"
                         >
                     </x-lists.search_li>
@@ -380,6 +378,7 @@
                 @else
                     <x-cards.body>
                         <x-lists.ul>
+
                             <hr>
                                 <x-lists.search_li
                                     :basic=true

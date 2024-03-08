@@ -61,7 +61,7 @@
                     </x-cards.body>
                 </div>
 
-                @foreach ($expenses as $expense)
+                @foreach($expenses as $expense)
                     @if(isset($expense->receipt_html))
                         <div style="page-break-before: always;"></div>
                         <h1>{{ money($expense->amount) . ' for ' . $expense->business_name }}</h1>
@@ -82,6 +82,7 @@
                                             <x-cards.button
                                                 href="{{ route('expenses.original_receipt', $expense->receipt->receipt_filename) }}"
                                                 target="_blank"
+                                                :class="'rounded-md ring-2 ring-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-sm'"
                                                 >
                                                 Original Receipt
                                             </x-cards.button>
@@ -99,6 +100,12 @@
                                                     'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
                                                     ],
                                                 ];
+
+                                            if(isset($expense->receipt_items)){
+                                                $total = '<s>' . money($expense->receipt->total) . '</s> ' . ($expense->amount);
+                                            }else{
+                                                $total = money($expense->receipt->total);
+                                            }
                                         @endphp
 
                                         <x-lists.ul>
@@ -124,9 +131,10 @@
                                                 <hr>
 
                                                 {{-- FOREACH --}}
-                                                @foreach($expense->receipt->receipt_items->items as $item)
+                                                @foreach($expense->receipt->receipt_items->items as $index => $item)
                                                     <div class="border-t-4">
-                                                        @include('livewire.receipts.receipt_view')
+                                                        @include('livewire.receipts.receipt_view',
+                                                            ['split_true' => isset($expense->receipt_items) ? $expense->receipt_items[$index]['checkbox'] == true ? true : false : true])
                                                     </div>
                                                 @endforeach
 
@@ -153,7 +161,7 @@
                                         <x-lists.search_li
                                             :basic=true
                                             :line_title="'Total'"
-                                            :line_data="money($expense->receipt->total)"
+                                            :line_data="$total"
                                             >
                                         </x-lists.search_li>
                                         </x-lists.ul>

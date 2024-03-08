@@ -1,3 +1,7 @@
+@props([
+    'split_true' => false
+])
+
 @if(isset($item->valueObject))
     @php
         $line_details = [
@@ -27,8 +31,11 @@
 
     <x-lists.search_li
         {{-- :basic=true --}}
+        :left_line=$split_true
         :line_title="$item->desc"
         :line_details="$line_details"
+        :class="'text-xl text-indigo-800'"
         >
+
     </x-lists.search_li>
 @endif

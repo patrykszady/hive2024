@@ -202,6 +202,7 @@ class ExpenseSplitsCreate extends Component
 
     public function split_store()
     {
+        // dd($this->expense_splits);
         $this->validate();
 
         if(round($this->expense_total - $this->splits_total, 2) != 0.0){

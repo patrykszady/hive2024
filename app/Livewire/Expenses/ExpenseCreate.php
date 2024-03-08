@@ -102,6 +102,7 @@ class ExpenseCreate extends Component
         $this->expense_splits = $saved_splits;
         $this->splits = TRUE;
         $this->split = TRUE;
+        $this->form->split = TRUE;
     }
 
     public function newExpense($amount)

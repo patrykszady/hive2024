@@ -27,7 +27,6 @@ class ExpenseForm extends Form
     #[Validate]
     public $split = FALSE;
 
-
     #[Validate('required|numeric|regex:/^-?\d+(\.\d{1,2})?$/')]
     public $amount = NULL;
 
@@ -260,12 +259,12 @@ class ExpenseForm extends Form
         ];
     }
 
-    public function save_splits($expense_id)
+    public function save_splits(Expense $expense)
     {
         $expense_details = $this->expenseDetails();
         //if no splits / splits removed and project/distrubtuion entered...
-        if(!$this->expense->splits->isEmpty() && (!is_null($expense_details['project_id']) || !is_null($expense_details['distribution_id']))){
-            foreach($this->expense->splits as $split_to_remove){
+        if(!$expense->splits->isEmpty() && (!is_null($expense_details['project_id']) || !is_null($expense_details['distribution_id']))){
+            foreach($expense->splits as $split_to_remove){
                 $split_to_remove = ExpenseSplits::findOrFail($split_to_remove->id);
                 $split_to_remove->delete();
             }
@@ -283,7 +282,7 @@ class ExpenseForm extends Form
                     $update_split = ExpenseSplits::findOrFail($split['id']);
                     $update_split->update([
                         'amount' => $split['amount'],
-                        'expense_id' => $expense_id,
+                        'expense_id' => $expense->id,
                         'project_id' => $project_id,
                         'distribution_id' => $distribution_id,
                         'reimbursment' => isset($split['reimbursment']) ? $split['reimbursment'] : NULL,
@@ -295,7 +294,7 @@ class ExpenseForm extends Form
                 }else{
                     $split = ExpenseSplits::create([
                         'amount' => $split['amount'],
-                        'expense_id' => $expense_id,
+                        'expense_id' => $expense->id,
                         'project_id' => $project_id,
                         'distribution_id' => $distribution_id,
                         'reimbursment' => isset($split['reimbursment']) ? $split['reimbursment'] : NULL,
@@ -353,7 +352,7 @@ class ExpenseForm extends Form
 
         //check...
 
-        $this->save_splits($this->expense->id);
+        $this->save_splits($this->expense);
 
         if($this->receipt_file){
             $this->upload_receipt_file($this->expense->amount, $this->expense->id);

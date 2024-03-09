@@ -1,9 +1,13 @@
 {{-- TOP LOGO --}}
 <div class="flex items-center h-16 mt-1 shrink-0">
-    <a href="{{ route('dashboard') }}">
+    <a
+        wire:navigate.hover
+        href="{{ route('dashboard') }}">
         <img class="w-auto h-12 mx-auto" src="{{ asset('favicon.png') }}" alt="{{ env('APP_NAME') }}">
     </a>
-    <a href="{{ route('dashboard') }}">
+    <a
+        wire:navigate.hover
+        href="{{ route('dashboard') }}">
         <h3 class="pl-3">Hive Contractors</h3>
     </a>
 </div>

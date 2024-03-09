@@ -35,8 +35,6 @@
         @if($hrefTarget)
             target="{{$hrefTarget}}"
         @endif
-
-        class="block"
         >
 
         <div class="relative px-4 py-4 sm:px-6">

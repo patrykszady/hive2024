@@ -2147,6 +2147,8 @@ class ReceiptController extends Controller
 
     public function menards()
     {
+
+        // dd($solver);
         //Browsershot
 
         // $estimate = $this->estimate;
@@ -2165,39 +2167,62 @@ class ReceiptController extends Controller
         // // ->pdf();
         // ->save('example.pdf');
 
+        // $solver = new \TwoCaptcha\TwoCaptcha('df7bdb76483ee8f1082eb612568fe1da');
+
+        // try{
+        //     $result = $solver->recaptcha([
+        //         'sitekey' => '6LfD3PIbAAAAAJs_eEHvoOl75_83eXSqpPSRFJ_u',
+        //         'url'     => 'https://2captcha.com/demo/recaptcha-v2',
+        //     ]);
+        // }catch (\Exception $e){
+        //     die($e->getMessage());
+        // }
+
+        // dd('Captcha solved: ' . $result->code);
+
+        $html = Browsershot::url('https://www.menards.com/main/login.html')
+            ->addChromiumArguments(["no-sandbox"])
+            ->newHeadless()
+            ->waitUntilNetworkIdle()
+            // ->savePdf('exampleMenards.pdf');
+            ->bodyHtml();
+
+        dd($html);
+        print_r($html);
+        dd('done');
 
 
-
-        // dd('done');
-
-
-
-
-        $puppeteer = new Puppeteer([
-            'js_extra' => /** @lang JavaScript */
-            "
-                const puppeteer = require('puppeteer-extra');
-                const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-                puppeteer.use(StealthPlugin());
-                instruction.setDefaultResource(puppeteer);
-            "
-        ]);
+        $puppeteer = new Puppeteer;
+        // $puppeteer = new Puppeteer([
+        //     'js_extra' => /** @lang JavaScript */
+        //     "
+        //         const puppeteer = require('puppeteer-extra');
+        //         const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+        //         puppeteer.use(StealthPlugin());
+        //         instruction.setDefaultResource(puppeteer);
+        //     "
+        // ]);
 
         $browser = $puppeteer->launch();
 
         $page = $browser->newPage();
         $page->goto('https://www.menards.com/main/login.html');
-        $page->waitForTimeout(500);
+        $page->waitForTimeout(3000);
 
-        $page->type('#username', 'patryk@gs.construction');
-        $page->type('#login-password', 'Pilka123#');
-        $page->waitForTimeout(1000);
-        $page->click('#loginForm > button');
-        $page->waitForTimeout(500);
+        // $page->type('#username', 'patryk@gs.construction');
+        // $page->type('#login-password', 'Pilka123#');
+        // $page->waitForTimeout(1000);
+        // $page->click('#loginForm > button');
+        // $page->waitForTimeout(2000);
 
-        $page->screenshot(['path' => 'example_captcha_screen.png']);
-
+        // dd($page->html());
+        dd($page->content());
+        // $page->screenshot(['path' => 'example_captcha_screen.png']);
+        $browser->close();
         dd('done');
+
+
+
         //solve reCAPCHA if challenged
         // $solver = new \TwoCaptcha\TwoCaptcha(env('2CAPTCHA_API'));
         // $result = $solver->recaptcha([

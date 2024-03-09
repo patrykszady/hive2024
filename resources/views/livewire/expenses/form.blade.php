@@ -34,7 +34,7 @@
                     autofocus
                     {{-- disabled if $amount isset... AND not in Edit... or if expense transactions are complete/= expense.amount --}}
                     {{-- expense_transactions ||  --}}
-                    x-bind:disabled="save_form == 'save'"
+                    x-bind:disabled="save_form == 'save' || expense_transactions"
                     >
                 </x-forms.row>
             </div>

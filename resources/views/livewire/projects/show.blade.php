@@ -67,12 +67,11 @@
 			</x-cards.wrapper>
 
             @can('update', $project)
-			    <livewire:project-status.status-create :project="$project"/>
+			    <livewire:project-status.status-create lazy :project="$project"/>
             @endcan
 
 			@if(!$project->expenses->isEmpty())
-                {{-- <livewire:expenses.expense-index :project="$project" :view="'projects.show'"/> --}}
-				@livewire('expenses.expense-index', ['project' => $project->id, 'view' => 'projects.show'])
+                <livewire:expenses.expense-index :project="$project->id" :view="'projects.show'"/>
 			@endif
 		</div>
 
@@ -286,6 +285,6 @@
 		@endcan
 	</div>
 
-    <livewire:bids.bid-create :project="$project" :vendor="auth()->user()->vendor"/>
+    <livewire:bids.bid-create lazy :project="$project" :vendor="auth()->user()->vendor"/>
 </div>
 

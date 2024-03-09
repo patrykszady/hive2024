@@ -250,8 +250,6 @@ class ExpenseCreate extends Component
             return $this->addError('no_splits', 'Splits required if Project is Split');
         }
 
-        // dd($this);
-
         $expense = $this->form->update();
 
         $this->modal_show = FALSE;
@@ -298,31 +296,13 @@ class ExpenseCreate extends Component
             return $this->addError('no_splits', 'Splits required if Project is Split');
         }
         // return $this->dispatch('validateCheck')->to(CheckCreate::class);
-        // dd(collect($this->expense_splits));
         $expense = $this->form->store();
 
         $this->modal_show = FALSE;
 
-        // if(isset($this->transaction)){
-        //     if(!$this->transaction->vendor_id){
-        //         $this->transaction->vendor_id = $expense->vendor_id;
-        //     }
-        //     $this->transaction->expense_id = $expense->id;
-        //     $this->transaction->check_id = $check_id;
-        //     $this->transaction->save();
-        // }
-
-        // if($this->receipt_file){
-        //     $this->upload_receipt_file($expense->amount, $expense->id);
-        // }
-
-
         $this->resetModal();
 
-        // $this->dispatch('resetSplits')->to('expenses.expenses-splits-form');
-        // $this->dispatch('resetSplits');
-
-        //emit and refresh so expenses-new-form removes/refreshes
+        //dispatch and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->dispatch('refreshComponent')->to('expenses.expense-show');
@@ -340,7 +320,6 @@ class ExpenseCreate extends Component
         $this->authorize('create', Expense::class);
 
         $vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
-
         $distributions = Distribution::all(['id', 'name']);
         $team_members = auth()->user()->vendor->users()->employed();
         $employees = $team_members->get();
@@ -357,7 +336,6 @@ class ExpenseCreate extends Component
 
         return view('livewire.expenses.form', [
             'vendors' => $vendors,
-            // 'projects' => $projects,
             'distributions' => $distributions,
             'employees' => $employees,
             'via_vendor_employees' => $via_vendor_employees,

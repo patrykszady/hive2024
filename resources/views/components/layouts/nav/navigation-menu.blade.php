@@ -18,7 +18,10 @@
             @can('viewAny', App\Models\Bank::class)
                 @if(!auth()->user()->vendor->banks()->whereNotNull('plaid_access_token')->get()->where('plaid_options.error', '!=', FALSE)->isEmpty())
                     <li>
-                        <a href="{{route('banks.index')}}" class="flex p-2 text-sm leading-6 text-red-400 rounded-md hover:text-white hover:bg-red-700 group gap-x-3">
+                        <a
+                            wire:navigate.hover
+                            href="{{route('banks.index')}}" class="flex p-2 text-sm leading-6 text-red-400 rounded-md hover:text-white hover:bg-red-700 group gap-x-3"
+                            >
                             <svg class="w-6 h-6 text-red-400 shrink-0 group-hover:text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
                             </svg>
@@ -33,7 +36,9 @@
                 <ul role="list" class="-mx-2 space-y-1">
                     <li>
                         <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
-                        <a href="{{route('dashboard')}}"
+                        <a
+                            href="{{route('dashboard')}}"
+                            wire:navigate
                             @class(['flex p-2 text-sm leading-6 text-gray-700 rounded-md group gap-x-3 hover:bg-gray-50', 'bg-gray-50' => request()->routeIs('dashboard')])
                             >
                             <svg class="w-6 h-6 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -46,7 +51,9 @@
                     </li>
                     <li>
                         <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
-                        <a href="{{route('projects.index')}}"
+                        <a
+                            wire:navigate.hover
+                            href="{{route('projects.index')}}"
                             @class(['flex p-2 text-sm leading-6 text-gray-700 font-semibold rounded-md group gap-x-3 hover:bg-gray-50', 'bg-gray-50' => request()->routeIs('projects.*')])
                             >
                             <svg class="w-6 h-6 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -89,7 +96,9 @@
                         <ul class="px-2 mt-1" id="sub-menu-1" x-show="expanded_expenses" x-collapse>
                             <li>
                                 <!-- 44px -->
-                                <a href="{{route('expenses.index')}}"
+                                <a
+                                    wire:navigate.hover
+                                    href="{{route('expenses.index')}}"
                                     @class(['block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9', 'bg-gray-200 border-2 border-indigo-500' => request()->routeIs('expenses.index')])
                                     >
                                     All Expenses
@@ -97,7 +106,9 @@
                             </li>
                             <li>
                                 <!-- 44px -->
-                                <a href="{{route('checks.index')}}"
+                                <a
+                                    wire:navigate.hover
+                                    href="{{route('checks.index')}}"
                                     @class(['block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9', 'bg-gray-200 border-2 border-indigo-400' => request()->routeIs('checks.index')])
                                     >
                                     Checks
@@ -135,16 +146,18 @@
                         <!-- Expandable link section, show/hide based on state. -->
                         <ul class="px-2 mt-1" id="sub-menu-2" x-show="expanded_vendors" x-collapse>
                             <li>
-                                <!-- 44px -->
-                                <a href="{{route('vendors.index')}}"
+                                <a
+                                    wire:navigate.hover
+                                    href="{{route('vendors.index')}}"
                                     class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                     All Vendors
                                 </a>
                             </li>
                             @can('create', App\Models\Vendor::class)
                             <li>
-                                <!-- 44px -->
-                                <a href="{{route('vendor_docs.index')}}"
+                                <a
+                                    wire:navigate.hover
+                                    href="{{route('vendor_docs.index')}}"
                                     class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                     Insurance Certificates
                                 </a>
@@ -182,15 +195,17 @@
                         <!-- Expandable link section, show/hide based on state. -->
                         <ul class="px-2 mt-1" id="sub-menu-3" x-show="expanded_timesheets" x-collapse>
                             <li>
-                                <!-- 44px -->
-                                <a href="{{route('hours.create')}}"
+                                <a
+                                    wire:navigate.hover
+                                    href="{{route('hours.create')}}"
                                     class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                     Hours
                                 </a>
                             </li>
                             <li>
-                                <!-- 44px -->
-                                <a href="{{route('timesheets.index')}}"
+                                <a
+                                    wire:navigate.hover
+                                    href="{{route('timesheets.index')}}"
                                     class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                     Timesheets
                                 </a>
@@ -198,8 +213,9 @@
 
                             @can('viewPayment', App\Models\Timesheet::class)
                             <li>
-                                <!-- 44px -->
-                                <a href="{{route('timesheets.payments')}}"
+                                <a
+                                    wire:navigate.hover
+                                    href="{{route('timesheets.payments')}}"
                                     class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                     Payments
                                 </a>
@@ -210,7 +226,9 @@
 
                     <li>
                         <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
-                        <a href="{{route('clients.index')}}"
+                        <a
+                            wire:navigate.hover
+                            href="{{route('clients.index')}}"
                             @class(['flex p-2 text-sm font-semibold leading-6 text-gray-700 rounded-md group gap-x-3 hover:bg-gray-50', 'bg-gray-50' => request()->routeIs('clients.*')])
                             >
                             <svg class="w-6 h-6 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -253,22 +271,25 @@
                             <!-- Expandable link section, show/hide based on state. -->
                             <ul class="px-2 mt-1" id="sub-menu-4" x-show="expanded_finances" x-collapse>
                                 <li>
-                                    <!-- 44px -->
-                                    <a href="{{route('distributions.index')}}"
+                                    <a
+                                        wire:navigate.hover
+                                        href="{{route('distributions.index')}}"
                                         class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                         Distributions
                                     </a>
                                 </li>
                                 <li>
-                                    <!-- 44px -->
-                                    <a href="{{route('banks.index')}}"
+                                    <a
+                                        wire:navigate.hover
+                                        href="{{route('banks.index')}}"
                                         class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                         Banks
                                     </a>
                                 </li>
                                 <li>
-                                    <!-- 44px -->
-                                    <a href="{{route('company_emails.index')}}"
+                                    <a
+                                        wire:navigate.hover
+                                        href="{{route('company_emails.index')}}"
                                         class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                         Company Emails
                                     </a>
@@ -308,16 +329,18 @@
                             <!-- Expandable link section, show/hide based on state. -->
                             <ul class="px-2 mt-1" id="sub-menu-5" x-show="expanded_global_actions" x-collapse>
                                 <li>
-                                    <!-- 44px -->
-                                    <a href="{{route('transactions.match_vendor')}}"
+                                    <a
+                                        wire:navigate.hover
+                                        href="{{route('transactions.match_vendor')}}"
                                         class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                         Match Transaction/Vendor
                                     </a>
                                 </li>
                                 @can('viewAny', App\Models\TransactionBulkMatch::class)
                                 <li>
-                                    <!-- 44px -->
-                                    <a href="{{route('transactions.bulk_match')}}"
+                                    <a
+                                        wire:navigate.hover
+                                        href="{{route('transactions.bulk_match')}}"
                                         class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                         Transaction Match
                                     </a>

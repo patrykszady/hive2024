@@ -3,9 +3,6 @@
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
-use App\Models\ProjectStatus;
-
-use Spatie\Browsershot\Browsershot;
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -13,12 +10,13 @@ use Livewire\Attributes\Title;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+use Spatie\Browsershot\Browsershot;
+
 class ProjectShow extends Component
 {
     use AuthorizesRequests;
 
     public Project $project;
-
     public $finances = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -28,7 +26,7 @@ class ProjectShow extends Component
     //     dd($this->project->client->name);
     // }
 
-    //Reimbursement
+    //Reimbursement print
     public function print_reimbursements()
     {
         //11-6-2022 QUEUE THIS??

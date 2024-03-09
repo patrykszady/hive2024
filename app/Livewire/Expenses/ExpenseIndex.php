@@ -10,6 +10,7 @@ use App\Models\Distribution;
 use App\Models\Transaction;
 
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 
 use Livewire\WithPagination;
@@ -17,6 +18,7 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+#[Lazy]
 class ExpenseIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -50,11 +52,12 @@ class ExpenseIndex extends Component
         $this->resetPage('transactions_page');
     }
 
-    public function updated($field)
+    public function updated($field, $value)
     {
-        // if($field == 'project'){
-        //     $this->vendor = NULL;
-        // }
+        // && $value == 'NO_PROJECT'
+        if($field == 'project'){
+            $this->vendor = NULL;
+        }
 
         // if($field == 'vendor'){
         //     $this->project = NULL;
@@ -66,9 +69,15 @@ class ExpenseIndex extends Component
         $this->banks = Bank::with('accounts')->get()->groupBy('plaid_ins_id')->toBase();
     }
 
+    // public function placeholder(array $params = [])
+    // {
+    //     return view('livewire.placeholders.skeleton', $params);
+    // }
+
     #[Title('Expenses')]
     public function render()
     {
+        // dd($this->project);
         $this->authorize('viewAny', Expense::class);
 
         if($this->view == NULL){
@@ -153,22 +162,18 @@ class ExpenseIndex extends Component
         }
 
         $expenses->getCollection()->each(function ($expense, $key){
-            //|| isset($expense->check_id)
-            // $expense->project_id != NULL || $expense->distribution != NULL ||
-            //|| $expense->splits->isNotEmpty()
             if($expense->check){
                 if($expense->check->transactions->isNotEmpty()){
                     $expense->status = 'Complete';
                 }else{
-                    $expense->status = 'No Transactions';
+                    $expense->status = 'No Transaction';
                 }
-            //|| isset($expense->check_id)
-            }elseif($expense->transactions->isNotEmpty() && $expense->project->project_name != 'NO PROJECT'){
+            }elseif(($expense->transactions->isNotEmpty() && $expense->project->project_name != 'NO PROJECT') || ($expense->paid_by != NULL && $expense->project->project_name != 'NO PROJECT')){
                 $expense->status = 'Complete';
             }else{
                 if($expense->project->project_name != 'NO PROJECT' && $expense->transactions->isEmpty()){
-                    $expense->status = 'No Transactions';
-                }elseif($expense->project->project_name == 'NO PROJECT' && $expense->transactions->isNotEmpty()){
+                    $expense->status = 'No Transaction';
+                }elseif($expense->project->project_name == 'NO PROJECT' && ($expense->transactions->isNotEmpty() || $expense->paid_by != NULL)){
                     $expense->status = 'No Project';
                 }else{
                     $expense->status = 'Missing Info';
@@ -177,9 +182,12 @@ class ExpenseIndex extends Component
         });
 
         //where vendor is in result
-        // || $this->project == ""
-        if(is_null($this->project)){
+        if(empty($this->project)){
             $vendors = Vendor::whereHas('expenses')->orWhereHas('transactions')->orderBy('business_name')->get();
+        }elseif($this->project == 'NO_PROJECT'){
+            //pluck all project expense vendors
+            $project_vendor_ids = Expense::where('project_id', NULL)->where('distribution_id', NULL)->whereDoesntHave('splits')->groupBy('vendor_id')->pluck('vendor_id')->toArray();
+            $vendors = Vendor::whereIn('id', $project_vendor_ids)->get();
         }else{
             //pluck all project expense vendors
             $project_vendor_ids = Expense::where('project_id', $this->project)->groupBy('vendor_id')->pluck('vendor_id')->toArray();

@@ -1,4 +1,4 @@
-<x-modals.modal :class="'max-w-lg'">
+<x-dialog.panel>
     <form wire:submit="{{$view_text['form_submit']}}">
         <x-cards.heading>
             <x-slot name="left">
@@ -12,7 +12,7 @@
             </x-slot>
         </x-cards.heading>
 
-        <x-cards.body :class="'space-y-4 my-4'">
+        <x-cards.body :class="'space-y-2 my-4'">
             {{-- CLIENT ID --}}
             <x-forms.row
                 wire:model.live="form.client_id"
@@ -104,4 +104,5 @@
             </div> --}}
         </x-cards.footer>
     </form>
-</x-modals.modal>
+</x-dialog.panel>
+

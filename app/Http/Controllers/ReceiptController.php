@@ -866,6 +866,7 @@ class ReceiptController extends Controller
                             $ocr_path = 'files/_temp_ocr/' . $ocr_filename;
 
                             $document_model = $this->azure_document_model($doc_type, $ocr_path);
+
                             $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
                             //pass receipt info from ocr_receipt_extracted to ocr_extract method
                             $ocr_receipt_data = $this->ocr_extract($ocr_receipt_extracted);
@@ -1713,6 +1714,8 @@ class ReceiptController extends Controller
                 $transaction_date = $key_value_pairs->where('key.content', 'Order Date')->first()->value->content;
             }elseif(!$key_value_pairs->where('key.content', 'Completed Date:')->isEmpty()){
                 $transaction_date = $key_value_pairs->where('key.content', 'Completed Date:')->first()->value->content;
+            }elseif(!$key_value_pairs->where('key.content', 'ORDER DATE')->isEmpty()){
+                $transaction_date = $key_value_pairs->where('key.content', 'ORDER DATE')->first()->value->content;
             }else{
                 $transaction_date = NULL;
             }

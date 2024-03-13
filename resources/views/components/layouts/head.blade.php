@@ -60,6 +60,7 @@
     {{-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> --}}
     <!-- https://www.chartjs.org/ -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+    <script defer src="https://unpkg.com/@alpinejs/ui@3.13.7-beta.0/dist/cdn.min.js"></script>
 
     @stack('custom_styles')
 

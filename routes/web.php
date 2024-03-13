@@ -33,6 +33,8 @@ use App\Livewire\Distributions\DistributionsShow;
 use App\Livewire\Clients\ClientsIndex;
 use App\Livewire\Clients\ClientsShow;
 
+use App\Livewire\ShowPosts;
+
 use App\Livewire\Timesheets\TimesheetsIndex;
 use App\Livewire\Timesheets\TimesheetCreate;
 use App\Livewire\Timesheets\TimesheetShow;
@@ -154,6 +156,9 @@ Route::get('transactions/bulk_match', BulkMatch::class)->name('transactions.bulk
 Route::middleware(['auth', 'user.vendor'])->group(function(){
     //DASHBOARD/ PRIMARY VENDOR
     Route::get('/dashboard', DashboardShow::class)->name('dashboard');
+
+    Route::get('/signup', ShowPosts::class)->name('signup');
+
 
     //USERS
     // Route::get('/users/{user}', UsersShow::class)->name('users.show');

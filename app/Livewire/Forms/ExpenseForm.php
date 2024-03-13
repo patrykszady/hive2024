@@ -163,7 +163,7 @@ class ExpenseForm extends Form
         'receipt_file.required_if' => 'Receipt is required if Expense is Reimbursed or has Splits',
     ];
 
-    public function setExpense(Expense $expense)
+    public function setExpense($expense)
     {
         $this->expense = $expense;
 

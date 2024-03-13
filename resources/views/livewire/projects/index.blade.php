@@ -6,14 +6,17 @@
                 <h1>Projects</h1>
             </x-slot>
 
-            {{-- @dd(isset($client)) --}}
             <x-slot name="right">
                 @can('create', App\Models\Project::class)
-                    <x-cards.button
-                        wire:click="$dispatchTo('projects.project-create', 'newProject', { client_id: '{{$client_id}}' })"
-                        >
-                        Create Project
-                    </x-cards.button>
+                    <x-dialog>
+                        {{-- wire:click="$parent.newProject({{$client_id}})" --}}
+                        <x-dialog.button wire:click="$dispatchTo('projects.project-create', 'newProject', { client_id: '{{$client_id}}' })">
+                            Create Project
+                        </x-dialog.button>
+
+                       {{-- NEW PROJECT MODAL --}}
+                       <livewire:projects.project-create :$clients />
+                    </x-dialog>
                 @endcan
             </x-slot>
         </x-cards.heading>
@@ -141,8 +144,4 @@
             {{ $projects->links() }}
         </x-cards.footer>
     </x-cards.wrapper>
-
-    {{-- NEW PROJECT MODAL --}}
-    {{-- :client_id="$client_id" --}}
-    <livewire:projects.project-create :clients="$clients"/>
 </div>

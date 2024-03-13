@@ -25,7 +25,7 @@ class ProjectCreate extends Component
     public $clients;
     public $client_addresses = [];
 
-    public $modal_show = FALSE;
+    // public $modal_show = FALSE;
 
     protected $listeners = ['newProject'];
 
@@ -100,8 +100,8 @@ class ProjectCreate extends Component
 
     public function newProject($client_id)
     {
-        $this->resetModal();
-        $this->resetAddress();
+        // $this->resetModal();
+        // $this->resetAddress();
 
         $client = $this->clients->where('id', $client_id)->first();
 
@@ -139,7 +139,7 @@ class ProjectCreate extends Component
             }
         }
 
-        $this->modal_show = TRUE;
+        // $this->modal_show = TRUE;
     }
 
     public function save()

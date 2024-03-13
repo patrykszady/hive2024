@@ -41,9 +41,9 @@
                         {{-- 08-30-2023 combine into 1 --}}
                         <input
                             {{-- debounce.750ms --}}
-                            wire:model.live="amount"
+                            wire:model.live.debounce.1000ms="amount"
                             type="number"
-                            inputmode="decimal"
+                            inputmode="numeric"
                             {{-- pattern="[-+,0-9.]*" --}}
                             step="0.01"
                             name="mobile-search-candidate"
@@ -53,7 +53,7 @@
                             autocomplete="mobile-search-candidate"
                             >
                         <input
-                            wire:model.live="amount"
+                            wire:model.live.debounce.1000ms="amount"
                             type="number"
                             inputmode="numeric"
                             step="0.01"

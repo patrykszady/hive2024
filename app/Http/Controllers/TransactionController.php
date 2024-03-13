@@ -931,7 +931,7 @@ class TransactionController extends Controller
                 ->whereNull('deleted_at')
                 ->where('belongs_to_vendor_id', $hive_vendor->id)
                 ->whereNotNull('vendor_id')
-                // ->whereId('20678')
+                // ->whereId('21228')
                 //where transacitons->sum != $expense(item)->sum  \\ whereNull checked_at (transactions add up to expense)
                 ->whereDate('date', '>=', Carbon::now()->subMonths(3))
                 ->get();
@@ -1016,7 +1016,6 @@ class TransactionController extends Controller
                     }else{
                         if(!$expense->receipts->isEmpty()){
                             // dd($expense);
-                            // dd('if');
                             //where amount != $expense->amount
 
                             foreach($transactions as $transaction){
@@ -1062,7 +1061,7 @@ class TransactionController extends Controller
                             $n = sizeof($arr);
                             $ids = $transaction_ids;
 
-                            $results = collect($this->subsetSums($arr, $n, $ids, 'expense'))->sortBy('sum');
+                            $results = collect($this->subsetSums($arr, $n, $ids, 'transaction'))->sortBy('sum');
 
                             foreach($results as $key => $result) {
                                 $sum = number_format($result['sum'], 2, '.', '');
@@ -1076,8 +1075,9 @@ class TransactionController extends Controller
 
                             if(isset($transaction_results['transactions'])){
                                 $transaction_results = collect($transaction_results['transactions']);
+
                                 foreach($transaction_results as $transaction){
-                                    $transaction = Transaction::findOrFail($transaction['client_payment_id']);
+                                    $transaction = Transaction::findOrFail($transaction['transaction_id']);
                                     $transaction->expense()->associate($expense);
                                     $transaction->save();
                                 }

@@ -5,7 +5,7 @@
     <body class="h-full">
         <div x-cloak x-data="{ sidebarOpen: false }" @keydown.window.escape="sidebarOpen = false">
             <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
-            <div x-show="sidebarOpen" class="relative z-50 md:hidden" role="dialog" aria-modal="true">
+            <div x-show="sidebarOpen" class="relative z-30 md:hidden" role="dialog" aria-modal="true">
                 <!--
                 Off-canvas menu backdrop, show/hide based on off-canvas menu state.
 
@@ -75,7 +75,7 @@
             </div>
 
             <!-- Static sidebar for desktop -->
-            <div class="hidden md:fixed md:inset-y-0 md:z-50 md:flex md:w-72 md:flex-col noprint">
+            <div class="hidden md:fixed md:inset-y-0 md:z-10 md:flex md:w-72 md:flex-col noprint">
                 <!-- Sidebar component, swap this element with another sidebar if you like -->
                 <div class="flex flex-col px-6 overflow-y-auto bg-white border-r border-gray-200 md:h-screen grow gap-y-5">
                     @include('components.layouts.nav.navigation-menu')
@@ -84,7 +84,7 @@
 
             {{-- if modal opened hide... --}}
             {{-- tob bar on mobile --}}
-            <div class="sticky top-0 z-40 flex items-center px-4 py-4 bg-white shadow-sm gap-x-6 sm:px-6 md:hidden noprint">
+            <div class="sticky top-0 z-20 flex items-center px-4 py-4 bg-white shadow-sm gap-x-6 sm:px-6 md:hidden noprint">
                 <button type="button" class="-m-2.5 p-2.5 text-gray-700 md:hidden" x-on:click="sidebarOpen = true">
                     <span class="sr-only">Open sidebar</span>
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -95,7 +95,7 @@
                 </button>
                 <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">Dashboard</div>
                 <a href="{{ route('dashboard') }}">
-                    <span class="sr-only">Your profile</span>
+                    <span class="sr-only">Your dashboard</span>
                     <img class="w-8 h-8 rounded-full" src="{{ asset('favicon.png') }}" alt="{{ env('APP_NAME') }}">
                 </a>
             </div>

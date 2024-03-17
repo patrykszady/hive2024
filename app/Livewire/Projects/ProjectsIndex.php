@@ -46,7 +46,6 @@ class ProjectsIndex extends Component
     #[Title('Projects')]
     public function render()
     {
-
         $this->authorize('viewAny', Project::class);
 
         if(!is_null($this->client)){

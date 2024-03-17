@@ -3,7 +3,7 @@
     x-dialog
     x-model="open"
     style="display: none"
-    class="fixed inset-0 z-50 overflow-y-auto text-left"
+    class="fixed inset-0 z-50 overflow-y-auto"
     >
     <!-- Overlay -->
     <div x-dialog:overlay x-transition.opacity class="fixed inset-0 bg-black bg-opacity-50"></div>
@@ -13,7 +13,7 @@
         <div
             x-dialog:panel
             x-transition.in x-transition.out.opacity
-            class="relative w-full max-w-2xl overflow-y-auto bg-white rounded-lg shadow-lg"
+            class="relative w-full max-w-2xl overflow-y-auto bg-white shadow-lg rounded-xl"
             >
             <!-- Close Button -->
             {{-- <div class="absolute top-0 right-0 pt-4 pr-4">

@@ -37,10 +37,8 @@ class BidCreate extends Component
     public function rules()
     {
         return [
+            // 'bids.*' => 'nullable',
             'bids.*.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
-            'bids.*.type' => 'required|numeric',
-            'bids.*.project_id' => 'required|numeric',
-            'bids.*.vendor_id' => 'required|numeric',
         ];
     }
 
@@ -62,7 +60,7 @@ class BidCreate extends Component
                 });
 
         if($this->bids->isEmpty()){
-            $bid = Bid::make([
+            $bid = Bid::create([
                 'amount' => 0.00,
                 'type' => 1,
                 'project_id' => $this->project->id,
@@ -95,13 +93,14 @@ class BidCreate extends Component
     {
         $bid_index = count($this->bids);
 
-        $bid = Bid::make([
-            'amount' => NULL,
+        $bid = Bid::create([
+            'amount' => 0.00,
             'type' => $bid_index + 1,
             'project_id' => $this->project->id,
             'vendor_id' => $this->vendor->id,
         ]);
 
+        $bid->amount = NULL;
         $this->bids->push($bid);
     }
 
@@ -109,13 +108,15 @@ class BidCreate extends Component
     {
         $bid = $this->bids[$index];
         $bid->delete();
-
         $this->bids->forget($index);
     }
 
     public function save()
     {
         $this->form->store();
+
+        $this->mount($this->vendor);
+        $this->render();
 
         // $route_name = app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName();
         // //09-01-2023 should be just one component $refresh..
@@ -133,14 +134,12 @@ class BidCreate extends Component
 
         $this->dispatch('updateProjectBids', $this->project->id)->to('vendors.vendor-payment-create');
         $this->dispatch('refreshComponent')->to('projects.project-show');
-
         $this->dispatch('notify',
             type: 'success',
             content: 'Bids Updated'
         );
 
-        //reset
-        $this->showModal = FALSE;
+        $this->modal_show = FALSE;
     }
 
     public function render()

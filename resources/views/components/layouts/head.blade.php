@@ -63,5 +63,4 @@
     <script defer src="https://unpkg.com/@alpinejs/ui@3.13.7-beta.0/dist/cdn.min.js"></script>
 
     @stack('custom_styles')
-
 </head>

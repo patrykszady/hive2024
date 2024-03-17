@@ -1,19 +1,4 @@
 <div class="bg-white rounded-xl shadow p-8 flex flex-col gap-6 min-w-[35rem]">
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-
     <div>
         <h2 class="mb-1 text-3xl font-bold">Let's start your journey!</h2>
         <span class="pb-2 text-lg text-slate-600">Sign up for a new account</span>
@@ -36,7 +21,9 @@
         <input type="password" class="px-3 py-2 border rounded-lg border-slate-300">
     </label>
 
-    <button wire:click="openModal">Open Modal</button>
+    <button type="button" wire:click="openModal">
+        Open modal from component
+    </button>
 
     <div class="flex items-center justify-between pt-4">
         <div class="flex items-center justify-start gap-2 text-sm">
@@ -84,12 +71,10 @@
                     </div>
 
                     <x-modal.close-button>
-                        <button class="w-1/2 px-3 py-2 font-medium text-center text-white bg-blue-500 rounded-xl">Cancel</button>
+                        <button class="w-1/2 px-3 py-2 font-medium text-center text-white bg-blue-500 rounded-xl">Close</button>
                     </x-modal.close-button>
                 </x-modal.panel>
             </x-modal>
-
-
         </div>
 
         <button class="w-1/2 px-3 py-2 font-medium text-center text-white bg-blue-500 rounded-xl">Register</button>

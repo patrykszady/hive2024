@@ -117,11 +117,23 @@
 
                             <x-slot name="right">
                                 <x-cards.button
-                                    wire:click="$dispatchTo('bids.bid-create', 'addBids', { project: {{$project->id}} })"
+                                    wire:click="$dispatchTo('bids.bid-create', 'addBids')"
+                                    {{-- wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50" --}}
                                     >
                                     Edit Bid
                                 </x-cards.button>
+                                {{-- <button
+                                    type="button"
+                                    , { project: {{$project->id}} }
+                                    wire:click="$dispatchTo('bids.bid-create', 'addBids')"
+                                    >
+                                    Edit Bid
+                                <button> --}}
+                                    <livewire:bids.bid-create :project="$project" :vendor="auth()->user()->vendor"/>
                             </x-slot>
+
+
                         </x-cards.heading>
                         <x-cards.body>
                             {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances wrapper--}}
@@ -245,6 +257,7 @@
                             @can('create', App\Models\Payment::class)
                             <x-slot name="right">
                                 {{-- 12-09-22 modal not page reload --}}
+                                {{-- wire:navigate.hover --}}
                                 <x-cards.button href="{{route('payments.create', $project->client->id)}}">
                                     Add Payment
                                 </x-cards.button>
@@ -285,6 +298,6 @@
 		@endcan
 	</div>
 
-    <livewire:bids.bid-create lazy :project="$project" :vendor="auth()->user()->vendor"/>
+
 </div>
 

@@ -19,7 +19,7 @@
 
                     <x-cards.button
                         wire:click="$dispatchTo('vendor-docs.vendor-doc-create', 'addDocument', { vendor: {{$vendor->id}} })"
-                        button_color=white
+                        :button_color="'white'"
                         >
                         Add
                     </x-cards.button>
@@ -45,7 +45,6 @@
 
                 <x-lists.search_li
                     {{-- wire:click="$dispatch('showMember', {{$user->id}})" --}}
-                    {{-- href="#" --}}
                     :line_details="$line_details"
                     :line_title="$doc->first()->type"
                     :bubble_message="$doc->first()->expiration_date > today() ? 'Active' : 'Expired'"

@@ -173,11 +173,16 @@ class ExpenseReceipts extends Model
 
     public function getTotalAttribute($value)
     {
-        if($this->receipt_items->total){
-            $total = $this->receipt_items->total;
+        if($this->expense->amount != $this->receipt_items->total){
+            $total = $this->expense->amount;
         }else{
-            $total = FALSE;
+            $total = $this->receipt_items->total;
         }
+        // if($this->receipt_items->total){
+        //     $total = $this->receipt_items->total;
+        // }else{
+        //     $total = FALSE;
+        // }
 
         return $total;
     }

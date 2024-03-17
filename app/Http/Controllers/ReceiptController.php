@@ -1376,6 +1376,7 @@ class ReceiptController extends Controller
 
         //pass receipt info to ocr_extract method
         $ocr_receipt_data = $this->ocr_extract($ocr_receipt_extracted, NULL, 'email');
+        // dd($ocr_receipt_data);
 
         if(isset($ocr_receipt_data['error'])){
             $move_type = 'error';

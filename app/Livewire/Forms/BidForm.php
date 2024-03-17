@@ -26,10 +26,21 @@ class BidForm extends Form
         $this->component->validate();
 
         foreach($this->component->bids as $index => $bid){
-            $bid->update([
-                'amount' => $bid['amount'],
-                'project_id' => $this->component->project->id,
-            ]);
+            if($bid->id){
+                $bid->update([
+                    'amount' => $bid['amount'],
+                    'project_id' => $this->component->project->id,
+                ]);
+            }else{
+                $bid_index = count($this->component->bids);
+
+                Bid::create([
+                    'amount' => $bid['amount'],
+                    'type' => $bid_index + 1,
+                    'project_id' => $this->component->project->id,
+                    'vendor_id' =>  $this->component->vendor->id,
+                ]);
+            }
         }
     }
 }

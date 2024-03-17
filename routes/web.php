@@ -33,6 +33,7 @@ use App\Livewire\Distributions\DistributionsShow;
 use App\Livewire\Clients\ClientsIndex;
 use App\Livewire\Clients\ClientsShow;
 
+use App\Livewire\Signup;
 use App\Livewire\ShowPosts;
 
 use App\Livewire\Timesheets\TimesheetsIndex;
@@ -157,8 +158,8 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     //DASHBOARD/ PRIMARY VENDOR
     Route::get('/dashboard', DashboardShow::class)->name('dashboard');
 
-    Route::get('/signup', ShowPosts::class)->name('signup');
-
+    Route::get('/signup', Signup::class)->name('signup');
+    Route::get('/showposts', ShowPosts::class)->name('showposts');
 
     //USERS
     // Route::get('/users/{user}', UsersShow::class)->name('users.show');

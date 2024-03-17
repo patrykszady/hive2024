@@ -89,21 +89,15 @@
                             </x-slot>
 
                             <x-slot name="right">
-                                <x-cards.button
-                                    wire:click="$dispatchTo('bids.bid-create', 'addBids', { project: {{$project->id}} })"
-                                    >
+                                <x-cards.button wire:click="$dispatchTo('bids.bid-create', 'addBids')">
                                     Edit Bid
                                 </x-cards.button>
 
-                                {{-- 8/20/2022 x-cards.button --}}
-                                <button
-                                    type="button"
-                                    wire:click="$dispatch('removeProject', { project_id_to_remove: {{$project->id}} })"
-                                    x-transition
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                    >
+                                <x-cards.button x-transition wire:click="$dispatch('removeProject', { project_id_to_remove: {{$project->id}} })" :button_color="'white'">
                                     Remove Project
-                                </button>
+                                </x-cards.button>
+
+                                {{-- <livewire:bids.bid-create wire:key="{{$project_id}}" :project="$project" :vendor="$vendor"/> --}}
                             </x-slot>
                         </x-cards.heading>
 
@@ -171,8 +165,6 @@
         </div>
     </form>
 
-    {{-- <livewire:bids.bid-create /> --}}
     <livewire:vendor-docs.vendor-doc-create />
-    <livewire:bids.bid-create :vendor="$vendor"/>
 </div>
 

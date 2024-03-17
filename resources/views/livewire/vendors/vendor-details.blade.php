@@ -9,6 +9,7 @@
 
         @can('update', $vendor)
             <x-slot name="right">
+                {{-- EDIT VENDOR DIALOG --}}
                 <x-cards.button
                     wire:click="$dispatchTo('vendors.vendor-create', 'editVendor', { vendor: {{$vendor->id}} })"
                     >

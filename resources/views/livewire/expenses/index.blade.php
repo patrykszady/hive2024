@@ -41,7 +41,7 @@
                         {{-- 08-30-2023 combine into 1 --}}
                         <input
                             {{-- debounce.750ms --}}
-                            wire:model.live.debounce.1000ms="amount"
+                            wire:model.live.debounce.750ms="amount"
                             type="number"
                             inputmode="numeric"
                             {{-- pattern="[-+,0-9.]*" --}}
@@ -53,7 +53,7 @@
                             autocomplete="mobile-search-candidate"
                             >
                         <input
-                            wire:model.live.debounce.1000ms="amount"
+                            wire:model.live.debounce.750ms="amount"
                             type="number"
                             inputmode="numeric"
                             step="0.01"
@@ -86,7 +86,7 @@
                 @if($view == NULL)
                     <div>
                         <select
-                            wire:model.live="project"
+                            wire:model.live.debounce.750ms="project"
                             id="project"
                             name="project"
                             @disabled($view == 'projects.show')
@@ -107,7 +107,7 @@
 
                 <div>
                     <select
-                        wire:model.live="vendor"
+                        wire:model.live.debounce.750ms="vendor"
                         id="vendor"
                         name="vendor"
                         class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
@@ -203,6 +203,19 @@
                                 >
                             </x-lists.search_li>
                         @endcan
+                        @foreach($expense->splits as $split)
+                            @php
+                                $split_details = isset($split->project) ? $split->project->name : $split->distribution->name;
+                                $split_details = '         ' . money($split->amount) . ' | ' . $split_details;
+                            @endphp
+
+                            <x-lists.search_li
+                                :no_hover=true
+                                :line_title="$split_details"
+                                :bubble_message="'Split'"
+                                >
+                            </x-lists.search_li>
+                        @endforeach
                     @endforeach
                 </x-lists.ul>
             </div>

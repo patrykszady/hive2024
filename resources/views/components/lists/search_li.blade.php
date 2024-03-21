@@ -24,7 +24,7 @@
 
     <a
         @if(isset($attributes['wire:click']))
-            href="#"
+            href="javascript:void(0);"
             wire:click="{{ $attributes['wire:click'] }}";
         @elseif($attributes['href'] == "")
 

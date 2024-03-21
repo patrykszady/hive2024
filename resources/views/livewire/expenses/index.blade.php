@@ -123,7 +123,7 @@
 
         {{-- BODY --}}
         <x-cards.body>
-            <div>
+            <div id="expenses_foreach">
                 <x-lists.ul wire:loading.class="opacity-50 text-opacity-40">
                     @foreach($expenses as $expense)
                         @php
@@ -225,7 +225,7 @@
         <x-cards.footer>
             {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our
             theme --}}
-            {{ $expenses->links() }}
+            {{ $expenses->links(data: ['scrollTo' => '#expenses_foreach']) }}
         </x-cards.footer>
     </x-cards.wrapper>
 
@@ -275,7 +275,7 @@
 
                 {{-- BODY --}}
                 <x-cards.body>
-                    <div>
+                    <div id="transactions_foreach">
                         <x-lists.ul wire:loading.class="opacity-50 text-opacity-40">
                             @foreach($transactions as $expense)
                                 @php
@@ -368,7 +368,7 @@
                 <x-cards.footer>
                     {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our
                     theme --}}
-                    {{ $transactions->links() }}
+                    {{ $transactions->links(data: ['scrollTo' => '#transactions_foreach']) }}
                 </x-cards.footer>
             </x-cards.wrapper>
         @endif

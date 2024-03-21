@@ -19,7 +19,8 @@
 
 					@can('update', $project)
 						<x-slot name="right">
-							<x-cards.button href="{{route('projects.show', $project->id)}}">
+                            {{-- {{route('projects.show', $project->id)}} --}}
+							<x-cards.button href="#">
 								Edit Project
 							</x-cards.button>
 						</x-slot>
@@ -60,8 +61,6 @@
 								>
 							</x-lists.search_li>
 						@endcan
-
-
 					</x-lists.ul>
 				</x-cards.body>
 			</x-cards.wrapper>
@@ -117,24 +116,16 @@
 
                             <x-slot name="right">
                                 <x-cards.button
-                                    wire:click="$dispatchTo('bids.bid-create', 'addBids')"
+                                    wire:click="$dispatchTo('bids.bid-create', 'addBids', { vendor: {{auth()->user()->vendor->id}}, project: {{$project->id}} })"
                                     {{-- wire:loading.attr="disabled"
                                     wire:loading.class="opacity-50" --}}
                                     >
                                     Edit Bid
                                 </x-cards.button>
-                                {{-- <button
-                                    type="button"
-                                    , { project: {{$project->id}} }
-                                    wire:click="$dispatchTo('bids.bid-create', 'addBids')"
-                                    >
-                                    Edit Bid
-                                <button> --}}
-                                    <livewire:bids.bid-create :project="$project" :vendor="auth()->user()->vendor"/>
                             </x-slot>
-
-
+                            <livewire:bids.bid-create />
                         </x-cards.heading>
+
                         <x-cards.body>
                             {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances wrapper--}}
                             <x-lists.ul
@@ -297,7 +288,5 @@
             </div>
 		@endcan
 	</div>
-
-
 </div>
 

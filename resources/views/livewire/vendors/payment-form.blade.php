@@ -70,7 +70,8 @@
 
                         <x-forms.row
                             {{-- wire:loading --}}
-                            wire:click="$dispatch('addProject')"
+                            wire:loading.class="opacity-50"
+                            wire:click="addProject"
                             type="button"
                             errorName="project_id_DONT_SHOW"
                             text=""
@@ -89,15 +90,12 @@
                             </x-slot>
 
                             <x-slot name="right">
-                                <x-cards.button wire:click="$dispatchTo('bids.bid-create', 'addBids')">
+                                <x-cards.button wire:click="$dispatchTo('bids.bid-create', 'addBids', { vendor: {{$vendor->id}}, project: {{$project->id}} })">
                                     Edit Bid
                                 </x-cards.button>
-
-                                <x-cards.button x-transition wire:click="$dispatch('removeProject', { project_id_to_remove: {{$project->id}} })" :button_color="'white'">
+                                <x-cards.button x-transition wire:click="removeProject({{$project_id}})" :button_color="'white'">
                                     Remove Project
                                 </x-cards.button>
-
-                                {{-- <livewire:bids.bid-create wire:key="{{$project_id}}" :project="$project" :vendor="$vendor"/> --}}
                             </x-slot>
                         </x-cards.heading>
 
@@ -161,10 +159,10 @@
                         </x-cards.body>
                     </x-cards.wrapper>
                 @endforeach
+
+                <livewire:bids.bid-create />
             </div>
         </div>
     </form>
-
-    <livewire:vendor-docs.vendor-doc-create />
 </div>
 

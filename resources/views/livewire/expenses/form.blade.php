@@ -6,7 +6,11 @@
             </x-slot>
             <x-slot name="right">
                 @if(isset($form->expense->id))
-                    <x-cards.button href="{{route('expenses.show', $form->expense->id)}}" target="_blank">
+                    <x-cards.button
+                        wire:navigate.hover
+                        href="{{route('expenses.show', $form->expense->id)}}"
+                        {{-- target="_blank" --}}
+                        >
                         Show Expense
                     </x-cards.button>
                 @endif

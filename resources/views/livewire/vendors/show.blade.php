@@ -28,5 +28,4 @@
         @endif
 	</div>
     <livewire:vendors.vendor-create />
-    <livewire:vendor-docs.vendor-doc-create />
 </div>

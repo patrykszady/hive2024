@@ -44,7 +44,28 @@ class BidCreate extends Component
         ];
     }
 
-    public function mount($vendor, $project)
+    //$vendor, $project
+    public function mount()
+    {
+        // $this->vendor = $vendor;
+        // $this->project = $project;
+
+
+    }
+
+    public function updated($field, $value)
+    {
+        // $index = substr($field, 10, -7);
+        // if($field == 'form.bids.' . $index . '.amount'){
+        //     $this->bids[$index]['amount'] = $value;
+        //     $this->form->bids[$index]['amount'] = $value;
+        // }
+
+        $this->validateOnly($field);
+        // $this->validate();
+    }
+
+    public function addBids(Vendor $vendor, Project $project)
     {
         $this->vendor = $vendor;
         $this->project = $project;
@@ -72,22 +93,7 @@ class BidCreate extends Component
             $bid->amount = NULL;
             $this->bids->push($bid);
         }
-    }
 
-    public function updated($field, $value)
-    {
-        // $index = substr($field, 10, -7);
-        // if($field == 'form.bids.' . $index . '.amount'){
-        //     $this->bids[$index]['amount'] = $value;
-        //     $this->form->bids[$index]['amount'] = $value;
-        // }
-
-        $this->validateOnly($field);
-        // $this->validate();
-    }
-
-    public function addBids()
-    {
         $this->showModal = TRUE;
     }
 

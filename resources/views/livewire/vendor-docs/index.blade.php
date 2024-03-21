@@ -15,9 +15,7 @@
 
     <div>
         @foreach($vendors as $vendor)
-            <livewire:vendor-docs.vendor-docs-card :vendor="$vendor"/>
+            <livewire:vendor-docs.vendor-docs-card :$vendor :key="$vendor->id" />
         @endforeach
     </div>
-
-    <livewire:vendor-docs.vendor-doc-create />
 </div>

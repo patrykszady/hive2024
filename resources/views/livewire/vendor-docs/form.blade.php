@@ -1,4 +1,4 @@
-<div>
+
     <x-modals.modal>
         <form wire:submit="store">
             {{-- HEADER --}}
@@ -75,4 +75,3 @@
             </x-cards.footer>
         </form>
     </x-modals.modal>
-</div>

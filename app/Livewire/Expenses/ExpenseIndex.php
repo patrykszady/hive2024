@@ -107,7 +107,7 @@ class ExpenseIndex extends Component
             ->when($this->vendor != NULL, function ($query, $vendor) {
                 return $query->where('vendor_id', 'like', "{$this->vendor}");
             })
-            ->paginate($paginate_number, ['*'], 'expenses_page');
+            ->simplePaginate($paginate_number, ['*'], 'expenses_page');
 
         if($this->bank != NULL){
             $this->bank_account_ids = array();
@@ -156,7 +156,7 @@ class ExpenseIndex extends Component
                 ->whereNull('expense_id')
                 ->whereNull('check_id')
                 ->doesntHave('payments')
-                ->paginate($paginate_number, ['*'], 'transactions_page');
+                ->simplePaginate($paginate_number, ['*'], 'transactions_page');
         }else{
             $transactions = collect();
         }

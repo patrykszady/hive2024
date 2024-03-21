@@ -32,7 +32,7 @@ class VendorPaymentCreate extends Component
     public $payment_projects = [];
     public $saved_expenses = [];
 
-    protected $listeners = ['addProject', 'removeProject', 'updateProjectBids'];
+    protected $listeners = ['updateProjectBids'];
 
     protected function rules()
     {

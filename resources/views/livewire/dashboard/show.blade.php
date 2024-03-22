@@ -16,19 +16,19 @@
         <div class="space-y-6 lg:col-start-1 lg:col-span-3">
             <livewire:vendors.vendor-details :vendor="$user->vendor">
         </div>
+
         {{-- VENDOR TEAM MEMBERS --}}
         <div class="space-y-6 lg:col-start-4 lg:col-span-3">
             <livewire:users.team-members :vendor="$user->vendor">
         </div>
 
+        {{-- GRAPH --}}
         @if($user->primary_vendor->pivot->role_id == 1)
             <div class="space-y-6 lg:col-start-1 lg:col-span-6">
                 <livewire:sheets.sheet-monthly />
             </div>
         @endif
     </div>
-
-    <livewire:vendors.vendor-create />
 </div>
 
 

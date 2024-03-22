@@ -2,13 +2,13 @@
     <x-cards.wrapper>
         <x-cards.heading>
             <x-slot name="left">
-                <h1 class="text-lg">Company Payments & Expenses</h1>
+                <h1 class="text-lg">Payments & Expenses</h1>
             </x-slot>
         </x-cards.heading>
 
         <x-cards.body>
             <div class="px-4 sm:px-6 lg:px-8">
-                <div class="flow-root mt-8">
+                <div class="flow-root -mt-8">
                     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                             {{-- GRAPH --}}
@@ -58,20 +58,35 @@
                                                         ],
                                                         label: 'Timesheets',
                                                         borderColor: [
-                                                            '#D64045',
+                                                            '#FE9900',
                                                         ],
                                                         tension: 0.3
                                                     },
                                                     {
                                                         data: [
-
+                                                            @foreach($months as $month_format => $month)
+                                                                {{array_key_exists('monthly_total_expenses', $month) ? $month['monthly_total_expenses'] : '0.00'}},
+                                                            @endforeach
                                                         ],
-                                                        label: 'Total Expenses',
+                                                        label: 'Total Spend',
                                                         borderColor: [
-                                                            '#CACFD2',
+                                                            '#c14348',
                                                         ],
-                                                        tension: 0.1,
+                                                        tension: 0.3,
                                                         borderDash: [15,5]
+                                                    },
+                                                    {
+                                                        data: [
+                                                            @foreach($months as $month_format => $month)
+                                                                {{array_key_exists('last_year_monthly_payments', $month) ? $month['last_year_monthly_payments']->sum('amount') : '0.00'}},
+                                                            @endforeach
+                                                        ],
+                                                        label: 'Payments Year Before',
+                                                        borderColor: [
+                                                            '#a1a5a8',
+                                                        ],
+                                                        tension: 0.3,
+                                                        borderDash: [5,5]
                                                     }
                                                 ],
                                             },
@@ -83,19 +98,29 @@
                                                 borderColor: 'white',
                                                 {{-- scales: { y: { beginAtZero: true }}, --}}
                                                 plugins: {
-                                                    legend: { position: 'bottom', display: true },
+                                                    legend: {
+                                                        position: 'bottom',
+                                                        display: true
+                                                    },
                                                     tooltip: {
-                                                        displayColors: true
+                                                        displayColors: true,
+                                                        callbacks: {
+                                                            title: function(context) {
+                                                                let title = 'TEST';
+
+                                                                return title;
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             }
                                         })
 
-                                        this.$watch('values', () => {
+                                        {{-- this.$watch('values', () => {
                                             chart.data.labels = this.labels
                                             chart.data.datasets[0].data = this.values
                                             chart.update()
-                                        })
+                                        }) --}}
                                     }
                                 }"
                                 >

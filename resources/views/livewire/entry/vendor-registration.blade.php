@@ -56,7 +56,7 @@
                             <div class="relative flex space-x-3">
                                 <div>
                                     <span class="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full ring-8 ring-white">
-                                        <x-heroicon-s-user-plus />
+                                        {{-- <x-heroicon-s-user-plus /> --}}
                                     </span>
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -266,7 +266,6 @@
             </div>
         </div>
     </div>
-    <livewire:vendors.vendor-create />
 
     {{-- REGISTER OVERLAY --}}
     <div

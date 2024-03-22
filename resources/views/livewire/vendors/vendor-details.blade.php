@@ -15,6 +15,8 @@
                     >
                     Edit Vendor
                 </x-cards.button>
+
+                <livewire:vendors.vendor-create />
             </x-slot>
         @endcan
     </x-cards.heading>
@@ -105,4 +107,5 @@
             </x-cards.button>
         </x-cards.footer>
     </div>
+
 </x-cards.wrapper>

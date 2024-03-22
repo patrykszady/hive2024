@@ -14,16 +14,11 @@ use Livewire\Component;
 class SheetMonthly extends Component
 {
     public $months = [];
-    // public $monthly_payments = [];
-    // public $monthly_expenses = [];
-    // public $monthly_timesheets = [];
-    // public $monthly_total_expenses = [];
 
     public function mount()
     {
-        //Carbon::parse('2024-02-29');
         $end_date = Carbon::today();
-        $start_date = $end_date->copy()->subMonths(11);
+        $start_date = $end_date->copy()->subMonths(11)->startOfMonth();
 
         // Create a period between the start and end dates
         $period = CarbonPeriod::create($start_date, '1 month', $end_date);
@@ -47,6 +42,9 @@ class SheetMonthly extends Component
         foreach($monthly_payments as $month => $payments){
             $this->months[$month]['monthly_payments'] = $payments;
         }
+
+
+
 
         $monthly_expenses =
             Expense::
@@ -78,10 +76,23 @@ class SheetMonthly extends Component
             $this->months[$month]['monthly_timesheets'] = $timesheets;
         }
 
-        // dd($this->months['Mar 24']);
-        // foreach($this->months as $month){
-        //     $this->monthly_total_expenses[$month] = (isset($this->monthly_timesheets[$month]) ? $this->monthly_timesheets[$month]->sum('amount') : '0') + (isset($this->monthly_expenses[$month]) ? $this->monthly_expenses[$month]->sum('amount') : '0');
-        // }
+        foreach($this->months as $month => $this_month){
+            $this->months[$month]['monthly_total_expenses'] = (isset($this_month['monthly_expenses']) ? $this_month['monthly_expenses']->sum('amount') : '0.00') + (isset($this_month['monthly_timesheets']) ? $this_month['monthly_timesheets']->sum('amount') : '0.00');
+        }
+
+        $last_year_monthly_payments =
+            Payment::
+                whereBetween('date', [$start_date->subYear(), $end_date->subYear()])
+                ->orderBy('date', 'DESC')
+                ->get()
+                ->groupBy(function ($payment) {
+                    return $payment->date->addYear()->format('M y');
+                })
+                ->toBase();
+
+        foreach($last_year_monthly_payments as $month => $payments){
+            $this->months[$month]['last_year_monthly_payments'] = $payments;
+        }
     }
 
     public function render()

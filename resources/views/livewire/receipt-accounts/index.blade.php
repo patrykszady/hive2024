@@ -33,11 +33,10 @@
                                 ];
                         @endphp
                         <x-lists.search_li
-                            {{-- wire:click="$dispatchTo('expenses.expense-create', '{{$click_emit_destination}}', { expense: {{$expense->id}}})" --}}
                             wire:click="$dispatchTo('receipt-accounts.receipt-account-vendor-create', 'editReceiptVendor', { vendor_id: {{$vendor->id}} })"
                             :line_details="$line_details"
                             :line_title="$vendor->name"
-                            :bubble_message="$vendor->receipt_accounts->isEmpty() ? 'Not Connected' : 'Connected'"
+                            :bubble_message="$vendor->receipt_accounts->isEmpty() ? 'Not Connected' : ($vendor->receipts->first()->from_type == 4 ? 'Connected via Login' : 'Connected via Email')"
                             :bubble_color="$vendor->receipt_accounts->isEmpty() ? 'red' : 'green'"
                             >
                         </x-lists.search_li>

@@ -172,7 +172,15 @@ class EstimateShow extends Component
     public function print($type)
     {
         if($type == 'estimate'){
-            SendInitialEstimateEmail::dispatch($this->estimate, $this->sections, $type);
+            // SendInitialEstimateEmail::dispatch($this->estimate, $this->sections, $type);
+            $data = $this->create_pdf($this->estimate, $this->sections, $type);
+
+            $headers =
+                array(
+                    'Content-Type: application/pdf',
+                );
+
+            return Response::download($data[0], $data[1] . '.pdf', $headers);
         }elseif($type == 'invoice'){
             $data = $this->create_pdf($this->estimate, $this->sections, $type);
 

@@ -330,7 +330,7 @@
                 @if($type == 'Estimate')
                     <div style="page-break-before: always;"> </div>
                     <div>
-                        @if(!$payments)
+                        @if($payments->isEmpty())
                             <p><b><i>*The below Contract is a sample. It is not meant to be signed until a finalized Estimate is avaliable.</i></b></p>
                             <br>
                         @endif
@@ -354,7 +354,7 @@
                         <p>Payments of the Contract price shall be paid in the manner following and shall not be unreasonably withheld.</p>
                         <p>Construction Payments:</p>
 
-                        @if($payments)
+                        @if(!$payments->isEmpty())
                             <x-cards.body>
                                 <div class="grid grid-cols-4 gap-4">
                                     <div class="col-span-3">

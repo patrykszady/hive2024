@@ -3,7 +3,7 @@
         <x-cards.heading>
             <x-slot name="left">
                 <h1>{{$vendor ? $vendor->name : 'NO VENDOR'}}</h1>
-                {{-- <h1>{{$vendor->business_name}}</h1> --}}
+                @dd($vendor)
             </x-slot>
         </x-cards.heading>
         <x-cards.body :class="'space-y-4 my-4'">
@@ -38,7 +38,6 @@
         </x-cards.body>
         <x-cards.footer>
             <button
-                {{-- wire:click="$emitTo('expenses.expenses-new-form', 'resetModal')" --}}
                 type="button"
                 x-on:click="open = false"
                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

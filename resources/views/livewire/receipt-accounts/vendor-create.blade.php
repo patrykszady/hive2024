@@ -3,7 +3,6 @@
         <x-cards.heading>
             <x-slot name="left">
                 <h1>{{$vendor ? $vendor->name : 'NO VENDOR'}}</h1>
-                @dd($vendor)
             </x-slot>
         </x-cards.heading>
         <x-cards.body :class="'space-y-4 my-4'">
@@ -35,6 +34,20 @@
                     </option>
                 @endforeach
             </x-forms.row>
+
+            @if($vendor ? $vendor->receipts->first()->from_type == 4 : false)
+                <div
+                    x-data="{ logged_in: @entangle('vendor.logged_in') }">
+                    <x-forms.row
+                        wire:click="api_login"
+                        name=""
+                        text=""
+                        type="button"
+                        x-text="logged_in == true ? 'Logout' : 'Login'"
+                        >
+                    </x-forms.row>
+                </div>
+            @endif
         </x-cards.body>
         <x-cards.footer>
             <button

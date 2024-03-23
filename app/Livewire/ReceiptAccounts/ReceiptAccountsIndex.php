@@ -16,7 +16,7 @@ class ReceiptAccountsIndex extends Component
 
     public $vendor_keys = [];
     public $vendors = [];
-    public $auth_vendor = NULL;
+    public $auth_vendor;
     public $distributions = [];
     // public $vendor_key = NULL;
     public $view = NULL;
@@ -34,8 +34,6 @@ class ReceiptAccountsIndex extends Component
     {
         $this->distributions = Distribution::all();
 
-        // $this->receipt_accounts = ReceiptAccount::all()->groupBy('vendor_id');
-
         $this->auth_vendor = auth()->user()->vendor;
         $this->vendors =
             Vendor::
@@ -45,22 +43,13 @@ class ReceiptAccountsIndex extends Component
                 // whereHas('receipt_accounts', function ($query) use ($auth_vendor) {
                 //     return $query->where('belongs_to_vendor_id', $auth_vendor->id);
                 //     })
-                ->with(['receipts', 'receipt_accounts'])
+                ->with(['receipts', 'receipt_account'])
                 ->orderBy('business_name')
                 ->get();
-
-        // dd($this->vendors);
 
         // dd($this->vendors->first()->receipt_accounts->first()->distribution ? $this->vendors->first()->receipt_accounts->first()->distribution->name : 'NO PROJECT');
 
         // $this->vendor_vendors_ids = auth()->user()->vendor->vendors->pluck('id')->toArray();
-
-
-
-        // $this->receipt_accounts = ReceiptAccount::whereHas('distribution')->get();
-        // dd($this->receipt_accounts->first()->distribution);
-        // $this->receipt_accounts = ReceiptAccount::with(['vendor'])->get();
-        // dd($this->receipt_accounts);
     }
 
     //add Existing Vendor to auth->user->vendor

@@ -23,6 +23,7 @@ class ReceiptAccountVendorCreate extends Component
     {
         return [
             'distribution_id' => 'required',
+            'vendor.logged_in' => 'nullable',
         ];
     }
 
@@ -33,20 +34,28 @@ class ReceiptAccountVendorCreate extends Component
 
     public function editReceiptVendor($vendor_id)
     {
-        $this->vendor = Vendor::find($vendor_id);
+        $this->vendor = Vendor::with(['receipts', 'receipt_account'])->find($vendor_id);
 
-        if(!$this->vendor->receipt_accounts->isEmpty()){
-            $receipt_account = $this->vendor->receipt_accounts->first();
+        if(isset($this->vendor->receipt_account)){
+            $receipt_account = $this->vendor->receipt_account;
             if(!is_null($receipt_account->distribution_id)){
                 $this->distribution_id = $receipt_account->distribution_id;
             }else{
-                $this->distribution_id = 'NO_PROJECT';  
+                $this->distribution_id = 'NO_PROJECT';
             }
         }else{
-            $this->distribution_id = NULL;  
+            $this->distribution_id = NULL;
         }
 
+        $this->vendor->logged_in = $this->vendor->receipt_account->options ? ($this->vendor->receipt_account->options['access_token']  ? true : false) : false;
+
         $this->modal_show = TRUE;
+    }
+
+    public function api_login()
+    {
+        $login_route = $this->vendor->receipts->first()->options['api_route'];
+        $this->redirectRoute($login_route);
     }
 
     public function store()
@@ -57,11 +66,12 @@ class ReceiptAccountVendorCreate extends Component
             $distribution_id = $this->distribution_id;
             $project_id = NULL;
         }else{
+            //NO PROJECT
             $distribution_id = NULL;
             $project_id = 0;
         }
 
-        if($this->vendor->receipt_accounts->isEmpty()){
+        if(is_null($this->vendor->receipt_account)){
             //create new
             $receipt_account = new ReceiptAccount();
             $receipt_account->project_id = $project_id;
@@ -71,7 +81,7 @@ class ReceiptAccountVendorCreate extends Component
             $receipt_account->save();
         }else{
             //edit existing
-            $receipt_account = $this->vendor->receipt_accounts->first();
+            $receipt_account = $this->vendor->receipt_account;
             $receipt_account->project_id = $project_id;
             $receipt_account->distribution_id = $distribution_id;
             $receipt_account->save();

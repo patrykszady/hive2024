@@ -17,7 +17,6 @@
             </x-slot>
         </x-cards.heading>
 
-        {{-- ROWS --}}
         <x-cards.body :class="'space-y-4 my-4'">
             {{-- AMOUNT --}}
             <div
@@ -165,7 +164,6 @@
                     x-text="splits == true ? 'Edit Splits' : 'Add Splits'"
                     >
                 </x-forms.row>
-                {{-- <x-forms.error errorName="no_splits" /> --}}
 
                 {{-- SPLITS MODAL --}}
                 <livewire:expenses.expense-splits-create :projects="$projects" :distributions="$distributions" />

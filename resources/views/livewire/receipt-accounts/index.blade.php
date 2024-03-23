@@ -22,8 +22,8 @@
                                 //     'text' => $vendor->business_name,
                                 //     'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
                                 //     ],
-                                2 => [
-                                    'text' => $vendor->receipt_accounts->isEmpty() ? '' : ($vendor->receipt_accounts->first()->distribution_id ? $vendor->receipt_accounts->first()->distribution->name : 'NO PROJECT'),
+                                1 => [
+                                    'text' => !isset($vendor->receipt_account) ? '' : ($vendor->receipt_account->distribution_id ? $vendor->receipt_account->distribution->name : 'NO PROJECT'),
                                     'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
                                     ],
                                 // 3 => [
@@ -36,8 +36,8 @@
                             wire:click="$dispatchTo('receipt-accounts.receipt-account-vendor-create', 'editReceiptVendor', { vendor_id: {{$vendor->id}} })"
                             :line_details="$line_details"
                             :line_title="$vendor->name"
-                            :bubble_message="$vendor->receipt_accounts->isEmpty() ? 'Not Connected' : ($vendor->receipts->first()->from_type == 4 ? 'Connected via Login' : 'Connected via Email')"
-                            :bubble_color="$vendor->receipt_accounts->isEmpty() ? 'red' : 'green'"
+                            :bubble_message="!isset($vendor->receipt_account) ? 'Not Connected' : ($vendor->receipts->first()->from_type == 4 ? 'Login' : 'Email')"
+                            :bubble_color="!isset($vendor->receipt_account) ? 'red' : 'green'"
                             >
                         </x-lists.search_li>
                     @endforeach

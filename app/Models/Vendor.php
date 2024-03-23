@@ -47,9 +47,9 @@ class Vendor extends Model
         return $this->belongsToMany(Vendor::class, 'vendors_vendor', 'vendor_id')->withTimestamps();
     }
 
-    public function receipt_accounts()
+    public function receipt_account()
     {
-        return $this->hasMany(ReceiptAccount::class);
+        return $this->hasOne(ReceiptAccount::class);
     }
 
     public function receipts()

@@ -117,11 +117,12 @@
                                 type: 'doughnut',
 
                                 data: {
-                                    labels: ['Timesheets Paid', 'Distribution Checks', 'Distribution Expenses', ' Timesheets Paid Others', 'Expenses Paid', 'Total User', 'Paid For'],
+                                    labels: ['Timesheets Paid', 'Timesheets Paid By', 'Distribution Checks', 'Distribution Expenses', ' Timesheets Paid Others', 'Expenses Paid', 'Total User', 'Paid For'],
                                     datasets: [{
-                                        data: [{{$timesheets_paid}}, {{$distribution_checks}}, {{$distribution_expenses}}, {{$timesheets_paid_others}}, {{$expenses_paid}}, 0, 0],
+                                        data: [{{$timesheets_paid}}, {{$timesheets_paid_by}}, {{$distribution_checks}}, {{$distribution_expenses}}, {{$timesheets_paid_others}}, {{$expenses_paid}}, 0, 0],
                                         label: '2023 ALL',
                                         backgroundColor: [
+                                            '#194d19',
                                             '#008000',
                                             '#38B000',
                                             '#70E000',
@@ -133,9 +134,10 @@
                                         {{-- hoverOffset: 8 --}}
                                     },
                                     {
-                                        data: [0, 0, 0, 0, 0, {{$timesheets_paid + $distribution_checks + $distribution_expenses}}, {{$timesheets_paid_others + $expenses_paid}}],
+                                        data: [0, 0, 0, 0, 0, 0, {{$timesheets_paid + $timesheets_paid_by + $distribution_checks + $distribution_expenses}}, {{$timesheets_paid_others + $expenses_paid}}],
                                         label: '2023 SPLIT',
                                         backgroundColor: [
+                                            '#194d19',
                                             '#008000',
                                             '#38B000',
                                             '#70E000',
@@ -208,21 +210,29 @@
                                                         <td class="p-4 text-sm text-green-800 whitespace-nowrap">{{money($timesheets_paid)}}</td>
                                                     </tr>
 
-                                                    {{-- @if($distribution_checks != 0) --}}
+                                                    @if($distribution_checks != 0)
                                                         <tr class="divide-x divide-gray-200">
                                                             <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
                                                                 &emsp; Distribution Checks</td>
                                                             <td class="p-4 text-sm text-green-800 whitespace-nowrap">{{money($distribution_checks)}}</td>
                                                         </tr>
-                                                    {{-- @endif
+                                                    @endif
 
-                                                    @if($timesheets_paid_others != 0) --}}
+                                                    @if($user_checks != 0)
+                                                        <tr class="divide-x divide-gray-200">
+                                                            <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
+                                                                &emsp; Member Extra Payments</td>
+                                                            <td class="p-4 text-sm text-green-800 whitespace-nowrap">{{money($user_checks)}}</td>
+                                                        </tr>
+                                                    @endif
+
+                                                    @if($timesheets_paid_others != 0)
                                                         <tr class="divide-x divide-gray-200">
                                                             <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
                                                                 &emsp; Timesheets Paid Others</td>
                                                             <td class="p-4 text-sm text-red-800 whitespace-nowrap">{{money($timesheets_paid_others)}}</td>
                                                         </tr>
-                                                    {{-- @endif --}}
+                                                    @endif
 
                                                     <tr class="divide-x divide-gray-200">
                                                         <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
@@ -235,41 +245,33 @@
                                                             &emsp; TOTAL CHECKS FOR USER</td>
                                                         <td class="p-4 text-sm text-gray-800 whitespace-nowrap">{{money($timesheets_paid + $distribution_checks)}}</td>
                                                     </tr>
-                                                    <tr class="divide-x divide-gray-200">
-                                                        <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
-                                                            &emsp; <i>difference</i></td>
-                                                            {{--  --}}
-                                                        <td class="p-4 text-sm text-gray-800 whitespace-nowrap">{{money($checks_written - ($timesheets_paid + $distribution_checks) - ($timesheets_paid_others + $expenses_paid))}}</td>
-                                                    </tr>
 
-
-                                                    {{-- @if($timesheets_paid_by != 0) --}}
+                                                    @if($timesheets_paid_by != 0)
                                                         <tr class="divide-x divide-gray-200">
                                                             <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
                                                                 Timesheets Paid By</td>
-                                                            <td class="p-4 text-sm text-gray-800 whitespace-nowrap">{{money($timesheets_paid_by)}}</td>
+                                                            <td class="p-4 text-sm text-green-800 whitespace-nowrap">{{money($timesheets_paid_by)}}</td>
                                                         </tr>
-                                                    {{-- @endif
+                                                    @endif
 
-                                                    @if($distribution_expenses != 0) --}}
+                                                    @if($distribution_expenses != 0)
                                                         <tr class="divide-x divide-gray-200">
                                                             <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
                                                                 Distribution Expenses</td>
                                                             <td class="p-4 text-sm text-green-800 whitespace-nowrap">{{money($distribution_expenses)}}</td>
                                                         </tr>
-                                                    {{-- @endif --}}
+                                                    @endif
 
                                                     <tr class="divide-x divide-gray-200">
                                                         <td class="py-4 pl-4 pr-4 text-sm font-medium text-gray-900 whitespace-nowrap sm:pl-0">
                                                             TOTAL FOR USER</td>
-                                                        <td class="p-4 text-sm text-gray-800 whitespace-nowrap">{{money($timesheets_paid + $distribution_checks + $distribution_expenses + $timesheets_paid_by)}}</td>
+                                                        <td class="p-4 text-sm font-bold text-gray-800 whitespace-nowrap">{{money($timesheets_paid + $distribution_checks + $distribution_expenses + $timesheets_paid_by)}}</td>
                                                     </tr>
 
                                                     <tr class="divide-x divide-gray-200">
                                                         <td class="py-4 pl-4 pr-4 text-sm text-gray-900 whitespace-nowrap sm:pl-0">
-                                                            <i>difference</i></td>
-                                                            {{--  --}}
-                                                        <td class="p-4 text-sm text-gray-800 whitespace-nowrap">{{money($checks_written - ($timesheets_paid + $distribution_checks) - ($timesheets_paid_others + $expenses_paid))}}</td>
+                                                            &emsp; <i>difference</i></td>
+                                                        <td class="p-4 text-sm text-gray-800 whitespace-nowrap"><i>{{money($difference)}}</i></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

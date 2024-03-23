@@ -1,4 +1,4 @@
-<div>
+
     <x-modals.modal>
         <form wire:submit="{{$view_text['form_submit']}}">
             <x-cards.heading>
@@ -160,6 +160,7 @@
                                     buttonText="Create Vendor"
                                     >
                                 </x-forms.row>
+                                {{-- <livewire:vendors.vendor-create /> --}}
                             </div>
                         </div>
                         {{-- USER / VENDOR HOURLY PAY --}}
@@ -230,4 +231,3 @@
     {{-- @if($model['id'] != 'NEW')
         <livewire:vendors.vendor-create />
     @endif --}}
-</div>

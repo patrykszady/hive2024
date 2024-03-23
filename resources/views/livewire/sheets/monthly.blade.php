@@ -106,7 +106,7 @@
                                                         displayColors: true,
                                                         callbacks: {
                                                             title: function(context) {
-                                                                let title = 'TEST';
+                                                                let title = '';
 
                                                                 return title;
                                                             }

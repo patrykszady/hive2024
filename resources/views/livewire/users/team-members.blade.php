@@ -9,6 +9,7 @@
                 <x-cards.button wire:click="$dispatchTo('users.user-create', 'newMember', { 'model': 'vendor', 'model_id': {{$vendor->id}} })">
                     Add Team Member
                 </x-cards.button>
+                <livewire:users.user-create>
             @endcan
         </x-slot>
     </x-cards.heading>
@@ -52,8 +53,6 @@
             </x-cards.button>
         </x-cards.footer>
     </div>
-    {{-- vendor_id="{{$vendor->id}}" --}}
-    <livewire:users.user-create>
 </x-cards.wrapper>
 
 

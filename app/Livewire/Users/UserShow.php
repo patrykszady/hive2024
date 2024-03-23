@@ -26,6 +26,8 @@ class UserShow extends Component
     public $distribution_checks = 0;
     public $checks_written = 0;
     public $distribution_expenses = 0;
+    public $user_checks = 0;
+    public $difference = 0;
     // public $modal_show = FALSE;
 
     // protected $listeners = ['showMember'];
@@ -43,7 +45,6 @@ class UserShow extends Component
 
         if(!is_null($this->user->this_vendor)){
             $user_distribution = $this->user->distributions->first() ? $this->user->distributions->first()->id : NULL;
-
             $year = $this->year;
 
             $this->checks_written =
@@ -52,15 +53,21 @@ class UserShow extends Component
                     ->whereYear('date', $this->year)
                     ->where('belongs_to_vendor_id', $this->user->this_vendor->id)
                     // ->pluck('id');
+                    // ->get();
                     ->sum('amount');
 
-            // $this->checks_written =
-            //     Transaction::
-            //         whereIn('check_id', $this->checks_written)
-            //         ->whereYear('transaction_date', $this->year)
-            //         ->sum('amount');
+            //Member Extra Payments
+            // if doesnt have a distribution
+            if(!$user_distribution){
+                $this->user_checks =
+                    Check::
+                        where('user_id', $this->user->id)
+                        ->whereYear('date', $this->year)
+                        ->whereDoesntHave('timesheets')
+                        ->where('belongs_to_vendor_id', $this->user->this_vendor->id)
+                        ->sum('amount');
+            }
 
-            // dd($this->checks_written);
 
             //where check->date is $this->year
             $this->timesheets_paid =
@@ -73,8 +80,9 @@ class UserShow extends Component
                     ->whereHas('check', function ($query) use($year) {
                         return $query->whereYear('date', $year);
                     })
+                    // ->get();
                     ->sum('amount');
-
+            // dd($this->timesheets_paid);
             if($user_distribution){
                 $this->distribution_checks =
                     Expense::
@@ -141,6 +149,9 @@ class UserShow extends Component
             }else{
                 $this->distribution_expenses = 0.00;
             }
+
+            // dd($this->checks_written - ($this->timesheets_paid + $this->distribution_checks) - ($this->timesheets_paid_others + $this->expenses_paid));
+            $this->difference = round($this->checks_written - $this->timesheets_paid - $this->distribution_checks - $this->user_checks - $this->timesheets_paid_others - $this->expenses_paid, 2);
         }
     }
 

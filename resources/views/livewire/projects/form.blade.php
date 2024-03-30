@@ -91,17 +91,6 @@
                 >
                 {{$view_text['button_text']}}
             </x-forms.button>
-            {{-- <div
-                x-data="{ address: @entangle('address').live, project_zip: @entangle('project.zip_code').live }"
-                x-show="address || project_zip"
-                x-transition
-                >
-                <button
-                    type="submit"
-                    class="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    {{$view_text['button_text']}}
-                </button>
-            </div> --}}
         </x-cards.footer>
     </form>
 </x-dialog.panel>

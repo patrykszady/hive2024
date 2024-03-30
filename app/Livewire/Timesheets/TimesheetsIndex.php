@@ -8,6 +8,7 @@ use App\Models\Hour;
 use App\Models\Timesheet;
 
 use Livewire\WithPagination;
+use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -15,6 +16,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Carbon\Carbon;
 // use Carbon\CarbonInterval;
 
+#[Lazy]
 class TimesheetsIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -25,10 +27,10 @@ class TimesheetsIndex extends Component
         'amount' => ['except' => ''],
     ];
 
-    public function mount()
-    {
+    // public function mount()
+    // {
 
-    }
+    // }
 
     #[Title('Timesheets')]
     public function render()

@@ -68,20 +68,18 @@ class UserShow extends Component
                         ->sum('amount');
             }
 
-
             //where check->date is $this->year
             $this->timesheets_paid =
                 Timesheet::
                     where('user_id', $this->user->id)
                     ->where('vendor_id', $this->user->this_vendor->id)
-                    // ->whereYear('date', $this->year)
-                    // ->whereNotNull('check_id')
                     ->whereNull('paid_by')
                     ->whereHas('check', function ($query) use($year) {
                         return $query->whereYear('date', $year);
                     })
                     // ->get();
                     ->sum('amount');
+
             // dd($this->timesheets_paid);
             if($user_distribution){
                 $this->distribution_checks =
@@ -127,11 +125,12 @@ class UserShow extends Component
 
             $this->timesheets_paid_by =
                 Timesheet::
-                    where('user_id', $this->user->id)
+                    withoutGlobalScopes()
+                    ->where('user_id', $this->user->id)
                     ->where('vendor_id', $this->user->this_vendor->id)
                     ->whereNotNull('paid_by')
                     ->whereHas('check', function ($query) use($year) {
-                        return $query->whereYear('date', $year);
+                        return $query->withoutGlobalScopes()->whereYear('date', $year);
                     })
                     ->sum('amount');
             //         ->get();

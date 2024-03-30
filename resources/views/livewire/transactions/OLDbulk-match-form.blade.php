@@ -109,7 +109,7 @@
                             </option>
                         @endforeach
 
-                        <x-slot name="radio">
+                        {{-- <x-slot name="radio">
                             <input
                                 wire:model.live="split"
                                 id="split"
@@ -117,7 +117,7 @@
                                 type="checkbox"
                                 class="w-4 h-4 ml-2 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                                 >
-                        </x-slot>
+                        </x-slot> --}}
                     </x-forms.row>
                 </div>
 

@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Transactions;
 
-use App\Models\Vendor;
-use App\Models\Expense;
-use App\Models\Transaction;
+// use App\Models\Vendor;
+// use App\Models\Expense;
+// use App\Models\Transaction;
 use App\Models\Distribution;
 use App\Models\TransactionBulkMatch;
 
@@ -17,34 +17,30 @@ class BulkMatch extends Component
 {
     use AuthorizesRequests;
 
+    public $distributions = [];
+    public $bulk_matches = [];
+
     public $split = FALSE;
     public $splits_count = 0;
     public $bulk_splits = [];
 
     public $vendor = NULL;
     public $vendor_id = NULL;
-    public $distribution_id = NULL;
-    public $modal_show = FALSE;
-    public $amount = NULL;
-    public $any_amount = FALSE;
-    public $desc = NULL;
-    public $amount_type = '=';
     public $vendor_amount_group = [];
     public $vendor_transactions = NULL;
     public $vendor_expenses = NULL;
 
-    protected $listeners = ['refreshComponent' => '$refresh', 'addNewBulk', 'resetModal', 'manualMatch', 'bulkSplits', 'addSplit', 'removeSplit'];
+    protected $listeners = ['refreshComponent' => '$refresh', 'manualMatch', 'bulkSplits', 'addSplit', 'removeSplit'];
 
-    protected function rules()
+    public function mount()
     {
-        return [
-            'vendor_id' => 'required',
-            'amount_type' => 'required',
-            'distribution_id' => 'required_unless:split,true',
-            'vendor_amount_group.*.checkbox' => 'nullable',
-            'amount' => 'required_without:any_amount',
-            // 'any_amount' => 'required_without:amount',
-        ];
+        $this->distributions = Distribution::all();
+        $this->bulk_matches =
+            TransactionBulkMatch::with(['vendor', 'distribution'])
+                ->get()
+                ->sortBy(function($item, $key) {
+                    return $item->vendor->business_name;
+                });
     }
 
     public function updated($field, $value)
@@ -74,9 +70,6 @@ class BulkMatch extends Component
     public function updatedVendorId($value)
     {
         $this->vendor = Vendor::findOrFail($value);
-        $this->resetModal();
-
-        // $this->modal_show = TRUE;
     }
 
     public function updatedAnyAmount($value)
@@ -91,12 +84,6 @@ class BulkMatch extends Component
             $this->any_amount = FALSE;
             $this->amount = NULL;
         }
-    }
-
-    public function addNewBulk()
-    {
-        $this->resetModal();
-        $this->modal_show = TRUE;
     }
 
     public function bulkSplits()
@@ -117,23 +104,6 @@ class BulkMatch extends Component
     {
         $this->splits_count = $this->splits_count - 1;
         unset($this->bulk_splits[$index]);
-    }
-
-    public function resetModal()
-    {
-        // $this->vendor = NULL;
-        // $this->vendor_id = NULL;
-        $this->distribution_id = NULL;
-        $this->amount = NULL;
-        $this->any_amount = FALSE;
-        $this->amount_type = '=';
-        $this->vendor_amount_group = [];
-        $this->vendor_transactions = NULL;
-        // $this->modal_show = FALSE;
-        $this->desc = NULL;
-        $this->split = FALSE;
-        $this->splits_count = 0;
-        $this->bulk_splits = [];
     }
 
     public function manualMatch()
@@ -173,31 +143,13 @@ class BulkMatch extends Component
             $this->dispatch('refreshComponent');
             $this->vendor_amount_group = [];
             $this->vendor_transactions = NULL;
-            $this->distribution_id = NULL;
+            // $this->distribution_id = NULL;
             //send notification
         }
     }
 
     public function store()
     {
-        // dd($this);
-        // $this->validate();
-
-        //any_amount isset? $amount = NULL, NULL = ANY
-        if($this->any_amount == true){
-            $amount = NULL;
-            $options = NULL;
-        }else{
-            $amount = $this->amount;
-            $options['amount_type'] = $this->amount_type;
-        }
-
-        if($this->desc){
-            $options['desc'] = $this->desc;
-        }else{
-            $options['desc'] = NULL;
-        }
-
         if(!empty($this->bulk_splits)){
             $options['splits'] = [];
 
@@ -220,36 +172,12 @@ class BulkMatch extends Component
             ]);
 
         // app('App\Http\Controllers\TransactionController')->transaction_vendor_bulk_match();
-
-        $this->resetModal();
-        $this->modal_show = FALSE;
     }
 
     #[Title('Bulk Transactions')]
     public function render()
     {
         $this->authorize('viewAny', TransactionBulkMatch::class);
-
-        $bulk_matches =
-            TransactionBulkMatch::with(['vendor', 'distribution'])
-                ->get()
-                ->sortBy(function($item, $key) {
-                    return $item->vendor->business_name;
-                });
-
-        $distributions = Distribution::all();
-        $transactions =
-            Transaction::whereHas('vendor')->whereDoesntHave('expense')->whereNull('check_number')->whereNotNull('posted_date')->where('posted_date', '<', today()->subDays(3)->format('Y-m-d'))
-                ->get()->groupBy('vendor_id');
-        // dd($transactions);
-
-        $expenses_no_project =
-            Expense::whereHas('vendor')->whereDoesntHave('splits')->where('project_id', "0")->whereNull('distribution_id')
-                ->get()->groupBy('vendor_id');
-        // dd($expenses_no_project);
-        // $vendor_ids_merged = $transactions->merge($expenses_no_project)->groupBy('vendor_id');
-        // dd($vendor_ids_merged);
-        $vendors = Vendor::whereIn('id', $transactions->keys())->orWhereIn('id', $expenses_no_project->keys())->where('business_type', 'Retail')->orderBy('business_name')->get();
 
         if($this->vendor){
             //transactions groupBy amount
@@ -279,10 +207,8 @@ class BulkMatch extends Component
             // dd($this->vendor_expenses);
         }
         return view('livewire.transactions.bulk-match', [
-            'bulk_matches' => $bulk_matches,
-            'distributions' => $distributions,
-            'transactions' => $transactions,
-            'vendors' => $vendors,
+            // 'transactions' => $transactions,
+            // 'vendors' => $vendors,
         ]);
     }
 }

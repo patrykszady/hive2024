@@ -18,8 +18,6 @@
 @php
     $input_classes = 'flex-1 block w-full min-w-0 rounded-none sm:text-' . $textSize;
 
-    // On blade do this x-bind:disabled="{{$bid->estimate_sections->isEmpty() ? false : true}}"
-
     if($attributes['x-bind:disabled']){
         $input_classes .= ' bg-gray-50';
     }else{

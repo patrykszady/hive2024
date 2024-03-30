@@ -9,7 +9,9 @@
     'lineData' => NULL,
     'bubbleMessage' => NULL,
     'bubbleColor' => 'indigo',
-    'bold' => FALSE,
+    // 3/23/24 remove BOLD everyhwere, replace with fontWeight
+    'bold' => false,
+    'fontWeight' => 'medium',
     'span' => NULL,
     'left_line' => FALSE,
     ])
@@ -86,7 +88,7 @@
                         </div>
                     @endif
                 @else
-                    <p class="font-medium text-gray-900 text-md font-col">
+                    <p class="font-{{$fontWeight}} text-gray-900 text-md font-col">
                         {{ $lineTitle }}
                     </p>
                     <div class="ml-auto">

@@ -23,7 +23,6 @@ class EstimateShow extends Component
 
     public Estimate $estimate;
     public $sections = [];
-    // public $items_rearrange = FALSE;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 

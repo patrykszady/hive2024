@@ -1446,7 +1446,7 @@ class ReceiptController extends Controller
                 where('vendor_id', $receipt->vendor_id)->
                 whereNull('deleted_at')->
                 where('amount', $amount)->
-                // where('date', $date)->
+                where('invoice', $invoice)->
                 whereBetween('date', [Carbon::create($date)->subDay(), Carbon::create($date)->addDays(4)])->
                 get();
 

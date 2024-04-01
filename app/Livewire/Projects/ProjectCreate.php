@@ -7,7 +7,7 @@ use App\Livewire\Forms\ProjectForm;
 use App\Models\Project;
 use Livewire\Component;
 
-use Illuminate\Support\Facades\Validator;
+// use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ProjectCreate extends Component
@@ -23,9 +23,10 @@ class ProjectCreate extends Component
     ];
 
     public $clients;
+    public $existing_client = NULL;
     public $client_addresses = [];
 
-    // public $modal_show = FALSE;
+    public $showModal = FALSE;
 
     protected $listeners = ['newProject'];
 
@@ -92,20 +93,17 @@ class ProjectCreate extends Component
         $this->resetValidation();
     }
 
-    public function resetModal()
-    {
-        $this->form->reset();
-        $this->resetValidation();
-    }
+    // public function resetModal()
+    // {
+    //     $this->form->reset();
+    //     $this->resetValidation();
+    // }
 
     public function newProject($client_id)
     {
-        // $this->resetModal();
-        // $this->resetAddress();
+        $this->existing_client = $this->clients->where('id', $client_id)->first();
 
-        $client = $this->clients->where('id', $client_id)->first();
-
-        if(!$client){
+        if(!$this->existing_client){
             $this->form->client_id = NULL;
             $this->client_addresses =
                 collect([
@@ -119,19 +117,19 @@ class ProjectCreate extends Component
                     ])
                 ]);
         }else{
-            $this->form->client_id = $client->id;
-            $this->client_addresses = $client->projects;
+            $this->form->client_id = $this->existing_client->id;
+            $this->client_addresses = $this->existing_client->projects;
 
             if($this->client_addresses->isEmpty()){
                 $this->client_addresses =
                     collect([
                         collect([
                             // 'CLIENT_PROJECT' => 'CLIENT_PROJECT',
-                            'address' => $client['address'],
-                            'address_2' => $client['address_2'],
-                            'city' => $client['city'],
-                            'state' => $client['state'],
-                            'zip_code' => $client['zip_code'],
+                            'address' => $this->existing_client['address'],
+                            'address_2' => $this->existing_client['address_2'],
+                            'city' => $this->existing_client['city'],
+                            'state' => $this->existing_client['state'],
+                            'zip_code' => $this->existing_client['zip_code'],
                         ])
                     ]);
             }else{
@@ -139,7 +137,7 @@ class ProjectCreate extends Component
             }
         }
 
-        // $this->modal_show = TRUE;
+        $this->showModal = TRUE;
     }
 
     public function save()
@@ -152,8 +150,6 @@ class ProjectCreate extends Component
 
     public function render()
     {
-        return view('livewire.projects.form', [
-
-        ]);
+        return view('livewire.projects.form');
     }
 }

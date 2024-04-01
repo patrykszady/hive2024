@@ -32,7 +32,7 @@
 
         @else
             href="{{ $attributes['href'] }}"
-            wire:navigate.hover
+            {{-- wire:navigate.hover --}}
         @endif
 
         @if($hrefTarget)

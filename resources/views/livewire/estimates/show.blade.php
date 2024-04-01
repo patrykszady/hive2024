@@ -218,7 +218,7 @@
                                                         <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
                                                         {{-- <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-0">Save and schedule</a> --}}
                                                         {{-- <a wire:click="$dispatchTo('estimates.estimate-accept', 'accept')" wire:loading.attr="disabled" wire:loading.class="opacity-50" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-{{$index}}-3">Update Section Name</a> --}}
-                                                        <a wire:click="itemsRearrange" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-{{$index}}-3">{!! $items_rearrange == TRUE ? 'Finish Rearrange' : 'Rearrange Items' !!}</a>
+                                                        <a wire:click="itemsRearrange({{$index}})" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-{{$index}}-3">{!! $section->items_rearrange == TRUE ? 'Finish Rearrange' : 'Rearrange Items' !!}</a>
                                                         <a wire:click="sectionDuplicate({{$section->id}})" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-{{$index}}-1">Duplicate Section</a>
                                                         <a wire:click="sectionRemove({{$section->id}})" class="block px-4 py-2 text-sm text-red-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-2">Delete Section</a>
                                                     </div>
@@ -280,21 +280,17 @@
                                             </tr>
                                         </thead>
 
-                                        {{-- @if($items_rearrange == TRUE) wire:sortable="itemsRearrangeOrder" @endif --}}
-                                        {{--  @else wire:sortable.disabled="itemsRearrangeOrder" --}}
-                                        {{-- {!! $items_rearrange == TRUE ? 'wire:sortable="itemsRearrangeOrder"' : '' !!} --}}
                                         <tbody wire:sortable="itemsRearrangeOrder">
                                             {{-- line_items where section is this section_id... --}}
                                             @foreach($estimate->estimate_line_items()->where('section_id', $section->id)->orderBy('section_index', 'ASC')->get() as $key => $estimate_line_item)
                                                 <tr
                                                     class="border-b border-gray-400 hover:bg-gray-100 break-inside-auto break-after-auto"
-                                                    wire:sortable.item="{{ $estimate_line_item->id }}"
+                                                    @if($section->items_rearrange == TRUE) wire:sortable.item="{{ $estimate_line_item->id }}" @endif
                                                     wire:key="item-{{ $estimate_line_item->id }}"
                                                     wire:target="itemsRearrangeOrder"
                                                     wire:loading.attr="disabled"
                                                     wire:loading.class="opacity-50"
                                                     >
-                                                    {{-- {!! $items_rearrange == TRUE ? "wire:sortable.handle" : '' !!} --}}
                                                     <td class="hidden px-3 py-5 text-right text-gray-500 align-text-top text-md sm:table-cell bg-gray-50">{{$index + 1}}.{{$estimate_line_item->section_index}}</td>
 
                                                     <td class="pl-4 pr-3 text-md max-w-0 sm:pl-6 bg-gray-50">
@@ -315,32 +311,35 @@
                                                 </tr>
 
                                                 {{-- remove if sorting --}}
-                                                <tr
-                                                    x-data="{ items_rearrange: @entangle('items_rearrange') }"
-                                                    x-show="!items_rearrange"
-                                                    x-transition
-                                                    class="border-b border-gray-400"
-                                                    >
-                                                    {{-- first td --}}
-                                                    <td class="hidden sm:table-cell"></td>
-                                                    <td class="pb-1 pl-4 pr-3 text-md max-w-0 sm:pl-6" colspan="5">
-                                                        <div class="flex flex-col hidden mt-1 sm:block">
-                                                            <span class="text-gray-700">{{$estimate_line_item->desc}}</span>
-                                                            @if($estimate_line_item->notes)
-                                                                <hr>
-                                                                <span class="text-gray-500"><i>{{$estimate_line_item->notes}}</i></span>
-                                                            @endif
-                                                            {{-- <span class="hidden sm:inline">·</span>
-                                                            <span>$100</span> --}}
-                                                        </div>
-                                                        {{-- MOBILE VIEW DIV --}}
-                                                        <div class="flex flex-col mt-1 text-gray-500 sm:block sm:hidden">
-                                                            <span>{{$estimate_line_item->unit_type !== 'no_unit' ? $estimate_line_item->quantity . ' ' . $estimate_line_item->unit_type . ' @ ' .money($estimate_line_item->cost) . '/each' : ''}}</span>
-                                                            {{-- <span class="hidden sm:inline">·</span>
-                                                            <span>$100</span> --}}
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                @if($section->items_rearrange == FALSE)
+                                                    <tr
+                                                        {{-- : @entangle($section->items_rearrange) --}}
+                                                        {{-- x-data="{ sections.{{$index}}.items_rearrange }"
+                                                        x-show="sections.{{$index}}.items_rearrange"
+                                                        x-transition --}}
+                                                        class="border-b border-gray-400"
+                                                        >
+                                                        {{-- first td --}}
+                                                        <td class="hidden sm:table-cell"></td>
+                                                        <td class="pb-1 pl-4 pr-3 text-md max-w-0 sm:pl-6" colspan="5">
+                                                            <div class="flex flex-col hidden mt-1 sm:block">
+                                                                <span class="text-gray-700">{{$estimate_line_item->desc}}</span>
+                                                                @if($estimate_line_item->notes)
+                                                                    <hr>
+                                                                    <span class="text-gray-500"><i>{{$estimate_line_item->notes}}</i></span>
+                                                                @endif
+                                                                {{-- <span class="hidden sm:inline">·</span>
+                                                                <span>$100</span> --}}
+                                                            </div>
+                                                            {{-- MOBILE VIEW DIV --}}
+                                                            <div class="flex flex-col mt-1 text-gray-500 sm:block sm:hidden">
+                                                                <span>{{$estimate_line_item->unit_type !== 'no_unit' ? $estimate_line_item->quantity . ' ' . $estimate_line_item->unit_type . ' @ ' .money($estimate_line_item->cost) . '/each' : ''}}</span>
+                                                                {{-- <span class="hidden sm:inline">·</span>
+                                                                <span>$100</span> --}}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endif
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -360,6 +359,8 @@
                 <button
                     type="button"
                     wire:click="sectionAdd"
+                    wire:loading.attr="disabled"
+                    wire:loading.class="opacity-50"
                     class="relative block w-full p-4 text-center border-2 border-gray-300 border-dashed sm:rounded-lg hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     {{-- <svg class="w-12 h-12 mx-auto text-gray-400" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"
                         fill="none" viewBox="0 0 48 48" aria-hidden="true">

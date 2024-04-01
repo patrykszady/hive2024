@@ -15,18 +15,24 @@ class BulkMatchCreate extends Component
 {
     public BulkMatchForm $form;
 
-    public $vendors = [];
-    public $all_vendors = [];
+    public $new_vendors = [];
     public $existing_vendors = [];
     public $distributions = [];
-
+    public $new_vendor = NULL;
+    // public $split = FALSE;
     public $showModal = FALSE;
 
     protected $listeners = ['newMatch', 'updateMatch'];
 
+    // public function rules()
+    // {
+    //     return [
+    //         'split' => 'nullable'
+    //     ];
+    // }
+
     public function mount($distributions, $vendors)
     {
-        $this->existing_vendors = $vendors->toArray();
         $this->distributions = $distributions;
 
         $transactions =
@@ -37,8 +43,8 @@ class BulkMatchCreate extends Component
             Expense::whereHas('vendor')->whereDoesntHave('splits')->where('project_id', "0")->whereNull('distribution_id')
                 ->get()->groupBy('vendor_id');
 
-        $this->all_vendors = Vendor::whereIn('id', $vendors->toArray())->orWhereIn('id', $transactions->keys())->orWhereIn('id', $expenses_no_project->keys())->where('business_type', 'Retail')->orderBy('business_name')->get();
-        $this->vendors = $this->all_vendors;
+        $this->new_vendors = Vendor::whereIn('id', $transactions->keys())->orWhereIn('id', $expenses_no_project->keys())->where('business_type', 'Retail')->orderBy('business_name')->get();
+        $this->existing_vendors = Vendor::whereIn('id', $vendors)->get();
     }
 
     public function updated($field, $value)
@@ -50,20 +56,46 @@ class BulkMatchCreate extends Component
             $this->form->amount_type = '=';
         }
 
+        if($field == 'form.vendor_id' && $value != NULL && !isset($this->form->match)){
+            $this->new_vendor = Vendor::findOrFail($value);
+            $this->new_vendor->vendor_transactions =
+                $this->new_vendor->transactions()
+                ->whereDoesntHave('expense')
+                ->whereDoesntHave('check')
+                ->orderBy('amount', 'DESC')
+                ->get()
+                ->groupBy('amount')
+                ->values()
+                //converts to array?
+                ->toBase();
+
+            $this->new_vendor->vendor_expenses =
+                $this->new_vendor->expenses()
+                ->whereDoesntHave('splits')
+                ->where('project_id', "0")
+                ->whereNull('distribution_id')
+                ->orderBy('amount', 'DESC')
+                ->get()
+                ->groupBy('amount')
+                ->toBase();
+        }elseif($field == 'form.vendor_id' && $value == NULL && !isset($this->form->match)){
+            $this->new_vendor = NULL;
+        }
+
         $this->validateOnly($field);
     }
 
     public function newMatch()
     {
+        $this->new_vendor = NULL;
         $this->form->reset();
-        $this->vendors = $this->all_vendors->whereNotIn('id', $this->existing_vendors);
         $this->showModal = TRUE;
     }
 
     public function updateMatch(TransactionBulkMatch $match)
     {
+        $this->new_vendor = NULL;
         $this->form->reset();
-        $this->vendors = $this->all_vendors->whereIn('id', $this->existing_vendors);
         $this->form->setMatch($match);
         $this->showModal = TRUE;
     }

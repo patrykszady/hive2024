@@ -23,7 +23,7 @@ class EstimateShow extends Component
 
     public Estimate $estimate;
     public $sections = [];
-    public $items_rearrange = FALSE;
+    // public $items_rearrange = FALSE;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -31,12 +31,18 @@ class EstimateShow extends Component
     {
         return [
             'sections.*.name' => 'required',
+            'sections.*.items_rearrange' => 'nullable',
         ];
     }
 
     public function mount()
     {
-        $this->sections = $this->estimate->estimate_sections;
+        $this->sections =
+            $this->estimate->estimate_sections
+                ->each(function ($item, $key) {
+                    $item->items_rearrange = FALSE;
+                });
+
         //11-1-2023 MOVE to EstiamteCreate
         //start with one section and an ADD card/button for line items
         if($this->sections->isEmpty()){
@@ -112,13 +118,14 @@ class EstimateShow extends Component
         );
     }
 
-    public function itemsRearrange()
+    public function itemsRearrange($section_index)
     {
-        // $this->items_rearrange = !$this->items_rearrange;
-        if($this->items_rearrange == FALSE){
-            $this->items_rearrange = TRUE;
+        $section = $this->sections[$section_index];
+
+        if($section->items_rearrange == FALSE){
+            $section->items_rearrange = TRUE;
         }else{
-            $this->items_rearrange = FALSE;
+            $section->items_rearrange = FALSE;
         }
     }
 
@@ -142,6 +149,7 @@ class EstimateShow extends Component
                 'estimate_id' => $this->estimate->id,
                 'line_item_id' => $duplicate_section_line->line_item_id,
                 'section_id' => $section->id,
+                'section_index' => $duplicate_section_line->section_index,
                 'name' => $duplicate_section_line->name,
                 'category' => $duplicate_section_line->category,
                 'sub_category' => $duplicate_section_line->sub_category,
@@ -230,6 +238,7 @@ class EstimateShow extends Component
         $estimate = $this->estimate;
         $estimate->delete();
 
+        //con notification ?
         $this->redirectRoute('projects.show', ['project' => $estimate->project->id]);
     }
 

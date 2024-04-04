@@ -136,7 +136,7 @@
 
                     {{-- QUANTITY --}}
                     <x-forms.row
-                        wire:model.live="form.quantity"
+                        wire:model.live.debounce.500ms="form.quantity"
                         errorName="form.quantity"
                         name="quantity"
                         text="Quantity"

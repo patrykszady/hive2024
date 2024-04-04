@@ -231,7 +231,10 @@
 
                                 {{-- IF section is opened/not collapsed --}}
                                 <x-slot name="right">
-                                    <x-cards.button type="button" wire:click="$dispatchTo('line-items.estimate-line-item-create', 'addToEstimate', { section_id: {{$section->id}}, section_item_count: {{$estimate->estimate_line_items()->where('section_id', $section->id)->count()}} })">
+                                    <x-cards.button
+                                        type="button"
+                                        wire:click="$dispatchTo('line-items.estimate-line-item-create', 'addToEstimate', { section_id: {{$section->id}}, section_item_count: {{$estimate->estimate_line_items()->where('section_id', $section->id)->count()}} })"
+                                        >
                                         Add Item
                                     </x-cards.button>
                                 </x-slot>

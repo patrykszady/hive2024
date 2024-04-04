@@ -105,7 +105,7 @@ class EstimateAccept extends Component
     //new estiamte Bid
     public function newEstimateBid($section_index)
     {
-        $bid_index = count($this->bids);
+        $bid_index = $this->bids->max('type');
         $bid = Bid::create([
             'amount' => 0.00,
             'type' => $bid_index + 1,
@@ -146,8 +146,6 @@ class EstimateAccept extends Component
 
     public function save()
     {
-        // dd($this);
-
         if($this->payments_outstanding < 0){
             $this->addError('payments_remaining_error', 'Amount Remaining cannot be less than $0.00');
         }else{
@@ -173,7 +171,7 @@ class EstimateAccept extends Component
             foreach($this->bids as $bid_index => $bid){
                 $bid_sections = $this->sections->whereNotNull('bid_index')->where('bid_index', $bid_index);
 
-                if($bid_sections->isEmpty() && $bid->amount == 0.00){
+                if($bid_sections->isEmpty() && $bid_sections->sum('total') == 0.00){
                     $bid->delete();
                 }elseif(!$bid_sections->isEmpty()){
                     $bid_amount = $bid_sections->sum('total');

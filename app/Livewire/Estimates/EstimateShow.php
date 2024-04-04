@@ -88,8 +88,6 @@ class EstimateShow extends Component
         }
 
         $section->delete();
-        // $this->estimate_line_item->delete();
-        // $this->dispatch('refreshComponent')->to('estimates.estimate-show');
 
         $this->estimate_refresh();
 
@@ -107,9 +105,12 @@ class EstimateShow extends Component
     public function sectionUpdate($section_index)
     {
         $section = $this->sections[$section_index];
+        //ignore 'bid_index' attribute when saving
+            //OR put    // public $items_rearrange; on Model
+        $section->offsetUnset('items_rearrange');
         $section->save();
 
-        $this->estimate_refresh();
+        // $this->estimate_refresh();
 
         $this->dispatch('notify',
             type: 'success',
@@ -173,7 +174,6 @@ class EstimateShow extends Component
     {
         return $this->sections->sum('total');
     }
-
 
     //$type = [estimate, invoice]
     public function print($type)

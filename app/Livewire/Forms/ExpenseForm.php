@@ -351,6 +351,35 @@ class ExpenseForm extends Form
         ]);
 
         //check...
+        if(empty($this->paid_by) && isset($this->bank_account_id)){
+            if($expense_details['distribution_id']){
+                $distribution_user_id = Distribution::findOrFail($expense_details['distribution_id'])->user_id;
+                if($distribution_user_id != 0){
+                    $dist_user = $distribution_user_id;
+                }else{
+                    $dist_user = NULL;
+                }
+            }else{
+                $dist_user = NULL;
+            }
+
+            $check = Check::create([
+                'check_type' => $this->check_type,
+                'check_number' => $this->check_number,
+                'date' => $this->date,
+                'bank_account_id' => $this->bank_account_id,
+                'amount' => $this->amount,
+                //user_id if expense project = distribution
+                'user_id' => $dist_user,
+                'vendor_id' => $this->vendor_id,
+                'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+                'created_by_user_id' => auth()->user()->id,
+            ]);
+
+            $this->expense->update([
+                'check_id' => $check->id
+            ]);
+        }
 
         $this->save_splits($this->expense);
 

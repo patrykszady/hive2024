@@ -11,8 +11,7 @@ class EstimateSection extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = ['estimate_id', 'index', 'name', 'total', 'bid_id', 'created_at', 'updated_at', 'deleted_at'];
-    // protected $guarded = ['items_rearrange'];
-    public $items_rearrange;
+
 
     public function estimate()
     {

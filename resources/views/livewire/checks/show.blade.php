@@ -279,7 +279,6 @@
                             {{-- :line_details="$line_details" --}}
                             :line_title="money($expense->amount) . ' | ' . $expense->project->name"
                             href="{{route('expenses.show', $expense->id)}}"
-                            href_target="blank"
                             :bubble_message="'Expense'"
                             >
                         </x-lists.search_li>
@@ -304,7 +303,6 @@
                             {{-- :line_details="$line_details" --}}
                             :line_title="money($paid_expense->amount) . ' | ' . $paid_expense->project->name"
                             href="{{route('expenses.show', $paid_expense->id)}}"
-                            href_target="blank"
                             :bubble_message="'Expense'"
                             {{-- :checkbox="$checkbox" --}}
                             >
@@ -349,7 +347,6 @@
                     @foreach($user_paid_reimburesements as $user_distribution_expense)
                         <x-lists.search_li
                             :href="route('expenses.show', $user_distribution_expense)"
-                            href_target="blank"
                             {{-- . ' | ' . $user_distribution_expense->vendor->name  --}}
                             {{--  . ' | ' . $user_distribution_expense->distribution->name --}}
                             :line_title="money($user_distribution_expense->amount)"

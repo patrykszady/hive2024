@@ -40,12 +40,9 @@ class EstimateLineItemCreate extends Component
         ];
     }
 
-    public function selected_line_item($line_item_id)
+    public function mount()
     {
-        $this->line_item_id = $line_item_id;
-        $this->form->setLineItem($this->line_items[$line_item_id]);
-        $this->search = $this->form->line_item->name;
-        $this->form->total = $this->getTotalLineItemProperty();
+        $this->line_items = LineItem::get()->keyBy('id');
     }
 
     public function updated($field, $value)
@@ -56,15 +53,19 @@ class EstimateLineItemCreate extends Component
         }
     }
 
-    public function mount()
+    public function selected_line_item($line_item_id)
     {
-        $this->line_items = LineItem::get()->keyBy('id');
+        $this->line_item_id = $line_item_id;
+        $this->form->setLineItem($this->line_items[$line_item_id]);
+        $this->search = $this->form->line_item->name;
+        $this->form->total = $this->getTotalLineItemProperty();
     }
 
     public function getTotalLineItemProperty()
     {
         // $total = 0;
         // $total +=
+        // dd(isset($this->form->quantity));
         if($this->form->quantity == 0){
             $quantity = 0;
         }else{

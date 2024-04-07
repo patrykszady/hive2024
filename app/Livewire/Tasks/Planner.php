@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\Project;
 
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
@@ -15,15 +16,27 @@ class Planner extends Component
     public $day_tasks = [];
     public $days = [];
     public $projects = [];
+    public $week = '';
 
     //'refreshComponent' => '$refresh',
     protected $listeners = ['refresh'];
+
+    protected $queryString = [
+        'week' => ['except' => ''],
+    ];
 
     public function mount()
     {
         $this->projects = Project::status(['Active', 'Scheduled'])->keyBy('id')->sortByDesc('last_status.start_date');
 
-        $this->set_week_days(today()->format('Y-m-d'));
+        if($this->week){
+            //must be Y-m-d format, else go to else
+            $monday = $this->week;
+        }else{
+            $monday = today()->format('Y-m-d');
+        }
+
+        $this->set_week_days($monday);
 
         $this->day_tasks = $this->refresh_day_tasks();
     }
@@ -76,16 +89,20 @@ class Planner extends Component
     public function weekToggle($direction)
     {
         $current_monday = $this->days[0]['database_date'];
+
         if($direction == 'next'){
             $monday = Carbon::parse($current_monday)->addWeek()->format('Y-m-d');
         }elseif($direction == 'previous'){
             $monday = Carbon::parse($current_monday)->subWeek()->format('Y-m-d');
         }
 
+        $this->week = $monday;
+
         $this->set_week_days(today()->format($monday));
         $this->day_tasks = $this->refresh_day_tasks();
     }
 
+    #[Title('Planner')]
     public function render()
     {
         return view('livewire.tasks.planner');

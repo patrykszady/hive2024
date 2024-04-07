@@ -1,3 +1,4 @@
+{{-- wire:poll --}}
 <div>
 	<x-page.top
         h1="Project Tasks Timeline"
@@ -41,7 +42,7 @@
                 </x-slot>
             </x-cards.heading>
             <x-cards.body>
-                @if(isset($day_tasks[$project->id]))
+                {{-- @if(isset($day_tasks[$project->id])) --}}
                     <div wire:sortable-group="taskRearrange" class="grid grid-cols-6 gap-1">
                         @foreach($days as $day)
                             {{-- class="hover:bg-gray-100" --}}
@@ -50,10 +51,10 @@
                                 <ul
                                     wire:sortable-group.item-group="{{ $day['database_date'] }}"
                                     wire:sortable-group.options="{ animation: 100 }"
-                                    class="border-t-2 border-gray-100"
+                                    class="space-y-1 border-t-4 border-gray-100"
                                     >
 
-                                    {{-- @if(isset($day_tasks[$project->id])) --}}
+                                    @if(isset($day_tasks[$project->id]))
                                         @if(!$day_tasks[$project->id]->where('start_date', $day['database_date'])->isEmpty())
                                             @foreach($day_tasks[$project->id]->where('start_date', $day['database_date']) as $task)
                                                 <li
@@ -77,12 +78,12 @@
                                                 </li>
                                             @endforeach
                                         @endif
-                                    {{-- @endif --}}
+                                    @endif
                                 </ul>
                             </div>
                         @endforeach
                     </div>
-                @endif
+                {{-- @endif --}}
             </x-cards.body>
         </x-cards.wrapper>
     @endforeach

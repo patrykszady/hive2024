@@ -55,8 +55,23 @@
                         <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
                         <a
                             wire:navigate.hover
-                            href="{{route('planner.index')}}"
+                            href="{{route('projects.index')}}"
                             @class(['flex p-2 text-sm leading-6 text-gray-700 font-semibold rounded-md group gap-x-3 hover:bg-gray-50', 'bg-gray-50' => request()->routeIs('projects.*')])
+                            >
+                            <svg class="w-6 h-6 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                            </svg>
+                            Projects
+                        </a>
+                    </li>
+                    <li>
+                        <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
+                        <a
+                            wire:navigate.hover
+                            href="{{route('planner.index')}}"
+                            @class(['flex p-2 text-sm leading-6 text-gray-700 font-semibold rounded-md group gap-x-3 hover:bg-gray-50', 'bg-gray-50' => request()->routeIs('planner.*')])
                             >
                             <svg class="w-6 h-6 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor" aria-hidden="true">

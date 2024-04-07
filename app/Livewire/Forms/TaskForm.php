@@ -13,7 +13,7 @@ class TaskForm extends Form
 {
     use AuthorizesRequests;
 
-    #[Validate('nullable')]
+    #[Validate('required')]
     public $title = NULL;
 
     #[Validate('required|date|after:2017-01-01')]

@@ -57,6 +57,11 @@ class Vendor extends Model
         return $this->hasMany(Receipt::class);
     }
 
+    public function task()
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function transactions_bulk_match()
     {
         return $this->hasMany(TransactionBulkMatch::class);

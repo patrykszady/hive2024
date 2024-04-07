@@ -134,7 +134,7 @@
                                                 @foreach($expense->receipt->receipt_items->items as $index => $item)
                                                     <div class="border-t-4">
                                                         @include('livewire.receipts.receipt_view',
-                                                            ['split_true' => isset($expense->receipt_items) ? $expense->receipt_items[$index]['checkbox'] == true ? true : false : true])
+                                                            ['split_true' => $expense->receipt_items && $expense->receipt_items[$index]['checkbox'] == true ? true : false])
                                                     </div>
                                                 @endforeach
 

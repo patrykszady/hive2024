@@ -80,6 +80,11 @@ class User extends Authenticatable
         return $this->hasMany(Timesheet::class);
     }
 
+    public function task()
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function distributions()
     {
         return $this->hasMany(Distribution::class);

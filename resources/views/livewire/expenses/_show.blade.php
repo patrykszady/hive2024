@@ -264,7 +264,6 @@
 
 					<x-lists.search_li
                         href="{{$split->distribution ? route('distributions.show', $split->distribution->id) : route('projects.show', $split->project->id)}}"
-                        :href_target="'_blank'"
 						:line_details="$line_details"
 						:line_title="money($split->amount)"
 						:bubble_message="$split->distribution ? 'Distribution' : 'Project'"

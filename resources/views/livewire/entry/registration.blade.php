@@ -15,7 +15,7 @@
                     <label for="user_cell" class="block text-sm font-medium text-gray-700">Cell Phone Number</label>
                     <div class="mt-1">
                         <input
-                            wire:model.live.debounce.1000ms="user_cell"
+                            wire:model.live="user_cell"
                             id="user_cell"
                             name="user_cell"
                             type="tel"
@@ -41,10 +41,9 @@
                     <div>
                         {{-- only enable when user_cell passes validation.. --}}
                         <button
-                            {{-- x-cloak --}}
                             wire:click="user_cell_confirm"
                             type="button"
-                            class="flex justify-center w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            class="flex justify-center w-full px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm font-small hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                             Confirm Number
                         </button>
@@ -109,7 +108,7 @@
                                 {{-- x-bind:disabled="{{isset($user) ? isset($user['id']) || isset($user['email']) ? true : false : false}}" --}}
                                 class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none disabled:opacity-50 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                             >
-                            <span class="text-sm" x-show="!show_name && !validate_email"><i>Make sure this your personal email address and NOT your main business email.</i></span>
+                            <span class="text-sm" x-show="!show_name && !validate_email"><i><b>Personal email</b> NOT your business email.</i></span>
                         </div>
                         <x-forms.error errorName="user.email" />
                     </div>

@@ -2,23 +2,92 @@
 
 namespace App\Livewire\Tasks;
 
+use App\Models\Task;
+use App\Models\Project;
+
 use Livewire\Component;
 
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 
 class Planner extends Component
 {
+    public $day_tasks = [];
+    public $days = [];
+    public $projects = [];
+
+    //'refreshComponent' => '$refresh',
+    protected $listeners = ['refresh'];
+
+    public function mount()
+    {
+        $this->projects = Project::status(['Active', 'Scheduled'])->keyBy('id')->sortByDesc('last_status.start_date');
+
+        $this->set_week_days(today()->format('Y-m-d'));
+
+        $this->day_tasks = $this->refresh_day_tasks();
+    }
+
+    public function refresh()
+    {
+        $this->day_tasks = $this->refresh_day_tasks();
+    }
+
+    public function refresh_day_tasks()
+    {
+        return Task::orderBy('position')->with(['vendor', 'user'])->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[5]['database_date']])->get()->groupBy('project_id', 'start_date')->toBase();
+    }
+
+    public function set_week_days($monday)
+    {
+        //carbon period
+        $days = new \DatePeriod(
+            Carbon::parse($monday)->startOfWeek(Carbon::MONDAY),
+            CarbonInterval::day(),
+            Carbon::parse($monday)->startOfWeek(Carbon::MONDAY)->endOfWeek(Carbon::SATURDAY)
+        );
+
+        $this->days = [];
+        foreach($days as $confirmed_date){
+            $this->days[] = [
+                'database_date' => $confirmed_date->format('Y-m-d'),
+                'formatted_date' => $confirmed_date->format('D, m/d')
+            ];
+        }
+    }
+
+    public function taskRearrange($list)
+    {
+        foreach($list as $day_items)
+        {
+            foreach($day_items['items'] as $item)
+            {
+                $task = Task::findOrFail($item['value']);
+                $task->start_date = $day_items['value'];
+                $task->position = $item['order'];
+                $task->save();
+            }
+        }
+
+        $this->day_tasks = $this->refresh_day_tasks();
+        $this->render();
+    }
+
+    public function weekToggle($direction)
+    {
+        $current_monday = $this->days[0]['database_date'];
+        if($direction == 'next'){
+            $monday = Carbon::parse($current_monday)->addWeek()->format('Y-m-d');
+        }elseif($direction == 'previous'){
+            $monday = Carbon::parse($current_monday)->subWeek()->format('Y-m-d');
+        }
+
+        $this->set_week_days(today()->format($monday));
+        $this->day_tasks = $this->refresh_day_tasks();
+    }
+
     public function render()
     {
-        $ganttChartTable = new \Helvetitec\LagoonCharts\DataTables\GanttChartTable();
-
-        $ganttChartTable->addTask("test1", "Test1", Carbon::now(), Carbon::now()->copy()->addMonth(), 30, 100, null);
-        $ganttChartTable->addTask("test2", "Test2", Carbon::now()->copy()->addMonth(), Carbon::now()->copy()->addMonths(2), 30, 100, "test1");
-
-        $data = $ganttChartTable->__toString(); //IMPORTANT USE __toString() here!
-
-        return view('livewire.tasks.planner', [
-            'data' => $data,
-        ]);
+        return view('livewire.tasks.planner');
     }
 }

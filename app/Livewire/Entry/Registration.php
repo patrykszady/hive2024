@@ -25,7 +25,7 @@ class Registration extends Component
     public User $user;
 
     #[Validate]
-    public $user_cell = '';
+    public $user_cell = NULL;
 
     #[Validate]
     public $cell_verification_code = '';

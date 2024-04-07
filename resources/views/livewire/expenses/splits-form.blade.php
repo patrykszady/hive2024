@@ -95,10 +95,10 @@
                                                     <tbody class="bg-white divide-y divide-gray-200">
                                                         @foreach($expense_line_items->items as $line_item_index => $line_item)
                                                             <!-- Selected: "bg-gray-50" -->
-                                                            <tr class="{{$split['items'][$line_item_index]['checkbox'] == TRUE ? 'bg-gray-50' : ''}}">
+                                                            <tr class="{{$split['items'] && $split['items'][$line_item_index]['checkbox'] == TRUE ? 'bg-gray-50' : ''}}">
                                                                 <td class="relative px-7 sm:w-12 sm:px-6">
                                                                     <!-- Selected row marker, only show when row is selected. -->
-                                                                    @if($split['items'][$line_item_index]['checkbox'] == TRUE)
+                                                                    @if($split['items'] && $split['items'][$line_item_index]['checkbox'] == TRUE)
                                                                         <div class="absolute inset-y-0 left-0 w-0.5 bg-indigo-600"></div>
                                                                     @endif
 
@@ -111,7 +111,7 @@
                                                                     >
                                                                 </td>
                                                                 <!-- Selected: "text-indigo-600", Not Selected: "text-gray-900" -->
-                                                                <td class="py-4 pr-3 text-sm {{$split['items'][$line_item_index]['checkbox'] == TRUE ? 'text-indigo-600' : (isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'text-gray-200' : 'text-gray-600' : 'text-gray-600')}} whitespace-nowrap">{{$line_item->desc}}</td>
+                                                                <td class="py-4 pr-3 text-sm {{$split['items'] && $split['items'][$line_item_index]['checkbox'] == TRUE ? 'text-indigo-600' : (isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'text-gray-200' : 'text-gray-600' : 'text-gray-600')}} whitespace-nowrap">{{$line_item->desc}}</td>
                                                                 <td class="px-3 py-4 text-sm {{isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'text-gray-200' : 'text-gray-500' : 'text-gray-500'}} whitespace-nowrap">{{$line_item->quantity}}</td>
                                                                 <td class="px-3 py-4 text-sm {{isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'text-gray-200' : 'text-gray-500' : 'text-gray-500'}} whitespace-nowrap">{{money($line_item->price_each)}}</td>
                                                                 <td class="px-3 py-4 text-sm {{isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'text-gray-200' : 'text-gray-500' : 'text-gray-500'}} whitespace-nowrap">{{money($line_item->price_total)}}</td>

@@ -46,7 +46,7 @@ class EmailVerificationCode extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.email_verification_code'
+            markdown: 'emails.email_verification_code'
             // text: 'emails.email_verification_code-text'
         );
     }

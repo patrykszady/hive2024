@@ -1,3 +1,10 @@
+@props([
+    'left' => null,
+    'right' => null,
+    'h1' => null,
+    'p' => null
+    ])
+
 <div
     class="max-w-xl px-4 pb-5 mx-auto mb-1 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-5xl lg:px-8">
     <div class="flex items-center space-x-5">
@@ -18,7 +25,7 @@
             </p>
         </div>
     </div>
-
+{{--
     @if(!empty($rightButtonHref))
         <div
             class="flex flex-col-reverse hidden mt-6 space-y-4 space-y-reverse justify-stretch md:block lg:flex-row-reverse lg:justify-end lg:space-x-reverse lg:space-y-0 lg:space-x-3 md:mt-0 md:flex-row md:space-x-3"
@@ -27,7 +34,9 @@
                 {{$rightButtonText}}
             </x-cards.button>
         </div>
-    @endif
+    @endif --}}
+
+    {{$right}}
 </div>
 
 {{-- <br> --}}

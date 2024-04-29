@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="h-full bg-gray-200" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html class="h-full bg-gray-50" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     @include('components.layouts.head')
     {{-- class="font-sans antialiased" --}}
     <body class="h-full">
@@ -103,26 +103,6 @@
             <main class="py-10 lg:pl-72">
                 <div class="px-4 sm:px-6 lg:px-8">
                     <!-- Your content -->
-                    {{-- <div class="p-4 mb-5 rounded-md bg-red-50 noprint">
-                        <div class="flex">
-                            <div class="flex-shrink-0">
-                                <svg class="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-lg font-bold text-red-800">Zmiany! Nie wszystko działa</h3>
-                                <div class="mt-2 text-sm text-red-700">
-                                <ul role="list" class="pl-5 space-y-1 list-disc">
-                                    <li>Zadzwoń do mnie jeśli napotkasz problemy. Zrób zrzut ekranu.</li>
-                                    <li>Wszystko wygląda tak samo, ale wprowadziliśmy wiele zmian w backendzie.</li>
-                                    <li>Musimy mieć pewność, że wszystko działa zgodnie z oczekiwaniami. Proszę zadzwonić przed KAŻDYM przesłaniem..</li>
-                                    <li>Thank you, Patryk. haha - thank you Google translate. </li>
-                                </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
                     {{ $slot }}
 
 
@@ -149,9 +129,13 @@
                 </div>
             </main>
         </div>
-        {{-- @lagoonScripts('en', 'gantt') --}}
-        @livewireScripts
+
+
+
         {{-- <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v1.x.x/dist/livewire-sortable.js"></script> --}}
         <script src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
+        {{-- @lagoonScripts('en', 'gantt') --}}
+        @livewireScripts
+
     </body>
 </html>

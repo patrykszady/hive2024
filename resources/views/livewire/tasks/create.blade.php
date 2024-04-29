@@ -30,7 +30,9 @@
                     name="title"
                     text="Title"
                     type="text"
-                    placeholder="Automatic">
+                    placeholder="Automatic"
+                    autofocus
+                    >
                 </x-forms.row>
 
                 {{-- DATE --}}
@@ -40,9 +42,26 @@
                     name="start_date"
                     text="Start Date"
                     type="date"
-                    autofocus
                     >
                 </x-forms.row>
+
+                {{-- DURATION --}}
+                <x-forms.row
+                    wire:model.live="form.duration"
+                    errorName="form.duration"
+                    name="duration"
+                    text="Duration"
+                    type="dropdown"
+                    >
+                    <option value="1">1 Day</option>
+                    <option value="2">2 Days</option>
+                    <option value="3">3 Days</option>
+                    <option value="4">4 Days</option>
+                    <option value="5">5 Days</option>
+                    <option value="6">6 Days</option>
+                    <option value="7">7 Days</option>
+                </x-forms.row>
+
                 {{-- PROJECT --}}
                 <x-forms.row
                     wire:model.live="form.project_id"
@@ -79,7 +98,7 @@
                     text="Team Member"
                     type="dropdown"
                     >
-                    <option value="" readonly>Select Team Member</option>
+                    <option value="NULL" readonly>Select Team Member</option>
                     @foreach ($employees as $employee)
                         <option value="{{$employee->id}}">{{$employee->first_name}}</option>
                     @endforeach

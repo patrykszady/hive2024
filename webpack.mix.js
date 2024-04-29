@@ -16,3 +16,11 @@ mix.js('resources/js/app.js', 'public/js')
         require('tailwindcss'),
         require('autoprefixer'),
     ]);
+
+// mix.scripts([
+//     'node_modules/gridstack/dist/gridstack-all.js'
+//     ],  'public/js/app.js')
+
+// .styles([
+//     'node_modules/gridstack/dist/gridstack.min.css'
+// ],  'public/css/app.css');

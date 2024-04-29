@@ -22,6 +22,7 @@
     "dependencies": {
         "@nesk/puphpeteer": "^2.0.0",
         "@zoon/puphpeteer": "github:zoonru/puphpeteer",
+        "gridstack": "^10.1.2",
         "puppeteer": "^14.4.1",
         "puppeteer-extra": "^3.3.6",
         "puppeteer-extra-plugin-adblocker": "^2.13.6",

@@ -1,4 +1,5 @@
-{{-- wire:poll --}}
+
+
 <div>
 	<x-page.top
         h1="Project Tasks Timeline"
@@ -8,13 +9,13 @@
             <button
                 wire:click="weekToggle('previous')"
                 type="button"
-                {{-- x-bind:disabled="submit_disabled" --}}
-                {{-- x-on:click="open = false" --}}
                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                 < Previous Week
             </button>
+            <br class="hidden:md">
             <span>{{$days[0]['formatted_date'] . ' - ' . $days[5]['formatted_date']}}</span>
+            <br class="hidden:md">
             <button
                 wire:click="weekToggle('next')"
                 type="button"
@@ -25,7 +26,7 @@
         </x-slot>
     </x-page.top>
 
-    @foreach($projects as $project)
+    @foreach($projects as $project_index => $project)
         <x-cards.wrapper class="max-w-5xl mb-4">
             <x-cards.heading>
                 <x-slot name="left">
@@ -41,52 +42,111 @@
                     </x-cards.button>
                 </x-slot>
             </x-cards.heading>
+
             <x-cards.body>
-                {{-- @if(isset($day_tasks[$project->id])) --}}
-                    <div wire:sortable-group="taskRearrange" class="grid grid-cols-6 gap-1">
-                        @foreach($days as $day)
-                            {{-- class="hover:bg-gray-100" --}}
-                            <div wire:key="group-{{ $day['database_date'] }}">
-                                <h5 class="ml-1">{{ $day['formatted_date'] }}</h5>
-                                <ul
-                                    wire:sortable-group.item-group="{{ $day['database_date'] }}"
-                                    wire:sortable-group.options="{ animation: 100 }"
-                                    class="space-y-1 border-t-4 border-gray-100"
+                <div class="grid grid-cols-7 gap-1">
+                    @foreach($days as $day_index => $day)
+                        <div>
+                            <h5
+                                wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}}, day_index: {{$day_index}} })"
+                                class="ml-1 border-r cursor-pointer hover:bg-gray-100"
+                                >
+                                {{ $day['formatted_date'] }}
+                            </h5>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div
+                    class="bg-white grid-stack"
+                    x-data="{
+                        init() {
+                            let grids = GridStack.initAll({
+                                column: 7,
+                                cellHeight: '60px',
+                                cellWidth: '100px',
+                                float: false,
+                                resizable: {
+                                    handles: 'w, e'
+                                },
+                                margin: 2
+                            });
+
+                            grids[{{$project_index}}].on('change', function(event, items) {
+                                let newItems = [];
+
+                                items.forEach ((el) => {
+                                    newItems.push({_id: el._id, x: el.x, y: el.y, w: el.w, task_id: el.id});
+                                });
+
+                                $wire.taskMoved(newItems);
+                            });
+                        }
+                    }"
+                    >
+
+                    @foreach($days as $day_index => $day)
+                        @foreach(
+                            $project->tasks->where('date', $day['database_date']) as $task)
+                            {{--                           ->where(function ($query) use ($day){
+                                    $query->where('start_date', $day['database_date'])
+                                        ->orWhere('end_date', $day['database_date']);
+                                }) --}}
+                            <div
+                                class="grid-stack-item"
+                                gs-id="{{$task->id}}" gs-x="{{$task->direction == 'left' ? $day_index : 0}}" gs-y="{{$task->order}}" gs-w="{{$task->direction == 'left' ? (7 - $day_index < $task->duration ? 7 - $day_index : $task->duration) : $day_index}}"
+                                >
+                                <div
+                                    wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
+                                    class="
+                                        p-1 bg-gray-100 border-{{$task->direction == 'right' ? 'r' : 'l'}}-4 cursor-pointer grid-stack-item-content hover:bg-gray-200
+                                        {{ $task->type == 'Milestone' ? 'border-green-600' : '' }}  {{ $task->type == 'Material' ? 'border-yellow-600' : '' }} {{ $task->type == 'Task' ? 'border-indigo-600' : '' }}
+                                    "
                                     >
 
-                                    @if(isset($day_tasks[$project->id]))
-                                        @if(!$day_tasks[$project->id]->where('start_date', $day['database_date'])->isEmpty())
-                                            @foreach($day_tasks[$project->id]->where('start_date', $day['database_date']) as $task)
-                                                <li
-                                                    wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task}} })"
-                                                    wire:sortable-group.item="{{ $task->id }}"
-                                                    wire:sortable-group.handle
-                                                    wire:key="task-{{ $task->id }}"
-                                                    class="p-2 bg-gray-100 border-l-4 border-indigo-600 cursor-pointer hover:bg-gray-200 {{ $task->type == 'Milestone' ? 'border-dashed' : '' }} {{ $task->type == 'Material' ? 'border-double' : '' }}"
-                                                    >
-                                                    <span class="text-indigo-600">{{Str::limit($task->title, 15)}}</span>
-
-                                                    @if($task->vendor)
-                                                        <br>
-                                                        <span class="text-sm font-medium text-gray-600">{{Str::limit($task->vendor->name, 15)}}</span>
-                                                    @endif
-
-                                                    @if($task->user)
-                                                        <br>
-                                                        <span class="text-sm font-medium text-gray-600">{{Str::limit($task->user->first_name, 15)}}</span>
-                                                    @endif
-                                                </li>
-                                            @endforeach
-                                        @endif
+                                    @if($task->direction == 'left' && 7 - $day_index < $task->duration)
+                                        <div class="flex float-right fill-gray-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400 ">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                            </svg>
+                                        </div>
+                                    @elseif($task->direction == 'right')
+                                        <div class="flex float-left fill-gray-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400 ">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                                            </svg>
+                                        </div>
                                     @endif
-                                </ul>
+
+                                    <span
+                                        class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
+                                        >
+                                        {{-- {{Str::limit($task->title, 15)}} --}}
+                                        {{$task->title}}
+                                    </span>
+
+                                    @if($task->vendor)
+                                        <br>
+                                        <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->vendor->name, 15}}</span>
+                                    @endif
+
+                                    @if($task->user)
+                                        <br>
+                                        <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->user->first_name, 15}}</span>
+                                    @endif
+                                </div>
                             </div>
                         @endforeach
-                    </div>
-                {{-- @endif --}}
+                    @endforeach
+                </div>
             </x-cards.body>
         </x-cards.wrapper>
     @endforeach
 
-    <livewire:tasks.task-create :projects="$projects"/>
+    <livewire:tasks.task-create :projects="$projects" :days="$days"/>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-all.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-extra.min.css">
 </div>
+

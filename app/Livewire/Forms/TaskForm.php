@@ -9,6 +9,8 @@ use Livewire\Form;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+use Carbon\Carbon;
+
 class TaskForm extends Form
 {
     use AuthorizesRequests;
@@ -19,8 +21,17 @@ class TaskForm extends Form
     #[Validate('required|date|after:2017-01-01')]
     public $start_date = NULL;
 
+    #[Validate('nullable|date|after:2017-01-01')]
+    public $end_date = NULL;
+
     #[Validate('required')]
     public $project_id = NULL;
+
+    #[Validate('required')]
+    public $duration = NULL;
+
+    #[Validate('nullable')]
+    public $order = NULL;
 
     #[Validate('nullable')]
     public $vendor_id = NULL;
@@ -41,7 +52,10 @@ class TaskForm extends Form
         $this->task = $task;
 
         $this->start_date = $task->start_date;
+        $this->end_date = $task->end_date;
         $this->project_id = $task->project_id;
+        $this->order = $task->order;
+        $this->duration = $task->duration;
         $this->vendor_id = $task->vendor_id;
         $this->type = $task->type;
         $this->title = $task->title;
@@ -68,14 +82,16 @@ class TaskForm extends Form
         $this->validate();
         $task = $this->task->update([
             'start_date' => $this->start_date,
+            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration)->format('Y-m-d'),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,
             'user_id' => $this->user_id,
             'title' => $this->title,
             'notes' => $this->notes,
-            'position' => 1,
-            'duration' => 1,
+            // 'position' => 1,
+            'duration' => $this->duration,
+            'order' => $this->order,
             'belongs_to_vendor_id' => auth()->user()->vendor->id,
             'created_by_user_id' => auth()->user()->id,
         ]);
@@ -89,14 +105,16 @@ class TaskForm extends Form
         $this->validate();
         $task = Task::create([
             'start_date' => $this->start_date,
+            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration)->format('Y-m-d'),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,
             'user_id' => $this->user_id,
             'title' => $this->title,
             'notes' => $this->notes,
-            'position' => 1,
-            'duration' => 1,
+            // 'position' => 1,
+            'order' => 1,
+            'duration' => $this->duration,
             'belongs_to_vendor_id' => auth()->user()->vendor->id,
             'created_by_user_id' => auth()->user()->id,
         ]);

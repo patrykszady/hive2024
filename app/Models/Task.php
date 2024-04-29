@@ -10,12 +10,18 @@ class Task extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['title', 'project_id', 'start_date', 'position', 'type', 'vendor_id', 'user_id', 'progress', 'notes', 'belongs_to_vendor_id', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['title', 'project_id', 'start_date', 'end_date', 'duration', 'order', 'type', 'vendor_id', 'user_id', 'progress', 'notes', 'belongs_to_vendor_id', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
 
+    // protected $appends = ['date'];
     // protected $casts = [
     //     'start_date' => 'date:Y-m-d',
     //     'deleted_at' => 'date:Y-m-d',
     // ];
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 
     public function vendor()
     {

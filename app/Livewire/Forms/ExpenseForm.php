@@ -220,7 +220,7 @@ class ExpenseForm extends Form
         //09-05-2023 need to get the file extention here... not a boolen
         // $this->receipt_file = $this->expense->receipts()->exists();
 
-        $this->expense_transactions_sum = $this->expense->transactions->sum('amount') == $this->expense->amount ? true : false;
+        $this->expense_transactions_sum = $this->expense->transactions->sum('amount') == $this->expense->amount && $this->expense->transactions->sum('amount') != '0.00' ? true : false;
     }
 
     public function expenseDetails()

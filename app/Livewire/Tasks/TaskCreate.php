@@ -16,8 +16,10 @@ class TaskCreate extends Component
     use AuthorizesRequests;
 
     public TaskForm $form;
-    //$projects come from the Planner component
+    //$projects and $days come from the Planner Component
     public $projects = [];
+    public $days = [];
+
     public $vendors = [];
     public $employees = [];
 
@@ -29,7 +31,6 @@ class TaskCreate extends Component
 
     public $showModal = FALSE;
 
-    //'refreshComponent' => '$refresh',
     protected $listeners = ['editTask', 'addTask'];
 
     public function mount()
@@ -38,7 +39,7 @@ class TaskCreate extends Component
         $this->employees = auth()->user()->vendor->users()->employed()->get();
     }
 
-    public function addTask($project_id)
+    public function addTask($project_id, $day_index = NULL)
     {
         $this->form->reset();
 
@@ -48,7 +49,13 @@ class TaskCreate extends Component
             'form_submit' => 'save',
         ];
 
-        $this->form->start_date = today()->format('Y-m-d');
+        if($day_index){
+            $date = $this->days[$day_index]['database_date'];
+        }else{
+            $date = today()->format('Y-m-d');
+        }
+
+        $this->form->start_date = $date;
         $this->form->project_id = $project_id;
         $this->showModal = TRUE;
     }
@@ -74,10 +81,7 @@ class TaskCreate extends Component
             content: 'Task Created'
         );
 
-        $this->dispatch('refresh')->to(Planner::class);
-        // $this->dispatch('refreshParentComponent');
-        // $this->dispatch('refresh')->to('tasks.planner');
-
+        $this->dispatch('refresh_test')->to(Planner::class);
         $this->showModal = FALSE;
     }
 
@@ -90,10 +94,7 @@ class TaskCreate extends Component
             content: 'Task Updated'
         );
 
-        $this->dispatch('refresh')->to(Planner::class);
-        // $this->dispatch('refreshParentComponent');
-        // $this->dispatch('refresh')->to('tasks.planner');
-
+        $this->dispatch('refresh_test')->to(Planner::class);
         $this->showModal = FALSE;
     }
 

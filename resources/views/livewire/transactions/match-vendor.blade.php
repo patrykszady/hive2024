@@ -105,17 +105,17 @@
         @endforeach
 
         <x-cards.wrapper class="max-w-2xl pt-4 mx-auto lg:max-w-3xl">
-            <x-cards.footer>
-                <button>
-                </button>
-                <button
-                    type="submit"
-                    {{-- wire:model.live="match_merchant_names.{{ $key }}"  --}}
-                    {{-- x-bind:disabled="expense.project_id" --}}
-                    class="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    {{$view_text['button_text']}}
-                </button>
-            </x-cards.footer>
+            <x-cards.heading>
+                <x-slot name="right">
+                    <button
+                        type="submit"
+                        {{-- wire:model.live="match_merchant_names.{{ $key }}"  --}}
+                        {{-- x-bind:disabled="expense.project_id" --}}
+                        class="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        {{$view_text['button_text']}}
+                    </button>
+                </x-slot>
+            </x-cards.heading>
         </x-cards.wrapper>
     </form>
 
@@ -220,18 +220,17 @@
         @endforeach
 
         <x-cards.wrapper class="max-w-2xl pt-4 mx-auto lg:max-w-3xl">
-            <x-cards.footer>
-                <button>
-                </button>
-                <button
-                    type="submit"
-                    {{-- wire:model.live="match_merchant_names.{{ $key }}"  --}}
-                    {{-- x-bind:disabled="expense.project_id" --}}
-                    class="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    {{-- {{$view_text['button_text']}} --}}
-                    Sync Expenses & Vendors
-                </button>
-            </x-cards.footer>
+            <x-cards.heading>
+                <x-slot name="right">
+                    <button
+                        type="submit"
+                        {{-- wire:model.live="match_merchant_names.{{ $key }}"  --}}
+                        {{-- x-bind:disabled="expense.project_id" --}}
+                        class="inline-flex justify-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Sync Expenses & Vendors
+                    </button>
+                </x-slot>
+            </x-cards.heading>
         </x-cards.wrapper>
     </form>
 </div>

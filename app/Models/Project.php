@@ -89,6 +89,11 @@ class Project extends Model
         return $this->hasMany(Hour::class);
     }
 
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
     public function timesheets()
     {
         return $this->hasMany(Timesheet::class);

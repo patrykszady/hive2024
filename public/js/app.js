@@ -2061,6 +2061,19 @@ module.exports = {
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
+// import GridStack from 'gridstack';
+// import 'gridstack/dist/gridstack.min.css';
+
+// const grid = new GridStack.initAll({
+//     column: 6,
+//     cellHeight: '60px',
+//     cellWidth: '100px',
+//     float: false,
+//     resizable: {
+//         handles: 'e'
+//     },
+//     margin: 2
+// });
 
 /***/ }),
 

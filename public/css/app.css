@@ -2,6 +2,198 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities'; */
 
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 200;
+
+  src: url(/fonts/nunito-v26-latin-200.woff2?552ccebe30987f17a5c2373bf601c78b) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 200;
+
+  src: url(/fonts/nunito-v26-latin-200italic.woff2?a95adca99d24dfc8c294dd6d1a47c6d7) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 300;
+
+  src: url(/fonts/nunito-v26-latin-300.woff2?b632ea72699e1f086d08bff7b73e251f) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 300;
+
+  src: url(/fonts/nunito-v26-latin-300italic.woff2?50d1c13dee384e023a7ca5ea18df606a) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 500;
+
+  src: url(/fonts/nunito-v26-latin-500.woff2?64f54a72c7932f832142eebf4d84a8a1) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 500;
+
+  src: url(/fonts/nunito-v26-latin-500italic.woff2?09ce58da29c7bb6b269287fb47eec791) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 600;
+
+  src: url(/fonts/nunito-v26-latin-600.woff2?5b82b8a2bb6b87b493f4081a46ce610a) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 600;
+
+  src: url(/fonts/nunito-v26-latin-600italic.woff2?ca0e030305691311e0f02bc31d0c63c0) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 700;
+
+  src: url(/fonts/nunito-v26-latin-700.woff2?6a5cf87e324af2e9c4a17813eede73b9) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 700;
+
+  src: url(/fonts/nunito-v26-latin-700italic.woff2?b4bf5076dc389e9eb96d58f38910a7c2) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 800;
+
+  src: url(/fonts/nunito-v26-latin-800.woff2?6e265e4c9609221bbcfc245d1e07aca0) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 800;
+
+  src: url(/fonts/nunito-v26-latin-800italic.woff2?96ffee6609bf972b760d286d7e9ed63c) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 900;
+
+  src: url(/fonts/nunito-v26-latin-900.woff2?cf9c391af221e647fd7015710a3933f9) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 900;
+
+  src: url(/fonts/nunito-v26-latin-900italic.woff2?77c87780a018c2c664a41accb5e69fb9) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: italic;
+
+  font-weight: 400;
+
+  src: url(/fonts/nunito-v26-latin-italic.woff2?f0c32eacc87a22a7f92f6568a860b99f) format('woff2');
+}
+
+@font-face {
+  font-display: swap;
+
+  font-family: 'Nunito';
+
+  font-style: normal;
+
+  font-weight: 400;
+
+  src: url(/fonts/nunito-v26-latin-regular.woff2?9f3f4583bd7c435a198cd91bce948954) format('woff2');
+}
+
 [x-cloak] { display: none !important;
 }
 
@@ -182669,3 +182861,4 @@ select {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
+

@@ -48,7 +48,7 @@
                     @foreach($days as $day_index => $day)
                         <div>
                             <h5
-                                wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}}, day_index: {{$day_index}} })"
+                                wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}}, date: '{{ $day['database_date'] }}' })"
                                 class="ml-1 border-r cursor-pointer hover:bg-gray-100"
                                 >
                                 {{ $day['formatted_date'] }}
@@ -86,15 +86,10 @@
                     >
 
                     @foreach($days as $day_index => $day)
-                        @foreach(
-                            $project->tasks->where('date', $day['database_date']) as $task)
-                            {{--                           ->where(function ($query) use ($day){
-                                    $query->where('start_date', $day['database_date'])
-                                        ->orWhere('end_date', $day['database_date']);
-                                }) --}}
+                        @foreach($project->tasks->where('date', $day['database_date']) as $task)
                             <div
                                 class="grid-stack-item"
-                                gs-id="{{$task->id}}" gs-x="{{$task->direction == 'left' ? $day_index : 0}}" gs-y="{{$task->order}}" gs-w="{{$task->direction == 'left' ? (7 - $day_index < $task->duration ? 7 - $day_index : $task->duration) : $day_index}}"
+                                gs-id="{{$task->id}}" gs-x="{{$task->direction == 'left' ? $day_index : 0}}" gs-y="{{$task->order}}" gs-w="{{$task->direction == 'left' ? (7 - $day_index < $task->duration ? 7 - $day_index : $task->duration) : $day_index + 1}}"
                                 >
                                 <div
                                     wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
@@ -143,7 +138,8 @@
         </x-cards.wrapper>
     @endforeach
 
-    <livewire:tasks.task-create :projects="$projects" :days="$days"/>
+    {{-- :days="$days" --}}
+    <livewire:tasks.task-create :projects="$projects" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-all.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack.min.css">

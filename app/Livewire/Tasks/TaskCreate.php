@@ -16,9 +16,9 @@ class TaskCreate extends Component
     use AuthorizesRequests;
 
     public TaskForm $form;
-    //$projects and $days come from the Planner Component
+    //$projects come from the Planner Component
     public $projects = [];
-    public $days = [];
+    public $date = NULL;
 
     public $vendors = [];
     public $employees = [];
@@ -39,7 +39,7 @@ class TaskCreate extends Component
         $this->employees = auth()->user()->vendor->users()->employed()->get();
     }
 
-    public function addTask($project_id, $day_index = NULL)
+    public function addTask($project_id, $date = NULL)
     {
         $this->form->reset();
 
@@ -49,13 +49,13 @@ class TaskCreate extends Component
             'form_submit' => 'save',
         ];
 
-        if($day_index){
-            $date = $this->days[$day_index]['database_date'];
+        if($date){
+            $this->date = $date;
         }else{
-            $date = today()->format('Y-m-d');
+            $this->date = today()->format('Y-m-d');
         }
 
-        $this->form->start_date = $date;
+        $this->form->start_date = $this->date;
         $this->form->project_id = $project_id;
         $this->showModal = TRUE;
     }

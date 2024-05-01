@@ -15,6 +15,7 @@ class Planner extends Component
 {
     public $days = [];
     public $projects = [];
+    public $tasks = [];
     public $week = '';
 
     protected $listeners = ['refresh_test'];
@@ -54,9 +55,6 @@ class Planner extends Component
         //         // });
         //     }])
         //     ->status(['Active', 'Scheduled'])->sortByDesc('last_status.start_date');
-        // // dd($this->projects->first()->tasks->first());
-
-
 
         //tasks where between week,,,
         $this->projects =
@@ -80,12 +78,11 @@ class Planner extends Component
             }
         })->groupBy('project_id');
 
+        // dd($this->tasks);
         // Combine projects and tasks
         foreach($this->projects as $project_index => $project) {
             $this->projects[$project_index]->tasks = $tasks[$project->id] ?? collect();
         }
-
-        // dd($this->projects->first()->tasks);
     }
 
     public function set_week_days($monday)
@@ -110,7 +107,28 @@ class Planner extends Component
     {
         foreach($items as $item){
             $task = Task::findOrFail($item['task_id']);
-            // dd([$task, $item, $this->days[$item['x']]['database_date']]);
+
+            if(Carbon::parse($task->start_date)->between($this->days[0]['database_date'], $this->days[6]['database_date']) && Carbon::parse($task->end_date)->between($this->days[0]['database_date'], $this->days[6]['database_date'])){
+                $task->date = $task->start_date;
+                $task->direction = 'left';
+            }elseif(Carbon::parse($task->start_date)->between($this->days[0]['database_date'], $this->days[6]['database_date'])){
+                $task->date = $task->start_date;
+                $task->direction = 'left';
+            }elseif(Carbon::parse($task->end_date)->between($this->days[0]['database_date'], $this->days[6]['database_date'])){
+                $task->date = $task->end_date;
+                $task->direction = 'right';
+            }
+
+            $days = collect($this->days);
+            $day_index = $days->where('database_date', $task->date)->keys()->first();
+
+            if($task->direction == 'left' && 7 - $day_index < $task->duration){
+                $duration = ($day_index - $item['x'] ) + $task->duration;
+            }elseif($task->direction == 'right'){
+                $duration = $task->duration + $item['w'] - ($day_index + 1);
+            }else{
+                $duration = $item['w'];
+            }
 
             //if $this->days[$item['x']]['database_date'] IS BEFORE $item->start_date, add the diffInDays to $task->duration
             // $item_day = Carbon::parse($this->days[$item['x']]['database_date']);
@@ -129,10 +147,26 @@ class Planner extends Component
             //     $task->duration = $task->duration - $day_diff;
             // }
 
-            $task->duration = $item['w'];
+            // $task->makeHidden('date');
+            // $task->update([
+            //     'duration' => $duration,
+            //     'order' => $item['y'],
+            //     'start_date' => $this->days[$item['x']]['database_date'],
+            //     'end_date' => Carbon::parse($this->days[$item['x']]['database_date'])->addDays($item['w'] - 1)->format('Y-m-d')
+            // ]);
+
+            $task->duration = $duration;
             $task->order = $item['y'];
-            $task->start_date = $this->days[$item['x']]['database_date'];
-            $task->end_date = Carbon::parse($this->days[$item['x']]['database_date'])->addDays($item['w'] - 1)->format('Y-m-d');
+
+            if($task->direction == 'left'){
+                $task->start_date = $this->days[$item['x']]['database_date'];
+                $task->end_date = Carbon::parse($this->days[$item['x']]['database_date'])->addDays($duration - 1)->format('Y-m-d');
+            }else{
+                $task->end_date = Carbon::parse($task->start_date)->addDays($duration - 1)->format('Y-m-d');
+            }
+
+            unset($task->date);
+            unset($task->direction);
             $task->save();
         }
 

@@ -63,26 +63,13 @@ class TaskForm extends Form
         $this->user_id = $task->user_id;
     }
 
-    // public function create_title()
-    // {
-    //     if($this->title){
-    //         $title = $this->title;
-    //     }elseif($this->vendor_id){
-    //         $title = $this->component->vendors->find($this->vendor_id)->name;
-    //     }elseif($this->user_id){
-    //         $title = $this->component->employees->find($this->user_id)->first_name;
-    //     }
-
-    //     return $title;
-    // }
-
     public function update()
     {
         // $this->authorize('create', Expense::class);
         $this->validate();
         $task = $this->task->update([
             'start_date' => $this->start_date,
-            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration)->format('Y-m-d'),
+            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration - 1)->format('Y-m-d'),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,
@@ -105,7 +92,7 @@ class TaskForm extends Form
         $this->validate();
         $task = Task::create([
             'start_date' => $this->start_date,
-            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration)->format('Y-m-d'),
+            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration - 1)->format('Y-m-d'),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,

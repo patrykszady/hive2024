@@ -60,6 +60,13 @@
                     <option value="5">5 Days</option>
                     <option value="6">6 Days</option>
                     <option value="7">7 Days</option>
+                    <option value="8">8 Days</option>
+                    <option value="9">9 Days</option>
+                    <option value="10">10 Days</option>
+                    <option value="11">11 Days</option>
+                    <option value="12">12 Days</option>
+                    <option value="13">13 Days</option>
+                    <option value="14">14 Days</option>
                 </x-forms.row>
 
                 {{-- PROJECT --}}

@@ -69,7 +69,7 @@
                     <li>
                         <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
                         <a
-                            wire:navigate.hover
+                            {{-- wire:navigate.hover --}}
                             href="{{route('planner.index')}}"
                             @class(['flex p-2 text-sm leading-6 text-gray-700 font-semibold rounded-md group gap-x-3 hover:bg-gray-50', 'bg-gray-50' => request()->routeIs('planner.*')])
                             >

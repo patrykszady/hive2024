@@ -2,6 +2,7 @@
 
 <div>
 	<x-page.top
+        class="lg:max-w-4xl"
         h1="Project Tasks Timeline"
         p=""
         >
@@ -27,8 +28,8 @@
     </x-page.top>
 
     @foreach($projects as $project_index => $project)
-        <x-cards.wrapper class="max-w-5xl mb-4">
-            <x-cards.heading>
+        <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
+            <x-cards.heading class="mx-auto">
                 <x-slot name="left">
                     <h1 class="font-medium">{{$project->name}}</h1>
                 </x-slot>

@@ -70,6 +70,7 @@
                                 resizable: {
                                     handles: 'w, e'
                                 },
+                                alwaysShowResizeHandle: false,
                                 margin: 2
                             });
 
@@ -88,14 +89,39 @@
 
                     @foreach($days as $day_index => $day)
                         @foreach($project->tasks->where('date', $day['database_date']) as $task)
+                            @php
+                                $gs_w = $task->direction == 'left' ? (7 - $day_index < $task->duration ? 7 - $day_index : $task->duration) : $day_index + 1;
+                                $gs_x = $task->direction == 'left' ? $day_index : 0;
+                            @endphp
                             <div
-                                class="grid-stack-item"
-                                gs-id="{{$task->id}}" gs-x="{{$task->direction == 'left' ? $day_index : 0}}" gs-y="{{$task->order}}" gs-w="{{$task->direction == 'left' ? (7 - $day_index < $task->duration ? 7 - $day_index : $task->duration) : $day_index + 1}}"
+                                {{-- grid grid-cols-7 gap-1 --}}
+                                class="flex grid-stack-item"
+                                gs-id="{{$task->id}}" gs-x="{{$gs_x}}" gs-y="{{$task->order}}" gs-w="{{$gs_w}}"
                                 >
+
+                                {{-- if satruday or sunday change bg-color --}}
+                                {{-- <div class="w-full bg-gray-500"></div> --}}
+                                {{-- @if($day_index == 5)
+                                    <div class="w-1/2 m-1 bg-gray-100"></div>
+                                @endif --}}
+                                {{-- <div class="w-2/{{$gs_w}} bg-red-500"></div>  <!-- Red half --> --}}
+
+{{--
+                                <div class="w-1/3 m-1 bg-red-500"></div>
+                                <div class="w-1/3 m-1 bg-blue-500"></div>
+                                <div class="w-1/3 m-1 bg-green-500"></div>
+                                <div class="w-full bg-gray-500"></div> --}}
+                                {{-- @if($gs_w == 1)
+                                    <div class="w-full bg-gray-500"></div>
+                                @elseif($gs_w == 3)
+                                    <div class="w-1/3 m-1 bg-red-500"></div>
+                                    <div class="w-1/3 m-1 bg-blue-500"></div>
+                                    <div class="w-1/3 m-1 bg-green-500"></div>
+                                @endif --}}
+
                                 <div
                                     wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
-                                    class="
-                                        p-1 bg-gray-100 border-{{$task->direction == 'right' ? 'r' : 'l'}}-4 cursor-pointer grid-stack-item-content hover:bg-gray-200
+                                    class="bg-gray-100 p-1 bg-transparent border-{{$task->direction == 'right' ? 'r' : 'l'}}-4 cursor-pointer grid-stack-item-content hover:bg-gray-200
                                         {{ $task->type == 'Milestone' ? 'border-green-600' : '' }}  {{ $task->type == 'Material' ? 'border-yellow-600' : '' }} {{ $task->type == 'Task' ? 'border-indigo-600' : '' }}
                                     "
                                     >
@@ -131,10 +157,15 @@
                                         <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->user->first_name, 15}}</span>
                                     @endif
                                 </div>
+
+
                             </div>
                         @endforeach
                     @endforeach
                 </div>
+
+
+
             </x-cards.body>
         </x-cards.wrapper>
     @endforeach

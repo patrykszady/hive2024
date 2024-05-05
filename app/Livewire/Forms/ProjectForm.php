@@ -13,6 +13,8 @@ class ProjectForm extends Form
 {
     use AuthorizesRequests;
 
+    public ?Project $project;
+
     #[Rule('required', as: 'Client')]
     public $client_id = NULL;
 
@@ -36,6 +38,38 @@ class ProjectForm extends Form
 
     #[Rule('required', as: 'Address')]
     public $project_existing_address = NULL;
+
+    public function setProject(Project $project)
+    {
+        $this->project = $project;
+
+        $this->client_id = $project->client_id;
+        $this->project_name = $project->project_name;
+        $this->project_existing_address = 'NEW';
+
+        $this->address = $project->address;
+        $this->address_2 = $project->address_2;
+        $this->city = $project->city;
+        $this->state = $project->state;
+        $this->zip_code = $project->zip_code;
+    }
+
+    public function update()
+    {
+        $this->validate();
+
+        $this->project->update([
+            'project_name' => $this->project_name,
+            // 'client_id' => $this->client_id,
+            'address' => $this->address,
+            'address_2' => $this->address_2,
+            'city' => $this->city,
+            'state' => $this->state,
+            'zip_code' => $this->zip_code,
+        ]);
+
+        return $this->project;
+    }
 
     public function store()
     {

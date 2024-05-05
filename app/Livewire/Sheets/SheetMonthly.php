@@ -19,7 +19,7 @@ class SheetMonthly extends Component
     {
         //Carbon::yesterday()
         $end_date = Carbon::today()->endOfMonth();
-        $start_date = Carbon::today()->startOfMonth()->subMonths(11);
+        $start_date = Carbon::today()->startOfMonth()->subMonths(12);
 
         // Create a period between the start and end dates
         $period = CarbonPeriod::create($start_date, '1 month', $end_date);
@@ -43,9 +43,6 @@ class SheetMonthly extends Component
         foreach($monthly_payments as $month => $payments){
             $this->months[$month]['monthly_payments'] = $payments;
         }
-
-
-
 
         $monthly_expenses =
             Expense::

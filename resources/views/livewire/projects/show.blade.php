@@ -1,5 +1,6 @@
 <div>
 	<x-page.top
+        class="lg:max-w-4xl"
         h1="{!! $project->name !!}"
         p="{!! $project->client->name !!}"
 		{{-- right_button_href="{{auth()->user()->can('update', $project) ? route('estimates.create', $project->id) : ''}}"
@@ -20,7 +21,9 @@
 					@can('update', $project)
 						<x-slot name="right">
                             {{-- {{route('projects.show', $project->id)}} --}}
-							<x-cards.button href="#">
+							<x-cards.button
+                                wire:click="$dispatchTo('projects.project-create', 'editProject', { project: {{$project->id}}})"
+                                >
 								Edit Project
 							</x-cards.button>
 						</x-slot>
@@ -288,5 +291,7 @@
             </div>
 		@endcan
 	</div>
+
+    <livewire:projects.project-create />
 </div>
 

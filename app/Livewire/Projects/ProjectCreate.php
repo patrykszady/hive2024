@@ -5,6 +5,7 @@ namespace App\Livewire\Projects;
 use App\Livewire\Forms\ProjectForm;
 
 use App\Models\Project;
+use App\Models\Client;
 use Livewire\Component;
 
 // use Illuminate\Support\Facades\Validator;
@@ -16,23 +17,25 @@ class ProjectCreate extends Component
 
     public ProjectForm $form;
 
+    public Project $project;
+
     public $view_text = [
         'card_title' => 'Create Project',
         'button_text' => 'Create',
         'form_submit' => 'save',
     ];
 
-    public $clients;
+    public $clients = [];
     public $existing_client = NULL;
     public $client_addresses = [];
 
     public $showModal = FALSE;
 
-    protected $listeners = ['newProject'];
+    protected $listeners = ['newProject', 'editProject'];
 
-    public function mount($clients)
+    public function mount()
     {
-        $this->clients = $clients;
+        $this->clients = Client::all();
     }
 
     public function updated($field, $value)
@@ -134,8 +137,32 @@ class ProjectCreate extends Component
                     ]);
             }else{
                 $this->client_addresses = $this->client_addresses->unique('address');
+                $client_address = $this->client_addresses->first();
+
+                $this->form->project_existing_address = $client_address->id;
+                $this->form->address = $client_address->address;
+                $this->form->address_2 = $client_address->address_2;
+                $this->form->city = $client_address->city;
+                $this->form->state = $client_address->state;
+                $this->form->zip_code = $client_address->zip_code;
             }
         }
+
+        $this->showModal = TRUE;
+    }
+
+    public function editProject(Project $project)
+    {
+        $this->project = $project;
+
+        $this->form->setProject($this->project);
+        $this->existing_client = $this->project->client;
+
+        $this->view_text = [
+            'card_title' => 'Update Project',
+            'button_text' => 'Update',
+            'form_submit' => 'edit',
+        ];
 
         $this->showModal = TRUE;
     }
@@ -146,6 +173,21 @@ class ProjectCreate extends Component
 
         //9-1-2023 NOTIFICATIONS when we redirect with Livewire...
         return redirect(route('projects.show', $project->id));
+    }
+
+    public function edit()
+    {
+        $project = $this->form->update();
+
+        $this->showModal = FALSE;
+
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Project Updated',
+            // route: 'clients/' . $client->id
+        );
+
+        $this->dispatch('refreshComponent')->to('projects.project-show');
     }
 
     public function render()

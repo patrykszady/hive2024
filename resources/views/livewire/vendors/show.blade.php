@@ -27,4 +27,5 @@
             </div>
         @endif
 	</div>
+    <livewire:vendor-docs.vendor-doc-create />
 </div>

@@ -28,7 +28,7 @@ class TaskForm extends Form
     public $project_id = NULL;
 
     #[Validate('required')]
-    public $duration = NULL;
+    public $duration = 1;
 
     #[Validate('nullable')]
     public $order = NULL;

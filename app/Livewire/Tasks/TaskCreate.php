@@ -109,7 +109,6 @@ class TaskCreate extends Component
 
     public function save()
     {
-        dd($this);
         $task = $this->form->store();
 
         $this->dispatch('notify',

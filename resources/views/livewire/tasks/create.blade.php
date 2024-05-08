@@ -67,14 +67,11 @@
                     }"
                     >
 
-
                     <x-forms.row
-                        {{-- wire:model.live="dates" --}}
                         errorName="form.dates"
                         name="dates"
                         text="Dates"
                         x-ref="picker"
-                        {{-- type="date_picker" --}}
                         >
                     </x-forms.row>
                 </div>

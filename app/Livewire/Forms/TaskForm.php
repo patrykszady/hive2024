@@ -101,8 +101,8 @@ class TaskForm extends Form
         // $this->authorize('create', Expense::class);
         $this->validate();
         $task = Task::create([
-            'start_date' => $this->start_date,
-            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration - 1)->format('Y-m-d'),
+            'start_date' => Carbon::parse($this->dates[0])->format('Y-m-d'),
+            'end_date' => isset($this->dates[1]) ? Carbon::parse($this->dates[1])->format('Y-m-d') : Carbon::parse($this->dates[0])->format('Y-m-d'),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,

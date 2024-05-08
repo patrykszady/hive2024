@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+
+use Carbon\Carbon;
 
 class Task extends Model
 {
@@ -14,11 +17,10 @@ class Task extends Model
 
     // protected $hidden = ['date', 'direction'];
     // protected $appends = ['date'];
-    // protected $casts = [
-    //     'start_date' => 'date:Y-m-d',
-    //     'end_date' => 'date:Y-m-d',
-    //     'deleted_at' => 'date:Y-m-d',
-    // ];
+    protected $casts = [
+        'start_date' => 'date:Y-m-d',
+        'end_date' => 'date:Y-m-d',
+    ];
 
     public function project()
     {
@@ -33,5 +35,21 @@ class Task extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    //5/7/2024 should just work because of $casts above
+    protected function startDate(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => Carbon::parse($value)->format('Y-m-d'),
+        );
+    }
+
+    //5/7/2024 should just work because of $casts above
+    protected function endDate(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => Carbon::parse($value)->format('Y-m-d'),
+        );
     }
 }

@@ -58,16 +58,11 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     @stack('custom_scripts')
     {{-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script> --}}
-    {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-all.js"></script> --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> --}}
     <!-- https://www.chartjs.org/ -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/ui@3.13.7-beta.0/dist/cdn.min.js"></script>
-
-    <!-- gridstack-->
-    {{-- <link rel="stylesheet" href="https://gridstackjs.com/node_modules/gridstack/dist/gridstack-extra.min.css"/>
-    <script src="https://gridstackjs.com/node_modules/gridstack/dist/gridstack-h5.js"></script> --}}
 
     @stack('custom_styles')
 </head>

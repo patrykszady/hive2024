@@ -26,6 +26,7 @@
     </x-page.top>
 
     @foreach($projects as $project_index => $project)
+        {{-- @dd($project->tasks) --}}
         <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
             <x-cards.heading class="mx-auto">
                 <x-slot name="left">
@@ -68,7 +69,6 @@
                                 resizable: {
                                     handles: 'w, e'
                                 },
-                                {{-- alwaysShowResizeHandle: false, --}}
                                 margin: 2
                             });
 
@@ -104,7 +104,7 @@
                                 @endif --}}
                                 {{-- <div class="w-2/{{$gs_w}} bg-red-500"></div>  <!-- Red half --> --}}
 
-        {{--
+                                {{--
                                 <div class="w-1/3 m-1 bg-red-500"></div>
                                 <div class="w-1/3 m-1 bg-blue-500"></div>
                                 <div class="w-1/3 m-1 bg-green-500"></div>

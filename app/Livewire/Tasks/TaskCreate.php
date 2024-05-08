@@ -39,11 +39,6 @@ class TaskCreate extends Component
         $this->employees = auth()->user()->vendor->users()->employed()->get();
     }
 
-    // public function updated($field, $value)
-    // {
-    //     dd($value);
-    // }
-
     public function addTask($project_id, $date = NULL)
     {
         $this->form->reset();
@@ -64,6 +59,7 @@ class TaskCreate extends Component
         $this->showModal = TRUE;
     }
 
+    // 5-7-2024 for flatpickr only... anyay to optimize?
     public function dateschanged($dates)
     {
         $this->form->dates = $dates;
@@ -109,7 +105,7 @@ class TaskCreate extends Component
 
     public function save()
     {
-        $task = $this->form->store();
+        $this->form->store();
 
         $this->dispatch('notify',
             type: 'success',
@@ -122,7 +118,7 @@ class TaskCreate extends Component
 
     public function edit()
     {
-        $task = $this->form->update();
+        $this->form->update();
 
         $this->dispatch('notify',
             type: 'success',

@@ -54,10 +54,21 @@
                             let picker = flatpickr(this.$refs.picker, {
                                 mode: 'range',
                                 dateFormat: 'm/d/Y',
+                                {{-- minRange: 3,
+                                maxRange: 14, // Maximum 10 days in the range --}}
                                 defaultDate: this.value,
+                                locale: {
+                                    firstDayOfWeek: 1, // 0 for Sunday, 1 for Monday, etc.
+                                },
+                                {{-- disable: [
+                                    function(date) {
+                                        // Disable Saturdays
+                                        return date.getDay() === 6;
+                                    }
+                                ], --}}
                                 onChange: (date, dateString) => {
                                     this.value = dateString.split(' to ')
-                                    console.log(this.value)
+                                    {{-- console.log(this.value) --}}
                                     $wire.dateschanged(this.value)
                                 }
                             })

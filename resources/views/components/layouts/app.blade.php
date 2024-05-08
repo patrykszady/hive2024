@@ -130,12 +130,7 @@
             </main>
         </div>
 
-
-
-        {{-- <script src="https://cdn.jsdelivr.net/gh/livewire/sortable@v1.x.x/dist/livewire-sortable.js"></script> --}}
-        <script src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
-        {{-- @lagoonScripts('en', 'gantt') --}}
         @livewireScripts
-
+        <script src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
     </body>
 </html>

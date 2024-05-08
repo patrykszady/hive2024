@@ -11,6 +11,8 @@ use App\Livewire\Forms\TaskForm;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+use Carbon\Carbon;
+
 class TaskCreate extends Component
 {
     use AuthorizesRequests;
@@ -18,8 +20,6 @@ class TaskCreate extends Component
     public TaskForm $form;
     //$projects come from the Planner Component
     public $projects = [];
-    public $date = NULL;
-
     public $vendors = [];
     public $employees = [];
 
@@ -39,6 +39,11 @@ class TaskCreate extends Component
         $this->employees = auth()->user()->vendor->users()->employed()->get();
     }
 
+    // public function updated($field, $value)
+    // {
+    //     dd($value);
+    // }
+
     public function addTask($project_id, $date = NULL)
     {
         $this->form->reset();
@@ -50,14 +55,29 @@ class TaskCreate extends Component
         ];
 
         if($date){
-            $this->date = $date;
+            $this->form->dates = [Carbon::parse($date)->format('m/d/Y')];
         }else{
-            $this->date = today()->format('Y-m-d');
+            $this->form->dates = [today()->format('m/d/Y')];
         }
 
-        $this->form->start_date = $this->date;
         $this->form->project_id = $project_id;
         $this->showModal = TRUE;
+    }
+
+    public function dateschanged($dates)
+    {
+        $this->form->dates = $dates;
+
+        if(count($dates) > 1){
+            $start = Carbon::parse($dates[0]);
+            $end = Carbon::parse($dates[1]);
+
+            $duration = $end->diff($start)->days + 1;
+
+            $this->form->duration = $duration;
+        }else{
+            $this->form->duration = 1;
+        }
     }
 
     public function editTask(Task $task)
@@ -72,8 +92,24 @@ class TaskCreate extends Component
         $this->showModal = TRUE;
     }
 
+    public function removeTask()
+    {
+        $task = $this->form->task;
+
+        $task->delete();
+
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Task Removed'
+        );
+
+        $this->dispatch('refresh_test')->to(Planner::class);
+        $this->showModal = FALSE;
+    }
+
     public function save()
     {
+        dd($this);
         $task = $this->form->store();
 
         $this->dispatch('notify',

@@ -81,6 +81,7 @@
 
                 <x-lists.ul>
                     @foreach($weekly_hours as $timesheet)
+                        {{-- @dd($timesheet->check) --}}
                         {{-- @dd($transaction->bank_account->bank) --}}
                         @php
                             // $timesheet->check = $timesheet->check()->withoutGlobalScopes()->first();
@@ -99,7 +100,7 @@
                             if($timesheet->check){
                                 $line_details += [
                                     3 => [
-                                        'text' => $timesheet->check && $timesheet->check_id ? $timesheet->check->check_type != 'Check' ? $timesheet->check->check_type : $timesheet->check->check_number : '',
+                                        'text' => $timesheet->check && $timesheet->check_id ? $timesheet->check->check_type != 'Check' ? $timesheet->check->check_type . ' #' . $timesheet->check->id : $timesheet->check->check_number : '',
                                         'icon' => 'M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z'
                                     ],
                                 ];
@@ -111,6 +112,16 @@
                                     ],
                                 ];
                             }
+
+                            if($timesheet->invoice){
+                                $line_details += [
+                                    4 => [
+                                        'text' => $timesheet->invoice,
+                                        'icon' => 'M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z'
+                                    ],
+                                ];
+                            }
+
                         @endphp
 
                         <x-lists.search_li

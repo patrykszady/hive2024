@@ -18,11 +18,14 @@ class TaskForm extends Form
     #[Validate('required')]
     public $title = NULL;
 
-    #[Validate('required|date|after:2017-01-01')]
-    public $start_date = NULL;
+    #[Validate('required')]
+    public $dates = NULL;
 
-    #[Validate('nullable|date|after:2017-01-01')]
-    public $end_date = NULL;
+    // #[Validate('nullable|date|after:2017-01-01')]
+    // public $start_date = NULL;
+
+    // #[Validate('nullable|date|after:2017-01-01')]
+    // public $end_date = NULL;
 
     #[Validate('required')]
     public $project_id = NULL;
@@ -50,9 +53,15 @@ class TaskForm extends Form
     public function setTask(Task $task)
     {
         $this->task = $task;
+        if($task->start_date == $task->end_date){
+            $new_dates = [Carbon::parse($task->start_date)->format('m/d/Y')];
+        }else{
+            $new_dates = [Carbon::parse($task->start_date)->format('m/d/Y'), Carbon::parse($task->end_date)->format('m/d/Y')];
+        }
 
-        $this->start_date = $task->start_date;
-        $this->end_date = $task->end_date;
+        $this->dates = $new_dates;
+        // $this->start_date = $task->start_date;
+        // $this->end_date = $task->end_date;
         $this->project_id = $task->project_id;
         $this->order = $task->order;
         $this->duration = $task->duration;
@@ -68,8 +77,9 @@ class TaskForm extends Form
         // $this->authorize('create', Expense::class);
         $this->validate();
         $task = $this->task->update([
-            'start_date' => $this->start_date,
-            'end_date' => Carbon::parse($this->start_date)->addDays($this->duration - 1)->format('Y-m-d'),
+            'start_date' => Carbon::parse($this->dates[0])->format('Y-m-d'),
+            // 'end_date' => Carbon::parse($this->start_date)->addDays($this->duration - 1)->format('Y-m-d'),
+            'end_date' => isset($this->dates[1]) ? Carbon::parse($this->dates[1])->format('Y-m-d') : Carbon::parse($this->dates[0])->format('Y-m-d'),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,

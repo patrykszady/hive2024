@@ -47,7 +47,7 @@ class ReceiptAccountVendorCreate extends Component
             $this->distribution_id = NULL;
         }
 
-        $this->vendor->logged_in = $this->vendor->receipt_account->options ? ($this->vendor->receipt_account->options['access_token']  ? true : false) : false;
+        $this->vendor->logged_in = $this->vendor->receipt_account && $this->vendor->receipt_account->options ? ($this->vendor->receipt_account->options['access_token']  ? true : false) : false;
 
         $this->modal_show = TRUE;
     }

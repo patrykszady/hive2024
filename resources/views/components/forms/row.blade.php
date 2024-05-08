@@ -258,6 +258,8 @@
                         class="{{ $input_classes }}"
                         {{ $attributes() }}
                     >
+                {{-- @elseif($type === 'date_picker') --}}
+
                 @else
                     <input
                         type="{{ $type }}"
@@ -297,4 +299,7 @@
             <x-forms.error errorName="{{$errorName}}" />
         </div>
     </div>
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> --}}
 </div>
+

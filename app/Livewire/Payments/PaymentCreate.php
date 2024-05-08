@@ -67,10 +67,10 @@ class PaymentCreate extends Component
         $this->validateOnly($field);
     }
 
-    public function updatedProjectId()
-    {
-        $this->project = Project::findOrFail($this->project_id);
-    }
+    // public function updatedProjectId()
+    // {
+    //     $this->project = Project::findOrFail($this->project_id);
+    // }
 
     public function getClientPaymentSumProperty()
     {

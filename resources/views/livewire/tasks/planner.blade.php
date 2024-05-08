@@ -1,5 +1,3 @@
-
-
 <div>
 	<x-page.top
         class="lg:max-w-4xl"
@@ -70,7 +68,7 @@
                                 resizable: {
                                     handles: 'w, e'
                                 },
-                                alwaysShowResizeHandle: false,
+                                {{-- alwaysShowResizeHandle: false, --}}
                                 margin: 2
                             });
 
@@ -106,7 +104,7 @@
                                 @endif --}}
                                 {{-- <div class="w-2/{{$gs_w}} bg-red-500"></div>  <!-- Red half --> --}}
 
-{{--
+        {{--
                                 <div class="w-1/3 m-1 bg-red-500"></div>
                                 <div class="w-1/3 m-1 bg-blue-500"></div>
                                 <div class="w-1/3 m-1 bg-green-500"></div>
@@ -157,15 +155,10 @@
                                         <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->user->first_name, 15}}</span>
                                     @endif
                                 </div>
-
-
                             </div>
                         @endforeach
                     @endforeach
                 </div>
-
-
-
             </x-cards.body>
         </x-cards.wrapper>
     @endforeach
@@ -177,4 +170,3 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-extra.min.css">
 </div>
-

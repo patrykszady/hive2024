@@ -699,8 +699,6 @@ class ReceiptController extends Controller
             ->setReturnType(Model\User::class)
             ->execute();
 
-        // dd($user);
-
         $existing_company_emails = CompanyEmail::withoutGlobalScopes()->where('email', $user->getMail())->get();
         if(!$existing_company_emails->isEmpty()){
             //return back with error

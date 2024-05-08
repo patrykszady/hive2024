@@ -36,14 +36,48 @@
                 </x-forms.row>
 
                 {{-- DATE --}}
-                <x-forms.row
+                {{-- <x-forms.row
                     wire:model.live.debounce.500ms="form.start_date"
                     errorName="form.start_date"
                     name="start_date"
-                    text="Start Date"
+                    text="Dates"
                     type="date"
                     >
-                </x-forms.row>
+                </x-forms.row> --}}
+
+                {{-- DATES --}}
+                <div
+                    wire.model.live="form.dates"
+                    x-data="{
+                        value: @entangle('form.dates'),
+                        init() {
+                            let picker = flatpickr(this.$refs.picker, {
+                                mode: 'range',
+                                dateFormat: 'm/d/Y',
+                                defaultDate: this.value,
+                                onChange: (date, dateString) => {
+                                    this.value = dateString.split(' to ')
+                                    console.log(this.value)
+                                    $wire.dateschanged(this.value)
+                                }
+                            })
+
+                            this.$watch('value', () => picker.setDate(this.value))
+                        },
+                    }"
+                    >
+
+
+                    <x-forms.row
+                        {{-- wire:model.live="dates" --}}
+                        errorName="form.dates"
+                        name="dates"
+                        text="Dates"
+                        x-ref="picker"
+                        {{-- type="date_picker" --}}
+                        >
+                    </x-forms.row>
+                </div>
 
                 {{-- DURATION --}}
                 <x-forms.row
@@ -52,6 +86,7 @@
                     name="duration"
                     text="Duration"
                     type="dropdown"
+                    disabled
                     >
                     <option value="1">1 Day</option>
                     <option value="2">2 Days</option>
@@ -136,7 +171,7 @@
                     x-show="estimate_line_item" --}}
                     >
                     <button
-                        {{-- wire:click="removeFromEstimate" --}}
+                        wire:click="removeTask"
                         type="button"
                         {{-- x-bind:disabled="submit_disabled" --}}
                         x-on:click="open = false"
@@ -154,4 +189,9 @@
             </x-cards.footer>
         </form>
     </x-modal.panel>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </x-modal>
+
+

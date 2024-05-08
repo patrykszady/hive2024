@@ -16,6 +16,7 @@ class Task extends Model
     // protected $appends = ['date'];
     // protected $casts = [
     //     'start_date' => 'date:Y-m-d',
+    //     'end_date' => 'date:Y-m-d',
     //     'deleted_at' => 'date:Y-m-d',
     // ];
 

@@ -43,7 +43,6 @@ class Kernel extends ConsoleKernel
             $schedule->call('\App\Http\Controllers\ReceiptController@auto_receipt')->everyTenMinutes();
             // $schedule->call('\App\Http\Controllers\TransactionController@add_transaction_to_multi_expenses')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_category_to_expense')->hourly();
-            // $schedule->call('\App\Http\Controllers\ReceiptController@hd_rebates')->hourly()->timezone('America/Chicago')->between('6:00', '20:00');
         }
 
         //everyMinute();

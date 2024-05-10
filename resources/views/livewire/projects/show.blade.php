@@ -249,13 +249,13 @@
                             </x-slot>
 
                             @can('create', App\Models\Payment::class)
-                            <x-slot name="right">
-                                {{-- 12-09-22 modal not page reload --}}
-                                {{-- wire:navigate.hover --}}
-                                <x-cards.button href="{{route('payments.create', $project->client->id)}}">
-                                    Add Payment
-                                </x-cards.button>
-                            </x-slot>
+                                <x-slot name="right">
+                                    {{-- 12-09-22 modal not page reload --}}
+                                    {{-- wire:navigate.hover --}}
+                                    <x-cards.button href="{{route('payments.create', $project->client->id)}}">
+                                        Add Payment
+                                    </x-cards.button>
+                                </x-slot>
                             @endcan
                         </x-cards.heading>
 

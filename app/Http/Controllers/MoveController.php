@@ -40,6 +40,21 @@ class MoveController extends Controller
 {
     public function move()
     {
+        //queue
+        $projects = Project::whereHas('distributions')->with('distributions')->get();
+
+        foreach($projects as $project){
+            $profit = $project->finances['profit'];
+
+            foreach($project->distributions as $distribution){
+                $percent = '.' . $distribution->pivot->percent;
+                $amount = round($profit * $percent, 2);
+
+                $project->distributions()->updateExistingPivot($distribution, ['amount' => $amount], true);
+            }
+        }
+
+        dd('done');
         //where group count is grather than one
         //groupby of group
 

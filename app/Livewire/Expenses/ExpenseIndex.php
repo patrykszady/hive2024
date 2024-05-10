@@ -166,7 +166,11 @@ class ExpenseIndex extends Component
                 if($expense->check->transactions->isNotEmpty()){
                     $expense->status = 'Complete';
                 }else{
-                    $expense->status = 'No Transaction';
+                    if($expense->transactions->isNotEmpty()){
+                        $expense->status = 'Complete';
+                    }else{
+                        $expense->status = 'No Transaction';
+                    }
                 }
             }elseif(($expense->transactions->isNotEmpty() && $expense->project->project_name != 'NO PROJECT') || ($expense->paid_by != NULL && $expense->project->project_name != 'NO PROJECT')){
                 $expense->status = 'Complete';

@@ -45,7 +45,7 @@ class PaymentCreate extends Component
         $this->authorize('create', Payment::class);
 
         $this->projects =
-            Project::where('created_at', '>', Carbon::now()->subYears(2)->format('Y-m-d'))
+            Project::where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
                 ->where('client_id', $this->client->id)
                 ->orderBy('created_at', 'DESC')
                 ->status(['Active', 'Complete'])->sortByDesc('last_status.start_date')

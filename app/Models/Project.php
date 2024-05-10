@@ -179,7 +179,7 @@ class Project extends Model
         $finances['total_cost'] = $finances['timesheets'] + $finances['expenses'];
         $finances['payments'] =  round($this->payments->sum('amount'), 2);
         //amount_format(..., 2)
-        $finances['profit'] = $finances['total_project'] - $finances['total_cost'];
+        $finances['profit'] = $finances['payments'] - $finances['total_cost'];
         $finances['balance'] = $finances['total_project'] - $finances['payments'];
 
         return $finances;

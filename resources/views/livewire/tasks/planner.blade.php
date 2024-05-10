@@ -44,6 +44,7 @@
             </x-cards.heading>
 
             <x-cards.body>
+
                 <div class="grid grid-cols-7 gap-1">
                     @foreach($days as $day_index => $day)
                         <div>
@@ -71,6 +72,8 @@
                                 },
                                 margin: 2
                             });
+
+                            {{-- GridStack.setupDragIn('.sidebar .grid-stack-item', { appendTo: 'body' }); --}}
 
                             grids[{{$project_index}}].on('change', function(event, items) {
                                 let newItems = [];
@@ -158,6 +161,16 @@
                             </div>
                         @endforeach
                     @endforeach
+                    {{-- <div class="sidebar">
+                        <!-- will size to match content -->
+                        <div class="grid-stack-item" gs-x="2" gs-y="1">
+                          <div class="grid-stack-item-content">Drag me</div>
+                        </div>
+                        <!-- manually force a drop size of 2x1 -->
+                        <div class="grid-stack-item" gs-w="2" gs-h="1" gs-max-w="3">
+                          <div class="grid-stack-item-content">2x1, max=3</div>
+                        </div>
+                      </div> --}}
                 </div>
             </x-cards.body>
         </x-cards.wrapper>

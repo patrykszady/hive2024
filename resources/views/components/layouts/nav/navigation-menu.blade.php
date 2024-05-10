@@ -306,6 +306,14 @@
                                 <li>
                                     <a
                                         wire:navigate.hover
+                                        href="{{route('sheets.index')}}"
+                                        class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
+                                        Sheets
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        wire:navigate.hover
                                         href="{{route('company_emails.index')}}"
                                         class="block py-2 pr-2 text-sm leading-6 text-gray-700 rounded-md hover:bg-gray-50 pl-9">
                                         Company Emails

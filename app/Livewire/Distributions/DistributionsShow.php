@@ -79,8 +79,16 @@ class DistributionsShow extends Component
                 ->paginate(10);
 
         //sum where DATE/YEAR between dates
+        //->where('projects.id', 180)->first()->statuses()->where('title', 'Complete')->first()->whereBetween('start_date', [$this->date['start'], $this->date['end']])->first();
         $this->distribution->earned =
-            $this->distribution->projects()->whereBetween('distribution_project.created_at', [$this->date['start'], $this->date['end']])->sum('amount');
+            $this->distribution->projects()->whereHas('statuses', function ($query) {
+                //where first Complete is within dates
+                $query->where('title', 'Complete')->whereBetween('start_date', [$this->date['start'], $this->date['end']]);
+                // $query->where('title', 'Complete')->whereBetween('start_date', [$this->date['start'], $this->date['end']]);
+            })->sum('amount');
+
+        // dd($this->distribution->earned);
+            // $this->distribution->projects()->whereBetween('distribution_project.created_at', [$this->date['start'], $this->date['end']])->sum('amount');
 
         $this->distribution->paid = $distribution_vendors->sum('sum');
 

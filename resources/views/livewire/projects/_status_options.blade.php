@@ -5,5 +5,7 @@
 <option value="Scheduled">Scheduled</option>
 <option value="Active">Active</option>
 <option value="Complete">Complete</option>
+<option value="Service Call">Service Call</option>
+<option value="Service Call Complete">Service Call Complete</option>
 <option value="Cancelled">Cancelled</option>
 <option value="VIEW ONLY">VIEW ONLY</option>

@@ -114,6 +114,7 @@ class Project extends Model
     }
 
     public function scopeStatus($query, $status){
+        // dd($status);
         return $query->with('last_status')->get()->whereIn('last_status.title', $status);
     }
 

@@ -49,7 +49,7 @@ class ExpenseCreate extends Component
 
     public function mount()
     {
-        $this->projects = Project::status(['Active', 'Complete'])->sortByDesc('last_status.start_date');
+        $this->projects = Project::status(['Active', 'Complete', 'Service Call', 'Service Call Complete'])->sortByDesc('last_status.start_date');
     }
 
     public function updated($field, $value)

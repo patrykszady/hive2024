@@ -47,7 +47,7 @@ class TaskForm extends Form
     public function setTask(Task $task)
     {
         $this->task = $task;
-        if($task->start_date == $task->end_date){
+        if($task->start_date === $task->end_date){
             $new_dates = [$task->start_date->format('m/d/Y')];
         }else{
             $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];

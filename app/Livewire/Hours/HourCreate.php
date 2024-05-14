@@ -53,7 +53,7 @@ class HourCreate extends Component
             Timesheet::
                 orderBy('date', 'DESC')
                 ->where('user_id', auth()->user()->id)
-                ->where('date', '>', today()->subWeeks(3))
+                ->where('date', '>', today()->subWeeks(4))
                 ->get()
                 ->groupBy('date');
 
@@ -104,7 +104,7 @@ class HourCreate extends Component
     public function getDays()
     {
         return new \DatePeriod(
-            Carbon::parse("2 weeks ago")->startOfWeek(Carbon::MONDAY),
+            Carbon::parse("3 weeks ago")->startOfWeek(Carbon::MONDAY),
             CarbonInterval::day(),
             Carbon::parse("1 week")->startOfWeek(Carbon::MONDAY)->next("Week")
         );

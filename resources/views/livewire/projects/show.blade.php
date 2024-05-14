@@ -109,7 +109,7 @@
                     </x-cards.body>
                 </x-cards.wrapper>
 
-                @if(in_array($this->project->last_status->title, ['Active', 'Complete', 'VIEW ONLY']))
+                @if(in_array($this->project->last_status->title, ['Active', 'Complete',  'Service Call', 'Service Call Complete', 'VIEW ONLY']))
                     {{-- PROJECT FINANCIALS --}}
                     <x-cards.wrapper>
                         <x-cards.heading>
@@ -197,7 +197,7 @@
                                     >
                                 </x-lists.search_li>
 
-                                @if($project->last_status->title == 'Complete')
+                                @if(in_array($this->project->last_status->title, ['Complete',  'Service Call', 'Service Call Complete']))
                                     <x-lists.search_li
                                         :basic=true
                                         :bold="TRUE"

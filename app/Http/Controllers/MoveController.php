@@ -43,6 +43,7 @@ class MoveController extends Controller
         //queue
         $projects = Project::whereHas('distributions')->with('distributions')->get();
 
+        dd($projects);
         foreach($projects as $project){
             $profit = $project->finances['profit'];
 

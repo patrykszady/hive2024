@@ -36,7 +36,7 @@ class PaymentCreate extends Component
     {
         return [
             'projects.*.show' => 'nullable',
-            'projects.*.amount' => 'required|numeric|min:0.01|regex:/^-?\d+(\.\d{1,2})?$/',
+            'projects.*.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
         ];
     }
 
@@ -74,7 +74,7 @@ class PaymentCreate extends Component
 
     public function getClientPaymentSumProperty()
     {
-        return collect($this->projects)->where('show', true)->where('amount', '>' , 0)->sum('amount');
+        return collect($this->projects)->where('show', true)->where('amount', '!=', NULL)->sum('amount');
     }
 
     // 8-31-2022 | 9-10-2023 same on VendorPaymentForm
@@ -82,6 +82,7 @@ class PaymentCreate extends Component
     {
         $project = $this->projects->where('id', $this->form->project_id)->first();
         $project->show = true;
+        $project->amount = 0;
 
         $this->form->project_id = "";
     }

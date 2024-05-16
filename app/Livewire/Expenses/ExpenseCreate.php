@@ -13,6 +13,8 @@ use App\Models\ExpenseSplits;
 use App\Models\ExpenseReceipts;
 use App\Models\Receipt;
 
+use App\Jobs\UpdateProjectDistributionsAmount;
+
 use App\Livewire\Forms\ExpenseForm;
 
 use Livewire\Component;
@@ -254,6 +256,9 @@ class ExpenseCreate extends Component
 
         $this->modal_show = FALSE;
         $this->resetModal();
+
+        //queue
+        UpdateProjectDistributionsAmount::dispatch($expense->project);
 
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->dispatch('refreshComponent')->to('expenses.expense-show');

@@ -26,7 +26,7 @@ class PaymentForm extends Form
         $this->validate();
 
         $parent_payment_id = NULL;
-        foreach($this->component->projects->where('show', 'true')->where('amount', '>' , 0) as $key => $project){
+        foreach($this->component->projects->where('show', 'true')->where('amount', '!=', NULL) as $key => $project){
             //ignore 'show' attribute when saving
             $project->offsetUnset('show');
 

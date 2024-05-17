@@ -140,6 +140,7 @@ class ExpenseIndex extends Component
                 // ->whereBetween('transaction_date', [today()->subYear(1), today()])
                 ->where('amount', 'like', "%{$this->amount}%")
                 ->where('amount', '!=', '0.00')
+                ->where('plaid_merchant_description', 'not like', "Pending:%")
                 // ->whereNotNull('vendor_id')
                 ->when($this->vendor != NULL, function ($query, $vendor) {
                     return $query->where('vendor_id', 'like', "{$this->vendor}");

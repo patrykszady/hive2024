@@ -100,8 +100,8 @@ class PaymentCreate extends Component
     {
         //validate payment total is greater than $0
         //if less than or equal to 0... send back with error
-        if($this->getClientPaymentSumProperty() <= 0){
-            return $this->addError('payment_total_min', 'Payment total needs to be greater than $0 and include at least 1 project.');
+        if($this->getClientPaymentSumProperty() === 0){
+            return $this->addError('payment_total_min', 'Payment total needs to include at least 1 project and not equal $0.00');
         }else{
             $payment = $this->form->store();
         }

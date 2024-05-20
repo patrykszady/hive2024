@@ -1851,7 +1851,7 @@ class ReceiptController extends Controller
                     }
                 }
             }else{
-                dd('in if else');
+                // dd('in if else');
                 //use created file from ocr
                 //SAVE expense_receipt_data for each attachment
                 $expense_receipt = new ExpenseReceipts;
@@ -1862,7 +1862,6 @@ class ReceiptController extends Controller
                 $expense_receipt->save();
             }
         }else{
-            dd('in else');
             //use created file from ocr
             //SAVE expense_receipt_data for each attachment
             $expense_receipt = new ExpenseReceipts;

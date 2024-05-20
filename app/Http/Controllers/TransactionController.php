@@ -778,6 +778,7 @@ class TransactionController extends Controller
         $transaction_bank_accounts = BankAccount::withoutGlobalScopes()->whereNull('deleted_at')->pluck('id')->toArray();
         $transactions = Transaction::TransactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_name');
         // dd($transactions);
+
         $vendors = Vendor::withoutGlobalScopes()->where('business_type', 'Retail')->get();
 
         foreach($transactions as $merchant_name => $merchant_transactions){
@@ -806,12 +807,12 @@ class TransactionController extends Controller
 
         //CHECK VendorTransaction table
         $vendor_transactions = VendorTransaction::whereNull('deposit_check')->get();
+
         foreach($vendor_transactions as $vendor_transaction){
             //get all BankAccount where bank_account_id
             //get plaid_inst_id of bank_account_ids on transactions table
 
             //Alter $transactions variable/results based on the if statement below
-
             foreach($transactions as $vendor_name => $plaid_name_transactions){
                 $vendor_name = $vendor_name . ' ' . $plaid_name_transactions->first()->plaid_merchant_name;
                 //decode json on VendorTrasaction Model
@@ -822,7 +823,7 @@ class TransactionController extends Controller
                     foreach($plaid_name_transactions as $key => $transaction){
                         $transaction->vendor_id = $vendor_transaction->vendor_id;
                         $transaction->save();
-
+                        // dd($transaction);
                         if($transaction->expense){
                             $expense = $transaction->expense;
                             $expense->vendor_id = $transaction->vendor_id;

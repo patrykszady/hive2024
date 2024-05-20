@@ -239,8 +239,8 @@ class TimesheetPaymentCreate extends Component
             $this->addError('weekly_timesheets_total', 'Payment needs at least one Timesheet');
         }else{
             $redirect_route = $this->form->store();
-
             // dd($redirect_route);
+            
             if($redirect_route == 'timesheets'){
                 return redirect()->route('timesheets.payments');
             }else{

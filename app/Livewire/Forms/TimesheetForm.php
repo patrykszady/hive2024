@@ -3,9 +3,11 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Timesheet;
+use App\Models\Project;
 
 use Livewire\Form;
 
+use App\Jobs\UpdateProjectDistributionsAmount;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TimesheetForm extends Form
@@ -41,8 +43,10 @@ class TimesheetForm extends Form
         $this->component->user->vendor->users()->updateExistingPivot($this->component->user->id, ['hourly_rate' => $hourly]);
 
         foreach($weekly_projects as $project_id => $project_weekly_hours){
-            $hours = $project_weekly_hours->sum('hours');
+            $project = Project::findOrFail($project_id);
+            UpdateProjectDistributionsAmount::dispatch($project, $project->distributions->pluck('id')->toArray());
 
+            $hours = $project_weekly_hours->sum('hours');
             $timesheet = Timesheet::create([
                 'date' => $this->component->week->startOfWeek()->format('Y-m-d'),
                 'user_id' => $this->component->user->id,

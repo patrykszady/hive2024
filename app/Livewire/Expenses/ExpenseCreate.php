@@ -258,11 +258,12 @@ class ExpenseCreate extends Component
         $this->resetModal();
 
         //queue
-        UpdateProjectDistributionsAmount::dispatch($expense->project);
+        UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
 
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->dispatch('refreshComponent')->to('expenses.expense-show');
         $this->dispatch('refreshComponent')->to('expenses.expense-index');
+        $this->dispatch('refreshComponent')->to('projects.project-show');
 
         $this->dispatch('notify',
             type: 'success',

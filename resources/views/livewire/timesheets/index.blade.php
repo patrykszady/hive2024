@@ -1,4 +1,3 @@
-@section('title','Hive Timesheets')
 <div class="max-w-xl mx-auto sm:px-6">
     {{-- 7-2-2022 dont show if no timesheets to confirm --}}
     <x-cards.wrapper>

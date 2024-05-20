@@ -13,13 +13,14 @@ class UpdateProjectDistributionsAmount implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $project;
+    protected $distribution_ids;
     /**
      * Create a new job instance.
      */
-    public function __construct($project)
+    public function __construct($project, $distribution_ids)
     {
         $this->project = $project;
-        // dd($this->project);
+        $this->distribution_ids = $distribution_ids;
     }
 
     /**
@@ -29,7 +30,8 @@ class UpdateProjectDistributionsAmount implements ShouldQueue
     {
         $profit = $this->project->finances['profit'];
 
-        foreach($this->project->distributions as $distribution){
+        //where in $distribution_ids. $distribution_ids = requesting Vendor all distribution ids
+        foreach($this->project->distributions()->whereIn('distributions.id', $this->distribution_ids)->get() as $distribution){
             $percent = '.' . $distribution->pivot->percent;
             $amount = round($profit * $percent, 2);
 

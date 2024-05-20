@@ -1834,21 +1834,24 @@ class ReceiptController extends Controller
 
                 //Add Email Attachments
                 foreach($attachments as $key => $attachment){
-                    $filename_attached = $expense_id . '-' . $key . '-' . $ocr_filename;
-                    $content_bytes = array_values((array) $attachment)[0]['contentBytes'];
-                    //file decoded
-                    $contents = base64_decode($content_bytes);
-                    Storage::disk('files')->put('/receipts/' . $filename_attached, $contents);
-
-                    //SAVE expense_receipt_data for each attachment
-                    $expense_receipt = new ExpenseReceipts;
-                    $expense_receipt->expense_id = $expense_id;
-                    $expense_receipt->receipt_filename = $filename_attached;
-                    $expense_receipt->receipt_html = $ocr_receipt_data['content'];
-                    $expense_receipt->receipt_items = json_encode($ocr_receipt_data['fields']);
-                    $expense_receipt->save();
+                    if($attachment->getContentType() == 'application/pdf'){
+                        $filename_attached = $expense_id . '-' . $key . '-' . $ocr_filename;
+                        $content_bytes = array_values((array) $attachment)[0]['contentBytes'];
+                        //file decoded
+                        $contents = base64_decode($content_bytes);
+                        Storage::disk('files')->put('/receipts/' . $filename_attached, $contents);
+    
+                        //SAVE expense_receipt_data for each attachment
+                        $expense_receipt = new ExpenseReceipts;
+                        $expense_receipt->expense_id = $expense_id;
+                        $expense_receipt->receipt_filename = $filename_attached;
+                        $expense_receipt->receipt_html = $ocr_receipt_data['content'];
+                        $expense_receipt->receipt_items = json_encode($ocr_receipt_data['fields']);
+                        $expense_receipt->save();
+                    }
                 }
             }else{
+                dd('in if else');
                 //use created file from ocr
                 //SAVE expense_receipt_data for each attachment
                 $expense_receipt = new ExpenseReceipts;
@@ -1859,6 +1862,7 @@ class ReceiptController extends Controller
                 $expense_receipt->save();
             }
         }else{
+            dd('in else');
             //use created file from ocr
             //SAVE expense_receipt_data for each attachment
             $expense_receipt = new ExpenseReceipts;

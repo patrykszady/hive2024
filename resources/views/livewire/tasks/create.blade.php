@@ -96,6 +96,7 @@
                     type="dropdown"
                     disabled
                     >
+                    <option value="0">Not Scheduled</option>
                     <option value="1">1 Day</option>
                     <option value="2">2 Days</option>
                     <option value="3">3 Days</option>
@@ -148,7 +149,7 @@
                     text="Team Member"
                     type="dropdown"
                     >
-                    <option value="NULL" readonly>Select Team Member</option>
+                    <option value="" readonly>Select Team Member</option>
                     @foreach ($employees as $employee)
                         <option value="{{$employee->id}}">{{$employee->first_name}}</option>
                     @endforeach

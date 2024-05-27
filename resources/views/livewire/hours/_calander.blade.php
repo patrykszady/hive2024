@@ -33,6 +33,7 @@
             <button
                 type="button"
                 wire:click="$dispatch('selectedDate', { date: '{{$day['format']}}' } )"
+                
                 {{-- if date is in CONFIRMED ARRAY --}}
                 @disabled(today()->format('Y-m-d') < $day['format'] || $day['confirmed_date'] == TRUE)
 
@@ -40,7 +41,7 @@
                     @if(today()->format('Y-m-d') < $day['format'] || $day['confirmed_date'] == TRUE)
                         ' cursor-not-allowed text-gray-200 bg-gray-50 '
                     @else
-                        ' hover:bg-indigo-800 hover:text-white hover:font-semibold  '
+                        ' hover:bg-indigo-400 hover:text-white hover:font-semibold '
                     @endif
 
                     @if(today()->format('Y-m-d') == $day['format'] && $day['has_hours'] == TRUE)

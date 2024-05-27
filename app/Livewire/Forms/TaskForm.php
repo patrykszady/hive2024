@@ -24,8 +24,8 @@ class TaskForm extends Form
     #[Validate('required')]
     public $project_id = NULL;
 
-    #[Validate('required')]
-    public $duration = 1;
+    #[Validate('nullable')]
+    public $duration = 0;
 
     #[Validate('nullable')]
     public $order = NULL;
@@ -47,7 +47,9 @@ class TaskForm extends Form
     public function setTask(Task $task)
     {
         $this->task = $task;
-        if($task->start_date === $task->end_date){
+        if(!isset($task->start_date)){
+            $new_dates = [];
+        }elseif($task->start_date === $task->end_date){
             $new_dates = [$task->start_date->format('m/d/Y')];
         }else{
             $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
@@ -69,8 +71,8 @@ class TaskForm extends Form
         // $this->authorize('create', Expense::class);
         $this->validate();
         $task = $this->task->update([
-            'start_date' => $this->dates[0],
-            'end_date' => isset($this->dates[1]) ? $this->dates[1] : $this->dates[0],
+            'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,
@@ -89,8 +91,8 @@ class TaskForm extends Form
         // $this->authorize('create', Expense::class);
         $this->validate();
         $task = Task::create([
-            'start_date' => $this->dates[0],
-            'end_date' => isset($this->dates[1]) ? $this->dates[1] : $this->dates[0],
+            'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,

@@ -21,10 +21,11 @@ class ProjectShow extends Component
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
-    // public function mount()
-    // {
-    //     dd($this->project->client->name);
-    // }
+    public function mount()
+    {
+        $this->finances = $this->project->finances;
+        $this->project = Project::with(['payments', 'client', 'expenses', 'estimates'])->findOrFail($this->project->id);
+    }
 
     //Reimbursement print
     public function print_reimbursements()
@@ -86,7 +87,6 @@ class ProjectShow extends Component
     {
         $this->authorize('view', $this->project);
 
-        return view('livewire.projects.show', [
-        ]);
+        return view('livewire.projects.show');
     }
 }

@@ -124,7 +124,7 @@ class User extends Authenticatable
 
     public function getRegistrationAttribute($value)
     {
-        return json_decode($value, true);
+        return json_decode($value, true) ?? '';
     }
 
     public function getFullNameAttribute()

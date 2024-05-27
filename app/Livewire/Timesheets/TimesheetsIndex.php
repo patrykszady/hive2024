@@ -14,7 +14,6 @@ use Livewire\Attributes\Title;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 use Carbon\Carbon;
-// use Carbon\CarbonInterval;
 
 #[Lazy]
 class TimesheetsIndex extends Component
@@ -59,34 +58,27 @@ class TimesheetsIndex extends Component
                         $group->sum_hours = $group->sum('hours');
                     });
                 });
-        // $confirmed_weekly_hours =
-        //     Timesheet::
-        //         orderBy('date', 'DESC')
-        //         // ->where('user_id', auth()->user()->id)
-        //         // ->withCount('hours')
-        //         ->get()
-        //         ->groupBy(function($item) {
-        //             return $item->date->toFormattedDateString();
-        //         })
-        //         ->transform(function($item, $k) {
-        //             return $item->groupBy(function($item) {
-        //                 return $item->user->first_name;
-        //             })->each(function ($group) {
-        //                 $group->sum_amount = $group->sum('amount');
-        //                 $group->sum_hours = $group->sum('hours');
-        //             });
-        //         })
-        //         // ->groupBy(['date', 'user_id'])
-        //         // ->each(function ($group) {
-        //         //     $group->sum_amount = $group->sum('amount');
-        //         //     $group->sum_hours = $group->sum('hours');
-        //         // })
-        //         // ->take(3);
 
-        //         ->paginate(5);
-        // dd($confirmed_weekly_hours);
+        $confirmed_weekly_hours =
+            Timesheet::
+                orderBy('date', 'DESC')
+                ->with('user')
+                // ->where('user_id', auth()->user()->id)
+                // ->withCount('hours')
+                ->get()
+                ->groupBy(function($item) {
+                    return $item->date->toFormattedDateString();
+                })
+                ->transform(function($item, $k) {
+                    return $item->groupBy(function($item) {
+                        return $item->user->first_name;
+                    })->each(function ($group) {
+                        $group->sum_amount = $group->sum('amount');
+                        $group->sum_hours = $group->sum('hours');
+                    });
+                })
+                ->paginate(5);
 
-        $confirmed_weekly_hours = collect();
         return view('livewire.timesheets.index', [
             'weekly_hours_to_confirm' => $weekly_hours_to_confirm,
             'confirmed_weekly_hours' => $confirmed_weekly_hours,

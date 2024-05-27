@@ -5,7 +5,7 @@
 
 {{--  sm:px-6 --}}
 {{-- bg-gray-50 --}}
-<div class="px-6 py-4 border-b border-gray-200">
+<div {{$attributes->merge(['class' => 'px-6 py-4 border-b border-gray-200'])}}>
     <div class="flex flex-wrap items-center justify-between sm:flex-nowrap">
         {{-- {{$slot}} --}}
 

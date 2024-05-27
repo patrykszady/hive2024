@@ -1111,8 +1111,10 @@ class ReceiptController extends Controller
                         ->setTimezone('America/Chicago')
                         ->format('Y-m-d');
 
+                // dd([$email_from, $email_from_domain, $email_subject, $email_date]);
                 //find the right Receipt:: that belongs to this email....
                 $from_email_receipts = Receipt::withoutGlobalScopes()->where('from_address', $email_from)->orWhere('from_address', $email_from_domain)->get();
+                // dd($from_email_receipts);
 
                 if($from_email_receipts->isEmpty()){
                     //continue... email not a Receipt

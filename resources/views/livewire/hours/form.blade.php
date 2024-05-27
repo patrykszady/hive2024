@@ -1,7 +1,7 @@
 <form wire:submit="{{$view_text['form_submit']}}">
 	<x-page.top
-		h1="Daily Hours for {{$first_name}}"
-		p="Daily Hours for {{$first_name}}"
+		h1="Daily Hours for {{auth()->user()->first_name}}"
+		p="Daily Hours for {{auth()->user()->first_name}}"
 		right_button_href="{{route('timesheets.index')}}"
 		right_button_text="Show Timesheets"
 		>
@@ -14,29 +14,28 @@
 				<x-cards.heading>
 					<x-slot name="left">
 						<h1>Daily Hours</h1>
-						<p><i>Pick Date to add or edit Daily Hours for {{$first_name}}</i></p>
+						<p><i>Pick Date to add or edit Daily Hours for {{auth()->user()->first_name}}</i></p>
 					</x-slot>
 				</x-cards.heading>
 
-				<x-cards.body>
-					{{-- CALANDER --}}
+                {{-- CALANDER --}}
+				<x-cards.body wire:loading.class="opacity-50 text-opacity-40 pointer-events-none">
 					@include('livewire.hours._calander')
-
 				</x-cards.body>
 
                 <x-cards.footer>
 					<div class="w-full space-y-1 text-center">
-						<button
+						<a
 							type="button"
 							class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none">
 							{{$this->selected_date->format('D M jS, Y')}}
-						</button>
-						{{-- @if(!$days->where('format', $this->selected_date->format('Y-m-d'))->first()['confirmed_date']) --}}
-                        <button
+						</a>
+
+                        <a
                             type="button"
                             class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none">
                             Hours | <b>{{$this->hours_count}}</b>
-                        </button>
+                        </a>
 
                         <x-forms.error errorName="hours_count"/>
 
@@ -51,16 +50,16 @@
 		</div>
 
 		<div class="col-span-4 space-y-2 lg:col-span-2">
-			{{-- @if(!$days->where('format', $this->selected_date->format('Y-m-d'))->first()['confirmed_date']) --}}
             <x-cards.wrapper>
-                <x-cards.body :class="'space-y-2 my-2'">
+                <x-cards.body :class="'space-y-2 my-2 divide-gray-200'">
                     {{-- PROJECT HOUR AMOUNT --}}
                     @foreach ($projects as $index => $project)
                         <x-forms.row
                             wire:model.live="form.projects.{{$index}}.hours"
                             errorName="form.projects.{{$index}}.hours"
                             name="form.projects.{{$index}}.hours"
-                            text="{!! $project->name !!}"
+                            label_text_color_custom="{{ !empty($day_project_tasks[$index]) ? 'indigo' : NULL}}"
+                            text="{!! '<b>' . $project->address . '</b><br>' . $project->project_name !!}"
                             type="number"
                             hint="Hours"
                             textSize="xl"
@@ -68,8 +67,18 @@
                             inputmode="decimal"
                             step="0.25"
                             >
-                        </x-forms.row>
 
+                            <x-slot name="titleslot">
+                                <div>
+                                    @if(!empty($day_project_tasks[$index]))
+                                        @foreach($day_project_tasks[$index] as $task)
+                                            <span class="mt-2 text-sm text-indigo-600"><i>{{$task['title']}}</i></span>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            </x-slot>
+                        </x-forms.row>
+                        
                         @if(!$loop->last)
                             <hr>
                         @endif
@@ -80,8 +89,10 @@
             <x-cards.wrapper>
                 <x-cards.body :class="'space-y-2 my-2'">
                     <x-forms.row
+                        {{-- 5-26-2024 disable if $new_project_id is NULL --}}
+                        x-bind:disabled="save_form == 'save' || expense_transactions"
                         wire:model.live="new_project_id"
-                        errorName="new_project_id"
+                        errorName="select_new_project"
                         name="new_project_id"
                         text="Another Project"
                         type="dropdown"
@@ -96,26 +107,6 @@
                     </x-forms.row>
                 </x-cards.body>
             </x-cards.wrapper>
-
-			{{-- @else
-				<x-cards.wrapper>
-					<x-cards.heading>
-						<x-slot name="left">
-							<h1>Date Confirmed</h1>
-						</x-slot>
-
-						<x-slot name="right">
-						</x-slot>
-					</x-cards.heading>
-					<x-cards.body :class="'space-y-2 my-2'">
-						<div class="'space-y-2 my-2'">
-							<p>This date has already been confirmed and converted into a Timesheet. See Timesheet for details.</p>
-						</div>
-					</x-cards.body>
-				</x-cards.wrapper>
-			@endif --}}
 		</div>
-
-        {{-- 3-25-2023 add another project --}}
 	</div>
 </form>

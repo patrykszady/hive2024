@@ -104,7 +104,7 @@
         </x-cards.heading>
 
         {{-- LIST / using List as a table because of mobile layouts vs a table mobile layout --}}
-        <x-lists.ul wire:loading.class="opacity-50 text-opacity-40">
+        <x-lists.ul>
             @foreach($projects as $project)
                 @php
                     $line_details = [
@@ -116,6 +116,7 @@
                 @endphp
 
                 <x-lists.search_li
+                    wire:navigate.hover
                     href="{{route('projects.show', $project->id)}}"
                     hrefTarget="_blank"
                     :line_details="$line_details"

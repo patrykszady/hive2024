@@ -29,6 +29,7 @@
 
                 @foreach($user_weeks as $week => $user_week)
                     <x-lists.search_li
+                        wire:navigate.hover
                         href="{{route('timesheets.create', $user_week->first()->id)}}"
                         :line_title="$week . ' | ' . $user_week->sum_hours . ' Hours'"
                         :bubble_message="'Confirm'"
@@ -61,11 +62,9 @@
                 @foreach($confirmed_weekly_hours as $week => $week_users)
                     <x-lists.ul>
                         <x-lists.search_li
-                            {{-- wire:click="$dispatch('timesheetWeek')" --}}
                             :no_hover=true
                             :line_title="$week"
                             :bubble_message="'Week'"
-                            {{-- :class="'pointer-events-none'" --}}
                             >
                         </x-lists.search_li>
                     </x-lists.ul>
@@ -84,12 +83,12 @@
                         @endphp
 
                         <x-lists.search_li
-                            {{-- href="{{route('timesheets.create', $week_hours->first())}}" --}}
+                            wire:navigate.hover
                             :line_details="$line_details"
                             :line_title="$user_name"
                             :bubble_message="'Confirmed Week'"
                             :bubble_color="'green'"
-                            :href_target="'_blank'"
+                            {{-- :href_target="'_blank'" --}}
                             href="{{route('timesheets.show', $week_user->first()->id)}}"
                             >
                         </x-lists.search_li>

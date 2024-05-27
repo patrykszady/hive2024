@@ -32,11 +32,11 @@
 				<x-cards.body>
 					<x-lists.ul>
 						<x-lists.search_li
+                            wire:navigate.hover
 							:basic=true
 							:line_title="'Project Client'"
 							href="{{route('clients.show', $project->client)}}"
 							:line_data="$project->client->name"
-							{{-- :bubble_message="'Success'" --}}
 							>
 						</x-lists.search_li>
 
@@ -139,14 +139,14 @@
                                 <x-lists.search_li
                                     :basic=true
                                     :line_title="'Estimate'"
-                                    :line_data="money($project->finances['estimate'])"
+                                    :line_data="money($finances['estimate'])"
                                     >
                                 </x-lists.search_li>
 
                                 <x-lists.search_li
                                     :basic=true
                                     :line_title="'Change Order'"
-                                    :line_data="money($project->finances['change_orders'])"
+                                    :line_data="money($finances['change_orders'])"
                                     >
                                 </x-lists.search_li>
 
@@ -154,7 +154,7 @@
                                     wire:click="print_reimbursements"
                                     :basic=true
                                     :line_title="'Reimbursements'"
-                                    :line_data="money($project->finances['reimbursments'])"
+                                    :line_data="money($finances['reimbursments'])"
                                     >
                                 </x-lists.search_li>
 
@@ -163,21 +163,21 @@
                                     :bold="TRUE"
                                     {{-- make gray --}}
                                     :line_title="'TOTAL PROJECT'"
-                                    :line_data="money($project->finances['total_project'])"
+                                    :line_data="money($finances['total_project'])"
                                     >
                                 </x-lists.search_li>
 
                                 <x-lists.search_li
                                     :basic=true
                                     :line_title="'Expenses'"
-                                    :line_data="money($project->finances['expenses'])"
+                                    :line_data="money($finances['expenses'])"
                                     >
                                 </x-lists.search_li>
 
                                 <x-lists.search_li
                                     :basic=true
                                     :line_title="'Timesheets'"
-                                    :line_data="money($project->finances['timesheets'])"
+                                    :line_data="money($finances['timesheets'])"
                                     >
                                 </x-lists.search_li>
 
@@ -186,14 +186,14 @@
                                     :bold="TRUE"
                                     {{-- make gray --}}
                                     :line_title="'TOTAL COST'"
-                                    :line_data="money($project->finances['total_cost'])"
+                                    :line_data="money($finances['total_cost'])"
                                     >
                                 </x-lists.search_li>
 
                                 <x-lists.search_li
                                     :basic=true
                                     :line_title="'Payments'"
-                                    :line_data="money($project->finances['payments'])"
+                                    :line_data="money($finances['payments'])"
                                     >
                                 </x-lists.search_li>
 
@@ -202,7 +202,7 @@
                                         :basic=true
                                         :bold="TRUE"
                                         :line_title="'PROFIT'"
-                                        :line_data="money($project->finances['profit'])"
+                                        :line_data="money($finances['profit'])"
                                         >
                                     </x-lists.search_li>
                                 @endif
@@ -211,7 +211,7 @@
                                     :basic=true
                                     {{-- make gray --}}
                                     :line_title="'Balance'"
-                                    :line_data="money($project->finances['balance'])"
+                                    :line_data="money($finances['balance'])"
                                     >
                                 </x-lists.search_li>
                             </x-lists.ul>

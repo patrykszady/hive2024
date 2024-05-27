@@ -16,6 +16,7 @@ use Livewire\Attributes\Title;
 
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
+use Carbon\CarbonPeriod;
 
 class HourCreate extends Component
 {
@@ -27,6 +28,7 @@ class HourCreate extends Component
     public $hours_count_store = 0;
     public $selected_date = NULL;
     public $new_project_id = NULL;
+    public $day_project_tasks = [];
 
     public $view_text = [
         'card_title' => 'Create Daily Hours',
@@ -45,9 +47,8 @@ class HourCreate extends Component
 
     public function mount()
     {
-        $this->projects = Project::status('Active')->sortByDesc('last_status.start_date');
-
-        $this->other_projects = Project::whereNotIn('id', $this->projects->pluck('id'))->orderBy('created_at', 'DESC')->get();
+        $this->selectedDate(today()->format('Y-m-d'));
+        $this->other_projects = Project::whereNotIn('id', $this->projects->pluck('id'))->orderBy('created_at', 'DESC')->get();        
 
         $confirmed_weeks =
             Timesheet::
@@ -116,13 +117,40 @@ class HourCreate extends Component
         $this->selected_date = Carbon::parse($date);
 
         $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $date)->get();
-
         //Project::active()->orderBy('created_at', 'DESC')->get();
-        $projects = $this->projects;
-        $other_projects = $this->other_projects->whereIn('id', $user_day_hours->pluck('project_id'));
+        $projects = Project::status(['Active', 'Service Call']);
+
+        // $other_projects = $this->other_projects->whereIn('id', $user_day_hours->pluck('project_id'));
+        $other_projects = Project::whereIn('id', $user_day_hours->pluck('project_id'));
         $merged_projects = $projects->merge($other_projects);
 
-        $this->projects = $merged_projects;
+        $this->projects = 
+            Project::whereIn('id', $merged_projects->pluck('id')->toArray())->with(['tasks' => function($query) {
+                    //CarbonPeriod between each task->start and end_date ... if $this->selected_date->format('Y-m-d') is between Carbon Period
+                    $query->where('user_id', auth()->user()->id)
+                        ->each(function ($task) {
+                            $task_duration_days = CarbonPeriod::create($task->start_date, $task->end_date);
+
+                            foreach($task_duration_days as $task_day){
+                                $this->day_project_tasks[$task->project->id][$task->id]['dates'][] = $task_day->format('Y-m-d');
+                                $this->day_project_tasks[$task->project->id][$task->id]['title'] = $task->title;
+                            }
+                        });
+                }])
+                ->get()
+                ->sortByDesc('last_status.start_date')
+                ->keyBy('id');
+        
+        foreach($this->day_project_tasks as $project_id => $project_tasks){
+            foreach($project_tasks as $task_id => $task){
+                if(in_array($this->selected_date->format('Y-m-d'), $task['dates'])){
+
+                }else{
+                    //remove $task from array
+                    unset($this->day_project_tasks[$project_id][$task_id]);
+                }
+            }
+        }
 
         $this->resetValidation();
 
@@ -156,14 +184,19 @@ class HourCreate extends Component
 
     public function add_project()
     {
-        $project = $this->other_projects->where('id', $this->new_project_id);
-        $this->projects->add($project->first());
-
-        $this->form->projects[] = $project->first()->toArray();
-
-        $this->other_projects->forget($project->keys()->first());
-        $this->new_project_id = NULL;
-        $this->render();
+        //return with error
+        if(is_null($this->new_project_id)){
+            $this->addError('select_new_project', 'Please select another project.');
+        }else{
+            $project = $this->other_projects->where('id', $this->new_project_id);
+            $this->projects->add($project->first());
+    
+            $this->form->projects[] = $project->first()->toArray();
+    
+            $this->other_projects->forget($project->keys()->first());
+            $this->new_project_id = NULL;
+            $this->render();
+        }
     }
 
     public function save()
@@ -172,9 +205,13 @@ class HourCreate extends Component
             $this->addError('hours_count', 'Daily Hours need at least one entry.');
         }else{
             $this->form->store();
-            return redirect()->route('hours.create');
-            // $this->dispatch('refreshComponent')->self();
+            $this->selectedDate($this->selected_date->format('Y-m-d'));
         }
+
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Hours Created'
+        );
     }
 
     public function edit()
@@ -183,24 +220,18 @@ class HourCreate extends Component
             $this->addError('hours_count', 'Daily Hours need at least one entry.');
         }else{
             $this->form->update();
-            return redirect()->route('hours.create');
-            // $this->dispatch('refreshComponent')->self();
+            $this->selectedDate($this->selected_date->format('Y-m-d'));
         }
-        $this->form->update();
+
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Hours Updated'
+        );
     }
 
     #[Title('Hours')]
     public function render()
     {
-        $first_name = auth()->user()->first_name;
-        if(is_null($this->selected_date)){
-            //1-27-23 only if the date is not yet paid with a timesheet... see above?
-            $this->selected_date = Carbon::parse(today()->format('Y-m-d'));
-            $this->selectedDate($this->selected_date);
-        }
-
-        return view('livewire.hours.form', [
-            'first_name' => $first_name,
-        ]);
+        return view('livewire.hours.form');
     }
 }

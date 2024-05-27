@@ -66,7 +66,7 @@
                         type="number"
                         hint="$"
                         textSize="xl"
-                        placeholder="00.00"
+                        placeholder="{{$form->any_amount == 1 ? 'Any Amount' : '00.00'}}"
                         inputmode="decimal"
                         x-bind:disabled="any_amount"
                         {{-- pattern="[-+,0-9.]*" --}}
@@ -133,16 +133,6 @@
                             {{$distribution->name}}
                         </option>
                     @endforeach
-                    {{--
-                    <x-slot name="radio">
-                        <input
-                            wire:model.live="split"
-                            id="split"
-                            name="split"
-                            type="checkbox"
-                            class="w-4 h-4 ml-2 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                            >
-                    </x-slot> --}}
                 </x-forms.row>
 
                 {{-- DESC --}}
@@ -161,7 +151,8 @@
                     >
                     <x-misc.hr>Missing Expenses</x-misc.hr>
                     @if(!is_null($new_vendor))
-                        @if(!$new_vendor->vendor_transactions->isEmpty())
+                        {{-- @if(!$new_vendor->vendor_transactions->isEmpty()) --}}
+                        @if(!is_null($new_vendor->vendor_transactions))
                             <x-cards.wrapper class="col-span-4 p-6 lg:col-span-2">
                                 <x-cards.heading class="bg-color-none">
                                     <x-slot name="left">
@@ -197,43 +188,43 @@
                                 </x-lists.ul>
                             </x-cards.wrapper>
                         @endif
-                        @if(!$new_vendor->vendor_expenses->isEmpty())
-                            <x-cards.wrapper class="col-span-4 p-6 lg:col-span-2">
-                                <x-cards.heading class="bg-color-none">
-                                    <x-slot name="left">
-                                        <h1>Vendor <b>Expenses</b></h1>
-                                    </x-slot>
-                                    <x-slot name="right">
-                                        {{-- , ['vendor', '{{$vendor_add_type}}'] --}}
-                                        {{-- <x-cards.button wire:click="$dispatch('manualMatch')">
-                                            Add Expenses For Selected
-                                        </x-cards.button> --}}
-                                    </x-slot>
-                                </x-cards.heading>
-                                <x-lists.ul>
-                                    @foreach($new_vendor->vendor_expenses as $amount => $expenses)
-                                        {{-- @php
-                                            $checkbox = [
-                                                // checked vs unchecked
-                                                'wire_click' => "checkbox($key)",
-                                                'id' => "$key",
-                                                'name' => "vendor_amount_group",
-                                            ];
-                                        @endphp --}}
-                                        <x-lists.search_li
-                                            {{-- tpggle checkbox value --}}
-                                            {{-- :line_details="" --}}
-                                            :line_title="money($amount)"
-                                            :bubble_message="$expenses->count() . ' Expense/s'"
+                        @if(!is_null($new_vendor->vendor_expenses))
+                        <x-cards.wrapper class="col-span-4 p-6 lg:col-span-2">
+                            <x-cards.heading class="bg-color-none">
+                                <x-slot name="left">
+                                    <h1>Vendor <b>Expenses</b></h1>
+                                </x-slot>
+                                <x-slot name="right">
+                                    {{-- , ['vendor', '{{$vendor_add_type}}'] --}}
+                                    {{-- <x-cards.button wire:click="$dispatch('manualMatch')">
+                                        Add Expenses For Selected
+                                    </x-cards.button> --}}
+                                </x-slot>
+                            </x-cards.heading>
+                            <x-lists.ul>
+                                @foreach($new_vendor->vendor_expenses as $amount => $expenses)
+                                    {{-- @php
+                                        $checkbox = [
+                                            // checked vs unchecked
+                                            'wire_click' => "checkbox($key)",
+                                            'id' => "$key",
+                                            'name' => "vendor_amount_group",
+                                        ];
+                                    @endphp --}}
+                                    <x-lists.search_li
+                                        {{-- tpggle checkbox value --}}
+                                        {{-- :line_details="" --}}
+                                        :line_title="money($amount)"
+                                        :bubble_message="$expenses->count() . ' Expense/s'"
 
-                                            {{-- :line_title="'TEST titlte'" --}}
-                                            {{-- :checkbox="$checkbox" --}}
-                                            >
-                                        </x-lists.search_li>
-                                    @endforeach
-                                </x-lists.ul>
-                            </x-cards.wrapper>
-                        @endif
+                                        {{-- :line_title="'TEST titlte'" --}}
+                                        {{-- :checkbox="$checkbox" --}}
+                                        >
+                                    </x-lists.search_li>
+                                @endforeach
+                            </x-lists.ul>
+                        </x-cards.wrapper>
+                    @endif
                     @endif
                 </div>
             </x-cards.body>

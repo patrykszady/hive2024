@@ -4,22 +4,12 @@
             <x-slot name="left">
                 <h1>Expense Project Splits</h1>
             </x-slot>
-
-            <x-slot name="right">
-                <button
-                    wire:click="$dispatch('addSplit')"
-                    type="button"
-                    class="inline-flex justify-center px-4 py-2 ml-3 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                    Add Another Split
-                </button>
-            </x-slot>
         </x-cards.heading>
 
         <x-cards.body>
             @if(!is_null($expense_splits))
                 @foreach ($expense_splits as $index => $split)
-                    <x-cards.heading>
+                    <x-cards.heading class="bg-gray-100">
                         <x-slot name="left">
                             <h1 class="text-base font-semibold leading-6 text-gray-900">Split {{$index + 1}}</h1>
                         </x-slot>
@@ -40,27 +30,14 @@
                     </x-cards.heading>
                     <div
                         wire:key="expense-splits-{{ $index }}"
-                        class="mt-2 space-y-2"
+                        class="space-y-2"
                         >
                         {{-- ROWS --}}
 
                         {{-- show expense receipt line items if isset --}}
                         @if($expense_line_items)
                             <div class="px-4 sm:px-6 lg:px-4">
-                                {{-- <div class="sm:flex sm:items-center">
-                                    <div class="sm:flex-auto">
-                                        <h1 class="text-base font-semibold leading-6 text-gray-900">Receipt</h1>
-                                        <p class="mt-2 text-sm text-gray-700">Receipt Items. Choose Items belonging to this Split</p>
-                                    </div>
-                                    <!-- <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-                                        <button type="button"
-                                            class="block px-3 py-2 text-sm font-semibold text-center text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add
-                                            user</button>
-                                    </div> -->
-                                </div> --}}
-                                <div class="flow-root mt-8">
-                                    {{-- <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                                        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8"> --}}
+                                <div class="flow-root">
                                     <div class="">
                                         <div class="">
                                             <div class="relative">
@@ -199,6 +176,18 @@
                 @endforeach
             @endif
         </x-cards.body>
+
+        <x-cards.footer>
+            <button>
+            </button>
+            <button
+                wire:click="$dispatch('addSplit')"
+                type="button"
+                class="inline-flex justify-center px-4 py-2 ml-3 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                Add Another Split
+            </button>
+        </x-cards.footer>
 
         <x-cards.footer>
             <button

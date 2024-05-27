@@ -13,6 +13,7 @@
     'buttonClick' => null,
     'bottom' => null,
     'hint_dropdown' => null,
+    'label_text_color_custom' => null
 ])
 
 @php
@@ -38,6 +39,9 @@
     if($errors->has($errorName)){
         $input_classes .= ' focus:ring-red-500 focus:border-red-500 border-red-300 text-red-900 placeholder-red-200';
         $label_text_color = 'red';
+    }elseif($label_text_color_custom != NULL){
+        $input_classes .= ' focus:ring-indigo-500 focus:border-' . $label_text_color_custom . '-500 border-' . $label_text_color_custom . '-300 placeholder-gray-200';
+        $label_text_color = $label_text_color_custom;
     }else{
         $input_classes .= ' focus:ring-indigo-500 focus:border-indigo-500 border-gray-300 placeholder-gray-200';
         $label_text_color  = 'gray';
@@ -57,7 +61,7 @@
             for="{{ $name }}"
             class="block text-sm font-medium text-{{$label_text_color}}-700 sm:mt-px sm:pt-2"
             >
-            {{ $text }}
+            {!!  $text  !!}
         </label>
         <div class="mt-1 sm:mt-0 sm:col-span-2">
             {{-- 08-26-2026 inline --}}

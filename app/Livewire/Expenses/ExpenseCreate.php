@@ -292,6 +292,12 @@ class ExpenseCreate extends Component
                     content: 'Expense Deleted'
                 );
             }
+
+            //queue
+            UpdateProjectDistributionsAmount::dispatch($this->form->expense->project, $this->form->expense->project->distributions->pluck('id')->toArray());
+            $this->dispatch('refreshComponent')->to('expenses.expense-show');
+            $this->dispatch('refreshComponent')->to('expenses.expense-index');
+            $this->dispatch('refreshComponent')->to('projects.project-show');
         // }
     }
 
@@ -308,11 +314,15 @@ class ExpenseCreate extends Component
 
         $this->resetModal();
 
+        //queue
+        UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
+        
         //dispatch and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->dispatch('refreshComponent')->to('expenses.expense-show');
         $this->dispatch('refreshComponent')->to('expenses.expense-index');
+        $this->dispatch('refreshComponent')->to('projects.project-show');
 
         $this->dispatch('notify',
             type: 'success',

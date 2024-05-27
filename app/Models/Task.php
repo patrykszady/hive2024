@@ -37,11 +37,25 @@ class Task extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected function userId(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => empty($value) ? NULL : $value,
+        );
+    }
+
+    protected function vendorId(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => empty($value) ? NULL : $value,
+        );
+    }
+
     //5/7/2024 should just work because of $casts above
     protected function startDate(): Attribute
     {
         return Attribute::make(
-            set: fn (string $value) => Carbon::parse($value)->format('Y-m-d'),
+            set: fn ($value) => $value != NULL ? Carbon::parse($value)->format('Y-m-d') : NULL,
         );
     }
 
@@ -49,7 +63,7 @@ class Task extends Model
     protected function endDate(): Attribute
     {
         return Attribute::make(
-            set: fn (string $value) => Carbon::parse($value)->format('Y-m-d'),
+            set: fn ($value) => $value != NULL ? Carbon::parse($value)->format('Y-m-d') : NULL,
         );
     }
 }

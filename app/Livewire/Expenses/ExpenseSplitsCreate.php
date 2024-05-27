@@ -85,6 +85,7 @@ class ExpenseSplitsCreate extends Component
                     $split['amount'] = round($total_with_tax, 2);
                 }
 
+                // dd($this);
                 return $split;
             });
         }
@@ -164,8 +165,6 @@ class ExpenseSplitsCreate extends Component
         $receipt = $this->expense->receipts()->latest()->first();
 
         if(!is_null($receipt) && !is_null($receipt->receipt_items->items)){
-            $this->expense_line_items = $receipt->receipt_items;
-
             foreach($this->expense_line_items->items as $item_index => $line_item){
                 $items[$item_index] = array('checkbox' => false);
             }
@@ -174,20 +173,22 @@ class ExpenseSplitsCreate extends Component
         }
 
         $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items]);
-
         $this->splits_count = $this->splits_count + 1;
     }
 
     public function removeSplit($index)
-    {
-        $this->splits_count = $this->splits_count - 1;
+    {        
+        $split_checked_items = collect($this->expense_splits[$index]['items'])->where('checkbox', TRUE)->keys();
+        foreach($split_checked_items as $item_index){
+            $this->expense_line_items->items[$item_index]->split_index = NULL;
+        }
 
         if(isset($this->expense_splits[$index]['id'])){
             $split_to_remove = ExpenseSplits::findOrFail($this->expense_splits[$index]['id']);
             $split_to_remove->delete();
         }
 
-        unset($this->expense_splits[$index]);
+        $this->splits_count = $this->splits_count - 1;
         unset($this->expense_splits[$index]);
     }
 
@@ -202,7 +203,6 @@ class ExpenseSplitsCreate extends Component
 
     public function split_store()
     {
-        // dd($this->expense_splits);
         $this->validate();
 
         if(round($this->expense_total - $this->splits_total, 2) != 0.0){
@@ -212,7 +212,6 @@ class ExpenseSplitsCreate extends Component
             //send back to ExpenseForm... all validated and tested here
             $this->dispatch('hasSplits', $this->expense_splits)->to(ExpenseCreate::class);
             $this->modal_show = FALSE;
-            // $this->expense_splits = [];
             // $this->resetSplits();
         }
     }

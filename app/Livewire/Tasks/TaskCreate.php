@@ -52,7 +52,7 @@ class TaskCreate extends Component
         if($date){
             $this->form->dates = [Carbon::parse($date)->format('m/d/Y')];
         }else{
-            $this->form->dates = [today()->format('m/d/Y')];
+            $this->form->dates = [];
         }
 
         $this->form->project_id = $project_id;
@@ -71,7 +71,9 @@ class TaskCreate extends Component
             $duration = $end->diff($start)->days + 1;
 
             $this->form->duration = $duration;
-        }else{
+        }elseif(empty($dates[0])){
+            $this->form->duration = 0;
+        }else{    
             $this->form->duration = 1;
         }
     }

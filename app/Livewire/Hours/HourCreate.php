@@ -115,11 +115,11 @@ class HourCreate extends Component
     {
         //if current User doesnt have any hours for this date let them add new project, if they do let them edit if not yet paid (or timesheet created)
         $this->selected_date = Carbon::parse($date);
-
+        
         $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $date)->get();
         //Project::active()->orderBy('created_at', 'DESC')->get();
         $projects = Project::status(['Active', 'Service Call']);
-
+        
         // $other_projects = $this->other_projects->whereIn('id', $user_day_hours->pluck('project_id'));
         $other_projects = Project::whereIn('id', $user_day_hours->pluck('project_id'));
         $merged_projects = $projects->merge($other_projects);
@@ -127,7 +127,7 @@ class HourCreate extends Component
         $this->projects = 
             Project::whereIn('id', $merged_projects->pluck('id')->toArray())->with(['tasks' => function($query) {
                     //CarbonPeriod between each task->start and end_date ... if $this->selected_date->format('Y-m-d') is between Carbon Period
-                    $query->where('user_id', auth()->user()->id)
+                    $query->where('user_id', auth()->user()->id)->whereNotNull('start_date')
                         ->each(function ($task) {
                             $task_duration_days = CarbonPeriod::create($task->start_date, $task->end_date);
 
@@ -140,7 +140,7 @@ class HourCreate extends Component
                 ->get()
                 ->sortByDesc('last_status.start_date')
                 ->keyBy('id');
-        
+
         foreach($this->day_project_tasks as $project_id => $project_tasks){
             foreach($project_tasks as $task_id => $task){
                 if(in_array($this->selected_date->format('Y-m-d'), $task['dates'])){

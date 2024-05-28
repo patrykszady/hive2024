@@ -25,17 +25,15 @@
 
                 <x-cards.footer>
 					<div class="w-full space-y-1 text-center">
-						<a
-							type="button"
-							class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none">
+						<button
+							class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none pointer-events-none">
 							{{$this->selected_date->format('D M jS, Y')}}
-						</a>
+						</button>
 
-                        <a
-                            type="button"
-                            class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none">
+                        <button
+                            class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none pointer-events-none">
                             Hours | <b>{{$this->hours_count}}</b>
-                        </a>
+                        </button>
 
                         <x-forms.error errorName="hours_count"/>
 

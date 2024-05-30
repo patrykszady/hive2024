@@ -26,10 +26,23 @@
     </x-page.top>
 
     @foreach($projects as $project_index => $project)
-        <x-cards.wrapper class="px-4 {{!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty() ? 'pb-8' : ''}} mb-1 sm:px-6 lg:max-w-5xl lg:px-8">
+        <x-cards.wrapper class="px-4 {{!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty() ? 'pb-4' : ''}} mb-1 sm:px-2 lg:max-w-5xl lg:px-4">
             <x-cards.heading class="px-1 py-1">
                 <x-slot name="left">
-                    <h1 class="font-bold"><a href="{{route('projects.show', $project->id)}}" target="_blank">{{$project->name}}</a></h1>
+                    <div>
+                        <a href="{{route('projects.show', $project->id)}}" target="_blank">
+                            <span class="font-bold text-base">{{$project->address}}</span>
+                            <br class="md:hidden">
+                            <span class="text-sm md:text-base">{{$project->project_name}}</span>
+                        </a>
+                        <div class="inline-flex">
+                            <span
+                                class="px-2 text-xs font-semibold rounded-full bg-indigo-100 text-indigo-800 float-right ml-2"
+                                >
+                                {{ $project->last_status->title }}
+                            </span>
+                        </div>
+                    </div>
                 </x-slot>
                 <x-slot name="right">
                     <x-cards.button
@@ -76,14 +89,15 @@
                     <hr>   
                 @endif     
 
-                <div class="overflow-x-auto">
+                {{-- id="project-{{$project_index}}" --}}
+                 <div class="overflow-x-auto" x-bind="scrollSync">
                     <div style="width: 960px;">
                         @if(!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty())
                             <div class="grid grid-cols-7 gap-1 divide-x divide-solid divide-gray-300">
                                 @foreach($days as $day_index => $day)
                                     <h5
                                         wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}}, date: '{{ $day['database_date'] }}' })"
-                                        class="pl-1 cursor-pointer hover:bg-gray-100"
+                                        class="pl-1 cursor-pointer hover:bg-gray-100 {{$day['is_today'] == TRUE ? 'text-indigo-600' : ''}}"
                                         >
                                         {{ $day['formatted_date'] }}
                                     </h5>
@@ -140,7 +154,7 @@
                                         >
                                         <div
                                             wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
-                                            class="p-1 border-{{$task->direction == 'right' ? 'r' : 'l'}}-4 cursor-pointer grid-stack-item-content hover:bg-gray-200 bg-gray-200 bg-opacity-50
+                                            class="p-1 border-{{$task->direction == 'right' ? 'l' : 'l'}}-4 cursor-pointer grid-stack-item-content hover:bg-gray-200 bg-gray-200 bg-opacity-50
                                                 {{-- 5/20/2024 if Satruday or Sunday change bg-color --}}
                                                 {{-- {{in_array($day_index, [5, 6]) ? 'bg-gray-700' : 'bg-gray-100'}} --}}
                                                 
@@ -169,19 +183,19 @@
                                             @endif
 
                                             <span
-                                                class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
+                                                class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-left' : ''}}"
                                                 >
                                                 {{$task->title}}
                                             </span>
 
                                             @if($task->vendor)
                                                 <br>
-                                                <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->vendor->name, 15}}</span>
+                                                <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-left' : ''}}">{{$task->vendor->name, 15}}</span>
                                             @endif
 
                                             @if($task->user)
                                                 <br>
-                                                <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->user->first_name, 15}}</span>
+                                                <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-left' : ''}}">{{$task->user->first_name, 15}}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -196,6 +210,24 @@
     @endforeach
 
     <livewire:tasks.task-create :projects="$projects" />
+
+    {{-- @push('custom_scripts') --}}
+        <script type="text/javascript">
+            document.addEventListener('alpine:init', () => {
+                Alpine.store('scrollSync', {
+                    scrollLeft: 0,
+                })
+                Alpine.bind('scrollSync', {
+                    '@scroll'(){
+                        this.$store.scrollSync.scrollLeft = this.$el.scrollLeft
+                    },
+                    'x-effect'() {
+                        this.$el.scrollLeft = this.$store.scrollSync.scrollLeft
+                    }
+                })
+            })
+        </script>
+    {{-- @endpush --}}
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack-all.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/10.1.2/gridstack.min.css">

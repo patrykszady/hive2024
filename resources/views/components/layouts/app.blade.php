@@ -102,29 +102,7 @@
 
             <main class="py-10 lg:pl-72">
                 <div class="px-4 sm:px-6 lg:px-8">
-                    <!-- Your content -->
                     {{ $slot }}
-
-
-                    {{-- @if(session()->has('notify'))
-                        @php
-                        $flash = session()->get('notify');
-                        $this->dispatch('notify',
-                            type: $flash[0],
-                            content: $flash[1],
-                            route: isset($flash[2]) ? $flash[2] : NULL
-                        );
-                        @endphp
-                    @endif --}}
-                    {{-- @if(session()->has('notify'))
-                        <script>
-                            window.onload = function() {
-                                window.dispatchEvent(new CustomEvent('notify', {
-                                    type: '{{ session('notify') }}'
-                                }));
-                            }
-                        </script>
-                    @endif --}}
                     @include('components.notify')
                 </div>
             </main>

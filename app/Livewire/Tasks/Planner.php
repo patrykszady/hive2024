@@ -84,7 +84,8 @@ class Planner extends Component
             //need to account for saturday&sunday / days off
             $this->days[] = [
                 'database_date' => $confirmed_date->format('Y-m-d'),
-                'formatted_date' => $confirmed_date->format('D, m/d')
+                'formatted_date' => $confirmed_date->format('D, m/d'),
+                'is_today' => $confirmed_date == today()
             ];
         }
     }

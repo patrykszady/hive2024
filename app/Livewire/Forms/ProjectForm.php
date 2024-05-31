@@ -73,6 +73,15 @@ class ProjectForm extends Form
 
     public function store()
     {
+        if($this->project_existing_address == 'CLIENT_PROJECT'){
+            $client_address = $this->component->client_addresses->first();
+            $this->address = $client_address['address'];
+            $this->address_2 = $client_address['address_2'];
+            $this->city = $client_address['city'];
+            $this->state = $client_address['state'];
+            $this->zip_code = $client_address['zip_code'];
+        }
+
         $this->validate();
 
         return Project::create([

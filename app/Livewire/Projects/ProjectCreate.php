@@ -122,7 +122,7 @@ class ProjectCreate extends Component
         }else{
             $this->form->client_id = $this->existing_client->id;
             $this->client_addresses = $this->existing_client->projects;
-
+            
             if($this->client_addresses->isEmpty()){
                 $this->client_addresses =
                     collect([
@@ -135,6 +135,15 @@ class ProjectCreate extends Component
                             'zip_code' => $this->existing_client['zip_code'],
                         ])
                     ]);
+
+                // $client_address = $this->client_addresses->first();
+
+                $this->form->project_existing_address = 'CLIENT_PROJECT';
+                // $this->form->address = $client_address->address;
+                // $this->form->address_2 = $client_address->address_2;
+                // $this->form->city = $client_address->city;
+                // $this->form->state = $client_address->state;
+                // $this->form->zip_code = $client_address->zip_code;
             }else{
                 $this->client_addresses = $this->client_addresses->unique('address');
                 $client_address = $this->client_addresses->first();
@@ -146,6 +155,8 @@ class ProjectCreate extends Component
                 $this->form->state = $client_address->state;
                 $this->form->zip_code = $client_address->zip_code;
             }
+
+            // dd($this->client_addresses->first());
         }
 
         $this->showModal = TRUE;

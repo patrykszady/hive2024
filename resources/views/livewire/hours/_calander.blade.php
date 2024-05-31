@@ -29,11 +29,10 @@
             Is selected or is today, include: "font-semibold"
             Is selected, include: "text-white"
         -->
-        @foreach ($days as $day)
+        @foreach ($days as $day_index =>  $day)
             <button
                 type="button"
-                wire:click="$dispatch('selectedDate', { date: '{{$day['format']}}' } )"
-                
+                wire:click="$dispatch('selectedDate', { date: '{{$day['format']}}', day_index: '{{$day_index}}' })"
                 {{-- if date is in CONFIRMED ARRAY --}}
                 @disabled(today()->format('Y-m-d') < $day['format'] || $day['confirmed_date'] == TRUE)
 
@@ -55,7 +54,6 @@
                     @elseif($day['month'] == today()->format('m'))
                         '  bg-gray-100 '
                     @elseif($day['has_hours'] == TRUE)
-                    {{-- ' bg-green-500 '  --}}
                         ' bg-green-100 '
                     @else
                         ' bg-white text-gray-400 '

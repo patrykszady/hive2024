@@ -78,7 +78,7 @@
 
                 <livewire:estimates.estimate-accept :estimate="$estimate"/>
                 <livewire:estimates.estimate-duplicate />
-                <livewire:estimates.estimate-combine :project="$estimate->project"/>
+                <livewire:estimates.estimate-combine :client="$estimate->client"/>
 
 				<x-cards.body>
 					<x-lists.ul>

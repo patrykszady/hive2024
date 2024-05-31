@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Estimates;
 
+use App\Models\Client;
 use App\Models\Project;
 use App\Models\Estimate;
 
@@ -9,9 +10,10 @@ use Livewire\Component;
 
 class EstimateCombine extends Component
 {
-    public Project $project;
+    public Client $client;
     public $estimate_id = NULL;
     public $estimate = NULL;
+    public $estimates = [];
 
     public $modal_show = FALSE;
 
@@ -24,22 +26,24 @@ class EstimateCombine extends Component
         ];
     }
 
+    public function mount(){
+        $client_projects = $this->client->projects->pluck('id')->toArray();
+        $this->estimates = Estimate::whereIn('project_id', $client_projects)->with('project')->get();
+    }
+
     public function combineModal($existing_estimate_id)
-    {
-        // dd($existing_estimate_id);
+    {       
+        $this->estimates = $this->estimates->where('id', '!=', $existing_estimate_id);
         $this->estimate = Estimate::findOrFail($existing_estimate_id);
-        // dd($this->project->estimates);
-        // $this->estimate = $estimate;
         $this->modal_show = TRUE;
     }
 
     public function save()
     {
         $this->validate();
-
-        //get current estimate and duplicate sections and line_items
         $new_estimate = Estimate::findOrFail($this->estimate_id);
 
+        //get current estimate and duplicate sections and line_items
         foreach($this->estimate->estimate_sections as $section){
             $new_section = $section->replicate();
             $new_section->estimate_id = $new_estimate->id;
@@ -60,6 +64,8 @@ class EstimateCombine extends Component
             content: 'Estimate Duplicated',
             route: 'estimates/' . $new_estimate->id
         );
+
+        $this->modal_show = FALSE;
     }
 
     public function render()

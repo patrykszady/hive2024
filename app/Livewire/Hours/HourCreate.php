@@ -27,6 +27,7 @@ class HourCreate extends Component
     public $days = [];
     public $hours_count_store = 0;
     public $selected_date = NULL;
+    public $day_index = NULL;
     public $new_project_id = NULL;
     public $day_project_tasks = [];
 
@@ -79,13 +80,13 @@ class HourCreate extends Component
         foreach($this->getDays() as $day){
             $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $day->format('Y-m-d'))->get();
 
-            $this->days->push([
+            $this->days->push(collect([
                 'format' => $day->format('Y-m-d'),
                 'day' => $day->format('d'),
                 'month' => $day->format('m'),
                 'has_hours' => $user_day_hours->isEmpty() ? FALSE : TRUE,
                 'confirmed_date' => in_array($day->format('Y-m-d'), $confirmed_week_days) ? TRUE : FALSE
-            ]);
+            ]));
         }
 
         $this->form->setProjects($this->projects->toArray());
@@ -111,17 +112,24 @@ class HourCreate extends Component
         );
     }
 
-    public function selectedDate($date)
+    public function selectedDate($date, $day_index = NULL)
     {
+        if(!is_null($day_index)){
+            $this->day_index = $day_index;
+            $new_date = $this->days[$day_index];
+            
+            $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $new_date['format'])->get();
+            $has_hours = $user_day_hours->isEmpty() ? FALSE : TRUE;
+            $this->days[$day_index]['has_hours'] = $has_hours;
+        }        
+
         //if current User doesnt have any hours for this date let them add new project, if they do let them edit if not yet paid (or timesheet created)
         $this->selected_date = Carbon::parse($date);
-        
         $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $date)->get();
-        //Project::active()->orderBy('created_at', 'DESC')->get();
         $projects = Project::status(['Active', 'Service Call']);
-        
+
         // $other_projects = $this->other_projects->whereIn('id', $user_day_hours->pluck('project_id'));
-        $other_projects = Project::whereIn('id', $user_day_hours->pluck('project_id'));
+        $other_projects = Project::whereIn('id', $user_day_hours->pluck('project_id'))->get();
         $merged_projects = $projects->merge($other_projects);
 
         $this->projects = 
@@ -140,7 +148,7 @@ class HourCreate extends Component
                 ->get()
                 ->sortByDesc('last_status.start_date')
                 ->keyBy('id');
-
+        
         foreach($this->day_project_tasks as $project_id => $project_tasks){
             foreach($project_tasks as $task_id => $task){
                 if(in_array($this->selected_date->format('Y-m-d'), $task['dates'])){
@@ -205,7 +213,7 @@ class HourCreate extends Component
             $this->addError('hours_count', 'Daily Hours need at least one entry.');
         }else{
             $this->form->store();
-            $this->selectedDate($this->selected_date->format('Y-m-d'));
+            $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
         }
 
         $this->dispatch('notify',
@@ -220,7 +228,7 @@ class HourCreate extends Component
             $this->addError('hours_count', 'Daily Hours need at least one entry.');
         }else{
             $this->form->update();
-            $this->selectedDate($this->selected_date->format('Y-m-d'));
+            $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
         }
 
         $this->dispatch('notify',

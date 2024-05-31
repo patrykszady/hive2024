@@ -19,6 +19,7 @@
 				</x-cards.heading>
 
                 {{-- CALANDER --}}
+                {{--  wire:target="save, edit" --}}
 				<x-cards.body wire:loading.class="opacity-50 text-opacity-40 pointer-events-none">
 					@include('livewire.hours._calander')
 				</x-cards.body>
@@ -71,6 +72,10 @@
                                     @if(!empty($day_project_tasks[$index]))
                                         @foreach($day_project_tasks[$index] as $task)
                                             <span class="mt-2 text-sm text-indigo-600"><i>{{$task['title']}}</i></span>
+                                            <br>
+                                            {{-- @if(!$loop->last)
+                                                <br>
+                                            @endif --}}
                                         @endforeach
                                     @endif
                                 </div>
@@ -88,7 +93,7 @@
                 <x-cards.body :class="'space-y-2 my-2'">
                     <x-forms.row
                         {{-- 5-26-2024 disable if $new_project_id is NULL --}}
-                        x-bind:disabled="save_form == 'save' || expense_transactions"
+                        {{-- x-bind:disabled="save_form == 'save' || expense_transactions" --}}
                         wire:model.live="new_project_id"
                         errorName="select_new_project"
                         name="new_project_id"

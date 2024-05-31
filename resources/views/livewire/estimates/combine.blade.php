@@ -18,8 +18,8 @@
                 type="dropdown"
                 >
                 <option value="" readonly>Select Estimate</option>
-                @foreach ($project->estimates as $estimate)
-                    <option value="{{$estimate->id}}">Estimate {{$estimate->id}}</option>
+                @foreach ($estimates as $estimate)
+                    <option value="{{$estimate->id}}">{{$estimate->project->project_name}} | Estimate {{$estimate->id}}</option>
                 @endforeach
             </x-forms.row>
         </x-cards.body>

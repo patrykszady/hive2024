@@ -48,7 +48,7 @@ class PaymentCreate extends Component
             Project::where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
                 ->where('client_id', $this->client->id)
                 ->orderBy('created_at', 'DESC')
-                ->status(['Active', 'Complete'])->sortByDesc('last_status.start_date')
+                ->status(['Active', 'Complete', 'Service Call Complete', 'Service Call'])->sortByDesc('last_status.start_date')
                 // ->with(['expenses' => function ($query) {
                 //     return $query->where('vendor_id', '4');
                 //     }])

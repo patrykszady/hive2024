@@ -59,8 +59,6 @@ class ProjectsIndex extends Component
             $client_ids = [];
         }
 
-        // dd($this->client ? $this->client : NULL);
-
         $clients = Client::orderBy('created_at', 'DESC')->get();
 
         $projects = Project::orderBy('created_at', 'DESC')
@@ -69,7 +67,7 @@ class ProjectsIndex extends Component
             })
             ->where('address', 'like', "%{$this->project_name_search}%")
             ->when($this->project_status_title != NULL, function($query) {
-                return $query->status($this->project_status_title)->sortByDesc('last_status.start_date');
+                return $query->status($this->project_status_title == 'Complete' ? [$this->project_status_title, 'Service Call Complete'] : $this->project_status_title)->sortByDesc('last_status.start_date');
             })
             ->when($this->client != NULL, function ($query) use ($client_ids) {
                 return $query->whereIn('client_id', $client_ids);

@@ -63,7 +63,14 @@
     {{-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> --}}
     <!-- https://www.chartjs.org/ -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-    <script defer src="https://unpkg.com/@alpinejs/ui@3.13.7-beta.0/dist/cdn.min.js"></script>
+    {{-- <script defer src="https://unpkg.com/@alpinejs/ui@3.13.7-beta.0/dist/cdn.min.js"></script> --}}
+
+    <!-- Alpine Plugins -->
+    <script defer src="https://unpkg.com/@alpinejs/ui@3.14.0-beta.0/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/@alpinejs/focus@3.14.0/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    {{-- ALPINE CORE INCLUDED WITH LIVEWIRE --}}
+
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     @stack('custom_styles')

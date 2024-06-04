@@ -27,6 +27,7 @@
 
             <x-lists.search_li
                 {{-- wire:click="$dispatch('showMember',)" --}}
+                wire:navigate.hover
                 href="{{route('users.show',  $user_vendor->id)}}"
                 :line_details="$line_details"
                 :line_title="$user_vendor->full_name"

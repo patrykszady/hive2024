@@ -12,6 +12,7 @@ use App\Livewire\Users\TeamMembers;
 use App\Livewire\Vendors\VendorCreate;
 
 use Livewire\Component;
+use App\Livewire\Dashboard\DashboardShow;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
@@ -175,11 +176,22 @@ class UserCreate extends Component
 
     public function removeMember(User $user)
     {
-        // 2-7-22 need REMOVAL MODAL to confirm
-        dd('in removeMember Livewire/Users/UsersForm');
-
-        $this->modal_show = true;
-        return view('livewire.users.show');
+        // 2-7-22 need REMOVAL MODAL to confirm     
+        $user->vendors()
+            ->updateExistingPivot(
+                auth()->user()->vendor, 
+                array(
+                    'is_employed' => 0, 
+                    'end_date' => today()->format('Y-m-d')
+                )
+            );
+        // ->where('id', auth()->user()->vendor->id)->first();        
+        $this->redirect(DashboardShow::class, navigate: true);
+        //6-1-2024 set blurry background...
+        $this->dispatch('notify',
+            type: 'success',
+            content: $user->first_name . ' Removed.'
+        );
     }
 
     // Everthing in top pulbic should be reset here

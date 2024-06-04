@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Hours;
 
+use App\Models\Task;
 use App\Models\Hour;
 use App\Models\Project;
 use App\Models\Timesheet;
@@ -127,10 +128,18 @@ class HourCreate extends Component
         $this->selected_date = Carbon::parse($date);
         $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $date)->get();
         $projects = Project::status(['Active', 'Service Call']);
+        $planner_projects_day = 
+            Task::where('user_id', auth()->user()->id)->whereNotNull('start_date')
+                ->whereNotIn('project_id', $projects->pluck('id')->toArray())
+                ->whereDate('start_date', '>=', $this->selected_date->format('Y-m-d'))
+                ->whereDate('end_date', '<=', $this->selected_date->format('Y-m-d'))
+                ->pluck('project_id')->unique('project_id');
 
-        // $other_projects = $this->other_projects->whereIn('id', $user_day_hours->pluck('project_id'));
+        $planner_projects_day = Project::whereIn('id', $planner_projects_day)->get();
+
         $other_projects = Project::whereIn('id', $user_day_hours->pluck('project_id'))->get();
         $merged_projects = $projects->merge($other_projects);
+        $merged_projects = $projects->merge($planner_projects_day);
 
         $this->projects = 
             Project::whereIn('id', $merged_projects->pluck('id')->toArray())->with(['tasks' => function($query) {

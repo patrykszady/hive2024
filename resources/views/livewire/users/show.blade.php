@@ -1,5 +1,6 @@
 <div>
 	<x-page.top
+        class="max-w-xl lg:max-w-5xl"
         h1="{!! $user->full_name !!}"
         p="{{$user->this_vendor ? 'Team Member for ' . $user->this_vendor->name : ''}}"
         {{-- right_button_href="{{auth()->user()->can('update', $vendor) ? route('vendors.show', $vendor->id) : ''}}"
@@ -20,16 +21,20 @@
                             @endif --}}
                         </x-slot>
 
-                        @can('update', $user)
-                            <x-slot name="right">
-                                <x-cards.button
-                                    {{-- wire:click="$dispatchTo('vendors.vendor-create', 'editVendor', { vendor: {{$vendor->id}} })" --}}
-                                    >
-                                    Edit User
-                                </x-cards.button>
-                                {{-- <livewire:vendor-docs.vendor-doc-create /> --}}
-                            </x-slot>
-                        @endcan
+                        @if($user->this_vendor)
+                            @can('update', $user)
+                                <x-slot name="right">
+                                    <x-cards.button
+                                        button_color='red'
+                                        wire:click="$dispatchTo('users.user-create', 'removeMember', { user: {{$user->id}} })"
+                                        >
+                                        Remove User From Vendor
+                                    </x-cards.button>
+
+                                    <livewire:users.user-create />
+                                </x-slot>
+                            @endcan
+                        @endif
                     </x-cards.heading>
 
                     <x-cards.body>

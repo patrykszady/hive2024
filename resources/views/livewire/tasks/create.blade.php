@@ -61,9 +61,8 @@
                                     firstDayOfWeek: 1, // 0 for Sunday, 1 for Monday, etc.
                                 },
                                 {{-- disable: [
-                                    function(date) {
-                                        // Disable Saturdays
-                                        return date.getDay() === 6;
+                                    function (date) {
+                                       return (date.getDay() === 6 || date.getDay() === 0);
                                     }
                                 ], --}}
                                 onChange: (date, dateString) => {

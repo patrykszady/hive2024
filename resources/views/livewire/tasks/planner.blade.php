@@ -89,9 +89,8 @@
                     <hr>   
                 @endif     
 
-                {{-- id="project-{{$project_index}}" --}}
-                 <div class="overflow-x-auto" x-bind="scrollSync">
-                    <div style="width: 960px;">
+                <div class="overflow-x-auto" x-bind="scrollSync">
+                    <div style="width: 992px;">
                         @if(!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty())
                             <div class="grid grid-cols-7 gap-1 divide-x divide-solid divide-gray-300">
                                 @foreach($days as $day_index => $day)
@@ -138,7 +137,7 @@
                             {{-- 5/20/2024 if Satruday or Sunday change bg-color --}}
                             {{-- <div class="flex h-full divide-x-2">
                                 <div class="bg-transparent" style="width: 71.428571%;"></div>
-                                <div class="bg-gray-400" style="width: 28.571429%;"></div>
+                                <div class="bg-gray-500" style="width: 28.571429%;"></div>
                             </div> --}}
 
                             @if(!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty())
@@ -149,6 +148,7 @@
                                         $gs_x = $task->direction == 'left' ? $day_index : 0;
                                     @endphp
                                     <div
+                                        {{-- bg-red-300 --}}
                                         class="grid-stack-item"
                                         gs-id="{{$task->id}}" gs-x="{{$gs_x}}" gs-y="{{$task->order}}" gs-w="{{$gs_w}}"
                                         >

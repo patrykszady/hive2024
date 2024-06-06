@@ -1755,13 +1755,13 @@ class TransactionController extends Controller
     }
 
     public function transaction_vendor_bulk_match(){
-        //->where('id', 41)
+        //->where('id', 42)
         $matches = TransactionBulkMatch::withoutGlobalScopes()->get();
 
         foreach($matches as $match){
             //get vendor back accounts..
             $bank_account_ids = $match->belongs_to_vendor->bank_accounts->pluck('id')->toArray();
-
+            // dd($match);
             $transactions =
                 Transaction::withoutGlobalScopes()
                     ->whereNull('deleted_at')
@@ -1785,12 +1785,14 @@ class TransactionController extends Controller
                 Expense::withoutGlobalScopes()
                     ->where('vendor_id', $match->vendor_id)
                     //repetative?
-                    ->where('belongs_to_vendor_id', $match->belongs_to_vendor->id)
-                    ->where('project_id', 0)
+                    ->where('belongs_to_vendor_id', $match->belongs_to_vendor_id)
+                    ->where('project_id', NULL)
+                    ->where('distribution_id', NULL)
                     ->when($match->amount != NULL, function ($query) use ($match){
                         return $query->where('amount', isset($match->options['amount_type']) ? $match->options['amount_type'] : '=', $match->amount);
                     })
                     ->get();
+            // dd($expenses);
 
             //set project to existing expenses where $expense->project = NO PROJECT (e.g. email receipt linked with transaction before Project was assigned to transaction).
             foreach($expenses as $expense){

@@ -1038,7 +1038,6 @@ class ReceiptController extends Controller
     {
         //6-28-2023 catch forwarded messages where From is in database table company_emails
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
-
         foreach($company_emails as $company_email){
             //check if access_token is expired, if so get new access_token and refresh_token
             $guzzle = new Client();
@@ -1095,6 +1094,7 @@ class ReceiptController extends Controller
                     continue;
                 }
             }
+            // dd($messages);
 
             foreach($messages as $key => $message){
                 if(!isset($message->getToRecipients()[0])){
@@ -1124,6 +1124,7 @@ class ReceiptController extends Controller
                         if(strpos($email_subject, $email_receipt->from_subject) !== FALSE){
                             $receipt = $email_receipt;
                         }else{
+                            //continue... email Subject not a Receipt
                             continue;
                         }
                     }
@@ -1138,6 +1139,7 @@ class ReceiptController extends Controller
                     continue;
                 }
 
+                // dd($receipt);
                 //NOTE: $receipt MUST be set by now
                 $receipt_account =
                     ReceiptAccount::withoutGlobalScopes()

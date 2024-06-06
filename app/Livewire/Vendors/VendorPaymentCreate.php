@@ -54,7 +54,7 @@ class VendorPaymentCreate extends Component
         // $vendor_id = $this->vendor->id;
         $this->projects =
             Project::where('created_at', '>', Carbon::now()->subYears(2)->format('Y-m-d'))
-                ->status(['Active', 'Complete'])->sortByDesc('last_status.start_date')
+                ->status(['Active', 'Complete', 'Service Call', 'Service Call Complete'])->sortByDesc('last_status.start_date')
                 // ->with(['expenses' => function ($query) {
                 //     return $query->where('vendor_id', '4');
                 //     }])

@@ -126,7 +126,7 @@ class HourCreate extends Component
 
         //if current User doesnt have any hours for this date let them add new project, if they do let them edit if not yet paid (or timesheet created)
         $this->selected_date = Carbon::parse($date);
-        $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $date)->get();
+        $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $this->selected_date->format('Y-m-d'))->get();
         $projects = Project::status(['Active', 'Service Call']);
         $planner_projects_day = 
             Task::where('user_id', auth()->user()->id)->whereNotNull('start_date')
@@ -136,10 +136,10 @@ class HourCreate extends Component
                 ->pluck('project_id')->unique('project_id');
 
         $planner_projects_day = Project::whereIn('id', $planner_projects_day)->get();
-
         $other_projects = Project::whereIn('id', $user_day_hours->pluck('project_id'))->get();
+
         $merged_projects = $projects->merge($other_projects);
-        $merged_projects = $projects->merge($planner_projects_day);
+        $merged_projects = $merged_projects->merge($planner_projects_day);
 
         $this->projects = 
             Project::whereIn('id', $merged_projects->pluck('id')->toArray())->with(['tasks' => function($query) {
@@ -169,6 +169,7 @@ class HourCreate extends Component
             }
         }
 
+        // dd($this->day_project_tasks);
         $this->resetValidation();
 
         if($user_day_hours->isEmpty()){
@@ -197,6 +198,8 @@ class HourCreate extends Component
         }
 
         $this->form->setProjects($this->projects->toArray());
+        // dd(collect($this->form->projects));
+        // dd($this->form->projects[250]->hours);
     }
 
     public function add_project()
@@ -233,13 +236,15 @@ class HourCreate extends Component
 
     public function edit()
     {
-        if($this->hours_count_store == 0){
-            $this->addError('hours_count', 'Daily Hours need at least one entry.');
-        }else{
-            $this->form->update();
-            $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
-        }
-
+        // if($this->hours_count_store == 0){
+        //     $this->addError('hours_count', 'Daily Hours need at least one entry.');
+        // }else{
+        //     $this->form->update();
+        //     $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
+        // }
+        $this->form->update();
+        $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
+        
         $this->dispatch('notify',
             type: 'success',
             content: 'Hours Updated'

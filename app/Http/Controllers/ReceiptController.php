@@ -1074,7 +1074,7 @@ class ReceiptController extends Controller
             // dd($user_hive_folder);
 
             if(env('APP_ENV') == 'production'){
-                //6-12-2023 6-27-2023 exclude ones already read ... save $message->getId() to a database...
+                //6-12-2023 6-27-2023 6-6-2024 exclude ones already read ... save $message->getId() to a (temp) database/log file?...
                 $messages_inbox = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/inbox/messages?top=20")
                     ->setReturnType(Message::class)
                     ->execute();
@@ -1372,6 +1372,7 @@ class ReceiptController extends Controller
             $doc_type = 'jpg';
         }
 
+        // dd('here');
         //ocr the file
         $document_model = $receipt->options['document_model'];
         $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);

@@ -1,6 +1,6 @@
 <div>
 	<x-page.top
-        class="lg:max-w-4xl"
+        class="max-w-xl lg:max-w-5xl"
         h1="{!! $project->name !!}"
         p="{!! $project->client->name !!}"
 		{{-- right_button_href="{{auth()->user()->can('update', $project) ? route('estimates.create', $project->id) : ''}}"
@@ -67,18 +67,10 @@
 					</x-lists.ul>
 				</x-cards.body>
 			</x-cards.wrapper>
-
-            @can('update', $project)
-			    <livewire:project-status.status-create lazy :project="$project"/>
-            @endcan
-
-			@if(!$project->expenses->isEmpty())
-                <livewire:expenses.expense-index :project="$project->id" :view="'projects.show'"/>
-			@endif
 		</div>
 
-		@can('update', $project)
-            <div class="col-span-4 space-y-4 lg:col-span-2">
+        @can('update', $project)
+            <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 {{-- PROJECT ESTIMATES --}}
                 <x-cards.wrapper>
                     <x-cards.heading>
@@ -109,9 +101,27 @@
                     </x-cards.body>
                 </x-cards.wrapper>
 
+                <livewire:project-status.status-create :project="$project"/>
+            </div>
+        @endcan
+
+        @can('update', $project)
+            <div class="col-span-4 space-y-4">
+                <livewire:tasks.planner :single_project_id="$project->id" />
+            </div>
+
+            <div class="col-span-4 space-y-4 lg:col-span-2">
+                @if(!$project->expenses->isEmpty())
+                    <livewire:expenses.expense-index :project="$project->id" :view="'projects.show'"/>
+                @endif
+            </div>
+        @endcan
+
+		@can('update', $project)
+            <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 @if(in_array($this->project->last_status->title, ['Active', 'Complete',  'Service Call', 'Service Call Complete', 'VIEW ONLY']))
                     {{-- PROJECT FINANCIALS --}}
-                    <x-cards.wrapper>
+                    <x-cards.wrapper lazy>
                         <x-cards.heading>
                             <x-slot name="left">
                                 <h1>Project Finances</b></h1>
@@ -242,7 +252,7 @@
                     @endif
 
                     {{-- PROJECT PAYMENTS --}}
-                    <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+                    <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3" lazy>
                         <x-cards.heading>
                             <x-slot name="left">
                                 <h1>Payments</b></h1>

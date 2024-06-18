@@ -199,4 +199,5 @@
     </x-modal.panel>
 </x-modal>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 

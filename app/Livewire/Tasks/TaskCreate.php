@@ -101,7 +101,7 @@ class TaskCreate extends Component
             content: 'Task Removed'
         );
 
-        $this->dispatch('refresh_test')->to(Planner::class);
+        $this->dispatch('refresh_planner')->to(PlannerProject::class);
         $this->showModal = FALSE;
     }
 
@@ -114,7 +114,7 @@ class TaskCreate extends Component
             content: 'Task Created'
         );
 
-        $this->dispatch('refresh_test')->to(Planner::class);
+        $this->dispatch('refresh_planner')->to(PlannerProject::class);
         $this->showModal = FALSE;
     }
 
@@ -127,7 +127,7 @@ class TaskCreate extends Component
             content: 'Task Updated'
         );
 
-        $this->dispatch('refresh_test')->to(Planner::class);
+        $this->dispatch('refresh_planner')->to(PlannerProject::class);
         $this->showModal = FALSE;
     }
 

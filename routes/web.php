@@ -25,6 +25,7 @@ use App\Livewire\VendorDocs\VendorDocsIndex;
 use App\Livewire\VendorDocs\AuditShow;
 
 use App\Livewire\Tasks\Planner;
+use App\Livewire\Tasks\PlannerList;
 
 use App\Livewire\Distributions\DistributionsIndex;
 // use App\Http\Livewire\Distributions\DistributionsForm;
@@ -236,6 +237,9 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
 
     //TASKS
     Route::get('/planner', Planner::class)->name('planner.index');
+
+    //TASKS
+    Route::get('/planner_list', PlannerList::class)->name('planner_list.index');
 });
 
 require __DIR__.'/auth.php';

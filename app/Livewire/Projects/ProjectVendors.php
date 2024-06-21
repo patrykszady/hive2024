@@ -34,6 +34,8 @@ class ProjectVendors extends Component
     public function save()
     {
         dd($this->vendor_id);
+        //project status
+        //project vendor
     }
 
     public function render()

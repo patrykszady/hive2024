@@ -40,7 +40,7 @@ class MoveController extends Controller
 {
     public function move()
     {
-        $splits = ExpenseSplits::whereBetween('id', [3000, 700000])->forceDelete();
+        // $splits = ExpenseSplits::whereBetween('id', [3000, 700000])->forceDelete();
         // foreach($splits as $split)
         // {
         //     $split->forceDelete();

@@ -92,7 +92,7 @@ class VendorDocCreate extends Component
         $file_location = 'files/vendor_docs/' . $ocr_filename;
         //save file for this->vendor
         $this->doc_file->storeAs('vendor_docs', $ocr_filename, 'files');
-        $document_model = 'newOct2023';
+        $document_model = env('AZURE_RECEIPTS_CUSTOM_MODEL_COI');
 
         //send to form recornizer
         $insurance_info = app('App\Http\Controllers\ReceiptController')->azure_docs_api($file_location, $document_model, $doc_type);

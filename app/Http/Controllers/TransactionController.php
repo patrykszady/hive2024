@@ -1756,7 +1756,6 @@ class TransactionController extends Controller
 
     public function transaction_vendor_bulk_match(){
         //->where('id', 42)
-        dd('SKIP');
         $matches = TransactionBulkMatch::withoutGlobalScopes()->get();
 
         foreach($matches as $match){
@@ -1805,7 +1804,9 @@ class TransactionController extends Controller
                 ]);
 
                 //splits
-                $this->transaction_vendor_bulk_match_splits($match, $expense, $expense['amount']);
+                if($expense->splits()->count() == 0){
+                    $this->transaction_vendor_bulk_match_splits($match, $expense, $expense['amount']);
+                }                
             }
 
             //create new expense foreach transaction
@@ -1845,13 +1846,13 @@ class TransactionController extends Controller
                         'belongs_to_vendor_id' => $match->belongs_to_vendor_id,
                         'created_by_user_id' => 0,
                     ]);
+
+                    //splits
+                    // $this->transaction_vendor_bulk_match_splits($match, $expense, $transaction['amount']);
                 }
 
                 $transaction->expense_id = $expense->id;
-                $transaction->save();
-
-                //splits
-                $this->transaction_vendor_bulk_match_splits($match, $expense, $transaction['amount']);
+                $transaction->save();               
             }
         }
     }

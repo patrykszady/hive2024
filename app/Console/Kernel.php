@@ -38,11 +38,13 @@ class Kernel extends ConsoleKernel
             $schedule->call('\App\Http\Controllers\TransactionController@add_payments_to_transaction')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_transaction_to_expenses_sin_vendor')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@find_credit_payments_on_debit')->everyTenMinutes();
-            $schedule->call('\App\Http\Controllers\TransactionController@transaction_vendor_bulk_match')->everyTenMinutes();
+            
             //->timezone('America/Chicago')->between('6:00', '20:00')
             $schedule->call('\App\Http\Controllers\ReceiptController@auto_receipt')->everyTenMinutes();
             // $schedule->call('\App\Http\Controllers\TransactionController@add_transaction_to_multi_expenses')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_category_to_expense')->hourly();
+
+            $schedule->call('\App\Http\Controllers\TransactionController@transaction_vendor_bulk_match')->everyTenMinutes();
         }
 
         //everyMinute();

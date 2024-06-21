@@ -63,6 +63,18 @@
 								:line_data="$project->client->full_address"
 								>
 							</x-lists.search_li>
+
+                            <x-lists.search_li
+                                :basic=true
+                                :line_title="'Invite Contractors'"
+                                :line_data="'Choose Vendors'"
+                                :button_wire="TRUE"
+                                {{-- , { project: {{$project->id}}} --}}
+                                wire:click="$dispatchTo('projects.project-vendors', 'addVendors')"
+                                >
+                            </x-lists.search_li>
+
+                            <livewire:projects.project-vendors />
 						@endcan
 					</x-lists.ul>
 				</x-cards.body>

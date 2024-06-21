@@ -71,7 +71,7 @@ class Client extends Model
     public function getNameAttribute()
     {
         // return implode(' & ', $users);
-        if($this->business_name == null){
+        if($this->business_name == NULL){
             $users = $this->users;
 
             if($users->count() == 1){

@@ -1756,6 +1756,7 @@ class TransactionController extends Controller
 
     public function transaction_vendor_bulk_match(){
         //->where('id', 42)
+        dd('SKIP');
         $matches = TransactionBulkMatch::withoutGlobalScopes()->get();
 
         foreach($matches as $match){

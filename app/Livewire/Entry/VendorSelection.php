@@ -19,9 +19,26 @@ class VendorSelection extends Component
     public $vendor_id = NULL;
     public $vendor_name = NULL;
 
+    public $vendors = [];
+    // public $clients = [];
+
     public function mount()
     {
+        $this->user = auth()->user();
+        //if env = production vs dev
+        //where not user removed / where end_date is null
+        $this->vendors = $this->user->vendors()
+            ->where('vendors.business_type', 'Sub')
+            // ->where('vendors.business_type', '!=', 'Retail')
+            // ->where('vendors.business_type', '!=', 'W9')
+            // ->where('vendors.id', 1)
+            ->wherePivot('is_employed', 1)
+            ->withoutGlobalScopes()
+            ->get();
 
+        // $this->clients = $this->user->clients()->get();
+
+        // dd($this->clients);
     }
 
     public function updatedVendorId($vendor_id)
@@ -56,21 +73,7 @@ class VendorSelection extends Component
     #[Title('Vendor Selection')]
     public function render()
     {
-        $this->user = auth()->user();
-
-        //if env = production vs dev
-        //where not user removed / where end_date is null
-        $vendors = $this->user->vendors()
-            ->where('vendors.business_type', 'Sub')
-            // ->where('vendors.business_type', '!=', 'Retail')
-            // ->where('vendors.business_type', '!=', 'W9')
-            // ->where('vendors.id', 1)
-            ->wherePivot('is_employed', 1)
-            ->withoutGlobalScopes()
-            ->get();
-
         return view('livewire.entry.vendor-selection', [
-            'vendors' => $vendors,
         ]);
     }
 }

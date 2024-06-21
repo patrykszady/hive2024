@@ -3,6 +3,7 @@
     'noHover' => false,
     'checkbox' => false,
     'basic' => false,
+    'button_wire' => false,
     'form' => false,
     'lineTitle' => NULL,
     'hrefTarget' => NULL,
@@ -68,7 +69,7 @@
                             <p class="text-sm {{$bold ? 'font-bold' : 'font-medium'}} text-gray-500 font-col">{{ $lineTitle }}</p>
 
                             @if($lineData)
-                                <p @class(['text-md text-gray-900 sm:col-span-2', 'hover:text-indigo-600' => $attributes['href'], 'font-bold' => $bold])>
+                                <p @class(['text-md text-gray-900 sm:col-span-2', 'hover:text-indigo-600' => $attributes['href'] || $attributes['wire:click'], 'font-bold' => $bold])>
                                     {!! $lineData !!}
 
                                     <br>

@@ -128,7 +128,7 @@ class VendorRegistration extends Component
             if(is_null($client)){
                 //create client from $this->vendor
                 $adding_vendor = Vendor::withoutGlobalScope(VendorScope::class)->findOrFail($belongs_to_vendor_id);
-
+                // dd($adding_vendor);
                 $client = Client::make();
                 $client->business_name = $adding_vendor->business_name;
                 $client->address = $adding_vendor->address;

@@ -1,5 +1,6 @@
 <div>
 	<x-page.top
+        class="lg:max-w-5xl max-w-xl"
         h1="{!! $vendor->name !!}"
         p=""
         {{-- right_button_href="{{auth()->user()->can('update', $vendor) ? route('vendors.show', $vendor->id) : ''}}"
@@ -15,7 +16,7 @@
             </div>
 
             {{-- INSURANCE --}}
-            @if($vendor->business_type != 'Retail')
+            @if($vendor->business_type == 'Sub')
                 <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/>
             @endif
         </div>

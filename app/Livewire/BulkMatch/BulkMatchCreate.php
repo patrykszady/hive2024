@@ -22,17 +22,28 @@ class BulkMatchCreate extends Component
     // public $split = FALSE;
     public $showModal = FALSE;
 
+    public $split = FALSE;
+    public $splits_count = 0;
+    public $bulk_splits = [];
+
+    public $view_text = [
+        'card_title' => 'Add New Automatic Bulk Match',
+        'button_text' => 'Create Bulk Match',
+        'form_submit' => 'save',
+    ];
+
     protected $listeners = ['newMatch', 'updateMatch'];
 
-    // public function rules()
-    // {
-    //     return [
-    //         'split' => 'nullable'
-    //     ];
-    // }
+    public function rules()
+    {
+        return [
+            'split' => 'nullable'
+        ];
+    }
 
     public function mount($distributions, $vendors)
     {
+        // dd($this->split);
         $this->distributions = $distributions;
 
         $transactions =
@@ -82,12 +93,45 @@ class BulkMatchCreate extends Component
             $this->new_vendor = NULL;
         }
 
+        // if SPLIT checked vs if unchecked
+        // if($field == 'split'){
+        //     if($this->split == TRUE){
+        //         $this->form->distribution_id = NULL;
+        //     }else{
+        //         $this->bulk_splits = [];
+        //     }
+        // }
+
+        // $this->validate();
         $this->validateOnly($field);
+    }
+
+    public function bulkSplits()
+    {
+        $this->bulk_splits = collect();
+        $this->bulk_splits->push(['amount' => NULL, 'amount_type' => '$', 'distribution_id' => NULL]);
+        $this->bulk_splits->push(['amount' => NULL, 'amount_type' => '$', 'distribution_id' => NULL]);
+        $this->splits_count = 2;
+    }
+
+    public function addSplit()
+    {
+        $this->splits_count = $this->splits_count + 1;
+        $this->bulk_splits->push(['amount' => NULL, 'amount_type' => '$', 'distribution_id' => NULL]);
+    }
+
+    public function removeSplit($index)
+    {
+        $this->splits_count = $this->splits_count - 1;
+        unset($this->bulk_splits[$index]);
     }
 
     public function newMatch()
     {
         $this->new_vendor = NULL;
+        $this->split = FALSE;
+        $this->splits_count = 0;
+        $this->bulk_splits = [];
         $this->form->reset();
         $this->showModal = TRUE;
     }
@@ -95,19 +139,55 @@ class BulkMatchCreate extends Component
     public function updateMatch(TransactionBulkMatch $match)
     {
         $this->new_vendor = NULL;
+        $this->split = FALSE;
+        $this->splits_count = 0;
+        $this->bulk_splits = [];
         $this->form->reset();
         $this->form->setMatch($match);
+
+        if(isset($match->options['splits'])){
+            $this->split = TRUE;
+            $this->splits_count = count($match->options['splits']);
+            $this->bulk_splits = $match->options['splits'];
+        }
+
+        $this->view_text = [
+            'card_title' => 'Edit New Automatic Bulk Match',
+            'button_text' => 'Edit Bulk Match',
+            'form_submit' => 'edit',
+        ];
+
         $this->showModal = TRUE;
     }
 
-    public function save()
+    public function remove()
     {
-        $this->form->store();
+        $this->form->match->delete();
+
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Match Removed'
+        );
+    }
+
+    public function edit()
+    {
+        $this->form->update();
         //refresh main component of transactions/bulk_match
         $this->showModal = FALSE;
         $this->dispatch('notify',
             type: 'success',
             content: 'Match Updated'
+        );
+    }
+
+    public function save()
+    {
+        $this->form->store();
+        $this->showModal = FALSE;
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Match Saved'
         );
     }
 

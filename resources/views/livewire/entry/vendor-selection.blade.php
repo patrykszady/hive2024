@@ -24,7 +24,7 @@
                                     Checked: "border-transparent", Not Checked: "border-gray-300"
                                     Active: "ring-2 ring-indigo-500"
                                 -->
-                        @foreach ($vendors as $vendor)
+                        @foreach($vendors as $vendor)
                             <label
                                 class="{{ $vendor_id == $vendor->id ? 'border-transparent ring-2 ring-indigo-500 ' : 'border-gray-300' }}
                                         relative block bg-white border rounded-lg shadow-sm px-6 py-4 cursor-pointer sm:flex sm:justify-between focus:outline-none hover:bg-gray-50"
@@ -77,7 +77,7 @@
                         Cancel
                     </button> --}}
                     <button
-                        x-transition.duration.250ms
+                        x-transition.duration.150ms
                         {{-- x-text="$wire.vendor_name" --}}
                         type="submit"
                         class="inline-flex justify-center px-4 py-2 ml-3 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

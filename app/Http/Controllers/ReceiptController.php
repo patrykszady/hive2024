@@ -1130,6 +1130,7 @@ class ReceiptController extends Controller
                     }
                 }
 
+                // dd($receipt);
                 //06-17-2023 forwarded/redirected emails? if HIVE doesnt find them? let users forward emails
                     //use $email_to = strtolower($message->getToRecipients()[0]['emailAddress']['address']);
 

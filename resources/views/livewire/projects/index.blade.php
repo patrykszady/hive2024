@@ -116,9 +116,9 @@
                 @endphp
 
                 <x-lists.search_li
-                    wire:navigate.hover
+                    wire:navigate
                     href="{{route('projects.show', $project->id)}}"
-                    hrefTarget="_blank"
+                    {{-- hrefTarget="_blank" --}}
                     :line_details="$line_details"
                     :line_title="$project->name"
                     :bubble_message="$project->last_status->title"

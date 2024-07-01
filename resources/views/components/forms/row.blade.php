@@ -281,7 +281,7 @@
                         {{$radio}}
                     </span>
                 @elseif($buttonHint)
-                    <button type="button" wire:click="{{$buttonClick}}" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100">
+                    <button type="button" wire:click="{{$buttonClick}}" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:bg-indigo-700 focus:text-white">
                         {{$buttonHint}}
                     </button>
                 @endif

@@ -88,7 +88,7 @@
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                                     <div>
-                                    <p class="text-sm text-gray-500">Confirm <a href="#" class="font-medium text-gray-900">{{$user->vendor->name}}</a> details</p>
+                                    <p class="text-sm text-gray-500">Confirm <a href="#" class="font-medium text-gray-900">{{$user->vendor->name}}, {{$user->vendor->business_type}}</a> details</p>
                                     </div>
                                 </div>
                                 </div>
@@ -100,7 +100,8 @@
                                 <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
                                 <div class="relative flex space-x-3">
                                 <div>
-                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['team_members'] === false && $this->registration['vendor_info'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
+                                    {{-- $this->registration['team_members'] === false &&  --}}
+                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['vendor_info'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
                                     <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="{{$icons['user_add']}}" clip-rule="evenodd" />
                                     </svg>
@@ -115,6 +116,7 @@
                             </div>
                         </li>
 
+                        @if(in_array($vendor->business_type, ['Sub', 'DBA']))
                         <li>
                             <div class="relative pb-8">
                                 <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
@@ -174,12 +176,13 @@
                             </div>
                         </div>
                         </li>
+                        @endif
 
                         <li>
                         <div class="relative pb-8">
                             <div class="relative flex space-x-3">
                                 <div>
-                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['registered'] === false && $this->registration['banks_registered'] === false ? 'bg-gray-500' : ($this->registration['banks_registered'] === true && $this->registration['registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
+                                    <span class="flex items-center justify-center w-8 h-8 {{$this->registration['registered'] === false && ($this->registration['banks_registered'] === false || $this->registration['vendor_info'] === false) ? 'bg-gray-500' : ($this->registration['banks_registered'] === true && $this->registration['registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
                                     <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path d="{{$icons['checkmark']}}" />
                                     </svg>
@@ -209,7 +212,7 @@
             <div
                 x-data="{ showMembers: @entangle('registration.vendor_info') }"
                 x-show="showMembers"
-                x-transition.duration.250ms
+                x-transition.duration.150ms
                 class="space-y-4"
                 >
 
@@ -222,30 +225,31 @@
 
                 {{-- VENDOR COMPANY EMAILS --}}
                 {{-- DISTRIBUTION LIST --}}
-                <div
-                    x-data="{ showEmails: @entangle('registration.team_members') }"
-                    x-show="showEmails"
-                    x-transition.duration.250ms
-                    >
+                @if(in_array($vendor->business_type, ['Sub', 'DBA']))
+                    <div
+                        x-data="{ showEmails: @entangle('registration.team_members') }"
+                        x-show="showEmails"
+                        x-transition.duration.150ms
+                        >
 
-                    <div>
-                        <livewire:distributions.distributions-list :registration="TRUE">
+                        <div>
+                            <livewire:distributions.distributions-list :registration="TRUE">
+                        </div>
+
+                        <livewire:company-emails.company-emails-index :view="'vendor-registration'">
                     </div>
 
-                    <livewire:company-emails.company-emails-index :view="'vendor-registration'">
-                </div>
-
-                {{-- VENDOR BANKS --}}
-                <div
-                    x-data="{ showBanks: @entangle('registration.emails_registered') }"
-                    x-show="showBanks"
-                    x-transition.duration.250ms
-                    >
-                    <div>
-                        <livewire:banks.bank-index :view="'vendor-registration'">
+                    {{-- VENDOR BANKS --}}
+                    <div
+                        x-data="{ showBanks: @entangle('registration.emails_registered') }"
+                        x-show="showBanks"
+                        x-transition.duration.150ms
+                        >
+                        <div>
+                            <livewire:banks.bank-index :view="'vendor-registration'">
+                        </div>
                     </div>
-                </div>
-
+                @endif
                 {{-- VENDOR REGISTRATION FORM --}}
                 <div
                     x-data="{ showRegister: @entangle('registration.banks_registered') }"

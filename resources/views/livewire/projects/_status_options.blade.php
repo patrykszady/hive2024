@@ -1,4 +1,5 @@
 <option value="" readonly>Project Status</option>
+<option value="Invited">Invited</option>
 <option value="Estimate">Estimate</option>
 <option value="Awaiting Response">Response</option>
 <option value="Project Prep">Prep</option>

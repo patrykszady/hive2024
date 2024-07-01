@@ -64,17 +64,18 @@
 								>
 							</x-lists.search_li>
 
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Invite Contractors'"
-                                :line_data="'Choose Vendors'"
-                                :button_wire="TRUE"
-                                {{-- , { project: {{$project->id}}} --}}
-                                wire:click="$dispatchTo('projects.project-vendors', 'addVendors')"
-                                >
-                            </x-lists.search_li>
+                            @if($project->belongs_to_vendor_id == auth()->user()->vendor->id)
+                                <x-lists.search_li
+                                    :basic=true
+                                    :line_title="'Invite Contractors'"
+                                    :line_data="'Choose Vendors'"
+                                    :button_wire="TRUE"
+                                    wire:click="$dispatchTo('projects.project-vendors', 'addVendors')"
+                                    >
+                                </x-lists.search_li>
 
-                            <livewire:projects.project-vendors />
+                                <livewire:projects.project-vendors :project="$project"/>
+                            @endif                           
 						@endcan
 					</x-lists.ul>
 				</x-cards.body>
@@ -117,23 +118,25 @@
             </div>
         @endcan
 
-        @can('update', $project)
-            <div class="col-span-4 space-y-4">
-                <livewire:tasks.planner :single_project_id="$project->id" />
-            </div>
+        @if($project->tasks->count() != 0)
+            @can('update', $project)
+                <div class="col-span-4 space-y-4">
+                    <livewire:tasks.planner :single_project_id="$project->id" />
+                </div>
 
-            <div class="col-span-4 space-y-4 lg:col-span-2">
-                @if(!$project->expenses->isEmpty())
-                    <livewire:expenses.expense-index :project="$project->id" :view="'projects.show'"/>
-                @endif
-            </div>
-        @endcan
+                <div class="col-span-4 space-y-4 lg:col-span-2">
+                    @if(!$project->expenses->isEmpty())
+                        <livewire:expenses.expense-index :project="$project->id" :view="'projects.show'"/>
+                    @endif
+                </div>
+            @endcan
+        @endif
 
 		@can('update', $project)
             <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 @if(in_array($this->project->last_status->title, ['Active', 'Complete',  'Service Call', 'Service Call Complete', 'VIEW ONLY']))
                     {{-- PROJECT FINANCIALS --}}
-                    <x-cards.wrapper lazy>
+                    <x-cards.wrapper>
                         <x-cards.heading>
                             <x-slot name="left">
                                 <h1>Project Finances</b></h1>

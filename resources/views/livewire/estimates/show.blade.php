@@ -336,12 +336,12 @@
                                                                 {{-- <span class="hidden sm:inline">·</span>
                                                                 <span>$100</span> --}}
                                                             </div>
-                                                            {{-- MOBILE VIEW DIV --}}
+                                                            {{-- MOBILE VIEW DIV --}}                                                            
                                                             <div class="flex flex-col mt-1 text-gray-500 sm:block sm:hidden">
                                                                 <span>{{$estimate_line_item->unit_type !== 'no_unit' ? $estimate_line_item->quantity . ' ' . $estimate_line_item->unit_type . ' @ ' .money($estimate_line_item->cost) . '/each' : ''}}</span>
                                                                 {{-- <span class="hidden sm:inline">·</span>
                                                                 <span>$100</span> --}}
-                                                            </div>
+                                                            </div>                                                           
                                                         </td>
                                                     </tr>
                                                 @endif

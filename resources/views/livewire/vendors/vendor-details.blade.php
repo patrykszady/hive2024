@@ -68,7 +68,8 @@
     </x-cards.body>
 
     @can('update', $vendor)
-        @if(in_array($vendor->business_type, ["Sub", "DBA", "1099"]))
+        {{-- , "1099" --}}
+        @if(in_array($vendor->business_type, ["Sub", "DBA"]))
             @if($vendor->id != auth()->user()->vendor->id)
                 <x-cards.footer>
                     <x-cards.button

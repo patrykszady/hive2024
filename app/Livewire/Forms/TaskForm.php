@@ -68,7 +68,7 @@ class TaskForm extends Form
 
     public function update()
     {
-        // $this->authorize('create', Expense::class);
+        $this->authorize('update', $this->task);
         $this->validate();
         $task = $this->task->update([
             'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
@@ -80,9 +80,7 @@ class TaskForm extends Form
             'title' => $this->title,
             'notes' => $this->notes,
             'duration' => $this->duration,
-            'order' => $this->order,
-            'belongs_to_vendor_id' => auth()->user()->vendor->id,
-            'created_by_user_id' => auth()->user()->id,
+            'order' => $this->order
         ]);
     }
 
@@ -100,9 +98,7 @@ class TaskForm extends Form
             'title' => $this->title,
             'notes' => $this->notes,
             'order' => 1,
-            'duration' => $this->duration,
-            'belongs_to_vendor_id' => auth()->user()->vendor->id,
-            'created_by_user_id' => auth()->user()->id,
+            'duration' => $this->duration
         ]);
     }
 }

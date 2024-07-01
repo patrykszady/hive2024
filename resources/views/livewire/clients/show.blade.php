@@ -1,6 +1,6 @@
 <div>
 	<x-page.top
-        class="lg:max-w-5xl"
+        class="lg:max-w-5xl max-w-xl"
         h1="{!! $client->name !!}"
         p="Client"
         {{-- right_button_href="{{route('clients.edit', $client->id)}}" --}}

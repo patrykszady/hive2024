@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Projects;
 
+use App\Models\Client;
+use App\Models\Project;
 use App\Models\Vendor;
 
 use Livewire\Component;
@@ -9,6 +11,7 @@ use Livewire\Component;
 class ProjectVendors extends Component
 {
     public $vendor_id;
+    public Project $project;
     public $vendors = [];
     public $showModal = FALSE;
 
@@ -21,9 +24,9 @@ class ProjectVendors extends Component
         ];
     }
 
-    public function mount()
+    public function mount(Project $project)
     {
-        $this->vendors = auth()->user()->vendor->vendors()->whereJsonContains('registration', ['registered' => true])->get();
+        $this->vendors = auth()->user()->vendor->vendors()->whereJsonContains('registration', ['registered' => true])->whereNotIn('vendors.id', $project->vendors->pluck('id')->toArray())->get();
     }
 
     public function addVendors()
@@ -33,9 +36,32 @@ class ProjectVendors extends Component
 
     public function save()
     {
-        dd($this->vendor_id);
-        //project status
-        //project vendor
+        $vendor = Vendor::findOrFail($this->vendor_id);
+        $client = Client::withoutGlobalScopes()->where('vendor_id', auth()->user()->vendor->id)->first();
+
+        if(!$vendor->projects->contains($this->project->id)){
+            $vendor->projects()->attach($this->project->id, ['client_id' => $client->id]);
+            app('App\Http\Controllers\VendorRegisteredController')
+                ->add_project_status(
+                    $this->project->id,
+                    $vendor->id,
+                    'Invited'
+                );
+
+            $this->dispatch('notify',
+                type: 'success',
+                content: 'Vendor invited to Project',
+                // route: 'clients/' . $client->id
+            );
+        }else{
+            $this->dispatch('notify',
+                type: 'success',
+                content: 'Vendor already part of Project',
+                // route: 'clients/' . $client->id
+            );
+        }
+
+        $this->showModal = FALSE;
     }
 
     public function render()

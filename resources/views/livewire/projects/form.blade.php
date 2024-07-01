@@ -27,7 +27,7 @@
 
                         <option value="" readonly>Select Client</option>
                         @foreach ($clients as $client)
-                            <option value="{{$client->id}}">{{$client->name}}</option>
+                            <option value="{{$client->id}}" {{isset($client->vendor_id) ? 'disabled' : ''}}>{{$client->name}}</option>
                         @endforeach
                     </x-forms.row>
                 </div>

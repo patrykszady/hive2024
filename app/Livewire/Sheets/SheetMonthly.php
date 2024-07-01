@@ -19,7 +19,7 @@ class SheetMonthly extends Component
     {
         //Carbon::yesterday()
         $end_date = Carbon::today()->endOfMonth();
-        $start_date = Carbon::today()->startOfMonth()->subMonths(13);
+        $start_date = Carbon::today()->endOfMonth()->subMonths(13);
 
         // Create a period between the start and end dates
         $period = CarbonPeriod::create($start_date, '1 month', $end_date);
@@ -33,6 +33,23 @@ class SheetMonthly extends Component
         $monthly_payments =
             Payment::
                 whereBetween('date', [$start_date, $end_date])
+                // ->with('project')
+                ->whereHas('project', function ($query) {
+                    // $query->status('VIEW ONLY');
+                    // $query->where('last_status', 'VIEW_ONLY');
+                    // $query->with('last_status')->where('last_status.title', '!=', 'VIEW ONLY');
+                    // $query->with(['statuses' => function($query) {
+                    //     return $query;
+                    // $query->with(['statuses' => function ($query){
+                    //     return $query->first();
+                    //   }]);
+                    // }]);
+                    // return $query->status(['Active']);
+                    $query->whereHas('last_status', function ($query) {
+                        // dd($query->where('title', '!=', 'VIEW ONLY')->first());
+                        $query->where('title', '!=', 'VIEW ONLY');
+                    });
+                })
                 ->orderBy('date', 'DESC')
                 ->get()
                 ->groupBy(function ($payment) {
@@ -81,6 +98,11 @@ class SheetMonthly extends Component
         $last_year_monthly_payments =
             Payment::
                 whereBetween('date', [$start_date->subYear(), $end_date->subYear()])
+                ->whereHas('project', function ($query) {
+                    $query->whereHas('last_status', function ($query) {
+                        $query->where('title', '!=', 'VIEW ONLY');
+                    });
+                })
                 ->orderBy('date', 'DESC')
                 ->get()
                 ->groupBy(function ($payment) {

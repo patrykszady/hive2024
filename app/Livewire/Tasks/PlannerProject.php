@@ -39,7 +39,15 @@ class PlannerProject extends Component
                     }
                 })->groupBy('project_id');
 
-        $no_date_tasks = Task::whereIn('project_id', $project_ids)->whereNull('start_date')->get()->groupBy('project_id');
+        $no_date_tasks = 
+            Task::
+                whereIn('project_id', $project_ids)
+                ->where(function ($query) {
+                    $query->where('vendor_id', auth()->user()->vendor->id)->orWhere('belongs_to_vendor_id', auth()->user()->vendor->id)->orWhere('created_by_user_id', auth()->user()->vendor->users()->employed()->pluck('users.id')->toArray());
+                })
+                ->whereNull('start_date')
+                ->get()
+                ->groupBy('project_id');
 
         // Combine projects and tasks
         foreach($this->projects as $project_index => $project) {

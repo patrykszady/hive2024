@@ -44,19 +44,21 @@
                                 gs-w="1" gs-h="1" gs-x="1" gs-id="{{$task->id}}"
                                 >
                                 <div class="pl-1 grid-stack-item-content border border-solid border-gray-300 h-12 hover:bg-gray-100 font-bold rounded-md text-clip overflow-hidden">
-                                    <span
-                                        class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
-                                        >
-                                        {{$task->title}}
-                                    </span>
+                                    @can('update', $task)
+                                        <span
+                                            class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
+                                            >
+                                            {{$task->title}}
+                                        </span>
 
-                                    @if($task->vendor)
-                                        <br>
-                                        <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->vendor->name, 15}}</span>
-                                    @elseif($task->user)
-                                        <br>
-                                        <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->user->first_name, 15}}</span>
-                                    @endif
+                                        @if($task->vendor)
+                                            <br>
+                                            <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->vendor->name, 15}}</span>
+                                        @elseif($task->user)
+                                            <br>
+                                            <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->user->first_name, 15}}</span>
+                                        @endif
+                                    @endcan
                                 </div>
                             </div>
                         @endforeach
@@ -68,8 +70,8 @@
                     class="overflow-x-auto" 
                     x-bind="scrollSync"
                     >
-                    {{--  style="width: 992px;" --}}
-                    <div class="max-w-xl lg:max-w-5xl">
+                    {{--   --}}
+                    <div class="max-w-5xl" style="width: 1400px;">
                         {{-- @if(!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty()) --}}
                             <div class="grid grid-cols-7 gap-1 divide-x divide-solid divide-gray-300">
                                 @foreach($days as $day_index => $day)
@@ -129,11 +131,19 @@
                                     <div
                                         {{-- bg-red-300 --}}
                                         class="grid-stack-item"
-                                        gs-id="{{$task->id}}" gs-x="{{$gs_x}}" gs-y="{{$task->order}}" gs-w="{{$gs_w}}"
+                                        gs-id="{{$task->id}}" 
+                                        gs-x="{{$gs_x}}" 
+                                        gs-y="{{$task->order}}" 
+                                        gs-w="{{$gs_w}}" 
+                                        gs-locked="true" 
+                                        gs-no-move="@cannot('update', $task) true @endcannot" 
+                                        gs-no-resize="@cannot('update', $task) true @endcannot"
                                         >
                                         <div
-                                            wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
-                                            class="p-1 border-{{$task->direction == 'right' ? 'l' : 'l'}}-4 cursor-pointer grid-stack-item-content hover:bg-gray-200 bg-gray-200 bg-opacity-50
+                                            @can('update', $task)
+                                                wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
+                                            @endcan
+                                            class="p-1 border-{{$task->direction == 'right' ? 'l' : 'l'}}-4 grid-stack-item-content bg-gray-200 bg-opacity-50 @cannot('update', $task) opacity-50 cursor-none @else cursor-pointer hover:bg-gray-200 @endcannot
                                                 {{-- 5/20/2024 if Satruday or Sunday change bg-color --}}
                                                 {{-- {{in_array($day_index, [5, 6]) ? 'bg-gray-700' : 'bg-gray-100'}} --}}
                                                 
@@ -167,15 +177,17 @@
                                                 {{$task->title}}
                                             </span>
 
-                                            @if($task->vendor)
-                                                <br>
-                                                <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-left' : ''}}">{{$task->vendor->name, 15}}</span>
-                                            @endif
+                                            @can('update', $task)
+                                                @if($task->vendor)
+                                                    <br>
+                                                    <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-left' : ''}}">{{$task->vendor->name, 15}}</span>
+                                                @endif
 
-                                            @if($task->user)
-                                                <br>
-                                                <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-left' : ''}}">{{$task->user->first_name, 15}}</span>
-                                            @endif
+                                                @if($task->user)
+                                                    <br>
+                                                    <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-left' : ''}}">{{$task->user->first_name, 15}}</span>
+                                                @endif
+                                            @endcan
                                         </div>
                                     </div>
                                 @endforeach

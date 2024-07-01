@@ -120,6 +120,7 @@ class TaskCreate extends Component
 
     public function edit()
     {
+        $this->authorize('update', $this->form->task);
         $this->form->update();
 
         $this->dispatch('notify',

@@ -20,10 +20,6 @@ class BulkMatch extends Component
     public $distributions = [];
     public $bulk_matches = [];
 
-    public $split = FALSE;
-    public $splits_count = 0;
-    public $bulk_splits = [];
-
     public $vendor = NULL;
     public $vendor_id = NULL;
     public $vendor_amount_group = [];
@@ -55,56 +51,27 @@ class BulkMatch extends Component
             }
         }
 
-        // if SPLIT checked vs if unchecked
-        if($field == 'split'){
-            if($this->split == TRUE){
-                $this->distribution_id = NULL;
-            }else{
-                $this->bulk_splits = [];
-            }
-        }
-
         $this->validateOnly($field);
     }
 
-    public function updatedVendorId($value)
-    {
-        $this->vendor = Vendor::findOrFail($value);
-    }
+    // public function updatedVendorId($value)
+    // {
+    //     $this->vendor = Vendor::findOrFail($value);
+    // }
 
-    public function updatedAnyAmount($value)
-    {
-        $this->any_amount = $value;
-        $this->amount = NULL;
-    }
+    // public function updatedAnyAmount($value)
+    // {
+    //     $this->any_amount = $value;
+    //     $this->amount = NULL;
+    // }
 
-    public function updatedAmount($value)
-    {
-        if(empty($value)){
-            $this->any_amount = FALSE;
-            $this->amount = NULL;
-        }
-    }
-
-    public function bulkSplits()
-    {
-        $this->bulk_splits = collect();
-        $this->bulk_splits->push(['amount' => NULL, 'amount_type' => '$', 'distribution_id' => NULL]);
-        $this->bulk_splits->push(['amount' => NULL, 'amount_type' => '$', 'distribution_id' => NULL]);
-        $this->splits_count = 2;
-    }
-
-    public function addSplit()
-    {
-        $this->splits_count = $this->splits_count + 1;
-        $this->bulk_splits->push(['amount' => NULL, 'amount_type' => '$', 'distribution_id' => NULL]);
-    }
-
-    public function removeSplit($index)
-    {
-        $this->splits_count = $this->splits_count - 1;
-        unset($this->bulk_splits[$index]);
-    }
+    // public function updatedAmount($value)
+    // {
+    //     if(empty($value)){
+    //         $this->any_amount = FALSE;
+    //         $this->amount = NULL;
+    //     }
+    // }
 
     public function manualMatch()
     {
@@ -150,27 +117,7 @@ class BulkMatch extends Component
 
     public function store()
     {
-        if(!empty($this->bulk_splits)){
-            $options['splits'] = [];
-
-            foreach($this->bulk_splits as $index => $split){
-                //2 decimals required for percent %
-                $options['splits'][$index]['amount'] = $split['amount_type'] == '%' ? '.' . preg_replace('/\./', '', $split['amount']) : $split['amount'];
-                $options['splits'][$index]['amount_type'] = $split['amount_type'];
-                $options['splits'][$index]['distribution_id'] = $split['distribution_id'];
-            }
-        }
-
-        //create new BulkMatch ...
-        $bulk_match =
-            TransactionBulkMatch::create([
-                'amount' => $amount,
-                'vendor_id' => $this->vendor_id,
-                'distribution_id' => $this->distribution_id,
-                'options' => $options,
-                'belongs_to_vendor_id' => auth()->user()->vendor->id,
-            ]);
-
+        dd('here in store of BulkMatch');
         // app('App\Http\Controllers\TransactionController')->transaction_vendor_bulk_match();
     }
 

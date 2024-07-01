@@ -28,12 +28,11 @@ class VendorSelection extends Component
         //if env = production vs dev
         //where not user removed / where end_date is null
         $this->vendors = $this->user->vendors()
-            ->where('vendors.business_type', 'Sub')
-            // ->where('vendors.business_type', '!=', 'Retail')
-            // ->where('vendors.business_type', '!=', 'W9')
-            // ->where('vendors.id', 1)
+            // , '1099'
+            ->whereIn('vendors.business_type', ['Sub'])
             ->wherePivot('is_employed', 1)
             ->withoutGlobalScopes()
+            ->orderBy('vendors.business_type')
             ->get();
 
         // $this->clients = $this->user->clients()->get();

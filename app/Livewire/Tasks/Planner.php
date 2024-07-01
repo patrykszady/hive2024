@@ -40,13 +40,13 @@ class Planner extends Component
             Project::with(['tasks' => function($query) {
                 $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
             }])
-            ->status(['Active', 'Scheduled', 'Service Call'])->sortByDesc('last_status.start_date')->values();
+            ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])->sortByDesc('last_status.start_date')->values();
         }else{
             $this->projects =
             Project::where('id', $this->single_project_id)->with(['tasks' => function($query) {
                 $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
             }])
-            ->status(['Active', 'Scheduled', 'Service Call'])->sortByDesc('last_status.start_date')->values();
+            ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])->sortByDesc('last_status.start_date')->values();
         }
     }
 

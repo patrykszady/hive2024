@@ -39,7 +39,22 @@ class SheetsIndex extends Component
         //>where('vendor_id', '!=', 1)
         // ::whereYear('date', 2023)->where('vendor_id', '!=', auth()->user()->vendor->id)->orWhereNotIn('user_id', $vendor_admins)->pluck('user_id');
 
-        $this->revenue = (float) Payment::whereYear('date', $this->year)->sum('amount');
+        $this->revenue = (float) Payment::whereYear('date', $this->year)->whereHas('project', function ($query) {
+            // $query->status('VIEW ONLY');
+            // $query->where('last_status', 'VIEW_ONLY');
+            // $query->with('last_status')->where('last_status.title', '!=', 'VIEW ONLY');
+            // $query->with(['statuses' => function($query) {
+            //     return $query;
+            // $query->with(['statuses' => function ($query){
+            //     return $query->first();
+            //   }]);
+            // }]);
+            // return $query->status(['Active']);
+            $query->whereHas('last_status', function ($query) {
+                // dd($query->where('title', '!=', 'VIEW ONLY')->first());
+                $query->where('title', '!=', 'VIEW ONLY');
+            });
+        })->sum('amount');
 
         $this->cost_of_labor =
             Check::

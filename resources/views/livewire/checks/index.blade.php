@@ -1,4 +1,4 @@
-<x-cards.wrapper class="max-w-xl px-4 pb-5 mb-1 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-3xl lg:px-8">
+<x-cards.wrapper class="{{$view == NULL ? 'max-w-xl px-4 pb-5 mb-1 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-3xl lg:px-8' : ''}}">
     {{-- HEADING --}}
     <x-cards.heading>
         <x-slot name="left">
@@ -128,6 +128,29 @@
                     <option value="Cash">Cash</option>
                 </select>
             </div>
+            @if($view != 'vendors.show')
+                <div>
+                    <select
+                        wire:model.live="vendor"
+                        id="vendor"
+                        name="vendor"
+                        class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <option value="" readonly>All Vendors</option>
+
+                        @foreach($vendors as $index => $vendor)
+                            <option value="{{$vendor->id}}">{{$vendor->name}}</option>
+                        @endforeach
+
+                        {{-- @foreach($banks as $index => $bank)
+                            <option value="{{$bank->info->id}}">{{$bank->info->name}}</option>
+                        @endforeach --}}
+                        {{-- <option disabled>----------</option>
+                        @foreach($distributions as $index => $distribution)
+                            <option value="D-{{$distribution->id}}">{{$distribution->name}}</option>
+                        @endforeach --}}
+                    </select>
+                </div>
+            @endif
         </div>
     </x-cards.heading>
 
@@ -136,24 +159,41 @@
         <x-lists.ul>
             @foreach($checks as $check)
                 @php
-                    $line_details = [
-                        1 => [
-                            'text' => $check->check_type != 'Check' ? $check->check_type : $check->check_number,
-                            'icon' => 'M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z'
-                            ],
-                        2 => [
-                            'text' => $check->date->format('M j, Y'),
-                            'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                            ],
-                        3 => [
-                            'text' => $check->bank_account->bank->name,
-                            'icon' => 'M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1zm3 1a1 1 0 012 0v3a1 1 0 11-2 0v-3zm5-1a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z'
-                            ],
-                        4 => [
-                            'text' => $check->owner,
-                            'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
-                            ],
-                        ];
+                    if($view == 'vendors.show'){
+                        $line_details = [
+                            1 => [
+                                'text' => $check->check_type != 'Check' ? $check->check_type : $check->check_number,
+                                'icon' => 'M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z'
+                                ],
+                            2 => [
+                                'text' => $check->date->format('M j, Y'),
+                                'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
+                                ],
+                            3 => [
+                                'text' => $check->bank_account->bank->name,
+                                'icon' => 'M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1zm3 1a1 1 0 012 0v3a1 1 0 11-2 0v-3zm5-1a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z'
+                                ]
+                            ];
+                    }else{
+                        $line_details = [
+                            1 => [
+                                'text' => $check->check_type != 'Check' ? $check->check_type : $check->check_number,
+                                'icon' => 'M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z'
+                                ],
+                            2 => [
+                                'text' => $check->date->format('M j, Y'),
+                                'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
+                                ],
+                            3 => [
+                                'text' => $check->bank_account->bank->name,
+                                'icon' => 'M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1zm3 1a1 1 0 012 0v3a1 1 0 11-2 0v-3zm5-1a1 1 0 00-1 1v3a1 1 0 102 0v-3a1 1 0 00-1-1z'
+                                ],
+                            4 => [
+                                'text' => $check->owner,
+                                'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
+                                ],
+                            ];
+                    }
                 @endphp
 
                 <x-lists.search_li

@@ -27,7 +27,9 @@
                         <div class="w-full space-y-1 text-center">
                             <button
                                 type="button"
-                                class="w-full px-4 py-2 font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none text-md cursor-text">
+                                class="w-full px-4 py-2 font-medium text-center border-2 rounded-md shadow-sm focus:outline-none text-md cursor-text
+                                    @error('check_total_min') text-red-900 border-red-600 @else text-gray-900 border-indigo-600 @enderror
+                                ">
                                 Check Total | <b>{{money($this->vendor_check_sum)}}</b>
                             </button>
 
@@ -55,26 +57,28 @@
 
                     <x-cards.body :class="'space-y-2 my-2'">
                         <x-forms.row
-                            wire:model.live="form.project_id"
-                            errorName="form.project_id"
+                            wire:model.live="project_id"
+                            wire:target="addProject"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-50"
+                            errorName="project_id"
                             name="project_id"
                             text="Project"
                             type="dropdown"
                             >
 
-                            <option value="" readonly>Select Project</option>
+                            <option value="" disabled>Select Project</option>
                             @foreach ($projects->where('show', false) as $project)
                                 <option value="{{$project->id}}">{{$project->name}}</option>
                             @endforeach
                         </x-forms.row>
 
                         <x-forms.row
-                            {{-- wire:loading --}}
-                            wire:loading.class="opacity-50"
                             wire:click="addProject"
+                            wire:loading.attr="disabled"
+                            wire:loading.class="opacity-50"
                             type="button"
-                            errorName="project_id_DONT_SHOW"
-                            text=""
+                            errorName="project_id_DONT_SHOW_ERROR"
                             buttonText="Add Project"
                             >
                         </x-forms.row>
@@ -86,7 +90,8 @@
                     <x-cards.wrapper>
                         <x-cards.heading>
                             <x-slot name="left">
-                                <h1>{{ $project->name }}</h1>
+                                <h1 class="font-bold"><a href="{{route('projects.show', $project->id)}}" target="_blank">{{ $project->address }}</a></h1>
+                                <span class="text-sm">{{ $project->project_name}}</span>
                             </x-slot>
 
                             <x-slot name="right">
@@ -94,7 +99,7 @@
                                     Edit Bid
                                 </x-cards.button>
                                 <x-cards.button x-transition wire:click="removeProject({{$project_id}})" :button_color="'white'">
-                                    Remove Project
+                                    Remove
                                 </x-cards.button>
                             </x-slot>
                         </x-cards.heading>
@@ -161,6 +166,7 @@
                 @endforeach
 
                 <livewire:bids.bid-create />
+                <livewire:vendor-docs.vendor-doc-create />
             </div>
         </div>
     </form>

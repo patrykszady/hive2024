@@ -5,13 +5,14 @@ namespace App\Livewire\Forms;
 use App\Models\Check;
 use App\Models\Expense;
 
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
 
 class VendorPaymentForm extends Form
 {
-    #[Validate('nullable')]
-    public $project_id = '';
+    // #[Validate('nullable')]
+    // public $project_id = '';
 
     #[Validate('required|date|before_or_equal:today|after:2017-01-01')]
     public $date = NULL;
@@ -21,20 +22,39 @@ class VendorPaymentForm extends Form
     public $paid_by = NULL;
 
     // required_without:check.paid_by
-    #[Validate('required_without:paid_by')]
+    #[Validate('required_without:paid_by', as: 'bank account')]
     public $bank_account_id = NULL;
 
     // required_with:check.bank_account_id
-    #[Validate('required_with:bank_account_id')]
+    #[Validate('required_with:bank_account_id', as: 'type')]
     public $check_type = NULL;
 
-    // required_if:check.check_type,Check
-    #[Validate('required_if:check_type,Check')]
+    // #[Validate('required_if:check_type,Check')]
     public $check_number = NULL;
 
     #[Validate('required_with:invoice')]
     public $invoice = NULL;
 
+    public function rules()
+    {
+        return [
+            'check_number' => [
+                'required_if:check_type,Check',
+                'nullable',
+                'numeric',
+
+                //ignore if vendor_id of Check is same as request()->vendor_id
+                // ->ignore($this->check),
+                Rule::unique('checks', 'check_number')->where(function ($query) {
+                    //->where('vendor_id', '!=', $this->expense->vendor_id)
+
+                    //where per vendor bank_account ... all bank accounts that have the inst ID
+                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->bank_account_id);
+                }),
+                // ->ignore($this->check),
+            ],
+        ];
+    }
     // protected function rules()
     // {
     //     return [

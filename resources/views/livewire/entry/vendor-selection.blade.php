@@ -3,8 +3,8 @@
         {{-- HEADER --}}
         <x-cards.heading>
             <x-slot name="left">
-                <h1 class="text-lg">Choose account to log into</h1>
-                <p class="text-sm"><i>{{$user->first_name}}, select one of your accounts to see dashboard.</i></p>
+                <h1 class="text-lg">Select Account</h1>
+                <p class="text-sm"><i>{{$user->first_name}}, select one of your accounts to access your dashboard.</i></p>
             </x-slot>
         </x-cards.heading>
 
@@ -90,33 +90,35 @@
         </form>
     </x-cards.wrapper>
 
-    <x-misc.hr :padding="''">
-        <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-            <path fill="#6B7280" fill-rule="evenodd"
-                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                clip-rule="evenodd" />
-        </svg>
-    </x-misc.hr>
-    <br>
-
-    <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
-        <button
-            x-data=""
-            {{-- wire:click="$dispatchTo('vendors.vendor-create', 'vendorModal')" --}}
-            type="button"
-            class="relative block w-full p-12 text-center border-2 border-indigo-400 rounded-lg hover:ring-3 hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-800"
-            >
-            <svg class="w-12 h-12 mx-auto text-gray-400" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"
-                fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" />
+    @if(!$vendors->isEmpty())
+        <x-misc.hr :padding="''">
+            <svg class="w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path fill="#6B7280" fill-rule="evenodd"
+                    d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                    clip-rule="evenodd" />
             </svg>
-            <span class="block mt-2 text-sm font-medium text-gray-900">
-                Create a Hive. <b>Contact Patryk to get started for free.</b> Cell: 224-999-3880 Email: patryk@hive.contractors
-            </span>
-        </button>
-    </x-cards.wrapper>
+        </x-misc.hr>
+        <br>
 
-    {{-- CREATE NEW VENDOR/BUSINESS --}}
-    <livewire:vendors.vendor-create />
+        <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
+            <button
+                x-data=""
+                {{-- wire:click="$dispatchTo('vendors.vendor-create', 'vendorModal')" --}}
+                type="button"
+                class="relative block w-full p-12 text-center border-2 border-indigo-400 rounded-lg hover:ring-3 hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-800"
+                >
+                <svg class="w-12 h-12 mx-auto text-gray-400" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"
+                    fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z" />
+                </svg>
+                <span class="block mt-2 text-sm font-medium text-gray-900">
+                    Create a Hive. <b>Contact us to get started for free.</b> Cell: 224-999-3880 Email: patryk@hive.contractors
+                </span>
+            </button>
+        </x-cards.wrapper>
+
+        {{-- CREATE NEW VENDOR/BUSINESS --}}
+        <livewire:vendors.vendor-create />
+    @endif
 </div>

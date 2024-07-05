@@ -20,7 +20,7 @@ class VendorSelection extends Component
     public $vendor_name = NULL;
 
     public $vendors = [];
-    // public $clients = [];
+    public $clients = [];
 
     public function mount()
     {
@@ -35,14 +35,13 @@ class VendorSelection extends Component
             ->orderBy('vendors.business_type')
             ->get();
 
-        // $this->clients = $this->user->clients()->get();
-
-        // dd($this->clients);
+        $this->clients = $this->user->clients()->get();
     }
 
     public function updatedVendorId($vendor_id)
     {
-        $this->vendor = Vendor::withoutGlobalScopes()->findOrFail($vendor_id);
+        // $this->vendor = Vendor::withoutGlobalScopes()->findOrFail($vendor_id);
+        $this->vendor = $this->vendors->where('id', $vendor_id)->first();
 
         if($this->vendor->registration['registered']){
             $button_text = 'Login to ';

@@ -33,21 +33,18 @@ class Planner extends Component
 
         $this->set_week_days($monday);
 
-        //6-14-2024 ... combine into one QUERY with IF or WHEN ...
         //tasks where between week
-        if(is_null($this->single_project_id)){
-            $this->projects =
-            Project::with(['tasks' => function($query) {
-                $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
-            }])
-            ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])->sortByDesc('last_status.start_date')->values();
-        }else{
-            $this->projects =
-            Project::where('id', $this->single_project_id)->with(['tasks' => function($query) {
-                $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
-            }])
-            ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])->sortByDesc('last_status.start_date')->values();
-        }
+        $this->projects =
+            Project::
+                when(!is_null($this->single_project_id), function ($query, $item) {
+                    return $query->where('id', $this->single_project_id);
+                })
+                ->with(['tasks' => function($query) {
+                    $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
+                }])
+                ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
+                ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']])
+                ->values();
     }
 
     public function set_week_days($monday)

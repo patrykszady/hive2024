@@ -89,15 +89,20 @@
                             wire:model.live.debounce.750ms="project"
                             id="project"
                             name="project"
-                            @disabled($view == 'projects.show')
-                            class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            {{-- @disabled($view == 'projects.show') --}}
+                            class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            >
+
                             <option value="" readonly>All Projects</option>
                             <option value="SPLIT">Project Splits</option>
                             <option value="NO_PROJECT">No Project</option>
+
                             @foreach($projects as $index => $project)
                                 <option value="{{$project->id}}">{{$project->name}}</option>
                             @endforeach
+
                             <option disabled>----------</option>
+
                             @foreach($distributions as $index => $distribution)
                                 <option value="D-{{$distribution->id}}">{{$distribution->name}}</option>
                             @endforeach
@@ -107,12 +112,15 @@
 
                 <div>
                     <select
-                        wire:model.live.debounce.750ms="vendor"
-                        id="vendor"
-                        name="vendor"
-                        class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        wire:model.live.debounce.750ms="expense_vendor"
+                        id="expense_vendor"
+                        name="expense_vendor"
+                        class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        >
+
                         <option value="" readonly>All Vendors</option>
                         <option value="0" readonly>NO VENDOR</option>
+
                         @foreach($vendors as $index => $vendor)
                             <option value="{{$vendor->id}}">{{$vendor->business_name}}</option>
                         @endforeach
@@ -322,12 +330,18 @@
                                             ]);
                                         }
 
-                                        if(strtolower($expense->plaid_merchant_description) != strtolower($expense->vendor->business_name)){
+                                        if(is_null($expense->vendor_id)){
                                             array_push($line_details, [
                                                 'text' => $expense->plaid_merchant_description,
                                                 'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
                                             ]);
                                         }
+                                        // if(strtolower($expense->plaid_merchant_description) != strtolower($expense->vendor->business_name)){
+                                        //     array_push($line_details, [
+                                        //         'text' => $expense->plaid_merchant_description,
+                                        //         'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
+                                        //     ]);
+                                        // }
 
                                         // if(strtolower($expense->plaid_merchant_description) != strtolower($expense->vendor->business_name)){
                                         //     array_push($line_details, [

@@ -25,7 +25,7 @@ class ExpenseIndex extends Component
 
     public $amount = NULL;
     public $project = NULL;
-    public $vendor = NULL;
+    public $expense_vendor = NULL;
     public $banks = NULL;
     public $bank = NULL;
     public $bank_owners = [];
@@ -40,7 +40,7 @@ class ExpenseIndex extends Component
     protected $queryString = [
         'amount' => ['except' => ''],
         'project' => ['except' => ''],
-        'vendor' => ['except' => ''],
+        'expense_vendor' => ['except' => ''],
         'bank' => ['except' => ''],
         'bank_owner' => ['except' => ''],
         'status' => ['except' => ''],
@@ -56,7 +56,7 @@ class ExpenseIndex extends Component
     {
         // && $value == 'NO_PROJECT'
         if($field == 'project'){
-            $this->vendor = NULL;
+            $this->expense_vendor = NULL;
         }
 
         // if($field == 'vendor'){
@@ -77,7 +77,6 @@ class ExpenseIndex extends Component
     #[Title('Expenses')]
     public function render()
     {
-        // dd($this->project);
         $this->authorize('viewAny', Expense::class);
 
         if($this->view == NULL){
@@ -91,6 +90,10 @@ class ExpenseIndex extends Component
             ->with(['project', 'distribution', 'vendor', 'splits', 'transactions', 'receipts'])
             // ->whereBetween('date', [today()->subYear(2), today()])
             ->where('amount', 'like', "{$this->amount}%")
+
+            ->when($this->expense_vendor != NULL, function ($query) {
+                return $query->where('vendor_id', $this->expense_vendor);
+            })
             ->when($this->project == 'SPLIT', function ($query) {
                 return $query->has('splits');
             })
@@ -99,14 +102,30 @@ class ExpenseIndex extends Component
                 return $query->where('project_id', NULL)->whereNull('distribution_id')->doesntHave('splits');
             })
             ->when(substr($this->project, 0, 2) == "D-", function ($query) {
-                return $query->where('distribution_id', substr($this->project, 2));
+                return $query->where('distribution_id', substr($this->project, 2))
+                    ->orWhere(function ($query) {
+                        $query->where('amount', 'like', "{$this->amount}%")
+                            ->when($this->expense_vendor != NULL, function ($query) {
+                                return $query->where('vendor_id', $this->expense_vendor);
+                            })->whereHas('splits', function ($query) {
+                                return $query->where('distribution_id', substr($this->project, 2));
+                            });
+                    });
             })
-            ->when(is_numeric($this->project), function ($query, $project) {
-                return $query->where('project_id', $this->project);
+            ->when(is_numeric($this->project), function ($query) {
+                //or where has splits with this project_id
+                return $query->where('project_id', $this->project)
+                    ->orWhere(function ($query) {
+                        $query->where('amount', 'like', "{$this->amount}%")
+                            ->when($this->expense_vendor != NULL, function ($query) {
+                                return $query->where('vendor_id', $this->expense_vendor);
+                            })->whereHas('splits', function ($query) {
+                                return $query->where('project_id', $this->project);
+                            });
+                    });
             })
-            ->when($this->vendor != NULL, function ($query, $vendor) {
-                return $query->where('vendor_id', 'like', "{$this->vendor}");
-            })
+
+
             ->simplePaginate($paginate_number, ['*'], 'expenses_page');
 
         if($this->bank != NULL){
@@ -142,8 +161,8 @@ class ExpenseIndex extends Component
                 ->where('amount', '!=', '0.00')
                 ->where('plaid_merchant_description', 'not like', "Pending:%")
                 // ->whereNotNull('vendor_id')
-                ->when($this->vendor != NULL, function ($query, $vendor) {
-                    return $query->where('vendor_id', 'like', "{$this->vendor}");
+                ->when($this->expense_vendor != NULL, function ($query, $vendor) {
+                    return $query->where('vendor_id', $this->expense_vendor);
                 })
                 ->when($this->bank != NULL, function ($query, $bank_account_ids) {
                     return $query->whereIn('bank_account_id', $this->bank_account_ids);
@@ -195,7 +214,7 @@ class ExpenseIndex extends Component
             $vendors = Vendor::whereIn('id', $project_vendor_ids)->get();
         }else{
             //pluck all project expense vendors
-            $project_vendor_ids = Expense::where('project_id', $this->project)->groupBy('vendor_id')->pluck('vendor_id')->toArray();
+            $project_vendor_ids = Expense::where('project_id', $this->project)->orWhere('distribution_id', substr($this->project, 2))->groupBy('vendor_id')->pluck('vendor_id')->toArray();
             $vendors = Vendor::whereIn('id', $project_vendor_ids)->get();
         }
         $projects = Project::whereHas('expenses')->orderBy('created_at', 'DESC')->get();

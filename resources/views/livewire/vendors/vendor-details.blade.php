@@ -68,8 +68,7 @@
     </x-cards.body>
 
     @can('update', $vendor)
-        {{-- , "1099" --}}
-        @if(in_array($vendor->business_type, ["Sub", "DBA"]))
+        @if(in_array($vendor->business_type, ["Sub", "DBA", "1099"]))
             @if($vendor->id != auth()->user()->vendor->id)
                 <x-cards.footer>
                     <x-cards.button
@@ -79,12 +78,16 @@
                     </x-cards.button>
                     @if($vendor->vendor_docs->isEmpty())
                         <x-cards.button
-                            {{-- wire:click="$dispatchTo('expenses.expense-create', 'newExpense', { amount: {{$amount}}})" --}}
-                            {{-- {{$vendor->id}} --}}
+                            {{-- {{!in_array($vendor->business_type, ["Sub", "DBA"]) ? 'disabled' : ''}} --}}
+                            {{--  x-bind:disabled="{{!in_array($vendor->business_type, ["Sub", "DBA"]) ? 'true' : ''}}" --}}
                             wire:click="$dispatchTo('vendor-docs.vendor-doc-create', 'addDocument', { vendor: {{$vendor->id}} })"
                             button_color=white
                             >
-                            Add Insurance
+                            @if(in_array($vendor->business_type, ["Sub", "DBA"]))
+                                Add Insurance
+                            @else
+                                Add W9 Form
+                            @endif
                         </x-cards.button>
                     @endif
                 </x-cards.footer>

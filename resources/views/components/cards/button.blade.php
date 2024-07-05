@@ -17,6 +17,7 @@
 
 @if(isset($attributes['wire:click']))
     <button
+        {{-- {{$attributes}} --}}
         type="button"
         class="{{$classes}}"
         wire:click="{{ $attributes['wire:click'] }}"
@@ -33,7 +34,7 @@
             target="{{$hrefTarget}}"
         @endif
 
-        {{$attributes}}
+        {{-- {{$attributes}} --}}
         class="{{$classes}}"
         >
         {{$slot}}

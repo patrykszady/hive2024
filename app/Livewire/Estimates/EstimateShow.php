@@ -175,35 +175,26 @@ class EstimateShow extends Component
         return $this->sections->sum('total');
     }
 
-    //$type = [estimate, invoice]
+    //$type = [estimate, invoice, work order]
     public function print($type)
     {
-        if($type == 'estimate'){
-            // SendInitialEstimateEmail::dispatch($this->estimate, $this->sections, $type);
-            $data = $this->create_pdf($this->estimate, $this->sections, $type);
+        $headers =
+            array(
+                'Content-Type: application/pdf',
+            );
 
-            $headers =
-                array(
-                    'Content-Type: application/pdf',
-                );
+        $data = $this->create_pdf($this->estimate, $this->sections, $type);
+        return Response::download($data[0], $data[1] . '.pdf', $headers);
 
-            return Response::download($data[0], $data[1] . '.pdf', $headers);
-        }elseif($type == 'invoice'){
-            $data = $this->create_pdf($this->estimate, $this->sections, $type);
-
-            $headers =
-                array(
-                    'Content-Type: application/pdf',
-                );
-
-            return Response::download($data[0], $data[1] . '.pdf', $headers);
-        }
+        // if($type == 'estimate'){
+        //     // SendInitialEstimateEmail::dispatch($this->estimate, $this->sections, $type);
+        //}
     }
 
     public function create_pdf($estimate, $sections, $type)
     {
         $estimate_total = $sections->sum('total');
-        $type = ucfirst($type);
+        $type = ucwords(strtolower($type));
 
         $estimate_total_words =
             SpellNumber::value($estimate_total)->locale('en')
@@ -223,10 +214,11 @@ class EstimateShow extends Component
             ->newHeadless()
             ->scale(0.8)
             ->showBrowserHeaderAndFooter()
-            // ->headerHtml('Header')
-            // ->footerHtml('<span class="pageNumber"></span>')
+            // ->hideFooter()
+            // ->headerHtml('<span class="pageNumber"></span>')
             //->margins($top, $right, $bottom, $left)
             ->margins(10, 5, 10, 5)
+            // ->transparentBackground()
             ->save($location);
 
         return [$location, $title_file];

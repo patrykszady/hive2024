@@ -51,8 +51,16 @@
                 placeholder="Check Number"
                 inputmode="numeric"
                 step="1"
+                label_text_color_custom="{{ $next_check_auto ? 'indigo' : NULL}}"
                 {{-- x-bind:disabled="check_input_existing" --}}
                 >
+                <x-slot name="titleslot">
+                    <div>
+                        @if($next_check_auto)
+                            <span class="mt-2 text-sm text-indigo-600"><i>Automatic Next Check Number</i></span>
+                        @endif
+                    </div>
+                </x-slot>
             </x-forms.row>
         </div>
     </div>

@@ -4,6 +4,7 @@ namespace App\Livewire\Checks;
 
 use App\Models\Bank;
 use App\Models\Check;
+use App\Models\Vendor;
 use App\Models\BankAccount;
 
 use Livewire\Component;
@@ -17,15 +18,20 @@ class ChecksIndex extends Component
     use WithPagination, AuthorizesRequests;
 
     public $banks = [];
+    public $vendors = [];
     public $bank = '' ;
     public $check_number = '' ;
     public $amount = '' ;
     public $check_type = '';
+    public $vendor = '';
+
+    public $view = NULL;
 
     protected $queryString = [
         'bank' => ['except' => ''],
         'check_number' => ['except' => ''],
         'check_type' => ['except' => ''],
+        'vendor' => ['except' => ''],
         'amount' => ['except' => '']
     ];
 
@@ -39,7 +45,7 @@ class ChecksIndex extends Component
         //where $check->transactions dont equal $check->amount
         // $checks = Check::whereBetween('date', ['2022-09-01', '2023-09-01'])->whereDoesntHave('transactions')->where('check_type', '!=', 'Cash')->get();
 
-        // dd($checks);
+        $this->vendors = Vendor::orderBy('business_name')->get();
         $this->banks =
             Bank::orderBy('created_at', 'DESC')
                 ->with('accounts')
@@ -58,9 +64,15 @@ class ChecksIndex extends Component
     public function render()
     {
         //$this->authorize('viewAny', Expense::class);
+        if($this->view == NULL){
+            $paginate_number = 10;
+        }else{
+            $paginate_number = 5;
+        }
+
         if($this->bank){
-            $bank_account_ids = Bank::where('id', $this->bank)->first()->plaid_ins_id;
-            $bank_account_ids = Bank::where('plaid_ins_id', $bank_account_ids)->pluck('id');
+            $bank_account_id = Bank::findOrFail($this->bank)->plaid_ins_id;
+            $bank_account_ids = Bank::where('plaid_ins_id', $bank_account_id)->pluck('id');
 
             $bank_accounts = BankAccount::whereIn('bank_id', $bank_account_ids)->pluck('id')->toArray();
         }else{
@@ -81,7 +93,10 @@ class ChecksIndex extends Component
                 ->when($amount, function ($query) {
                     return $query->where('amount', 'like', "{$this->amount}%");
                 })
-                ->paginate(10);
+                ->when($this->vendor, function ($query) {
+                    return $query->where('vendor_id', $this->vendor);
+                })
+                ->paginate($paginate_number);
 
         return view('livewire.checks.index', [
             'checks' => $checks,

@@ -101,7 +101,7 @@
 
                                         <x-lists.search_li
                                             :basic=true
-                                            :line_title="'Estimate'"
+                                            :line_title="$type"
                                             :line_data="$estimate->number"
                                             >
                                         </x-lists.search_li>
@@ -164,18 +164,20 @@
                                                     >
                                                     Unit
                                                 </th>
-                                                <th scope="col"
-                                                    class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell"
-                                                    >
-                                                    Cost
-                                                </th>
-                                                {{-- last th --}}
-                                                <th
-                                                    scope="col"
-                                                    class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-6"
-                                                    >
-                                                    Total
-                                                </th>
+                                                @if($type != 'Work Order')
+                                                    <th scope="col"
+                                                        class="hidden px-3 py-3.5 text-right text-sm font-semibold text-gray-900 sm:table-cell"
+                                                        >
+                                                        Cost
+                                                    </th>
+                                                    {{-- last th --}}
+                                                    <th
+                                                        scope="col"
+                                                        class="py-3.5 pl-3 pr-4 text-right text-sm font-semibold text-gray-900 sm:pr-6"
+                                                        >
+                                                        Total
+                                                    </th>
+                                                @endif
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -207,9 +209,12 @@
 
                                                     <td class="hidden px-3 py-5 text-right text-gray-500 align-text-top text-md sm:table-cell bg-gray-50">{{$estimate_line_item->unit_type !== 'no_unit' ? $estimate_line_item->quantity : ''}}</td>
                                                     <td class="hidden px-3 py-5 text-right text-gray-500 align-text-top text-md sm:table-cell bg-gray-50">{{$estimate_line_item->unit_type !== 'no_unit' ? $estimate_line_item->unit_type : ''}}</td>
-                                                    <td class="hidden px-3 py-5 text-right text-gray-500 align-text-top text-md sm:table-cell bg-gray-50">{{$estimate_line_item->unit_type !== 'no_unit' ? money($estimate_line_item->cost) : ''}}</td>
-                                                    {{-- last td --}}
-                                                    <td class="py-5 pl-3 pr-4 text-right text-gray-800 align-text-top text-md sm:pr-6 bg-gray-50">{{money($estimate_line_item->total)}}</td>
+
+                                                    @if($type != 'Work Order')
+                                                        <td class="hidden px-3 py-5 text-right text-gray-500 align-text-top text-md sm:table-cell bg-gray-50">{{$estimate_line_item->unit_type !== 'no_unit' ? money($estimate_line_item->cost) : ''}}</td>
+                                                        {{-- last td --}}
+                                                        <td class="py-5 pl-3 pr-4 text-right text-gray-800 align-text-top text-md sm:pr-6 bg-gray-50">{{money($estimate_line_item->total)}}</td>
+                                                    @endif
                                                 </tr>
 
                                                 <tr class="border-b border-gray-400">
@@ -222,14 +227,6 @@
                                                                 <hr>
                                                                 <span class="text-gray-500"><i>{{$estimate_line_item->notes}}</i></span>
                                                             @endif
-                                                            {{-- <span class="hidden sm:inline">·</span>
-                                                            <span>$100</span> --}}
-                                                        </div>
-                                                        {{-- MOBILE VIEW DIV --}}
-                                                        <div class="flex flex-col mt-1 text-gray-500 sm:block sm:hidden">
-                                                            <span>{{$estimate_line_item->unit_type !== 'no_unit' ? $estimate_line_item->quantity . ' ' . $estimate_line_item->unit_type . ' @ ' .money($estimate_line_item->cost) . '/each' : ''}}</span>
-                                                            {{-- <span class="hidden sm:inline">·</span>
-                                                            <span>$100</span> --}}
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -238,93 +235,97 @@
                                     </table>
                                 </x-cards.body>
 
-                                <x-cards.footer>
-                                    <button></button>
-                                    <h3>Section Total: {{money($section->total)}}</h3>
-                                </x-cards.footer>
+                                @if($type != 'Work Order')
+                                    <x-cards.footer>
+                                        <button></button>
+                                        <h3>Section Total: {{money($section->total)}}</h3>
+                                    </x-cards.footer>
+                                @endif
                             </div>
                         </div>
                     @endforeach
 
                     {{-- ESTIMATE TOTAL --}}
-                    <div class="grid max-w-5xl grid-cols-3 gap-4 px-6 mx-auto">
-                        <div class="col-span-2 col-start-2">
-                            <x-cards.heading>
-                                <x-slot name="left">
-                                    <h1 class="text-lg">{{$type}} Finances</b></h1>
-                                </x-slot>
-                            </x-cards.heading>
-                            <x-cards.body>
-                                {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances wrapper--}}
-                                <x-lists.ul
-                                    {{-- wire:target="print"
-                                    wire:loading.attr="disabled"
-                                    wire:loading.class="opacity-50 text-opacity-40" --}}
-                                    >
-                                    <x-lists.search_li
-                                        :basic=true
-                                        :line_title="'Estimate'"
-                                        :line_data="money($estimate->project->finances['estimate'])"
+                    @if($type != 'Work Order')
+                        <div class="grid max-w-5xl grid-cols-3 gap-4 px-6 mx-auto">
+                            <div class="col-span-2 col-start-2">
+                                <x-cards.heading>
+                                    <x-slot name="left">
+                                        <h1 class="text-lg">{{$type}} Finances</b></h1>
+                                    </x-slot>
+                                </x-cards.heading>
+                                <x-cards.body>
+                                    {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances wrapper--}}
+                                    <x-lists.ul
+                                        {{-- wire:target="print"
+                                        wire:loading.attr="disabled"
+                                        wire:loading.class="opacity-50 text-opacity-40" --}}
                                         >
-                                    </x-lists.search_li>
-
-                                    <x-lists.search_li
-                                        :basic=true
-                                        :line_title="'Change Order'"
-                                        :line_data="money($estimate->project->finances['change_orders'])"
-                                        >
-                                    </x-lists.search_li>
-
-                                    @if($estimate->reimbursments)
                                         <x-lists.search_li
                                             :basic=true
-                                            :line_title="'Reimbursements'"
-                                            :line_data="money($estimate->reimbursments)"
+                                            :line_title="'Estimate'"
+                                            :line_data="money($estimate->project->finances['estimate'])"
                                             >
                                         </x-lists.search_li>
-                                    @endif
 
-                                    <x-lists.search_li
-                                        :basic=true
-                                        :bold="TRUE"
-                                        {{-- make gray --}}
-                                        :line_title="'TOTAL ESTIMATE'"
-                                        :line_data="money($estimate_total + $estimate->reimbursments)"
-                                        >
-                                    </x-lists.search_li>
-
-                                    {{-- @if($estimate->project->payments->isEmpty()) --}}
-                                    @foreach($payments as $payment)
                                         <x-lists.search_li
                                             :basic=true
-                                            :line_title="'Payment ' . $payment->reference"
-                                            :line_data="money($payment->amount)"
+                                            :line_title="'Change Order'"
+                                            :line_data="money($estimate->project->finances['change_orders'])"
                                             >
                                         </x-lists.search_li>
-                                    @endforeach
 
-                                    <x-lists.search_li
-                                        :basic=true
-                                        :bold="TRUE"
-                                        {{-- make gray --}}
-                                        :line_title="'TOTAL PAYMENTS'"
-                                        :line_data="money($payments->sum('amount'))"
-                                        >
-                                    </x-lists.search_li>
+                                        @if($estimate->reimbursments)
+                                            <x-lists.search_li
+                                                :basic=true
+                                                :line_title="'Reimbursements'"
+                                                :line_data="money($estimate->reimbursments)"
+                                                >
+                                            </x-lists.search_li>
+                                        @endif
 
-                                    <x-lists.search_li
-                                        :basic=true
-                                        :bold="TRUE"
-                                        {{-- make gray --}}
-                                        :line_title="'BALANCE'"
-                                        :line_data="money(($estimate_total + $estimate->reimbursments) - $payments->sum('amount'))"
-                                        >
-                                    </x-lists.search_li>
-                                    {{-- @endif --}}
-                                </x-lists.ul>
-                            </x-cards.body>
+                                        <x-lists.search_li
+                                            :basic=true
+                                            :bold="TRUE"
+                                            {{-- make gray --}}
+                                            :line_title="'TOTAL ESTIMATE'"
+                                            :line_data="money($estimate_total + $estimate->reimbursments)"
+                                            >
+                                        </x-lists.search_li>
+
+                                        {{-- @if($estimate->project->payments->isEmpty()) --}}
+                                        @foreach($payments as $payment)
+                                            <x-lists.search_li
+                                                :basic=true
+                                                :line_title="'Payment ' . $payment->reference"
+                                                :line_data="money($payment->amount)"
+                                                >
+                                            </x-lists.search_li>
+                                        @endforeach
+
+                                        <x-lists.search_li
+                                            :basic=true
+                                            :bold="TRUE"
+                                            {{-- make gray --}}
+                                            :line_title="'TOTAL PAYMENTS'"
+                                            :line_data="money($payments->sum('amount'))"
+                                            >
+                                        </x-lists.search_li>
+
+                                        <x-lists.search_li
+                                            :basic=true
+                                            :bold="TRUE"
+                                            {{-- make gray --}}
+                                            :line_title="'BALANCE'"
+                                            :line_data="money(($estimate_total + $estimate->reimbursments) - $payments->sum('amount'))"
+                                            >
+                                        </x-lists.search_li>
+                                        {{-- @endif --}}
+                                    </x-lists.ul>
+                                </x-cards.body>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
 
                 @if($type == 'Estimate')

@@ -129,6 +129,8 @@ class Registration extends Component
 
                     $this->validate_number = TRUE;
                 }catch(\Exception $e){
+                    $this->user_cell = NULL;
+                    $this->user = User::make();
                     $this->addError('user_cell', 'Invalid Phone Number.');
                 }
 

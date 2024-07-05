@@ -4,6 +4,7 @@ namespace App\Livewire\Vendors;
 
 use App\Models\Project;
 use App\Models\Vendor;
+use App\Models\Check;
 use App\Models\BankAccount;
 
 use App\Jobs\SendVendorPaymentEmailJob;
@@ -28,15 +29,26 @@ class VendorPaymentCreate extends Component
 
     public Vendor $vendor;
 
+    public $next_check_auto = FALSE;
+    public $project_id = "";
     public $projects = [];
+    public $employees = [];
+    public $bank_accounts = [];
     public $payment_projects = [];
     public $saved_expenses = [];
+
+    public $view_text = [
+        'card_title' => 'Create Vendor Payments',
+        'button_text' => 'Create Vendor Check',
+        'form_submit' => 'save',
+    ];
 
     protected $listeners = ['updateProjectBids'];
 
     protected function rules()
     {
         return [
+            'project_id' => 'required',
             'projects.*.show' => 'nullable',
             'projects.*.vendor_expenses_sum' => 'nullable',
             'projects.*.vendor_bids_sum' => 'nullable',
@@ -61,38 +73,49 @@ class VendorPaymentCreate extends Component
                 // ->get()
                 ->each(function ($item, $key) {
                     $item->show = false;
-                    // $item->show_timestamp = now();
                 })
                 ->keyBy('id');
 
         $this->form->date = today()->format('Y-m-d');
+
+        $this->employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
+
+        $this->bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
+            ->whereHas('bank', function ($query) {
+                return $query->whereNotNull('plaid_access_token');
+            })->get();
     }
 
     public function updated($field, $value)
     {
-        // if(substr($field, 0, 8) == 'projects'){
-        //     $project_id = preg_replace("/[^0-9]/", '', $field);
+        if($field == 'form.bank_account_id'){
+            $this->form->check_type = NULL;
+            $this->form->check_number = NULL;
+            $this->next_check_auto = FALSE;
+            $this->resetValidation('form.check_number');
+        }
 
-        //     // $this->updateProjectBalance($project_id);
+        if($field == 'form.check_type'){
+            if($value == 'Check'){
+                $next_check_number = Check::where('bank_account_id', $this->form->bank_account_id)->where('check_type', 'Check')->orderBy('date', 'DESC')->orderBy('created_at', 'DESC')->first()->check_number + 1;
+                $this->form->check_number = $next_check_number;
+                $this->next_check_auto = TRUE;
+            }else{
+                $this->form->check_number = NULL;
+                $this->next_check_auto = FALSE;
+                $this->resetValidation('form.check_number');
+            }
+        }
 
-        //     // $balance = $this->projects[$project_id]->balance;
-        //     // $amount = $this->projects[$project_id]->amount;
-        // }
+        if($field == 'form.check_number'){
+            $this->next_check_auto = FALSE;
+            $this->validateOnly($field);
+        }
 
         if(substr($field, 0, 8) == 'projects'){
             $project_id = preg_replace("/[^0-9]/", '', $field);
-
             $this->updateProjectBalance($project_id);
         }
-
-        // if($field == 'check.check_type'){
-        //     if($this->check->check_type == 'Check'){
-        //         $this->check_input = TRUE;
-        //     }else{
-        //         $this->check->check_number = NULL;
-        //         $this->check_input = FALSE;
-        //     }
-        // }
 
         $this->validateOnly($field);
 
@@ -104,14 +127,15 @@ class VendorPaymentCreate extends Component
 
     public function addProject()
     {
-        $project = $this->projects[$this->form->project_id];
+        $this->validateOnly('project_id');
+
+        $project = $this->projects[$this->project_id];
         $project->show = true;
         $project->vendor_expenses_sum = $project->expenses()->where('vendor_id', $this->vendor->id)->sum('amount');
         $project->vendor_bids_sum = $project->bids()->vendorBids($this->vendor->id)->sum('amount');
-        // $project->show_timestamp = now();
         $project->balance = $project->vendor_bids_sum - $project->vendor_expenses_sum;
 
-        $this->form->project_id = "";
+        $this->project_id = "";
     }
 
     public function updateProjectBids($project_id)
@@ -145,9 +169,11 @@ class VendorPaymentCreate extends Component
 
     public function removeProject($project_id_to_remove)
     {
-        $project = $this->projects->where('id', $project_id_to_remove)->first();
+        $project = $this->projects[$project_id_to_remove];
         $project->show = false;
-        $this->form->project_id = "";
+        $project->amount = NULL;
+
+        $this->project_id = "";
     }
 
     public function getVendorCheckSumProperty()
@@ -181,6 +207,7 @@ class VendorPaymentCreate extends Component
 
             SendVendorPaymentEmailJob::dispatch($auth_user, $vendor, $check);
 
+            dd('done');
             return redirect()->route('checks.show', $check->id);
         }else{
             return redirect()->route('vendors.show', $this->vendor->id);
@@ -190,27 +217,6 @@ class VendorPaymentCreate extends Component
     #[Title('Vendor Payment')]
     public function render()
     {
-        $view_text = [
-            'card_title' => 'Create Vendor Payments',
-            'button_text' => 'Create Vendor Check',
-            'form_submit' => 'save',
-        ];
-
-        //->whereNot('users.id', auth()->user()->id)
-        $employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
-
-        $bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
-            ->whereHas('bank', function ($query) {
-                return $query->whereNotNull('plaid_access_token');
-            })->get();
-
-        $projects = $this->projects;
-
-        return view('livewire.vendors.payment-form', [
-            'view_text' => $view_text,
-            'employees' => $employees,
-            'bank_accounts' => $bank_accounts,
-            'projects' => $projects,
-        ]);
+        return view('livewire.vendors.payment-form');
     }
 }

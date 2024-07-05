@@ -10,21 +10,23 @@
 
 	<div class="grid max-w-xl grid-cols-4 gap-4 mx-auto lg:max-w-5xl sm:px-6">
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
-            {{-- PROJECT DETAILS --}}
+            {{-- VENDOR DETAILS --}}
             <div class="col-span-4 lg:col-span-2">
                 <livewire:vendors.vendor-details :vendor="$vendor">
             </div>
 
-            {{-- INSURANCE --}}
-            @if($vendor->business_type == 'Sub')
-                <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/>
-            @endif
+            <livewire:checks.checks-index :vendor="$vendor->id" :view="'vendors.show'" lazy />
         </div>
 
         {{-- VENDOR TEAM MEMBERS --}}
         @if($vendor->business_type != 'Retail')
-            <div class="col-span-4 lg:col-span-2">
+            <div class="col-span-4 lg:col-span-2 space-y-4">
                 <livewire:users.team-members :vendor="$vendor">
+
+                {{-- INSURANCE --}}
+                @if(in_array($vendor->business_type, ["Sub", "DBA"]))
+                    <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true" lazy />
+                @endif
             </div>
         @endif
 	</div>

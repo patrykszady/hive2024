@@ -15,15 +15,15 @@
                     <label for="user_cell" class="block text-sm font-medium text-gray-700">Cell Phone Number</label>
                     <div class="mt-1">
                         <input
-                            wire:model.live="user_cell"
+                            wire:model.live.debounce.250ms="user_cell"
                             id="user_cell"
                             name="user_cell"
                             type="tel"
                             {{-- autocomplete="user_cell_required1432" --}}
                             inputmode="numeric"
-                            placeholder="8474304439"
+                            placeholder="8470004000"
                             required
-                            x-bind:disabled="{{isset($user) ? isset($user['id']) || isset($user['cell_phone']) && !$errors->has('invalid_user_cell') ? true : false : false}}"
+                            x-bind:disabled="{{isset($user) ? isset($user['id']) || isset($user['cell_phone']) && !$errors->has('user_cell') ? true : false : false}}"
                             class="block w-full px-3 py-2 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm appearance-none disabled:opacity-50 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         >
                     </div>

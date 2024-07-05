@@ -16,7 +16,7 @@ class SheetsIndex extends Component
 {
     use AuthorizesRequests;
 
-    public $year = 2024;
+    public $year = 2023;
     public $cost_of_labor = 0;
     public $cost_of_materials = 0;
     public $general_expenses = 0;

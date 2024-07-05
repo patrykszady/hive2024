@@ -43,6 +43,7 @@ class AuditShow extends Component
                 ->whereIn('bank_account_id', $this->bank_account_ids)
                 ->whereNotNull('check_number')
                 ->whereNull('check_id')
+                ->whereNull('expense_id')
                 ->get();
 
         $this->vendors_grouped_checks =

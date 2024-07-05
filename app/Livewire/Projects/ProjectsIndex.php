@@ -72,7 +72,6 @@ class ProjectsIndex extends Component
             ->when($this->client != NULL, function ($query) use ($client_ids) {
                 return $query->whereIn('client_id', $client_ids);
             })
-
             ->paginate(10);
 
         return view('livewire.projects.index', [

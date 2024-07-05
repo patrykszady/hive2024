@@ -23,9 +23,11 @@ class ClientScope implements Scope
         if(auth()->guest()){
 
         }else{
-            $builder->whereHas('vendors', function($q){
-                $q->where('vendor_id', '=', auth()->user()->vendor->id);
-            });
+            if(auth()->user()->vendor){
+                $builder->whereHas('vendors', function($q){
+                    $q->where('vendor_id', '=', auth()->user()->vendor->id);
+                });
+            }
         }
     }
 }

@@ -68,6 +68,7 @@
                                         <a wire:click="$dispatchTo('estimates.estimate-combine', 'combineModal', { existing_estimate_id: {{$estimate->id}} })" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-1">Combine Estimate</a>
                                         <a wire:click="print('estimate')" wire:loading.attr="disabled" wire:loading.class="opacity-50" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-2">Export Estimate</a>
                                         <a wire:click="print('invoice')" wire:loading.attr="disabled" wire:loading.class="opacity-50" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-4">Export Invoice</a>
+                                        <a wire:click="print('work order')" wire:loading.attr="disabled" wire:loading.class="opacity-50" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-4">Export Work Order</a>
                                         <a wire:click="delete" class="block px-4 py-2 text-sm text-red-700 cursor-pointer hover:bg-gray-100" role="menuitem" tabindex="-1" id="option-menu-item-2">Delete Estimate</a>
                                     </div>
                                 </div>

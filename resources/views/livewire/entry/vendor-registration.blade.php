@@ -263,6 +263,7 @@
                             {{-- x-bind:disabled="store" --}}
                             {{-- wire:click="showmodal" --}}
                             wire:loading.attr="disabled"
+                            disabled
                             {{-- wire:target="{{$view_text['form_submit']}}, 'expense', 'createExpenseFromTransaction'" --}}
                             {{-- x-bind:disabled="expense.project_id" --}}
                             class="inline-flex justify-center w-full px-4 py-2 text-lg font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

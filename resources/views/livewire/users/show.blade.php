@@ -21,7 +21,7 @@
                             @endif --}}
                         </x-slot>
 
-                        @if($user->this_vendor)
+                        @if($user->this_vendor && auth()->user()->vendor_role == 'Admin')
                             @can('update', $user)
                                 <x-slot name="right">
                                     <x-cards.button

@@ -81,7 +81,7 @@
                                 </div>
                             </x-slot>
                         </x-forms.row>
-                        
+
                         @if(!$loop->last)
                             <hr>
                         @endif

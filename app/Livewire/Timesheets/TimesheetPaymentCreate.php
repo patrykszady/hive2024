@@ -4,6 +4,7 @@ namespace App\Livewire\Timesheets;
 
 use App\Models\BankAccount;
 use App\Models\Expense;
+use App\Models\Check;
 use App\Models\User;
 use App\Models\Timesheet;
 use App\Models\Vendor;
@@ -22,8 +23,8 @@ class TimesheetPaymentCreate extends Component
 
     public TimesheetPaymentForm $form;
     // public CheckForm $check_form;
-
     public User $user;
+    public $next_check_auto = FALSE;
 
     public $weekly_timesheets = [];
     public $employee_weekly_timesheets = [];
@@ -151,10 +152,32 @@ class TimesheetPaymentCreate extends Component
         $this->form->setUser($this->user);
     }
 
-    public function updated($field)
+    public function updated($field, $value)
     {
         // $this->validate();
-        $this->validateOnly($field);
+        if($field == 'form.bank_account_id'){
+            $this->form->check_type = NULL;
+            $this->form->check_number = NULL;
+            $this->next_check_auto = FALSE;
+            $this->resetValidation('form.check_number');
+        }
+
+        if($field == 'form.check_type'){
+            if($value == 'Check'){
+                $next_check_number = Check::where('bank_account_id', $this->form->bank_account_id)->where('check_type', 'Check')->orderBy('date', 'DESC')->orderBy('created_at', 'DESC')->first()->check_number + 1;
+                $this->form->check_number = $next_check_number;
+                $this->next_check_auto = TRUE;
+            }else{
+                $this->form->check_number = NULL;
+                $this->next_check_auto = FALSE;
+                $this->resetValidation('form.check_number');
+            }
+        }
+
+        if($field == 'form.check_number'){
+            $this->next_check_auto = FALSE;
+            $this->validateOnly($field);
+        }
         // $this->validateOnly('form.bank_account_id');
         // $this->validateOnly('form.paid_by');
     }
@@ -240,7 +263,7 @@ class TimesheetPaymentCreate extends Component
         }else{
             $redirect_route = $this->form->store();
             // dd($redirect_route);
-            
+
             if($redirect_route == 'timesheets'){
                 return redirect()->route('timesheets.payments');
             }else{

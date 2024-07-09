@@ -52,7 +52,7 @@ class ExpenseForm extends Form
     public $paid_by = NULL;
 
     // required_without:form.paid_by
-    #[Validate('required_without:paid_by', as: 'bank account')]
+    #[Validate('nullable', as: 'bank account')]
     public $bank_account_id = NULL;
 
     #[Validate('required_with:bank_account_id', as: 'type')]
@@ -465,8 +465,11 @@ class ExpenseForm extends Form
         ]);
 
         if($this->transaction){
-            $this->transaction->check_id = $check->id;
-            // $this->transaction->expense_id = $expense->id;
+            if($this->transaction->check_id){
+                $this->transaction->check_id = $check->id;
+            }else{
+                $this->transaction->expense_id = $expense->id;
+            }
             $this->transaction->save();
         }
 

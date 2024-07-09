@@ -15,15 +15,17 @@
                         <h1>Check Details</h1>
                     </x-slot>
 
-                    <x-slot name="right">
-                        <div class="space-x-2">
-                            <x-cards.button
-                                wire:click="$dispatchTo('checks.check-create', 'editCheck', { check: {{$check->id}}})"
-                                >
-                                Edit Check
-                            </x-cards.button>
-                        </div>
-                    </x-slot>
+                    @if($check->transactions->sum('amount') != $check->amount)
+                        <x-slot name="right">
+                            <div class="space-x-2">
+                                <x-cards.button
+                                    wire:click="$dispatchTo('checks.check-create', 'editCheck', { check: {{$check->id}}})"
+                                    >
+                                    Edit Check
+                                </x-cards.button>
+                            </div>
+                        </x-slot>
+                    @endif
                 </x-cards.heading>
 
                 <x-cards.body>

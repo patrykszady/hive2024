@@ -207,7 +207,6 @@ class VendorPaymentCreate extends Component
 
             SendVendorPaymentEmailJob::dispatch($auth_user, $vendor, $check);
 
-            dd('done');
             return redirect()->route('checks.show', $check->id);
         }else{
             return redirect()->route('vendors.show', $this->vendor->id);

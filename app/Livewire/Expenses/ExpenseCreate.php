@@ -159,9 +159,6 @@ class ExpenseCreate extends Component
         // $this->modal_show = FALSE;
 
         // $this->transaction = NULL;
-
-        // $this->check_input = FALSE;
-        // $this->check_input_existing = FALSE;
         // $this->check = Check::make();
         // $this->resetValidation();
     }
@@ -201,7 +198,6 @@ class ExpenseCreate extends Component
 
         //2/18/2023 if check_number .. expense->vendor_id = GS Construction / logged in vendor?
         if($transaction->check_number){
-            // $this->check_input_existing = TRUE;
             if($transaction->check_number == '1010101'){
                 $check_type = 'Transfer';
             }elseif($transaction->check_number == '2020202'){
@@ -212,17 +208,11 @@ class ExpenseCreate extends Component
 
             $this->form->bank_account_id = $transaction->bank_account_id;
             $this->form->check_type = $check_type;
-            $this->check_input = TRUE;
 
             //2/18/2023 dont allow changes to $this->check if coming from a transaction...
             if($check_type == 'Check'){
                 $this->form->check_number = $transaction->check_number;
-                // $this->check_number = TRUE;
             }
-            // else{
-            //     // $this->check_number = NULL;
-            //     $this->check_input = NULL;
-            // }
         }
 
         $this->form->transaction = $transaction;
@@ -316,7 +306,7 @@ class ExpenseCreate extends Component
 
         //queue
         UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
-        
+
         //dispatch and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');

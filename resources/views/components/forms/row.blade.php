@@ -64,7 +64,7 @@
             {!!  $text  !!}
         </label>
         <div class="mt-1 sm:mt-0 sm:col-span-2">
-            {{-- 08-26-2026 inline --}}
+            {{-- 08-26-202X inline --}}
             @if($type === 'radio' || $type === 'radiogroup')
                 <div>
             @else

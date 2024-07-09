@@ -38,7 +38,7 @@ class CheckForm extends Form
     // required_with:check.paid_by
     // #[Rule('nullable')]
     // public $invoice = NULL;
-
+    // public $transaction = TRUE;
     // protected $messages =
     // [
     //     'check.check_number' => 'Check Number is required if Payment Type is Check',
@@ -72,6 +72,10 @@ class CheckForm extends Form
         $this->bank_account_id = $this->check->bank_account_id;
         $this->check_type = $this->check->check_type;
         $this->check_number = $this->check->check_number;
+
+        // if($this->check->transactions->sum('amount') == $this->check->amount){
+        //     $this->transaction = TRUE;
+        // }
     }
 
     public function update()

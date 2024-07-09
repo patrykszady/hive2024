@@ -16,19 +16,20 @@ class ExpenseShow extends Component
     use AuthorizesRequests;
 
     public Expense $expense;
+    public $receipt = NULL;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
+
+    public function mount()
+    {
+        $this->receipt = $this->expense->receipts()->latest()->first();
+    }
 
     #[Title('Expense')]
     public function render()
     {
         $this->authorize('view', $this->expense);
 
-        $splits = $this->expense->splits()->get();
-
-        return view('livewire.expenses.show', [
-            'receipt' => $this->expense->receipts()->latest()->first(),
-            'splits' => $splits,
-        ]);
+        return view('livewire.expenses.show');
     }
 }

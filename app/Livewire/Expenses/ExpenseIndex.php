@@ -124,8 +124,6 @@ class ExpenseIndex extends Component
                             });
                     });
             })
-
-
             ->simplePaginate($paginate_number, ['*'], 'expenses_page');
 
         if($this->bank != NULL){

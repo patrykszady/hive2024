@@ -231,8 +231,7 @@
 
         {{-- FOOTER --}}
         <x-cards.footer>
-            {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our
-            theme --}}
+            {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our theme --}}
             {{ $expenses->links(data: ['scrollTo' => '#expenses_foreach']) }}
         </x-cards.footer>
     </x-cards.wrapper>
@@ -250,7 +249,6 @@
 
                 {{-- SUB-HEADING --}}
                 <x-cards.heading>
-                    {{-- class="mt-3 sm:mt-0 sm:ml-4 --}}
                     <div class="mx-auto">
                         <div>
                             <select
@@ -380,8 +378,7 @@
 
                 {{-- FOOTER --}}
                 <x-cards.footer>
-                    {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our
-                    theme --}}
+                    {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our theme --}}
                     {{ $transactions->links(data: ['scrollTo' => '#transactions_foreach']) }}
                 </x-cards.footer>
             </x-cards.wrapper>

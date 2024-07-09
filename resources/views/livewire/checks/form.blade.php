@@ -1,8 +1,8 @@
-{{-- <form wire:submit="store"> --}}
-<div>
+<div x-data="{ transaction: @entangle('form.transaction') }">
     <x-forms.row
         wire:model.live="form.bank_account_id"
         errorName="form.bank_account_id"
+        x-bind:disabled="transaction"
         name="bank_account_id"
         text="Bank"
         type="dropdown"
@@ -25,6 +25,7 @@
         <x-forms.row
             wire:model.live="form.check_type"
             {{-- x-bind:disabled="{{$expense_update ? TRUE : FALSE}}" --}}
+            x-bind:disabled="transaction"
             errorName="form.check_type"
             name="check_type"
             text="Type"
@@ -44,6 +45,7 @@
             <x-forms.row
                 wire:model.live="form.check_number"
                 {{-- x-bind:disabled="{{$expense_update ? TRUE : FALSE}}" --}}
+                x-bind:disabled="transaction"
                 errorName="form.check_number"
                 name="check_number"
                 text="Check Number"
@@ -56,4 +58,3 @@
         </div>
     </div>
 </div>
-{{-- <form> --}}

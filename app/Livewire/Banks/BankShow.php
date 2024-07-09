@@ -55,11 +55,11 @@ class BankShow extends Component
         curl_close($ch);
 
         $result = json_decode($exchangeToken, true);
-        // dd($result);
 
         //open Plaid Link Modal.
             //script file in banks.show.blade file.
         $this->dispatch('linkTokenUpdate', $result['link_token']);
+        //after dispatch run TransactionController@plaid_item_status
     }
 
     #[Title('Bank')]

@@ -192,8 +192,8 @@
 
             {{-- CHECK --}}
             <div
-                x-data="{ open: @entangle('form.paid_by'), openproject: @entangle('form.project_id'), splits: @entangle('splits') }"
-                x-show="(openproject || splits) && !open"
+                x-data="{ open: @entangle('form.paid_by'), project_id: @entangle('form.project_id'), splits: @entangle('splits') }"
+                x-show="(project_id || splits) && !open"
                 x-transition
                 >
 

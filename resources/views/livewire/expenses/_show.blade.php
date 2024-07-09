@@ -243,7 +243,7 @@
 			</x-cards.heading>
 
 			<x-lists.ul>
-				@foreach($splits as $split)
+				@foreach($expense->splits as $split)
 					@php
 						$line_details = [
 							1 => [

@@ -7,7 +7,7 @@ use App\Models\Distribution;
 use App\Models\Expense;
 use App\Models\ExpenseSplits;
 
-// use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rule;
 // use Livewire\Attributes\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -52,13 +52,13 @@ class ExpenseForm extends Form
     public $paid_by = NULL;
 
     // required_without:form.paid_by
-    #[Validate]
+    #[Validate('required_without:paid_by', as: 'bank account')]
     public $bank_account_id = NULL;
 
-    #[Validate('required_with:bank_account_id')]
+    #[Validate('required_with:bank_account_id', as: 'type')]
     public $check_type = NULL;
 
-    #[Validate('required_if:check_type,Check')]
+    // #[Validate('required_if:check_type,Check')]
     public $check_number = NULL;
 
     // #[Validate]
@@ -72,6 +72,26 @@ class ExpenseForm extends Form
     // #[Validate]
     public $receipt_file = NULL;
 
+    public function rules()
+    {
+        return [
+            'check_number' => [
+                'required_if:check_type,Check',
+                'nullable',
+                'numeric',
+
+                //ignore if vendor_id of Check is same as request()->vendor_id
+                // ->ignore($this->check),
+                Rule::unique('checks', 'check_number')->where(function ($query) {
+                    //->where('vendor_id', '!=', $this->expense->vendor_id)
+
+                    //where per vendor bank_account ... all bank accounts that have the inst ID
+                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->bank_account_id);
+                }),
+                // ->ignore($this->check),
+            ],
+        ];
+    }
     // public function rules()
     // {
     //     return [
@@ -215,6 +235,10 @@ class ExpenseForm extends Form
             $this->bank_account_id = $this->expense->check->bank_account_id;
             $this->check_type = $this->expense->check->check_type;
             $this->check_number = $this->expense->check->check_number;
+            $this->transaction = TRUE;
+            // if(!$this->expense->check->transactions->isEmpty()){
+            //     $this->transaction = TRUE;
+            // }
         }
 
         //09-05-2023 need to get the file extention here... not a boolen
@@ -441,7 +465,8 @@ class ExpenseForm extends Form
         ]);
 
         if($this->transaction){
-            $this->transaction->expense_id = $expense->id;
+            $this->transaction->check_id = $check->id;
+            // $this->transaction->expense_id = $expense->id;
             $this->transaction->save();
         }
 

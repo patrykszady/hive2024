@@ -1761,8 +1761,23 @@ class ReceiptController extends Controller
             $subtotal = NULL;
         }
 
+        //ITEMS
         if(isset($ocr_receipt_extract_prefix['Items'])){
             $items = $ocr_receipt_extract_prefix['Items']['valueArray'];
+
+            foreach($items as $key => $line_item){
+                if(isset($line_item['valueObject']['Quantity'])){
+                    $quantity = $line_item['valueObject']['Quantity']['valueNumber'];
+                    $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
+                    $total_price = $line_item['valueObject']['TotalPrice']['valueNumber'];
+                    $line_item_total = $quantity * $line_item_price;
+
+                    if($line_item_total != $total_price){
+                        $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $line_item_total;
+                        // $line_item['valueObject']['TotalPrice']['content'] = $line_item_total;
+                    }
+                }
+            }
         }else{
             $items = NULL;
         }
@@ -1846,7 +1861,7 @@ class ReceiptController extends Controller
                         //file decoded
                         $contents = base64_decode($content_bytes);
                         Storage::disk('files')->put('/receipts/' . $filename_attached, $contents);
-    
+
                         //SAVE expense_receipt_data for each attachment
                         $expense_receipt = new ExpenseReceipts;
                         $expense_receipt->expense_id = $expense_id;

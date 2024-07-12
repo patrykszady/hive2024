@@ -15,7 +15,9 @@
                 <livewire:vendors.vendor-details :vendor="$vendor">
             </div>
 
-            <livewire:checks.checks-index :vendor="$vendor->id" :view="'vendors.show'" lazy />
+            @if($vendor->business_type != 'Retail')
+                <livewire:checks.checks-index :vendor="$vendor->id" :view="'vendors.show'" lazy />
+            @endif
         </div>
 
         {{-- VENDOR TEAM MEMBERS --}}

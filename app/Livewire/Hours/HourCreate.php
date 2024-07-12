@@ -50,7 +50,7 @@ class HourCreate extends Component
     public function mount()
     {
         $this->selectedDate(today()->format('Y-m-d'));
-        $this->other_projects = Project::whereNotIn('id', $this->projects->pluck('id'))->orderBy('created_at', 'DESC')->get();        
+        $this->other_projects = Project::whereNotIn('id', $this->projects->pluck('id'))->orderBy('created_at', 'DESC')->get();
 
         $confirmed_weeks =
             Timesheet::
@@ -118,17 +118,17 @@ class HourCreate extends Component
         if(!is_null($day_index)){
             $this->day_index = $day_index;
             $new_date = $this->days[$day_index];
-            
+
             $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $new_date['format'])->get();
             $has_hours = $user_day_hours->isEmpty() ? FALSE : TRUE;
             $this->days[$day_index]['has_hours'] = $has_hours;
-        }        
+        }
 
         //if current User doesnt have any hours for this date let them add new project, if they do let them edit if not yet paid (or timesheet created)
         $this->selected_date = Carbon::parse($date);
         $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $this->selected_date->format('Y-m-d'))->get();
         $projects = Project::status(['Active', 'Service Call']);
-        $planner_projects_day = 
+        $planner_projects_day =
             Task::where('user_id', auth()->user()->id)->whereNotNull('start_date')
                 ->whereNotIn('project_id', $projects->pluck('id')->toArray())
                 ->whereDate('start_date', '>=', $this->selected_date->format('Y-m-d'))
@@ -141,7 +141,7 @@ class HourCreate extends Component
         $merged_projects = $projects->merge($other_projects);
         $merged_projects = $merged_projects->merge($planner_projects_day);
 
-        $this->projects = 
+        $this->projects =
             Project::whereIn('id', $merged_projects->pluck('id')->toArray())->with(['tasks' => function($query) {
                     //CarbonPeriod between each task->start and end_date ... if $this->selected_date->format('Y-m-d') is between Carbon Period
                     $query->where('user_id', auth()->user()->id)->whereNotNull('start_date')
@@ -155,9 +155,9 @@ class HourCreate extends Component
                         });
                 }])
                 ->get()
-                ->sortByDesc('last_status.start_date')
+                ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']])
                 ->keyBy('id');
-        
+
         foreach($this->day_project_tasks as $project_id => $project_tasks){
             foreach($project_tasks as $task_id => $task){
                 if(in_array($this->selected_date->format('Y-m-d'), $task['dates'])){
@@ -210,9 +210,9 @@ class HourCreate extends Component
         }else{
             $project = $this->other_projects->where('id', $this->new_project_id);
             $this->projects->add($project->first());
-    
+
             $this->form->projects[] = $project->first()->toArray();
-    
+
             $this->other_projects->forget($project->keys()->first());
             $this->new_project_id = NULL;
             $this->render();
@@ -244,7 +244,7 @@ class HourCreate extends Component
         // }
         $this->form->update();
         $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
-        
+
         $this->dispatch('notify',
             type: 'success',
             content: 'Hours Updated'

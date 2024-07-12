@@ -15,6 +15,8 @@ use App\Livewire\CompanyEmails\CompanyEmailsIndex;
 // use App\Livewire\CompanyEmails\CompanyEmailsForm;
 
 // use App\Livewire\Users\UsersShow;
+use App\Livewire\Test\Playground;
+use App\Livewire\Test\Sorting;
 
 use App\Livewire\Vendors\VendorsIndex;
 use App\Livewire\Vendors\VendorPaymentCreate;
@@ -156,7 +158,9 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     //DASHBOARD/ PRIMARY VENDOR
     Route::get('/dashboard', DashboardShow::class)->name('dashboard');
 
-
+    //TESTS
+    Route::get('/test/playground', Playground::class)->name('test.playground');
+    Route::get('/test/sorting', Sorting::class)->name('test.sorting');
     //USERS
     // Route::get('/users/{user}', UsersShow::class)->name('users.show');
         //Log In As User for Admins (User id # 1 right now only)

@@ -105,7 +105,7 @@ class ExpenseSplitsCreate extends Component
         $receipt = $expense->receipts()->latest()->first();
 
         //!is_null($receipt->receipt_items->items
-        if(!is_null($receipt) && !is_null($receipt->receipt_items)){
+        if(!is_null($receipt) && !is_null($receipt->receipt_items->items)){
             $this->expense_line_items = $receipt->receipt_items;
 
             $items = [];
@@ -177,7 +177,7 @@ class ExpenseSplitsCreate extends Component
     }
 
     public function removeSplit($index)
-    {        
+    {
         $split_checked_items = collect($this->expense_splits[$index]['items'])->where('checkbox', TRUE)->keys();
         foreach($split_checked_items as $item_index){
             $this->expense_line_items->items[$item_index]->split_index = NULL;

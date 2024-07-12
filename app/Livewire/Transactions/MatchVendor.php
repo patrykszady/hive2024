@@ -67,8 +67,9 @@ class MatchVendor extends Component
 
     public function store_expense_vendors()
     {
-        $this->validate();
         // $this->authorize('create', Expense::class);
+        $this->validate();
+
         foreach($this->match_expense_merchant_names as $key => $vendor_match){
             if($vendor_match['vendor_id'] == "NEW"){
                 //new Retail Vendor
@@ -78,12 +79,15 @@ class MatchVendor extends Component
                 ]);
 
                 $vendor_id = $vendor->id;
+                foreach($this->expense_receipt_merchants[$vendor_match['match_desc']] as $expense){
+                    $expense->vendor_id = $vendor_id;
+                    $expense->save();
+                }
             }else{
                 $deposit_check = NULL;
                 $vendor_id = $vendor_match['vendor_id'];
 
                 $institution_id = NULL;
-
                 $options = json_encode('/i');
 
                 $vendor_transaction = VendorTransaction::create([

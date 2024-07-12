@@ -99,7 +99,6 @@
                         >
                         {{ $slot }}
                     </select>
-
                 @elseif($type === 'file')
                     <input
                         type="{{ $type }}"
@@ -108,7 +107,6 @@
                         class="{{ $input_classes }} py-2 px-4 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         {{ $attributes() }}
                     >
-
                 @elseif($type === 'button')
                     <button
                         type="button"
@@ -119,7 +117,6 @@
                         >
                         {{ $buttonText }}
                     </button>
-
                 @elseif($type === 'radio')
                     <fieldset>
                         <legend class="sr-only">

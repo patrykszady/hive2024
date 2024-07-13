@@ -10,13 +10,6 @@ class Playground extends Component
     public $clients = [];
     public $client_id = NULL;
 
-    public function rules()
-    {
-        return [
-            'client_id' => 'nullable',
-        ];
-    }
-
     public function mount()
     {
         $this->clients = Client::all();
@@ -31,13 +24,9 @@ class Playground extends Component
         // dd($this);
     }
 
-    // public function selected()
-    // {
-    //     dd($this);
-    // }
-
     public function render()
     {
+        //7-12-2024 move to middleware / previous onion layer
         if(auth()->user()->id === 1){
             return view('livewire.test.playground');
         }else{

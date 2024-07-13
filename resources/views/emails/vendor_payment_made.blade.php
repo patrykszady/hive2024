@@ -15,12 +15,5 @@ Check Total <b>{{money($check->amount)}}</b><br>
 <br>
 @endforeach
 </x-mail::panel>
-<x-mail::subcopy>
-{{$paying_vendor->name}} uses <a href="https://dashboard.hive.contractors">Hive Contractors</a> to manage projects in one place. <b>Finances, Estimates, Timesheets, Schedules</b>, and so much more.
-<br>
-Join <a href="https://dashboard.hive.contractors">Hive Contractors</a> to connect with {{$paying_vendor->name}} today to manage your construction projects, better, together.
-</x-mail::subcopy>
-<x-mail::button :url="'https://dashboard.hive.contractors'">
-Create Your Hive
-</x-mail::button>
+@include('emails.top_footer', ["sending_vendor" => $paying_vendor->name])
 </x-mail::message>

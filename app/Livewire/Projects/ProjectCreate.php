@@ -16,8 +16,11 @@ class ProjectCreate extends Component
     use AuthorizesRequests;
 
     public ProjectForm $form;
-
     public Project $project;
+    public $clients = [];
+    public $existing_client = NULL;
+    public $client_addresses = [];
+    public $showModal = FALSE;
 
     public $view_text = [
         'card_title' => 'Create Project',
@@ -25,17 +28,11 @@ class ProjectCreate extends Component
         'form_submit' => 'save',
     ];
 
-    public $clients = [];
-    public $existing_client = NULL;
-    public $client_addresses = [];
-
-    public $showModal = FALSE;
-
     protected $listeners = ['newProject', 'editProject'];
 
     public function mount()
     {
-        $this->clients = Client::all();
+        $this->clients = Client::orderBy('created_at', 'DESC')->get();
     }
 
     public function updated($field, $value)
@@ -122,7 +119,7 @@ class ProjectCreate extends Component
         }else{
             $this->form->client_id = $this->existing_client->id;
             $this->client_addresses = $this->existing_client->projects;
-            
+
             if($this->client_addresses->isEmpty()){
                 $this->client_addresses =
                     collect([

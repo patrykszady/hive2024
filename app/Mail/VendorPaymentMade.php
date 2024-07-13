@@ -47,7 +47,7 @@ class VendorPaymentMade extends Mailable
     public function envelope()
     {
         return new Envelope(
-            from: new Address('support@hive.contractors', 'Hive Contractors'),
+            // from: new Address('support@hive.contractors', 'Hive Contractors'),
             subject: $this->paying_vendor->name . ' Payment',
         );
     }

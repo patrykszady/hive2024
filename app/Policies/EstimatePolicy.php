@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Models\Estimate;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
@@ -35,9 +36,14 @@ class EstimatePolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(User $user): bool
+    public function create(User $user, Project $project): bool
     {
-        //
+        //can create if project->last_status is NOT X Y and Z
+        if($user->primary_vendor->pivot->role_id == 1 && !in_array($project->last_status->title, ['Active', 'Complete', 'Service Call', 'Service Call Complete', 'Cancelled', 'VIEW_ONLY'])){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**

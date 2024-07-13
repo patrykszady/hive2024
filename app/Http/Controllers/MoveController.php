@@ -27,6 +27,9 @@ use App\Models\Receipt;
 use App\Models\ReceiptAccount;
 use App\Models\Bid;
 
+use App\Mail\TestMail;
+use Illuminate\Support\Facades\Mail;
+
 use Carbon\Carbon;
 
 use Illuminate\Http\Request;
@@ -45,6 +48,7 @@ class MoveController extends Controller
         // {
         //     $split->forceDelete();
         // }
+        Mail::to('szady81@gmail.com')->send(new TestMail());
 
         dd('done');
 

@@ -31,15 +31,17 @@
         "log1x/laravel-webfonts": "^1.0",
         "microsoft/microsoft-graph": "^1.85",
         "nesbot/carbon": "^2.66",
+        "nyholm/psr7": "*",
         "opcodesio/log-viewer": "^3.1",
         "php-webdriver/webdriver": "^1.14",
+        "railsware/mailtrap-php": "*",
         "regulus/tetra-text": "^0.6.16",
         "rmunate/spell-number": "^4.1",
         "setasign/fpdf": "1.8.*",
         "setasign/fpdi": "^2.0",
         "spatie/browsershot": "^3.59",
         "spatie/image": "^2.2",
-        "symfony/http-client": "^6.2",
+        "symfony/http-client": "*",
         "symfony/mailgun-mailer": "^6.2",
         "symfony/panther": "^2.0",
         "twilio/sdk": "^6.44",
@@ -103,7 +105,10 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
-        "process-timeout": 0
+        "process-timeout": 0,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true

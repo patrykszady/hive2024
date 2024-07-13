@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html class="h-full bg-gray-50" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    {{-- HEAD --}}
     @include('components.layouts.head')
-    {{-- class="font-sans antialiased" --}}
-    <body class="h-full">
+
+    {{-- BODY --}}
+    <body class="h-full font-sans antialiased">
         <div x-cloak x-data="{ sidebarOpen: false }" @keydown.window.escape="sidebarOpen = false">
             <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
             <div x-show="sidebarOpen" class="relative z-30 lg:hidden" role="dialog" aria-modal="true">
@@ -101,14 +103,11 @@
             </div>
 
             <main class="py-10 lg:pl-72">
-                <div class="px-4 sm:px-6 lg:px-8">
+                <div class="px-2 lg:px-8">
                     {{ $slot }}
                     @include('components.notify')
                 </div>
             </main>
         </div>
-
-        @livewireScripts
-        <script src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
     </body>
 </html>

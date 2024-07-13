@@ -91,13 +91,17 @@
                             <h1>Project Estimates</b></h1>
                         </x-slot>
 
-                        <x-slot name="right">
-                            <x-cards.button
-                                href="{{route('estimates.create', $project->id)}}"
-                                >
-                                Create Estimate
-                            </x-cards.button>
-                        </x-slot>
+                        @can('create', [App\Models\Estimate::class, $project])
+                            <x-slot name="right">
+                                <x-cards.button
+                                    href="{{route('estimates.create', $project->id)}}"
+                                    {{-- wire:click="$dispatch('estimate.create')" --}}
+                                    >
+                                    Create Estimate
+                                </x-cards.button>
+                            </x-slot>
+                            {{-- <livewire:estimates.estimate-create :project="$project" /> --}}
+                        @endcan
                     </x-cards.heading>
                     <x-cards.body>
                         <x-lists.ul>

@@ -2,14 +2,12 @@
 Hello,
 <br>
 On behalf of <b>{{$vendor->business_name}}</b> we are requesting new certificates of insurance for the following policies that have expired. Please contact the insured directly if needed.
-
 <h3>Expired Policies:</h3>
 <x-mail::panel>
 @foreach($agent_expired_docs as $agent_expired_doc)
 <b>{{$agent_expired_doc->type}}</b> | {{$agent_expired_doc->expiration_date->format('m/d/Y')}}<br>
 @endforeach
 </x-mail::panel>
-
 <h3>Certificate Holder:</h3>
 <x-mail::panel>
 <b>{{$requesting_vendor->business_name}}</b>
@@ -22,15 +20,5 @@ On behalf of <b>{{$vendor->business_name}}</b> we are requesting new certificate
 <br>
 {{$requesting_vendor->city}}, {{$requesting_vendor->state}} {{$requesting_vendor->zip_code}}
 </x-mail::panel>
-
-<x-mail::subcopy>
-Contractors: Join <a href="https://dashboard.hive.contractors/">Hive Contractors</a> today to flawlessly manage your construction projects, see more details for this payment, add bids, and so much more!<br>
-Call Patryk 224-999-3880 to setup for free!
-</x-mail::subcopy>
-<x-mail::button :url="'https://dashboard.hive.contractors'">
-Join Hive
-</x-mail::button>
-Thank you,<br>
-Patryk<br>
-<a href="https://dashboard.hive.contractors">Hive Contractors</a>
+@include('emails.top_footer', ["sending_vendor" => $requesting_vendor->name])
 </x-mail::message>

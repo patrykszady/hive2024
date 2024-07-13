@@ -28,7 +28,7 @@
     }"
     class="max-w-xs w-full"
     >
-    <div x-combobox wire:model.live="client_id" >
+    <div x-combobox wire:model.live="client_id">
         <div class="mt-1 relative rounded-md focus-within:ring-2 focus-within:ring-indigo-500">
             <div class="flex items-center justify-between gap-2 w-full bg-white pl-5 pr-3 py-2.5 rounded-md shadow">
                 <input

@@ -35,7 +35,8 @@
     {{-- @preloadFonts --}}
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
+    @vite('resources/css/app.css')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     {{-- @livewireStyles --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css"> --}}
@@ -68,12 +69,10 @@
     <!-- Alpine Plugins -->
     <script defer src="https://unpkg.com/@alpinejs/ui@3.14.1-beta.0/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@alpinejs/focus@3.14.1/dist/cdn.min.js"></script>
-    {{-- <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script> --}}
-
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.1/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
+    {{-- <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script> --}}
 
-    <!-- https://www.chartjs.org/ -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
     {{-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> --}}
     {{-- @stack('custom_styles') --}}

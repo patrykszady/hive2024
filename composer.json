@@ -15,7 +15,6 @@
         "blade-ui-kit/blade-icons": "*",
         "dcblogdev/laravel-microsoft-graph": "^3.2",
         "doctrine/dbal": "^3.5",
-        "google/apiclient": "^2.15",
         "guzzlehttp/guzzle": "^7.0.1",
         "h4cc/wkhtmltoimage-amd64": "0.12.x",
         "h4cc/wkhtmltopdf-amd64": "0.12.x",
@@ -50,7 +49,6 @@
         "weidner/goutte": "^2.2",
         "zoon/puphpeteer": "^2.1"
     },
-
     "require-dev": {
         "dbrekelmans/bdi": "^1.0",
         "fakerphp/faker": "^1.9.1",
@@ -75,7 +73,7 @@
     },
     "scripts": {
         "pre-autoload-dump": [
-            "Google\\Task\\Composer::cleanup"
+
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -94,12 +92,7 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        },
-        "google/apiclient-services": [
-            "Drive",
-            "Oauth2",
-            "Gmail"
-        ]
+        }
     },
     "config": {
         "optimize-autoloader": true,

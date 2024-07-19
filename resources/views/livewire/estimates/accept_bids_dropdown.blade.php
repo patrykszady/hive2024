@@ -13,7 +13,7 @@
             @foreach($bids as $bid_index => $bid)
                 <option
                     value="{{$bid_index}}"
-                    x-bind:disabled="{{$bid->estimate_sections->isEmpty() && $bid->amount != 0.00}}"
+                    {{-- x-bind:disabled="{{$bid->estimate_sections->isEmpty() && $bid->amount != 0.00}}" --}}
                     >
                     {{$bid->name}}
                 </option>

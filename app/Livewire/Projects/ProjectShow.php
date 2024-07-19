@@ -64,7 +64,7 @@ class ProjectShow extends Component
         $location = storage_path('files/reimbursements/' . $title_file . '.pdf');
 
         Browsershot::html($view)
-            // ->newHeadless()
+            ->newHeadless()
             ->scale(0.8)
             ->showBrowserHeaderAndFooter()
             ->showBackground()

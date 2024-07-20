@@ -8,11 +8,10 @@ use App\Models\Check;
 use App\Models\BankAccount;
 
 use App\Jobs\SendVendorPaymentEmailJob;
+use App\Livewire\Forms\VendorPaymentForm;
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
-
-use App\Livewire\Forms\VendorPaymentForm;
 
 use Carbon\Carbon;
 
@@ -36,6 +35,7 @@ class VendorPaymentCreate extends Component
     public $bank_accounts = [];
     public $payment_projects = [];
     public $saved_expenses = [];
+    public $disable_paid_by = FALSE;
 
     public $view_text = [
         'card_title' => 'Create Vendor Payments',
@@ -63,23 +63,23 @@ class VendorPaymentCreate extends Component
         // $projects = Project::active()->orderBy('created_at', 'DESC')->get();
         //whereNotIn('id', $existing_projects)
 
-        // $vendor_id = $this->vendor->id;
         $this->projects =
             Project::where('created_at', '>', Carbon::now()->subYears(2)->format('Y-m-d'))
-                ->status(['Active', 'Complete', 'Service Call', 'Service Call Complete'])->sortByDesc('last_status.start_date')
+                ->status(['Active', 'Complete', 'Service Call', 'Service Call Complete'])
+                ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']])
                 // ->with(['expenses' => function ($query) {
                 //     return $query->where('vendor_id', '4');
                 //     }])
                 // ->get()
                 ->each(function ($item, $key) {
                     $item->show = false;
+                    $item->name = $item->name;
+                    $item->disabled = FALSE;
                 })
                 ->keyBy('id');
 
         $this->form->date = today()->format('Y-m-d');
-
         $this->employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
-
         $this->bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
             ->whereHas('bank', function ($query) {
                 return $query->whereNotNull('plaid_access_token');
@@ -129,12 +129,14 @@ class VendorPaymentCreate extends Component
     {
         $this->validateOnly('project_id');
 
-        $project = $this->projects[$this->project_id];
-        $project->show = true;
+        $project = $this->projects[$this->project_id['id']];
+        $project->show = TRUE;
+        $project->disabled = TRUE;
         $project->vendor_expenses_sum = $project->expenses()->where('vendor_id', $this->vendor->id)->sum('amount');
         $project->vendor_bids_sum = $project->bids()->vendorBids($this->vendor->id)->sum('amount');
         $project->balance = $project->vendor_bids_sum - $project->vendor_expenses_sum;
 
+        // $this->projects->reload();
         $this->project_id = "";
     }
 
@@ -146,9 +148,7 @@ class VendorPaymentCreate extends Component
         $this->updateProjectBalance($project_id);
 
         // $this->payment_projects[$project_id]['bids'] = Project::findOrFail($project_id)->bids()->vendorBids($this->vendor->id)->sum('amount');
-
         // $balance = $this->payment_projects[$project_id]['bids'] - $this->payment_projects[$project_id]['vendor_sum'];
-
         // $this->payment_projects[$project_id]['balance'] = $balance;
     }
 

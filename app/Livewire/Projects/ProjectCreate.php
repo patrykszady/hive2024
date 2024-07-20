@@ -41,7 +41,7 @@ class ProjectCreate extends Component
         if($field == 'form.client_id'){
             if($value){
                 $this->resetAddress();
-                $client = $this->clients->where('id', $value)->first();
+                $client = $this->clients->where('id', $value['id'])->first();
                 $this->client_addresses = $client->projects;
 
                 if($this->client_addresses->isEmpty()){

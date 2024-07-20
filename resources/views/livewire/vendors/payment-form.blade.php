@@ -1,10 +1,10 @@
 <div>
     <form wire:submit="{{$view_text['form_submit']}}">
         <x-page.top
-            h1="{{$vendor->business_name}} Payment"
+            h1="{{$vendor->name}} Payment"
             p="Vendor Payment for {{$vendor->business_name}}"
-            right_button_href="{{route('vendors.show', $vendor->id)}}"
-            right_button_text="Vendor"
+            {{-- right_button_href="{{route('vendors.show', $vendor->id)}}"
+            right_button_text="Vendor" --}}
             >
         </x-page.top>
 
@@ -14,7 +14,7 @@
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1>Vendor Payment</h1>
-                            <p class="text-gray-500"><i>Choose Projects to add for {{$vendor->business_name}} in this Payment</i></p>
+                            <p class="text-gray-500"><i>Choose Projects to add for {{$vendor->name}} in this Payment</i></p>
                         </x-slot>
                     </x-cards.heading>
 
@@ -55,7 +55,7 @@
                         </x-slot>
                     </x-cards.heading>
 
-                    <x-cards.body :class="'space-y-2 my-2'">
+                    <x-cards.body :class="'space-y-2 my-2 pb-2'">
                         <x-forms.row
                             wire:model.live="project_id"
                             wire:target="addProject"
@@ -64,13 +64,15 @@
                             errorName="project_id"
                             name="project_id"
                             text="Project"
-                            type="dropdown"
+                            type="new_dropdown"
+                            :options="$this->projects->where('show', false)"
                             >
 
-                            <option value="" disabled>Select Project</option>
-                            @foreach ($projects->where('show', false) as $project)
+
+                            {{-- <option value="" disabled>Select Project</option> --}}
+                            {{-- @foreach ($projects->where('show', false) as $project)
                                 <option value="{{$project->id}}">{{$project->name}}</option>
-                            @endforeach
+                            @endforeach --}}
                         </x-forms.row>
 
                         <x-forms.row
@@ -105,7 +107,7 @@
                         </x-cards.heading>
 
                         {{-- ROWS --}}
-                        <x-cards.body :class="'space-y-2 my-2'">
+                        <x-cards.body :class="'space-y-2 my-2 pb-2'">
                             {{-- VENDOR BIDS --}}
                             <x-forms.row
                                 wire:model.live="projects.{{$project_id}}.vendor_bids_sum"

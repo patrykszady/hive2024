@@ -6,7 +6,7 @@
     ])
 
 <div
-    {{ $attributes->merge(['class' => 'px-4 pb-5 mx-auto mb-1 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:px-8']) }}>
+    {{ $attributes->merge(['class' => 'px-4 pb-5 mx-auto mb-1 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:px-8 max-w-5xl']) }}>
     <div class="flex items-center space-x-5">
         {{-- LEFT IMAGE --}}
         {{-- <div class="flex-shrink-0">

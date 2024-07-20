@@ -7,9 +7,9 @@
     >
 </x-forms.row>
 
-{{-- Paid by --}}
+{{-- PAID BY --}}
 <div
-    {{-- 'disable' entangle only used on TimesheetPaymentCreate, Console Error otherwire (Vendors Payment) --}}
+    {{-- 7-19-2024 'disable' entangle only used on TimesheetPaymentCreate, Console Error otherwire (Vendors Payment) --}}
     x-data="{ disable: @entangle('disable_paid_by') }"
     >
     <x-forms.row

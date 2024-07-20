@@ -1,4 +1,4 @@
-<div class="items-center justify-between px-6 py-3 border-t border-gray-200 bg-gray-50 lg:flex">
+<div class="items-center justify-between px-6 py-3 border-t border-gray-200 bg-gray-50 lg:flex rounded-b-lg">
     {{-- sm:flex-1 sm:flex sm:items-center sm:justify-between --}}
     <div class="flex items-center justify-between flex-1">
         {{$slot}}

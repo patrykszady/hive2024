@@ -13,7 +13,8 @@
     'buttonClick' => null,
     'bottom' => null,
     'hint_dropdown' => null,
-    'label_text_color_custom' => null
+    'label_text_color_custom' => null,
+    'options' => null
 ])
 
 @php
@@ -67,9 +68,12 @@
             {{-- 08-26-202X inline --}}
             @if($type === 'radio' || $type === 'radiogroup')
                 <div>
-            @else
+            @elseif($hint)
                 <div class="flex max-w-lg rounded-md shadow-sm">
+            @else
+                <div class="rounded-md shadow-sm">
             @endif
+
                 @if($hint)
                     <span
                         class="cursor-default inline-flex items-center px-3 rounded-l-md border border-r-0 border-{{$label_text_color}}-300 bg-{{$label_text_color}}-50 text-{{$label_text_color}}-500 sm:text-sm"
@@ -259,8 +263,90 @@
                         class="{{ $input_classes }}"
                         {{ $attributes() }}
                     >
-                {{-- @elseif($type === 'date_picker') --}}
+                @elseif($type === 'new_dropdown')
+                    <div
+                        x-data="{
+                            query: '',
+                            selected: null,
+                            items: [
+                                @foreach($options as $option)
+                                    {
+                                        id: {{$option->id}},
+                                        name: '{{$option->name}}',
+                                        disabled: '{{$option->disabled}}',
+                                    },
+                                @endforeach
+                            ],
+                            get filteredItems() {
+                                return this.query === ''
+                                    ? this.items
+                                    : this.items.filter((item) => {
+                                    return item.name.toLowerCase().includes(this.query.toLowerCase())
+                                })
+                            },
+                        }"
+                        x-modelable="selected"
+                        >
 
+                        <div x-combobox wire:model.live="{{$name}}" by="id">
+                            <div class="mt-1 relative rounded-md focus-within:ring-2 focus-within:ring-indigo-500">
+                                {{--  {{ $input_classes }} --}}
+                                <div class="flex px-4 py-2 items-center justify-between w-full rounded-md border border-gray-300 hover:bg-gray-50">
+                                    <input
+                                        x-combobox:input
+                                        :display-value="item => item?.name"
+                                        @change="query = $event.target.value;"
+                                        class="focus:outline-none w-11/12 bg-transparent"
+                                        placeholder="Select {{$text}}"
+                                    />
+
+                                    <button
+                                        x-combobox:button
+                                        type="button"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-2"
+                                        >
+                                        <!-- Heroicons up/down -->
+                                        <svg class="shrink-0 w-5 h-5 text-gray-500" viewBox="0 0 20 20" fill="none" stroke="currentColor"><path d="M7 7l3-3 3 3m0 6l-3 3-3-3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                    </button>
+                                </div>
+
+                                <div
+                                    x-combobox:options
+                                    x-cloak
+                                    class="absolute left-0 w-full max-h-60 bg-white mt-1 z-10 origin-top-right shadow-lg overflow-auto border border-gray-200 rounded-md outline-none"
+                                    x-transition.out.opacity
+                                    >
+                                    <ul class="divide-y divide-gray-100">
+                                        <template
+                                            x-for="item in filteredItems"
+                                            :key="item.id"
+                                            hidden
+                                            >
+                                            <li
+                                                x-combobox:option
+                                                :value="item"
+                                                :disabled="item.disabled"
+                                                :class="{
+                                                    'text-indigo-600 font-bold': $comboboxOption.isSelected,
+                                                    'bg-indigo-600 bg-opacity-10 text-indigo-600 font-bold': $comboboxOption.isActive,
+                                                    'text-gray-600': ! $comboboxOption.isActive,
+                                                    'opacity-50 cursor-not-allowed': $comboboxOption.isDisabled,
+                                                }"
+                                                class="flex items-center cursor-default justify-between gap-2 w-full px-4 py-2 text-sm"
+                                                >
+                                                <span x-text="item.name"></span>
+                                                <span x-show="$comboboxOption.isSelected" class="text-indigo-600 font-bold">&check;</span>
+                                            </li>
+                                        </template>
+                                    </ul>
+
+                                    <p x-show="filteredItems.length == 0" class="px-4 py-2 text-sm text-gray-600 w-full">{{$text}} not found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {{-- @elseif($type === 'date_picker') --}}
                 @else
                     <input
                         type="{{ $type }}"

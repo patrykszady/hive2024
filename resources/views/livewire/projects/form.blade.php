@@ -17,18 +17,14 @@
                     <x-forms.row
                         wire:model.live="form.client_id"
                         errorName="form.client_id"
-                        name="client_id"
+                        name="form.client_id"
                         text="Client"
-                        type="dropdown"
-                        {{-- :disabled="isset($view) ? true : false " --}}
-                        {{-- x-bind:disabled="!vendor_id_disabled || business_type_disabled == '1099'" --}}
-                        x-bind:disabled="existing_client"
+                        type="new_dropdown"
+                        placeholder="Select Client"
+                        :options="$this->clients"
+                        {{-- :dropdown_options="{{$clients->toArray()}}" --}}
+                        {{-- x-bind:disabled="existing_client" --}}
                         >
-
-                        <option value="" readonly>Select Client</option>
-                        @foreach ($clients as $client)
-                            <option value="{{$client->id}}" {{isset($client->vendor_id) ? 'disabled' : ''}}>{{$client->name}}</option>
-                        @endforeach
                     </x-forms.row>
                 </div>
 
@@ -59,7 +55,7 @@
                         {{-- x-bind:disabled="!vendor_id_disabled || business_type_disabled == '1099'" --}}
                         >
                         <option value="" readonly>Select Address</option>
-                        @foreach($client_addresses as $project_address)
+                        @foreach($this->client_addresses as $project_address)
                             @if(isset($project_address->id))
                                 <option value="{{$project_address->id}}" selected>{{$project_address->address}}</option>
                             @else

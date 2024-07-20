@@ -12,8 +12,10 @@
     <div class="relative flex items-center justify-center min-h-screen p-4">
         <div
             {{-- x-dialog:panel --}}
-            x-transition.in x-transition.out.opacity
-            class="relative w-full max-w-2xl overflow-y-auto bg-white shadow-lg rounded-xl"
+            x-transition.in
+            x-transition.out.opacity
+            {{-- overflow-y-auto --}}
+            class="relative w-full max-w-2xl bg-white shadow-lg rounded-xl"
             >
             <!-- Close Button -->
 

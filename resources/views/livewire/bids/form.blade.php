@@ -37,7 +37,6 @@
                             >
                             <x-slot name="radio">
                                 <input
-                                    {{-- wire:click="$dispatch('removeChangeOrder', { index: {{$bid_index}} })" --}}
                                     wire:click="removeChangeOrder({{$bid_index}})"
                                     id="remove{{$bid_index}}"
                                     name="remove"

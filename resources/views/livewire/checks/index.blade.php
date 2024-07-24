@@ -1,4 +1,4 @@
-<x-cards.wrapper class="{{$view == NULL ? 'max-w-xl px-4 pb-5 mb-1 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-3xl lg:px-8' : ''}}">
+<x-cards class="{{$view == NULL ? 'max-w-xl px-4 pb-5 mb-1 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-3xl lg:px-8' : ''}}">
     {{-- HEADING --}}
     <x-cards.heading>
         <x-slot name="left">
@@ -213,4 +213,4 @@
         theme --}}
         {{ $checks->links() }}
     </x-cards.footer>
-</x-cards.wrapper>
+</x-cards>

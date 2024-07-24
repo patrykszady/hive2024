@@ -1,5 +1,5 @@
 {{-- PROJECT LIFESPAN / STATUS --}}
-<x-cards.wrapper>
+<x-cards>
     <x-cards.heading>
         <x-slot name="left">
             <h1>Project Lifespan</b></h1>
@@ -111,4 +111,4 @@
             <x-forms.error errorName="project_status"/>
         </ul>
     </x-cards.body>
-</x-cards.wrapper>
+</x-cards>

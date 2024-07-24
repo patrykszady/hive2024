@@ -1,6 +1,6 @@
 <x-modals.modal>
     <form wire:submit="{{$view_text['form_submit']}}">
-        <x-cards.wrapper class="max-w-2xl mx-auto">
+        <x-cards class="max-w-2xl mx-auto">
             {{-- HEADER --}}
             <x-cards.heading>
                 <x-slot name="left">
@@ -310,6 +310,6 @@
                     </button>
                 </div>
             </x-cards.footer>
-        </x-cards.wrapper>
+        </x-cards>
     </form>
 </x-modals.modal>

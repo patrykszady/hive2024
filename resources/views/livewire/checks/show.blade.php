@@ -9,7 +9,7 @@
 
     <div class="grid max-w-xl grid-cols-4 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
-            <x-cards.wrapper>
+            <x-cards>
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Check Details</h1>
@@ -78,11 +78,11 @@
                         @endif
                     </x-lists.ul>
                 </x-cards.body>
-            </x-cards.wrapper>
+            </x-cards>
 
             {{-- CHECK TRANSACTIONS --}}
             @if(!$check->transactions->isEmpty())
-                <x-cards.wrapper>
+                <x-cards>
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1>Transactions</h1>
@@ -117,14 +117,14 @@
                             </x-lists.search_li>
                         @endforeach
                     </x-lists.ul>
-                </x-cards.wrapper>
+                </x-cards>
             @endif
         </div>
 
         <div class="col-span-4 space-y-2 lg:col-span-2">
             {{-- THIS CHECK USER PAID TIMESHEETS --}}
             @if(!$weekly_timesheets->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1><b>{{$check->user->first_name}}</b> Timesheets</h1>
@@ -176,12 +176,12 @@
                         @endforeach
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
 
             {{-- THIS CHECK USER PAID EMPLOYEE TIMESHEETS --}}
             @if(!$employee_weekly_timesheets->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Employee Paid Timesheets</h1>
@@ -240,7 +240,7 @@
                         @endforeach
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
 
             {{-- THIS CHECK VENDOR PAID EXPENSES --}}
@@ -267,7 +267,7 @@
 
             {{-- THIS CHECK USER PAID EXPENSES --}}
             @if(!$vendor_expenses->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Expenses</h1>
@@ -286,12 +286,12 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
 
             {{-- THIS CHECK USER PAID EXPENSES --}}
             @if(!$user_paid_expenses->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Paid Expenses</h1>
@@ -311,12 +311,12 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
 
             {{-- THIS CHECK DISTRIBUTIONS --}}
             @if(!$user_distributions->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Paid Distrbutions</h1>
@@ -333,12 +333,12 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
 
             {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
             @if(!$user_paid_reimburesements->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Paid Employee Reimbursements</h1>
@@ -357,7 +357,7 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
         </div>
     </div>

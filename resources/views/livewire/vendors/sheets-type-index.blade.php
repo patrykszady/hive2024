@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-xl lg:px-8">
+    <x-cards class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-xl lg:px-8">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -147,6 +147,6 @@
                 @endif
             @endforeach
         </x-cards.body>
-    </x-cards.wrapper>
+    </x-cards>
 </div>
 

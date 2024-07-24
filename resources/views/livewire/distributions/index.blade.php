@@ -13,7 +13,7 @@
             <livewire:distributions.distributions-list />
 
             {{-- PROJECT DOES NOT HAVE DISTRIBUTIONS --}}
-            <x-cards.wrapper>
+            <x-cards>
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1 class="text-lg">Projects <b>Without</b> Distributions</b></h1>
@@ -33,12 +33,12 @@
                 <x-cards.footer>
                     {{ $projects_doesnt_dis->links() }}
                 </x-cards.footer>
-            </x-cards.wrapper>
+            </x-cards>
 		</div>
 
         <div class="col-span-4 lg:col-span-2">
 			{{-- PROJECT HAS DISTRIBUTIONS --}}
-			<x-cards.wrapper>
+			<x-cards>
 				<x-cards.heading>
 					<x-slot name="left">
 						<h1 class="text-lg">Projects <b>With</b> Distributions</h1>
@@ -69,7 +69,7 @@
                 <x-cards.footer>
                     {{ $projects_has_dis->links() }}
                 </x-cards.footer>
-			</x-cards.wrapper>
+			</x-cards>
 		</div>
 	</div>
 

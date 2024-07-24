@@ -10,7 +10,7 @@
 
         <div class="grid max-w-xl grid-cols-5 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
             <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
-                <x-cards.wrapper>
+                <x-cards>
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1>Vendor Payment</h1>
@@ -41,14 +41,14 @@
                             </button>
                         </div>
                     </x-cards.footer>
-                </x-cards.wrapper>
+                </x-cards>
 
                 {{-- INSURANCE --}}
                 <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/>
             </div>
             <div class="col-span-5 space-y-2 lg:col-span-3">
                 {{-- SELECT PROJECT --}}
-                <x-cards.wrapper>
+                <x-cards>
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1>Choose Payment Projects</h1>
@@ -85,11 +85,11 @@
                             >
                         </x-forms.row>
                     </x-cards.body>
-                </x-cards.wrapper>
+                </x-cards>
 
                 {{-- PAYMENT PROJECTS --}}
                 @foreach($projects->where('show', true) as $project_id => $project)
-                    <x-cards.wrapper>
+                    <x-cards>
                         <x-cards.heading>
                             <x-slot name="left">
                                 <h1 class="font-bold"><a href="{{route('projects.show', $project->id)}}" target="_blank">{{ $project->address }}</a></h1>
@@ -164,7 +164,7 @@
                             </x-forms.row>
                             {{-- total paid, bid, balance rows DISABLED --}}
                         </x-cards.body>
-                    </x-cards.wrapper>
+                    </x-cards>
                 @endforeach
 
                 <livewire:bids.bid-create />

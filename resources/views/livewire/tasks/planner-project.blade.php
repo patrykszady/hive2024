@@ -1,7 +1,7 @@
 <div>
     @foreach($projects as $project_index => $project)
-        {{-- <x-cards.wrapper class="px-4 {{!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty() ? 'pb-4' : ''}} mb-1 sm:px-2 lg:max-w-5xl lg:px-4"> --}}
-        <x-cards.wrapper class="{{!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty() ? 'pb-4' : ''}} mb-1 lg:max-w-5xl">
+        {{-- <x-cards class="px-4 {{!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty() ? 'pb-4' : ''}} mb-1 sm:px-2 lg:max-w-5xl lg:px-4"> --}}
+        <x-cards class="{{!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty() ? 'pb-4' : ''}} mb-1 lg:max-w-5xl">
             <x-cards.heading class="px-1 py-1">
                 <x-slot name="left">
                     <div>
@@ -39,8 +39,8 @@
                         </div> --}}
                         @foreach($project->no_date_tasks as $task)
                             <div
-                                class="grid-stack-item cursor-pointer" 
-                                wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })" 
+                                class="grid-stack-item cursor-pointer"
+                                wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
                                 gs-w="1" gs-h="1" gs-x="1" gs-id="{{$task->id}}"
                                 >
                                 <div class="pl-1 grid-stack-item-content border border-solid border-gray-300 h-12 hover:bg-gray-100 font-bold rounded-md text-clip overflow-hidden">
@@ -62,12 +62,12 @@
                                 </div>
                             </div>
                         @endforeach
-                    </div>   
-                    <hr>   
-                @endif     
+                    </div>
+                    <hr>
+                @endif
 
-                <div 
-                    class="overflow-x-auto" 
+                <div
+                    class="overflow-x-auto"
                     x-bind="scrollSync"
                     >
                     {{--   --}}
@@ -112,7 +112,7 @@
                                         $wire.taskMoved(newItems);
                                     });
                                     GridStack.setupDragIn('.noDateTasks .grid-stack-item', { appendTo: 'body' });
-                                }                        
+                                }
                             }"
                             >
                             {{-- 5/20/2024 if Satruday or Sunday change bg-color --}}
@@ -131,12 +131,12 @@
                                     <div
                                         {{-- bg-red-300 --}}
                                         class="grid-stack-item"
-                                        gs-id="{{$task->id}}" 
-                                        gs-x="{{$gs_x}}" 
-                                        gs-y="{{$task->order}}" 
-                                        gs-w="{{$gs_w}}" 
-                                        gs-locked="true" 
-                                        gs-no-move="@cannot('update', $task) true @endcannot" 
+                                        gs-id="{{$task->id}}"
+                                        gs-x="{{$gs_x}}"
+                                        gs-y="{{$task->order}}"
+                                        gs-w="{{$gs_w}}"
+                                        gs-locked="true"
+                                        gs-no-move="@cannot('update', $task) true @endcannot"
                                         gs-no-resize="@cannot('update', $task) true @endcannot"
                                         >
                                         <div
@@ -146,7 +146,7 @@
                                             class="p-1 border-{{$task->direction == 'right' ? 'l' : 'l'}}-4 grid-stack-item-content bg-gray-200 bg-opacity-50 @cannot('update', $task) opacity-50 cursor-none @else cursor-pointer hover:bg-gray-200 @endcannot
                                                 {{-- 5/20/2024 if Satruday or Sunday change bg-color --}}
                                                 {{-- {{in_array($day_index, [5, 6]) ? 'bg-gray-700' : 'bg-gray-100'}} --}}
-                                                
+
 
                                                 {{-- @if(in_array($day_index, [5, 6]))
                                                 bg-gray-700
@@ -156,7 +156,7 @@
                                                 {{ $task->type == 'Milestone' ? 'border-green-600' : '' }}  {{ $task->type == 'Material' ? 'border-yellow-600' : '' }} {{ $task->type == 'Task' ? 'border-indigo-600' : '' }}
                                             "
                                             >
-                                
+
                                             @if($task->direction == 'left' && 7 - $day_index < $task->duration)
                                                 <div class="flex float-right fill-gray-300">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400 ">
@@ -197,7 +197,7 @@
                     </div>
                 </div>
             </x-cards.body>
-        </x-cards.wrapper>
+        </x-cards>
     @endforeach
 
     <script type="text/javascript">

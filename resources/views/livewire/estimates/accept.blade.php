@@ -16,7 +16,7 @@
             </x-slot>
         </x-cards.heading>
         <x-cards.body>
-            {{-- <x-cards.wrapper class="col-span-4 lg:col-span-2">
+            {{-- <x-cards class="col-span-4 lg:col-span-2">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1><b>{{ $user->first_name }}</b>'s Timesheets</h1>
@@ -88,7 +88,7 @@
                         </tbody>
                     </table>
                 </div>
-            {{-- </x-cards.wrapper> --}}
+            {{-- </x-cards> --}}
         </x-cards.body>
 
         {{-- Reimbursements: --}}
@@ -152,7 +152,7 @@
             </x-slot>
         </x-cards.heading>
         <x-cards.body>
-            {{-- <x-cards.wrapper class="col-span-4 lg:col-span-2">
+            {{-- <x-cards class="col-span-4 lg:col-span-2">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1><b>{{ $user->first_name }}</b>'s Timesheets</h1>
@@ -225,7 +225,7 @@
                         </tbody>
                     </table>
                 </div>
-            {{-- </x-cards.wrapper> --}}
+            {{-- </x-cards> --}}
         </x-cards.body>
         <hr>
         <x-cards.heading>

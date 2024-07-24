@@ -1,7 +1,7 @@
 <div>
     <form wire:submit="{{$view_text['form_submit']}}">
         @foreach($merchant_names as $merchant_name => $merchant_transactions)
-            <x-cards.wrapper class="max-w-2xl mx-auto mt-6 lg:max-w-3xl">
+            <x-cards class="max-w-2xl mx-auto mt-6 lg:max-w-3xl">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>
@@ -101,10 +101,10 @@
                         </x-slot>
                     </x-forms.row>
                 </x-cards.body>
-            </x-cards.wrapper>
+            </x-cards>
         @endforeach
 
-        <x-cards.wrapper class="max-w-2xl pt-4 mx-auto lg:max-w-3xl">
+        <x-cards class="max-w-2xl pt-4 mx-auto lg:max-w-3xl">
             <x-cards.heading>
                 <x-slot name="right">
                     <button
@@ -116,12 +116,12 @@
                     </button>
                 </x-slot>
             </x-cards.heading>
-        </x-cards.wrapper>
+        </x-cards>
     </form>
 
     <form wire:submit="store_expense_vendors">
         @foreach($expense_receipt_merchants as $merchant_name => $merchant_expenses)
-            <x-cards.wrapper class="max-w-2xl mx-auto mt-6 lg:max-w-3xl">
+            <x-cards class="max-w-2xl mx-auto mt-6 lg:max-w-3xl">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>
@@ -216,10 +216,10 @@
                         </x-slot>
                     </x-forms.row> --}}
                 </x-cards.body>
-            </x-cards.wrapper>
+            </x-cards>
         @endforeach
 
-        <x-cards.wrapper class="max-w-2xl pt-4 mx-auto lg:max-w-3xl">
+        <x-cards class="max-w-2xl pt-4 mx-auto lg:max-w-3xl">
             <x-cards.heading>
                 <x-slot name="right">
                     <button
@@ -231,6 +231,6 @@
                     </button>
                 </x-slot>
             </x-cards.heading>
-        </x-cards.wrapper>
+        </x-cards>
     </form>
 </div>

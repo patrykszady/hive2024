@@ -1,6 +1,6 @@
 {{-- form classes divide-y divide-gray-200 --}}
 <form wire:submit="{{$view_text['form_submit']}}">
-    <x-cards.wrapper class="max-w-2xl mx-auto">
+    <x-cards class="max-w-2xl mx-auto">
         {{-- HEADER --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -46,5 +46,5 @@
                 {{$view_text['button_text']}}
             </button>
         </x-cards.footer>
-    </x-cards.wrapper>
+    </x-cards>
 </form>

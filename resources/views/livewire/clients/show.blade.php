@@ -13,7 +13,7 @@
 		{{--  lg:h-32 lg:sticky lg:top-5 --}}
 		<div class="col-span-4 lg:col-span-2">
 			{{-- CLIENT DETAILS --}}
-			<x-cards.wrapper>
+			<x-cards>
 				<x-cards.heading>
 					<x-slot name="left">
 						<h1 class="text-lg">Client Details</b></h1>
@@ -56,12 +56,12 @@
                         </x-lists.search_li>
 					</x-lists.ul>
 				</x-cards.body>
-			</x-cards.wrapper>
+			</x-cards>
 		</div>
 
         <div class="col-span-4 lg:col-span-2">
 			{{-- CLIENT USERS --}}
-			<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+			<x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Client Members</h1>

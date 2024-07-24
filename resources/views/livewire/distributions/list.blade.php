@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="mb-4">
+    <x-cards class="mb-4">
         <x-cards.heading>
             <x-slot name="left">
                 <h1 class="text-lg">Distributions</b></h1>
@@ -46,5 +46,5 @@
                 @endforeach
             </x-lists.ul>
         </x-cards.body>
-    </x-cards.wrapper>
+    </x-cards>
 </div>

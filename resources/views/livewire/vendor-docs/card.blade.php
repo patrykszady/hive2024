@@ -1,4 +1,4 @@
-<x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 pb-5 mb-1' : ''}}">
+<x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 pb-5 mb-1' : ''}}">
     <x-cards.heading>
         <x-slot name="left">
             <h1>{{$view ? 'Insurance' : $vendor->name}}</h1>
@@ -58,4 +58,4 @@
     @else
         <p class="text-red-800">NO INSURANCE</p>
     @endif
-</x-cards.wrapper>
+</x-cards>

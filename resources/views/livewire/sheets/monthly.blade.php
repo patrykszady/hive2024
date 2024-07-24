@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper>
+    <x-cards>
         <x-cards.heading>
             <x-slot name="left">
                 <h1 class="text-lg">Payments & Expenses</h1>
@@ -176,5 +176,5 @@
                 </div>
             </div>
         </x-cards.body>
-    </x-cards.wrapper>
+    </x-cards>
 </div>

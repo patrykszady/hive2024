@@ -34,7 +34,7 @@
             target="{{$hrefTarget}}"
         @endif
 
-        {{-- {{$attributes}} --}}
+        {{$attributes}}
         class="{{$classes}}"
         >
         {{$slot}}

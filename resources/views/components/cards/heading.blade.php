@@ -1,24 +1,51 @@
-@props([
-    'left' => null,
-    'right' => null
-    ])
+@aware([
+    'accordian' => NULL,
+])
 
-{{--  sm:px-6 --}}
-{{-- bg-gray-50 --}}
-<div {{$attributes->merge(['class' => 'px-6 py-4 border-b border-gray-200 z-10'])}}>
-    <div class="flex flex-wrap items-center justify-between sm:flex-nowrap">
-        {{-- {{$slot}} --}}
-
-        <div>
-            <h3 class="text-lg font-medium leading-6 text-gray-900">
-                {{$left}}
-            </h3>
+{{-- isset($accordian) ? 'pl-2 ' : 'pl-6 ' .  --}}
+<div {{$attributes->merge(['class' => 'pl-2 pr-4 py-4 border-b border-gray-200'])}}>
+    <div class="flex mx-auto items-center justify-between">
+        <div class="text-lg font-medium text-gray-900">
+            @if(isset($accordian))
+                <button
+                    x-disclosure:button
+                    class="flex pl-0 mr-4 items-center justify-between"
+                    >
+                    <span x-show="$disclosure.isOpen" x-cloak aria-hidden="true" class="ml-4">
+                        <svg
+                            x-transition.duration.250ms
+                            class="w-5 h-5 ml-auto text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor"
+                            aria-hidden="true"
+                            >
+                            <path fill-rule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <span x-show="!$disclosure.isOpen" aria-hidden="true" class="ml-4">
+                        <svg
+                            x-transition.duration.250ms
+                            class="w-5 h-5 ml-auto text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor"
+                            aria-hidden="true"
+                            >
+                            <path fill-rule="evenodd"
+                                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    {{--  class="cursor-text" --}}
+                    <span>{{$left ?? ''}}</span>
+                </button>
+            @else
+                <span>{{$left ?? ''}}</span>
+            @endif
         </div>
+
         {{--  10/14/21 only last inside x-card.heading = flex-shrink-0 .. how to do automatically? --}}
         {{-- mt-2 md:mt-0 --}}
         <div class="flex-shrink-0 md:ml-4">
             {{-- 10/14/21 button = new compnent in card or application? --}}
-            {{$right}}
+            {{$right ?? ''}}
         </div>
     </div>
     {{$slot}}

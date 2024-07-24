@@ -12,7 +12,7 @@
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:top-5">
             {{-- USER DETAILS --}}
             <div class="col-span-4 lg:col-span-2">
-                <x-cards.wrapper>
+                <x-cards>
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1 class="text-lg">User Details</h1>
@@ -99,7 +99,7 @@
                             @endif
                         </x-lists.ul>
                     </x-cards.body>
-                </x-cards.wrapper>
+                </x-cards>
             </div>
         </div>
 
@@ -183,7 +183,7 @@
             </div>
             <div class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <div class="col-span-4">
-                    <x-cards.wrapper>
+                    <x-cards>
                         <x-cards.heading>
                             <x-slot name="left">
                                 <h1 class="text-lg">User Finances</h1>
@@ -285,7 +285,7 @@
                                 </div>
                             </div>
                         </x-cards.body>
-                    </x-cards.wrapper>
+                    </x-cards>
                 </div>
             </div>
         @endcan

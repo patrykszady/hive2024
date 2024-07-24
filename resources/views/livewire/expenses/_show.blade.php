@@ -1,7 +1,7 @@
 <div class="grid max-w-xl grid-cols-4 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
 	<div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
 		{{-- EXPENSE DETAILS --}}
-		<x-cards.wrapper>
+		<x-cards accordian="OPENED">
 			<x-cards.heading>
 				<x-slot name="left">
 					<h1>Expense Details</h1>
@@ -139,11 +139,11 @@
                     <span class="text-sm"><i>*Expense Created Automatically.</i></span>
                 </x-cards.footer>
             @endif
-		</x-cards.wrapper>
+		</x-cards>
 
 		{{-- TRANSACTIONS --}}
 		@if(!$expense->transactions->isEmpty())
-		<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+		<x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
 			<x-cards.heading>
 				<x-slot name="left">
 					<h1>Transactions</h1>
@@ -179,14 +179,14 @@
 					</x-lists.search_li>
 				@endforeach
 			</x-lists.ul>
-		</x-cards.wrapper>
+		</x-cards>
 		@endif
 	</div>
 
 	<div class="col-span-4 space-y-2 lg:col-span-2">
 		{{-- ASSOCIATED EXPENSES --}}
 		@if(!is_null($expense->associated_expenses))
-		<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+		<x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
 			<x-cards.heading>
 				<x-slot name="left">
 					<h1>Associated Expenses</h1>
@@ -230,12 +230,12 @@
 					</x-lists.search_li>
 				@endforeach
 			</x-lists.ul>
-		</x-cards.wrapper>
+		</x-cards>
 		@endif
 
 		{{-- SPLITS --}}
 		@if(!$expense->splits->isEmpty())
-		<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+		<x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
 			<x-cards.heading>
 				<x-slot name="left">
 					<h1>Splits</h1>
@@ -271,12 +271,12 @@
 					</x-lists.search_li>
 				@endforeach
 			</x-lists.ul>
-		</x-cards.wrapper>
+		</x-cards>
 		@endif
 
 		{{-- CHECK --}}
 		@if($expense->check)
-			<x-cards.wrapper>
+			<x-cards>
 				<x-cards.heading>
 					<x-slot name="left">
 						<h1>Check</h1>
@@ -309,12 +309,12 @@
 						>
 					</x-lists.search_li>
 				</x-lists.ul>
-			</x-cards.wrapper>
+			</x-cards>
 		@endif
 
 		{{-- RECEIPTS --}}
 		@if(!$expense->receipts->isEmpty())
-		<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+		<x-cards accordian="OPENED" class="col-span-4 lg:col-span-2 lg:col-start-3">
 			<x-cards.heading>
 				<x-slot name="left">
 					<h1>Receipt</h1>
@@ -417,7 +417,7 @@
                     </x-cards.footer>
                 @endif
             @endif
-		</x-cards.wrapper>
+		</x-cards>
 		@endif
 	</div>
 </div>

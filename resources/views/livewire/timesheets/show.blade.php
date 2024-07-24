@@ -13,7 +13,7 @@
     <div class="grid max-w-xl grid-cols-4 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
             {{-- TIMESHEET DETAILS --}}
-            <x-cards.wrapper>
+            <x-cards>
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Timesheet Week Details</h1>
@@ -68,10 +68,10 @@
                         </x-lists.search_li>
                     </x-lists.ul>
                 </x-cards.body>
-            </x-cards.wrapper>
+            </x-cards>
 
             {{-- WEEKLY GROUPED --}}
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         {{-- by project, not daily --}}
@@ -134,12 +134,12 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
         </div>
 
         <div class="col-span-4 space-y-2 lg:col-span-2">
             {{-- DAILY PROJECT HOURS --}}
-            <x-cards.wrapper>
+            <x-cards>
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Daily Hours</h1>
@@ -173,8 +173,7 @@
                         @endforeach
                     </x-lists.ul>
                 @endforeach
-            </x-cards.wrapper>
+            </x-cards>
         </div>
     </div>
-
 </div>

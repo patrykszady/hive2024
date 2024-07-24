@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-3xl lg:px-8 pb-5 mb-1' : ''}}">
+    <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-3xl lg:px-8 pb-5 mb-1' : ''}}">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -119,7 +119,7 @@
             theme --}}
             {{ $clients->links() }}
         </x-cards.footer>
-    </x-cards.wrapper>
+    </x-cards>
 
     <livewire:users.user-create />
     <livewire:clients.client-create />

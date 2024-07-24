@@ -1,21 +1,20 @@
-<x-cards.wrapper>
+<x-cards accordian="CLOSED">
     <x-cards.heading>
         <x-slot name="left">
-            <h1 class="text-lg">Vendor Details</h1>
+            <h1>Vendor Details</h1>
             @if($registration)
-                <p class="max-w-2xl mt-1 text-sm text-gray-500">Confirm {{$vendor->business_name}} information.</p>
+                <p class="max-w-2xl mt-1 text-sm text-gray-500">Confirm  information.</p>
             @endif
         </x-slot>
 
         @can('update', $vendor)
             <x-slot name="right">
-                {{-- EDIT VENDOR DIALOG --}}
+                {{-- EDIT VENDOR MODAL --}}
                 <x-cards.button
                     wire:click="$dispatchTo('vendors.vendor-create', 'editVendor', { vendor: {{$vendor->id}} })"
                     >
                     Edit Vendor
                 </x-cards.button>
-
             </x-slot>
         @endcan
     </x-cards.heading>
@@ -111,5 +110,5 @@
         </x-cards.footer>
     </div>
 
-    <livewire:vendors.vendor-create />
-</x-cards.wrapper>
+    {{-- <livewire:vendors.vendor-create /> --}}
+</x-cards>

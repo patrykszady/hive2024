@@ -1,6 +1,6 @@
 <div>
     {{-- EXPENSES --}}
-    <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-4xl lg:px-8 pb-5 mb-1' : ''}}">
+    <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-4xl lg:px-8 pb-5 mb-1' : ''}}">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -234,12 +234,12 @@
             {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our theme --}}
             {{ $expenses->links(data: ['scrollTo' => '#expenses_foreach']) }}
         </x-cards.footer>
-    </x-cards.wrapper>
+    </x-cards>
 
     @can('create', App\Models\Expense::class)
         {{-- TRANSACTIONS --}}
         @if(!$transactions->isEmpty())
-            <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-4xl lg:px-8 pb-5 mb-1' : ''}}">
+            <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-4xl lg:px-8 pb-5 mb-1' : ''}}">
                 {{-- HEADING --}}
                 <x-cards.heading>
                     <x-slot name="left">
@@ -381,7 +381,7 @@
                     {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our theme --}}
                     {{ $transactions->links(data: ['scrollTo' => '#transactions_foreach']) }}
                 </x-cards.footer>
-            </x-cards.wrapper>
+            </x-cards>
         @endif
 
         {{-- EXPENSE FORM MODAL --}}

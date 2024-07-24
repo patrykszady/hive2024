@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 pb-5 mb-1' : ''}}">
+    <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 pb-5 mb-1' : ''}}">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -28,13 +28,13 @@
                 </div>
             </x-slot>
         </x-cards.heading>
-    </x-cards.wrapper>
-    {{-- <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 pb-5 mb-1' : ''}}">
+    </x-cards>
+    {{-- <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 pb-5 mb-1' : ''}}">
     @livewire('vendor-docs.audit-index')
-    </x-cards.wrapper> --}}
+    </x-cards> --}}
 
     {{-- TRANSACTIONS NO CHECKS --}}
-    <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 mb-2' : ''}}">
+    <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 mb-2' : ''}}">
         <x-cards.heading>
             <x-slot name="left">
                 <h1>Transactions </h1>
@@ -107,13 +107,13 @@
                 </tbody>
             </table>
         </x-cards.body>
-    </x-cards.wrapper>
+    </x-cards>
 
     {{-- VENDOR CHECKS --}}
     {{-- @if(!is_null($vendors_grouped_checks)) --}}
         {{-- @dd($vendors_grouped_checks) --}}
         @foreach($vendors_grouped_checks as $vendor_id => $vendor_checks)
-            <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 mb-2' : ''}}">
+            <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 mb-2' : ''}}">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>{{$vendor_checks->first()->vendor->business_name}}</h1>
@@ -192,7 +192,7 @@
                         </tbody>
                     </table>
                 </x-cards.body>
-            </x-cards.wrapper>
+            </x-cards>
         @endforeach
     {{-- @endif --}}
 </div>

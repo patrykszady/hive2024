@@ -1,4 +1,4 @@
-<x-cards.wrapper class="max-w-lg mx-auto">
+<x-cards class="max-w-lg mx-auto">
     {{-- HEADING --}}
     <x-cards.heading>
         <x-slot name="left">
@@ -104,5 +104,5 @@
         });
     </script>
     <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
-</x-cards.wrapper>
+</x-cards>
 

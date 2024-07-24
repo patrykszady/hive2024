@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
+    <x-cards class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -12,11 +12,11 @@
                 </x-cards.button>
             </x-slot>
         </x-cards.heading>
-    </x-cards.wrapper>
+    </x-cards>
 
     {{-- EACH PROJECT DURING WEEK & DAY --}}
     @foreach($weekly_days as $weekly_day => $daily_projects)
-        <x-cards.wrapper class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
+        <x-cards class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
             {{-- HEADING --}}
             <x-cards.heading>
                 <x-slot name="left">
@@ -41,12 +41,12 @@
                     </x-lists.search_li>
                 @endforeach
             </x-lists.ul>
-        </x-cards.wrapper>
+        </x-cards>
     @endforeach
 
     {{-- user info/ confirm/ change hourly if you can update Hours/Timesheets...ONLY if you Admin --}}
     <form wire:submit="save">
-        <x-cards.wrapper class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
+        <x-cards class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
             <x-cards.heading>
                 <x-slot name="left">
                     <h1>Timesheet User Details</h1>
@@ -120,6 +120,6 @@
                     </button>
                 </div>
             </x-cards.footer>
-        </x-cards.wrapper>
+        </x-cards>
     </form>
 </div>

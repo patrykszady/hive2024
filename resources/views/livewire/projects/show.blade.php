@@ -12,7 +12,7 @@
 		{{--  lg:h-32 lg:sticky lg:top-5 --}}
 		<div class="col-span-4 space-y-4 lg:col-span-2">
 			{{-- PROJECT DETAILS --}}
-			<x-cards.wrapper>
+			<x-cards>
 				<x-cards.heading>
 					<x-slot name="left">
 						<h1>Project Details</b></h1>
@@ -79,13 +79,13 @@
 						@endcan
 					</x-lists.ul>
 				</x-cards.body>
-			</x-cards.wrapper>
+			</x-cards>
 		</div>
 
         @can('update', $project)
             <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 {{-- PROJECT ESTIMATES --}}
-                <x-cards.wrapper>
+                <x-cards>
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1>Project Estimates</b></h1>
@@ -116,7 +116,7 @@
                             @endforeach
                         </x-lists.ul>
                     </x-cards.body>
-                </x-cards.wrapper>
+                </x-cards>
 
                 <livewire:project-status.status-create :project="$project" lazy />
             </div>
@@ -140,7 +140,7 @@
             <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 @if(in_array($this->project->last_status->title, ['Active', 'Complete',  'Service Call', 'Service Call Complete', 'VIEW ONLY']))
                     {{-- PROJECT FINANCIALS --}}
-                    <x-cards.wrapper>
+                    <x-cards>
                         <x-cards.heading>
                             <x-slot name="left">
                                 <h1>Project Finances</b></h1>
@@ -159,7 +159,7 @@
                         </x-cards.heading>
 
                         <x-cards.body>
-                            {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances wrapper--}}
+                            {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances card--}}
                             <x-lists.ul
                                 wire:target="print_reimbursements"
                                 wire:loading.attr="disabled"
@@ -245,11 +245,11 @@
                                 </x-lists.search_li>
                             </x-lists.ul>
                         </x-cards.body>
-                    </x-cards.wrapper>
+                    </x-cards>
 
                     {{-- PROJECT DISTRIBUTIONS --}}
                     @if(!$this->project->distributions->isEmpty())
-                        <x-cards.wrapper>
+                        <x-cards>
                             <x-cards.heading>
                                 <x-slot name="left">
                                     <h1>Project Distributions</b></h1>
@@ -267,11 +267,11 @@
                                     @endforeach
                                 </x-lists.ul>
                             </x-cards.body>
-                        </x-cards.wrapper>
+                        </x-cards>
                     @endif
 
                     {{-- PROJECT PAYMENTS --}}
-                    <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3" lazy>
+                    <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3" lazy>
                         <x-cards.heading>
                             <x-slot name="left">
                                 <h1>Payments</b></h1>
@@ -315,7 +315,7 @@
                                 @endforeach
                             </x-lists.ul>
                         @endif
-                    </x-cards.wrapper>
+                    </x-cards>
                 @endif
             </div>
 		@endcan

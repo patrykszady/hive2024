@@ -1,5 +1,5 @@
 <div class="max-w-xl mx-auto sm:px-6">
-    <x-cards.wrapper>
+    <x-cards>
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -35,5 +35,5 @@
                 </x-lists.search_li>
             @endforeach
         </x-lists.ul>
-    </x-cards.wrapper>
+    </x-cards>
 </div>

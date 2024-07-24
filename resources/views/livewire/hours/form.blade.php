@@ -10,7 +10,7 @@
 	<div class="grid max-w-xl grid-cols-4 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
 		{{-- FLOAT CALENDAR --}}
 		<div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
-			<x-cards.wrapper>
+			<x-cards>
 				<x-cards.heading>
 					<x-slot name="left">
 						<h1>Daily Hours</h1>
@@ -45,11 +45,16 @@
                         </button>
 					</div>
                 </x-cards.footer>
-			</x-cards.wrapper>
+			</x-cards>
 		</div>
 
 		<div class="col-span-4 space-y-2 lg:col-span-2">
-            <x-cards.wrapper>
+            <x-cards accordian="OPENED">
+                <x-cards.heading>
+                    <x-slot name="left">
+                        Projects
+                    </x-slot>
+				</x-cards.heading>
                 <x-cards.body :class="'space-y-2 my-2 divide-gray-200'">
                     {{-- PROJECT HOUR AMOUNT --}}
                     @foreach ($projects as $index => $project)
@@ -87,10 +92,10 @@
                         @endif
                     @endforeach
                 </x-cards.body>
-            </x-cards.wrapper>
+            </x-cards>
 
-            <x-cards.wrapper>
-                <x-cards.body :class="'space-y-2 my-2'">
+            <x-cards>
+                <x-cards.body>
                     <x-forms.row
                         {{-- 5-26-2024 disable if $new_project_id is NULL --}}
                         {{-- x-bind:disabled="save_form == 'save' || expense_transactions" --}}
@@ -109,7 +114,7 @@
                         @endforeach
                     </x-forms.row>
                 </x-cards.body>
-            </x-cards.wrapper>
+            </x-cards>
 		</div>
 	</div>
 </form>

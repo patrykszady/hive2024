@@ -1,6 +1,6 @@
 <div class="max-w-xl mx-auto sm:px-6">
     {{-- 7-2-2022 dont show if no timesheets to confirm --}}
-    <x-cards.wrapper>
+    <x-cards>
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -39,11 +39,11 @@
                 @endforeach
             @endforeach
         </x-lists.ul>
-    </x-cards.wrapper>
+    </x-cards>
 
     @if(!$confirmed_weekly_hours->isEmpty())
         <br>
-        <x-cards.wrapper>
+        <x-cards>
             {{-- HEADING --}}
             <x-cards.heading>
                 <x-slot name="left">
@@ -102,6 +102,6 @@
                 theme --}}
                 {{ $confirmed_weekly_hours->links() }}
             </x-cards.footer>
-        </x-cards.wrapper>
+        </x-cards>
     @endif
 </div>

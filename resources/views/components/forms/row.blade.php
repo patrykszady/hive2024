@@ -68,7 +68,7 @@
             {{-- 08-26-202X inline --}}
             @if($type === 'radio' || $type === 'radiogroup')
                 <div>
-            @elseif($hint)
+            @elseif($hint || $radioHint || $buttonHint)
                 <div class="flex max-w-lg rounded-md shadow-sm">
             @else
                 <div class="rounded-md shadow-sm">

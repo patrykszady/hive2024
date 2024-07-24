@@ -866,9 +866,10 @@ class ReceiptController extends Controller
                             $document_model = $this->azure_document_model($doc_type, $ocr_path);
 
                             $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
+                            // dd($ocr_receipt_extracted);
                             //pass receipt info from ocr_receipt_extracted to ocr_extract method
                             $ocr_receipt_data = $this->ocr_extract($ocr_receipt_extracted);
-
+                            // dd($ocr_receipt_data);
                             if(isset($ocr_receipt_data['error']) && $ocr_receipt_data['error'] == TRUE){
                                 //if error move this single $attachment to a folder for debug...
                                 Storage::disk('files')->move('/_temp_ocr/' . $ocr_filename, '/auto_receipts_failed/' . $ocr_filename);
@@ -1768,8 +1769,19 @@ class ReceiptController extends Controller
             foreach($items as $key => $line_item){
                 if(isset($line_item['valueObject']['Quantity'])){
                     $quantity = $line_item['valueObject']['Quantity']['valueNumber'];
-                    $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
-                    $total_price = $line_item['valueObject']['TotalPrice']['valueNumber'];
+
+                    if(isset($line_item['valueObject']['Price'])){
+                        $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
+                    }elseif(isset($line_item['valueObject']['UnitPrice'])){
+                        $line_item_price = $line_item['valueObject']['UnitPrice']['valueCurrency']['amount'];
+                    }
+
+                    if(isset($line_item['valueObject']['TotalPrice'])){
+                        $total_price = $line_item['valueObject']['TotalPrice']['valueNumber'];
+                    }elseif(isset($line_item['valueObject']['Amount'])){
+                        $total_price = $line_item['valueObject']['Amount']['valueCurrency']['amount'];
+                    }
+
                     $line_item_total = $quantity * $line_item_price;
 
                     if($line_item_total != $total_price){

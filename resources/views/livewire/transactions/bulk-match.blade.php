@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-2xl lg:px-8">
+    <x-cards class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-2xl lg:px-8">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -62,5 +62,5 @@
         </x-cards.body>
 
         <livewire:bulk-match.bulk-match-create :distributions="$distributions" :vendors="$bulk_matches->unique('vendor.id')->pluck('vendor.id')"/>
-    </x-cards.wrapper>
+    </x-cards>
 </div>

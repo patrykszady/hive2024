@@ -9,7 +9,7 @@
 
     <div class="grid max-w-xl grid-cols-5 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
         <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
-            <x-cards.wrapper>
+            <x-cards>
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Payment</h1>
@@ -50,13 +50,13 @@
                         </button>
                     </div>
                 </x-cards.footer>
-            </x-cards.wrapper>
+            </x-cards>
         </div>
 
         <div class="col-span-5 space-y-2 lg:col-span-3">
             {{-- USER UNPAID TIMESHEETS --}}
             @if(!$weekly_timesheets->isEmpty())
-                <x-cards.wrapper class="col-span-4 lg:col-span-2">
+                <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1><b>{{ $user->first_name }}</b>'s Timesheets</h1>
@@ -110,12 +110,12 @@
                             @endforeach
                         @endforeach
                     </x-lists.ul>
-                </x-cards.wrapper>
+                </x-cards>
             @endif
 
             {{-- USER PAID EMPLOYEE TIMESHEETS --}}
             @if(!$employee_weekly_timesheets->isEmpty())
-                <x-cards.wrapper class="col-span-4 lg:col-span-2">
+                <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1><b>{{ $user->first_name }}</b> Paid Timesheets</h1>
@@ -170,12 +170,12 @@
                             @endforeach
                         @endforeach
                     </x-lists.ul>
-                </x-cards.wrapper>
+                </x-cards>
             @endif
 
             {{-- USER PAID FOR EXPENSES --}}
             @if(!$user_paid_expenses->isEmpty())
-                <x-cards.wrapper class="col-span-4 lg:col-span-2">
+                <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1><b>{{ $user->first_name }}</b> Paid For Expenses</h1>
@@ -215,12 +215,12 @@
                             </x-lists.search_li>
                         @endforeach
                     </x-lists.ul>
-                </x-cards.wrapper>
+                </x-cards>
             @endif
 
             {{-- USER REIMBURESEMENT EXPENSES --}}
             @if(!$user_reimbursement_expenses->isEmpty())
-                <x-cards.wrapper class="col-span-4 lg:col-span-2">
+                <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1><b>{{ $user->first_name }}</b> Owns {!! $user->via_vendor_back->name !!}</h1>
@@ -261,12 +261,12 @@
                             </x-lists.search_li>
                         @endforeach
                     </x-lists.ul>
-                </x-cards.wrapper>
+                </x-cards>
             @endif
 
             {{-- USER PAID REIMBURESEMENT EXPENSES FROM ANOHTER USER --}}
             @if(!$this->user_paid_by_reimbursements->isEmpty())
-                <x-cards.wrapper class="col-span-4 lg:col-span-2">
+                <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1><b>{{ $user->first_name }}</b> Paid Reimbursement Expenses</h1>
@@ -306,7 +306,7 @@
                             </x-lists.search_li>
                         @endforeach
                     </x-lists.ul>
-                </x-cards.wrapper>
+                </x-cards>
             @endif
         </div>
     </div>

@@ -3,15 +3,16 @@
 ])
 
 {{-- isset($accordian) ? 'pl-2 ' : 'pl-6 ' .  --}}
-<div {{$attributes->merge(['class' => 'pl-2 pr-4 py-4 border-b border-gray-200'])}}>
+{{-- {{$attributes->merge(['class' => 'pr-4 py-4 border-b border-gray-200'])}} --}}
+<div class="{{isset($accordian) ? '' : 'pl-6'}} pr-4 py-4 border-b border-gray-200">
     <div class="flex mx-auto items-center justify-between">
-        <div class="text-lg font-medium text-gray-900">
+
             @if(isset($accordian))
                 <button
                     x-disclosure:button
-                    class="flex pl-0 mr-4 items-center justify-between"
+                    class="flex pl-0 mr-4 justify-between items-center ml-2"
                     >
-                    <span x-show="$disclosure.isOpen" x-cloak aria-hidden="true" class="ml-4">
+                    <span x-show="$disclosure.isOpen" x-cloak aria-hidden="true">
                         <svg
                             x-transition.duration.250ms
                             class="w-5 h-5 ml-auto text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor"
@@ -22,7 +23,7 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </span>
-                    <span x-show="!$disclosure.isOpen" aria-hidden="true" class="ml-4">
+                    <span x-show="!$disclosure.isOpen" aria-hidden="true">
                         <svg
                             x-transition.duration.250ms
                             class="w-5 h-5 ml-auto text-gray-400 shrink-0" viewBox="0 0 20 20" fill="currentColor"
@@ -33,13 +34,13 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </span>
-                    {{--  class="cursor-text" --}}
-                    <span>{{$left ?? ''}}</span>
+
+                    <div>{{$left ?? ''}}</div>
                 </button>
             @else
-                <span>{{$left ?? ''}}</span>
+                <div>{{$left ?? ''}}</div>
             @endif
-        </div>
+
 
         {{--  10/14/21 only last inside x-card.heading = flex-shrink-0 .. how to do automatically? --}}
         {{-- mt-2 md:mt-0 --}}

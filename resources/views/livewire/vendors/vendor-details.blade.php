@@ -1,7 +1,7 @@
 <x-cards accordian="CLOSED">
     <x-cards.heading>
         <x-slot name="left">
-            <h1>Vendor Details</h1>
+            Vendor Details
             @if($registration)
                 <p class="max-w-2xl mt-1 text-sm text-gray-500">Confirm  information.</p>
             @endif
@@ -15,6 +15,8 @@
                     >
                     Edit Vendor
                 </x-cards.button>
+
+                <livewire:vendors.vendor-create />
             </x-slot>
         @endcan
     </x-cards.heading>
@@ -109,6 +111,4 @@
             </x-cards.button>
         </x-cards.footer>
     </div>
-
-    {{-- <livewire:vendors.vendor-create /> --}}
 </x-cards>

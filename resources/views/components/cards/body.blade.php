@@ -2,6 +2,6 @@
     'accordian' => NULL,
 ])
 
-<div {{isset($accordian) ? 'x-disclosure:panel x-collapse' : ''}}  {{ $attributes->merge(['class' => '']) }}>
+<div {{isset($accordian) ? 'x-disclosure:panel x-collapse' : ''}} {{ $attributes->merge(['class' => '']) }}>
     {{$slot}}
 </div>

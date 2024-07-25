@@ -43,7 +43,7 @@
         @if(isset($attributes['wire:navigate.hover']))
             wire:navigate.hover
         @endif
-        
+
         >
 
         <div class="relative px-4 py-4 sm:px-6">

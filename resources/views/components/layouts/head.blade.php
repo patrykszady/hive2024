@@ -72,7 +72,7 @@
     <script defer src="https://unpkg.com/@alpinejs/ui@3.14.1-beta.0/dist/cdn.min.js"></script>
     {{-- <script defer src="https://unpkg.com/@alpinejs/focus@3.14.1/dist/cdn.min.js"></script> --}}
     {{-- <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.1/dist/cdn.min.js"></script> --}}
-    {{-- <script defer src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script> --}}
+    <script defer src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
     {{-- <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script> --}}
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>

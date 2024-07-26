@@ -265,7 +265,7 @@
             @endif
 
             {{-- USER PAID REIMBURESEMENT EXPENSES FROM ANOHTER USER --}}
-            @if(!$this->user_paid_by_reimbursements->isEmpty())
+            @if(!$user_paid_by_reimbursements->isEmpty())
                 <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
                         <x-slot name="left">
@@ -274,7 +274,7 @@
                     </x-cards.heading>
 
                     <x-lists.ul>
-                        @foreach($this->user_paid_by_reimbursements as $key => $expense)
+                        @foreach($user_paid_by_reimbursements as $key => $expense)
                             @php
                                 // $line_details = [
                                 //     1 => [
@@ -294,12 +294,14 @@
                                 ];
                             @endphp
 
+
                             <x-lists.search_li
                                 {{-- wire:click="$dispatch('timesheetWeek')" --}}
                                 {{-- :line_details="$line_details" --}}
                                 href="{{route('expenses.show', $expense->id)}}"
                                 :href_target="'_blank'"
-                                :line_title="money($expense->amount) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment"
+
+                                :line_title="substr($expense->amount, 0, 1) == '-' ? money(substr($expense->amount, 1)) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment : '-' . money($expense->amount) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment"
                                 :bubble_message="'Expense'"
                                 :checkbox="$checkbox"
                                 >

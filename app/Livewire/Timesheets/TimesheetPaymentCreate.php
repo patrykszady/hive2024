@@ -124,10 +124,17 @@ class TimesheetPaymentCreate extends Component
                 ->get()
                 ->each(function ($item, $key) {
                     $item->checkbox = true;
+                    // $item->amount = -$item->amount;
                 })
                 ->keyBy('id');
 
-                // dd($this->user_paid_by_reimbursements->first()->reimbursment);
+        // foreach($this->user_paid_by_reimbursements as $user_paid_by_reimbursement_expense){
+        //     $user_paid_by_reimbursement_expense->amount = '-' . $user_paid_by_reimbursement_expense->amount;
+        //     // dd($user_paid_by_reimbursement_expense->amount);
+        // }
+
+        // dd($this->user_paid_by_reimbursements);
+        // dd($this->user_paid_by_reimbursements->first()->reimbursment);
 
         if($this->weekly_timesheets->isEmpty()){
             $this->weekly_timesheets = collect();
@@ -241,7 +248,8 @@ class TimesheetPaymentCreate extends Component
         if($user_paid_by_reimbursements != '0.00'){
             $confirm_disable[] = TRUE;
         }
-        $total += $user_paid_by_reimbursements;
+        // dd($user_paid_by_reimbursements);
+        $total -= $user_paid_by_reimbursements;
 
         if(in_array('true', $confirm_disable)){
             $this->disable_paid_by = TRUE;
@@ -250,6 +258,7 @@ class TimesheetPaymentCreate extends Component
             $this->disable_paid_by = FALSE;
         }
 
+        // dd($total);
         return $total;
     }
 

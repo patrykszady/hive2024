@@ -2,11 +2,15 @@
     'accordian' => NULL,
 ])
 
+@props([
+    'exclude_accordian_button_text' => NULL,
+])
+
 {{-- isset($accordian) ? 'pl-2 ' : 'pl-6 ' .  --}}
 {{-- {{$attributes->merge(['class' => 'pr-4 py-4 border-b border-gray-200'])}} --}}
 <div class="{{isset($accordian) ? '' : 'pl-6'}} pr-4 py-4 border-b border-gray-200">
     <div class="flex mx-auto items-center justify-between">
-
+        <div class="flex items-center justify-between">
             @if(isset($accordian))
                 <button
                     x-disclosure:button
@@ -34,13 +38,17 @@
                                 clip-rule="evenodd" />
                         </svg>
                     </span>
-
-                    <div>{{$left ?? ''}}</div>
+                    @if(!$exclude_accordian_button_text)
+                        {{$left ?? ''}}
+                    @endif
                 </button>
+                @if($exclude_accordian_button_text)
+                    {{$left ?? ''}}
+                @endif
             @else
-                <div>{{$left ?? ''}}</div>
+                {{$left ?? ''}}
             @endif
-
+        </div>
 
         {{--  10/14/21 only last inside x-card.heading = flex-shrink-0 .. how to do automatically? --}}
         {{-- mt-2 md:mt-0 --}}

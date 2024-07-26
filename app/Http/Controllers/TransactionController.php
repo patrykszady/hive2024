@@ -1276,6 +1276,62 @@ class TransactionController extends Controller
                 //if not BUT if amount matches, that's the one
                 $transactions->first()->check()->associate($check)->save();
             }else{
+                if($check->check_type == 'Transfer'){
+                    $transactions_by_name = Transaction::withoutGlobalScopes()
+                        ->whereNull('deleted_at')
+                        ->whereDoesntHave('check')
+                        ->where('check_number', $check_number)
+                        //per hive vendor... checks table foreach bank_account_id
+                        // ->where('bank_account_id', $check->bank_account_id)
+                        ->whereBetween('transaction_date', [
+                                $check->date->subDays(7)->format('Y-m-d'),
+                                $check->date->addDays($add_days)->format('Y-m-d')
+                                ])
+                        ->orderBy('id', 'DESC')
+                        ->get()
+                        ->each(function($transaction, $key){
+                            $transaction->transfer_name = substr($transaction->plaid_merchant_description, strpos($transaction->plaid_merchant_description, "ORG ID")  + 7);
+                        })
+                        ->groupBy('transfer_name');
+
+                    foreach($transactions_by_name as $transactions){
+                        //summy
+                        //clear array before next foreach statement
+                        $transaction_results = array();
+
+                        $transaction_ids = $transactions->pluck('id')->toArray();
+                        $transaction_plucked = $transactions->pluck('amount')->toArray();
+
+                        $arr = array_values(array_filter($transaction_plucked));
+                        $n = sizeof($arr);
+                        $ids = $transaction_ids;
+
+                        $results = collect($this->subsetSums($arr, $n, $ids, 'transaction'))->sortBy('sum');
+
+                        foreach($results as $key => $result) {
+                            $sum = number_format($result['sum'], 2, '.', '');
+                            //this can happen multiple of times.. eg transaction_id 6230
+
+                            //is this Transaction a RETURN CHECK "DEPOSIT"?
+                            if($sum == $check->amount){
+                                $transaction_results = $result;
+                            }
+                        }
+
+                        if(isset($transaction_results['transactions'])){
+                            $transaction_results = collect($transaction_results['transactions']);
+
+                            foreach($transaction_results as $transaction){
+                                $transaction = Transaction::findOrFail($transaction['transaction_id']);
+                                $transaction->check()->associate($check);
+                                $transaction->save();
+                            }
+
+                            continue;
+                        }
+                    }
+                }
+
                 // Log::channel('add_check_id_to_transactions')->info($check);
             }
         }
@@ -1806,7 +1862,7 @@ class TransactionController extends Controller
                 //splits
                 if($expense->splits()->count() == 0){
                     $this->transaction_vendor_bulk_match_splits($match, $expense, $expense['amount']);
-                }                
+                }
             }
 
             //create new expense foreach transaction
@@ -1852,7 +1908,7 @@ class TransactionController extends Controller
                 }
 
                 $transaction->expense_id = $expense->id;
-                $transaction->save();               
+                $transaction->save();
             }
         }
     }

@@ -1327,7 +1327,7 @@ class TransactionController extends Controller
                                 $transaction->save();
                             }
 
-                            continue;
+                            // continue;
                         }
                     }
                 }

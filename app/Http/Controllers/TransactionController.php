@@ -1327,12 +1327,10 @@ class TransactionController extends Controller
                                 $transaction->save();
                             }
 
-                            // continue;
+                            continue;
                         }
                     }
                 }
-
-                // Log::channel('add_check_id_to_transactions')->info($check);
             }
         }
     }

@@ -42,6 +42,7 @@ class ExpenseIndex extends Component
     public $status = NULL;
 
     public $view = NULL;
+    public $paginate_number = 8;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -58,7 +59,7 @@ class ExpenseIndex extends Component
     {
         // $this->resetPage();
         $this->resetPage('expenses-page');
-        // $this->resetPage('transactions_page');
+        $this->resetPage('transactions-page');
     }
 
     public function updated($field, $value)
@@ -75,6 +76,12 @@ class ExpenseIndex extends Component
 
     public function mount()
     {
+        $this->authorize('viewAny', Expense::class);
+
+        if(!is_null($this->view)){
+            $this->paginate_number = 5;
+        }
+
         // $this->resetPage('expenses-page');
         // $this->banks = Bank::with('accounts')->get()->groupBy('plaid_ins_id')->toBase();
         $this->vendors = Vendor::whereHas('expenses')->orWhereHas('transactions')->orderBy('business_name')->get();
@@ -90,14 +97,6 @@ class ExpenseIndex extends Component
     #[Title('Expenses')]
     public function render()
     {
-        $this->authorize('viewAny', Expense::class);
-
-        if($this->view == NULL){
-            $paginate_number = 8;
-        }else{
-            $paginate_number = 5;
-        }
-
         $expenses =
             Expense::search($this->amount)
                 ->when(!empty($this->expense_vendor), function ($query, $item) {
@@ -109,11 +108,24 @@ class ExpenseIndex extends Component
                 ->orderBy('date', 'desc')
                 // ->get();
                 // ->simplePaginate($paginate_number, ['*'], 'expenses_page');
-                ->paginate($paginate_number, pageName: 'expenses-page');
+                ->paginate($this->paginate_number, pageName: 'expenses-page');
         // dd($expenses);
+
+        // $transactions =
+        //     Transaction::search($this->amount)
+        //         // ->query(function ($query) {
+        //         //     //->whereNull('check_id')
+        //         //     $query->whereNull('expense_id')->whereNull('check_id');
+        //         // })
+        //         ->where('expense_id', NULL)
+        //         ->orderBy('transaction_date', 'desc')
+        //         // ->get();
+        //         ->paginate($this->paginate_number, pageName: 'transactions-page');
+        // // dd($transactions);
 
         return view('livewire.expenses.index', [
             'expenses' => $expenses,
+            // 'transactions' => $transactions,
         ]);
     }
 }

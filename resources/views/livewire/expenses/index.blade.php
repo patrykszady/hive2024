@@ -132,6 +132,7 @@
         </x-cards.heading>
 
         {{-- BODY --}}
+        {{-- EXPENSES --}}
         <x-cards.body>
             <div>
                 <x-lists.ul wire:loading.class="opacity-50 text-opacity-40">

@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use App\Models\Scopes\TransactionScope;
 
+use Laravel\Scout\Searchable;
+
 class Transaction extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     // protected $dates = ['transaction_date', 'posted_date', 'date', 'deleted_at'];
 
@@ -26,6 +28,28 @@ class Transaction extends Model
     protected static function booted()
     {
         static::addGlobalScope(new TransactionScope);
+    }
+
+    //Searchable / Typesense
+    public function toSearchableArray(): array
+    {
+        return array_merge($this->toArray(),[
+            'id' => (string) $this->id,
+            'amount' => $this->amount,
+            'expense_id' => (string) $this->expense_id,
+            'check_id' => (string) $this->check_id,
+            'transaction_date' => $this->transaction_date,
+            'posted_date' => $this->posted_date,
+            'created_at' => $this->created_at->timestamp,
+        ]);
+    }
+
+    /**
+     * Get the name of the index associated with the model.
+     */
+    public function searchableAs(): string
+    {
+        return 'transactions_index';
     }
 
     public function vendor()

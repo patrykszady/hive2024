@@ -1,5 +1,6 @@
 <?php
 use App\Models\Expense;
+use App\Models\Transaction;
 
 return [
 
@@ -199,6 +200,53 @@ return [
                             'name' => 'date',
                             'type' => 'string',
                             'sort' => true,
+                        ],
+                        [
+                            'name' => 'created_at',
+                            'type' => 'int64',
+                        ],
+                        [
+                            'name' => '__soft_deleted',
+                            'type' => 'int32',
+                            'optional' => true,
+                        ],
+                    ],
+                    'default_sorting_field' => 'created_at',
+                ],
+                'search-parameters' => [
+                    'query_by' => 'amount',
+                ],
+            ],
+            Transaction::class => [
+                'collection-schema' => [
+                    'fields' => [
+                        [
+                            'name' => 'id',
+                            'type' => 'string',
+                        ],
+                        [
+                            'name' => 'amount',
+                            'type' => 'string',
+                            'sort' => true,
+                        ],
+                        [
+                            'name' => 'expense_id',
+                            'type' => 'string',
+                        ],
+                        [
+                            'name' => 'check_id',
+                            'type' => 'string',
+                        ],
+                        [
+                            'name' => 'transaction_date',
+                            'type' => 'string',
+                            'sort' => true,
+                        ],
+                        [
+                            'name' => 'posted_date',
+                            'type' => 'string',
+                            'sort' => true,
+                            'optional' => true,
                         ],
                         [
                             'name' => 'created_at',

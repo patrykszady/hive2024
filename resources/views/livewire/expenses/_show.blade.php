@@ -35,22 +35,13 @@
 						>
 					</x-lists.search_li>
 
-                    @if(is_null($expense->vendor->business_name))
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Vendor'"
-                            :line_data="'NO VENDOR'"
-                            >
-                        </x-lists.search_li>
-                    @else
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Vendor'"
-                            :line_data="$expense->vendor->business_name"
-                            href="{{route('vendors.show', $expense->vendor->id)}}"
-                            >
-                        </x-lists.search_li>
-                    @endif
+                    <x-lists.search_li
+                        :basic=true
+                        :line_title="'Vendor'"
+                        :line_data="$expense->vendor->name"
+                        href="{{isset($expense->vendor->id) ? route('vendors.show', $expense->vendor->id) : ''}}"
+                        >
+                    </x-lists.search_li>
 
 					@if($expense->distribution)
 						<x-lists.search_li

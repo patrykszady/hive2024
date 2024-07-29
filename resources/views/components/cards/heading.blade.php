@@ -39,14 +39,14 @@
                         </svg>
                     </span>
                     @if(!$exclude_accordian_button_text)
-                        {{$left ?? ''}}
+                        <span class="font-medium">{{$left ?? ''}}</span>
                     @endif
                 </button>
                 @if($exclude_accordian_button_text)
-                    {{$left ?? ''}}
+                    <span class="font-medium">{{$left ?? ''}}</span>
                 @endif
             @else
-                {{$left ?? ''}}
+                <span class="font-medium">{{$left ?? ''}}</span>
             @endif
         </div>
 

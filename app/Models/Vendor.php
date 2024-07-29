@@ -8,9 +8,11 @@ use App\Models\Scopes\ClientScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Laravel\Scout\Searchable;
+
 class Vendor extends Model
 {
-    use HasFactory;
+    use HasFactory, Searchable;
 
     protected $fillable = ['business_name', 'business_type', 'sheets_type', 'category_id', 'address', 'address_2', 'city', 'state', 'zip_code', 'business_phone', 'business_email', 'created_at', 'updated_at'];
 
@@ -19,6 +21,25 @@ class Vendor extends Model
     protected static function booted()
     {
         static::addGlobalScope(new VendorScope);
+    }
+
+    //Searchable / Typesense
+    public function toSearchableArray(): array
+    {
+        return array_merge($this->toArray(),[
+            'id' => (string) $this->id,
+            'business_name' => $this->business_name,
+            'business_type' => $this->business_type,
+            'created_at' => $this->created_at->timestamp,
+        ]);
+    }
+
+    /**
+     * Get the name of the index associated with the model.
+     */
+    public function searchableAs(): string
+    {
+        return 'vendors_index';
     }
 
     //Vendors that belong to Logged in vendor / via $user->primary_vendor_id
@@ -159,9 +180,20 @@ class Vendor extends Model
         return $address;
     }
 
+    public function getBusienssNameAttribute()
+    {
+        if(is_null($this->business_name)){
+            return 'NO VENDOR';
+        }else{
+            return $this->business_name;
+        }
+    }
+
     public function getNameAttribute()
     {
-        if($this->biz_type == 4 AND !is_null($this->users()->first())){
+        if(is_null($this->business_name)){
+            return 'NO VENDOR';
+        }elseif($this->biz_type == 4 AND !is_null($this->users()->first())){
             $name = $this->users()->first()->first_name . ' ' . $this->users()->first()->last_name;
             return $name;
         }else{
@@ -174,7 +206,6 @@ class Vendor extends Model
     public function getAddressMapURI()
     {
         $url = 'https://maps.apple.com/?q=' . $this->address . ', ' . $this->city . ', ' . $this->state . ', ' . $this->zip_code;
-
         return $url;
     }
 

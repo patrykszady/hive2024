@@ -74,6 +74,12 @@ use App\Livewire\Payments\PaymentsIndex;
 use App\Livewire\Payments\PaymentCreate;
 
 use App\Livewire\Dashboard\DashboardShow;
+// use App\Models\Expense;
+// use Illuminate\Http\Request;
+
+// Route::get('/search_test', function (Request $request) {
+//     return Expense::search($request->search)->get();
+// });
 
 //if guests go to '/', if logged in go to dashboard (or to /vendor_selection if not set and User has multiple)
 Route::middleware('guest')->group(function(){

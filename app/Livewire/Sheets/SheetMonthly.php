@@ -10,7 +10,9 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class SheetMonthly extends Component
 {
     public $months = [];

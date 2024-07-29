@@ -12,9 +12,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+use Laravel\Scout\Searchable;
+
 class Expense extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $fillable = ['amount', 'date', 'invoice', 'note', 'categroy_id', 'project_id', 'distribution_id', 'vendor_id', 'check_id', 'reimbursment' , 'belongs_to_vendor_id', 'created_by_user_id', 'paid_by', 'created_at', 'updated_at', 'deleted_at'];
 
@@ -26,6 +28,27 @@ class Expense extends Model
     protected static function booted()
     {
         static::addGlobalScope(new ExpenseScope);
+    }
+
+    //Searchable / Typesense
+    public function toSearchableArray(): array
+    {
+        return array_merge($this->toArray(),[
+            'id' => (string) $this->id,
+            'vendor_id' => (string) $this->vendor_id,
+            'project_id' => (string) $this->project_id,
+            'amount' => $this->amount,
+            'date' => $this->date->format('Y-m-d'),
+            'created_at' => $this->created_at->timestamp,
+        ]);
+    }
+
+    /**
+     * Get the name of the index associated with the model.
+     */
+    public function searchableAs(): string
+    {
+        return 'expenses_index';
     }
 
     public function project()

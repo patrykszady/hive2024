@@ -84,7 +84,7 @@ class ChecksIndex extends Component
         $checks =
             Check::orderBy('date', 'DESC')
                 //distributions
-                ->with(['expenses', 'timesheets', 'bank_account'])
+                ->with(['expenses', 'timesheets', 'bank_account', 'transactions'])
                 ->whereIn('bank_account_id', $bank_accounts)
                 ->where('check_type', 'like', "%{$this->check_type}%")
                 ->when($check_number, function ($query) {
@@ -97,6 +97,17 @@ class ChecksIndex extends Component
                     return $query->where('vendor_id', $this->vendor);
                 })
                 ->paginate($paginate_number);
+
+        $checks->getCollection()->each(function ($check, $key){
+            // dd($check->transactions->sum('amount'));
+            if($check->transactions->sum('amount') == $check->amount){
+                $check->status = 'Complete';
+            }elseif(($check->transactions->isNotEmpty() && $check->transactions->sum('amount') != $check->amount)){
+                $check->status = 'Missing Transactions';
+            }else{
+                $check->status = 'No Transactions';
+            }
+        });
 
         return view('livewire.checks.index', [
             'checks' => $checks,

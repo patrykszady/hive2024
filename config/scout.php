@@ -230,12 +230,28 @@ return [
                             'sort' => true,
                         ],
                         [
+                            'name' => 'deposit',
+                            'type' => 'string',
+                        ],
+                        [
+                            'name' => 'vendor_id',
+                            'type' => 'string',
+                        ],
+                        [
                             'name' => 'expense_id',
                             'type' => 'string',
                         ],
                         [
+                            'name' => 'is_expense_id_null',
+                            'type' => 'auto',
+                        ],
+                        [
                             'name' => 'check_id',
                             'type' => 'string',
+                        ],
+                        [
+                            'name' => 'is_check_id_null',
+                            'type' => 'auto',
                         ],
                         [
                             'name' => 'transaction_date',

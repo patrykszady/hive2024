@@ -28,9 +28,12 @@ class Kernel extends ConsoleKernel
         if(env('APP_ENV') == 'production'){
             //->timezone('America/Chicago')->between('6:00', '20:00')
             $schedule->call('\App\Http\Controllers\ReceiptController@ms_graph_email_api')->everyTenMinutes();
+            $schedule->call('\App\Http\Controllers\ReceiptController@auto_receipt')->everyTenMinutes();
+
             $schedule->call('\App\Http\Controllers\TransactionController@plaid_item_status')->hourly();
             $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_sync')->hourly();
             $schedule->call('\App\Http\Controllers\ReceiptController@amazon_orders_api')->hourly();
+
             $schedule->call('\App\Http\Controllers\TransactionController@add_check_deposit_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyTenMinutes();
@@ -38,12 +41,11 @@ class Kernel extends ConsoleKernel
             $schedule->call('\App\Http\Controllers\TransactionController@add_payments_to_transaction')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_transaction_to_expenses_sin_vendor')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@find_credit_payments_on_debit')->everyTenMinutes();
-            
+
             //->timezone('America/Chicago')->between('6:00', '20:00')
-            $schedule->call('\App\Http\Controllers\ReceiptController@auto_receipt')->everyTenMinutes();
+
             // $schedule->call('\App\Http\Controllers\TransactionController@add_transaction_to_multi_expenses')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_category_to_expense')->hourly();
-
             $schedule->call('\App\Http\Controllers\TransactionController@transaction_vendor_bulk_match')->everyTenMinutes();
         }
 

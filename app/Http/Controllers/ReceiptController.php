@@ -794,7 +794,7 @@ class ReceiptController extends Controller
     {
         //09/22/2023 EACH FILE SHOULD BE UPLOADED TO ONEDRIVE AND NOT VIA EMAIL!
         //get receipt from email/onedrive
-        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
+        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->where('id', 17)->get();
         foreach($company_emails as $company_email){
             $email_vendor = $company_email->vendor;
             $email_vendor_bank_account_ids = $email_vendor->bank_accounts->pluck('id');
@@ -840,7 +840,7 @@ class ReceiptController extends Controller
                     "/me/mailFolders/inbox/messages?filter=from/emailAddress/address eq 'noreply@print.epsonconnect.com' and subject eq 'Receipt Scans'")
                     ->setReturnType(Message::class)
                     ->execute();
-
+            // dd($receipts_emails);
             foreach($receipts_emails as $index => $message){
                 if($message->getHasAttachments()){
                     $attachments =
@@ -866,7 +866,7 @@ class ReceiptController extends Controller
                             $document_model = $this->azure_document_model($doc_type, $ocr_path);
 
                             $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
-                            // dd($ocr_receipt_extracted);
+                            // dd($ocr_receipt_extracted['document']['Items']);
                             //pass receipt info from ocr_receipt_extracted to ocr_extract method
                             $ocr_receipt_data = $this->ocr_extract($ocr_receipt_extracted);
                             // dd($ocr_receipt_data);
@@ -1765,28 +1765,37 @@ class ReceiptController extends Controller
         //ITEMS
         if(isset($ocr_receipt_extract_prefix['Items'])){
             $items = $ocr_receipt_extract_prefix['Items']['valueArray'];
-
             foreach($items as $key => $line_item){
                 if(isset($line_item['valueObject']['Quantity'])){
-                    $quantity = $line_item['valueObject']['Quantity']['valueNumber'];
+                    if($key == 1){
+                        $quantity = $line_item['valueObject']['Quantity']['valueNumber'];
 
-                    if(isset($line_item['valueObject']['Price'])){
-                        $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
-                    }elseif(isset($line_item['valueObject']['UnitPrice'])){
-                        $line_item_price = $line_item['valueObject']['UnitPrice']['valueCurrency']['amount'];
-                    }
+                        if(isset($line_item['valueObject']['Price'])){
+                            $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
+                        }elseif(isset($line_item['valueObject']['UnitPrice'])){
+                            $line_item_price = $line_item['valueObject']['UnitPrice']['valueCurrency']['amount'];
+                        }else{
+                            $line_item_price = 0;
+                        }
 
-                    if(isset($line_item['valueObject']['TotalPrice'])){
-                        $total_price = $line_item['valueObject']['TotalPrice']['valueNumber'];
-                    }elseif(isset($line_item['valueObject']['Amount'])){
-                        $total_price = $line_item['valueObject']['Amount']['valueCurrency']['amount'];
-                    }
+                        if(isset($line_item['valueObject']['TotalPrice'])){
+                            $total_price = $line_item['valueObject']['TotalPrice']['valueNumber'];
+                        }elseif(isset($line_item['valueObject']['Amount'])){
+                            $total_price = $line_item['valueObject']['Amount']['valueCurrency']['amount'];
+                        }else{
+                            $total_price = 0;
+                        }
 
-                    $line_item_total = $quantity * $line_item_price;
-
-                    if($line_item_total != $total_price){
-                        $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $line_item_total;
-                        // $line_item['valueObject']['TotalPrice']['content'] = $line_item_total;
+                        if($line_item_price == "0" && $total_price == "0"){
+                            $items[$key]['valueObject']['TotalPrice']['valueNumber'] = "0.00";
+                        }else{
+                            if($line_item_price != "0"){
+                                $line_item_total = $quantity * $line_item_price;
+                                if($line_item_total != $total_price){
+                                    $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $line_item_total;
+                                }
+                            }
+                        }
                     }
                 }
             }

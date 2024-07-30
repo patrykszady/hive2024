@@ -111,21 +111,26 @@ class ExpenseIndex extends Component
                 ->paginate($this->paginate_number, pageName: 'expenses-page');
         // dd($expenses);
 
-        // $transactions =
-        //     Transaction::search($this->amount)
-        //         // ->query(function ($query) {
-        //         //     //->whereNull('check_id')
-        //         //     $query->whereNull('expense_id')->whereNull('check_id');
-        //         // })
-        //         ->where('expense_id', NULL)
-        //         ->orderBy('transaction_date', 'desc')
-        //         // ->get();
-        //         ->paginate($this->paginate_number, pageName: 'transactions-page');
-        // // dd($transactions);
+        $transactions =
+            Transaction::search($this->amount)
+                // ->query(function ($query) {
+                //     //->whereNull('check_id')
+                //     $query->whereNull('expense_id')->whereNull('check_id');
+                // })
+                ->where('is_expense_id_null', 'true')
+                ->where('is_check_id_null', 'true')
+                ->whereIn('deposit', ['NOT_DEPOSIT', 'NO_PAYMENTS'])
+                ->when(!empty($this->expense_vendor), function ($query, $item) {
+                    return $query->where('vendor_id', $this->expense_vendor);
+                })
+                ->orderBy('transaction_date', 'desc')
+                // ->get();
+                ->paginate($this->paginate_number, pageName: 'transactions-page');
+        // dd($transactions);
 
         return view('livewire.expenses.index', [
             'expenses' => $expenses,
-            // 'transactions' => $transactions,
+            'transactions' => $transactions,
         ]);
     }
 }

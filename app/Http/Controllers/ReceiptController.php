@@ -1038,7 +1038,7 @@ class ReceiptController extends Controller
     public function ms_graph_email_api()
     {
         //6-28-2023 catch forwarded messages where From is in database table company_emails
-        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
+        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->where('id', 17)->get();
         foreach($company_emails as $company_email){
             //check if access_token is expired, if so get new access_token and refresh_token
             $guzzle = new Client();

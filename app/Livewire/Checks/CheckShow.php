@@ -83,6 +83,7 @@ class CheckShow extends Component
             Expense::
                 whereNotNull('paid_by')
                 // where('paid_by', $this->check->user_id)
+                // ->whereNull('reimbursment')
                 ->where('check_id', $this->check->id)
                 ->whereNull('distribution_id')
                 ->get();
@@ -101,6 +102,16 @@ class CheckShow extends Component
                 ->whereNotNull('reimbursment')
                 ->where('check_id', $this->check->id)
                 ->get();
+        // dd($user_paid_reimburesements);
+
+        $user_paid_by_reimbursements =
+            Expense::
+                where('paid_by', $this->check->user_id)
+                ->whereNotNull('reimbursment')
+                ->where('reimbursment', '!=', 'Client')
+                ->where('check_id', $this->check->id)
+                ->orderBy('date', 'DESC')
+                ->get();
 
         return view('livewire.checks.show', [
             // 'vendor_paid_expenses' => $vendor_paid_expenses,
@@ -111,6 +122,7 @@ class CheckShow extends Component
             'user_paid_expenses' => $user_paid_expenses,
             'user_distributions' => $user_distributions,
             'user_paid_reimburesements' => $user_paid_reimburesements,
+            'user_paid_by_reimbursements' => $user_paid_by_reimbursements,
         ]);
     }
 }

@@ -94,7 +94,7 @@ class TimesheetPaymentCreate extends Component
         $this->user_paid_expenses =
             Expense::
                 where('paid_by', $this->user->id)
-                ->whereNull('reimbursment')
+                ->whereIn('reimbursment', ['', 'Client'])
                 ->whereNull('check_id')
                 ->orderBy('date', 'DESC')
                 ->get()
@@ -102,23 +102,24 @@ class TimesheetPaymentCreate extends Component
                     $item->checkbox = true;
                 })
                 ->keyBy('id');
+        // dd($this->user_paid_expenses);
 
-        $this->user_reimbursement_expenses =
-            Expense::
-                where('reimbursment', $this->user->id)
-                ->whereNull('paid_by')
-                ->whereNull('check_id')
-                ->orderBy('date', 'DESC')
-                ->get()
-                ->each(function ($item, $key) {
-                    $item->checkbox = true;
-                })
-                ->keyBy('id');
+        // $this->user_reimbursement_expenses =
+        //     Expense::
+        //         where('reimbursment', $this->user->id)
+        //         ->whereNull('paid_by')
+        //         ->whereNull('check_id')
+        //         ->orderBy('date', 'DESC')
+        //         ->get()
+        //         ->each(function ($item, $key) {
+        //             $item->checkbox = true;
+        //         })
+        //         ->keyBy('id');
 
         $this->user_paid_by_reimbursements =
             Expense::
                 where('paid_by', $this->user->id)
-                ->whereNotNull('reimbursment')
+                ->whereNotIn('reimbursment', ['', 'Client'])
                 ->whereNull('check_id')
                 ->orderBy('date', 'DESC')
                 ->get()
@@ -127,14 +128,14 @@ class TimesheetPaymentCreate extends Component
                     // $item->amount = -$item->amount;
                 })
                 ->keyBy('id');
-
-        // foreach($this->user_paid_by_reimbursements as $user_paid_by_reimbursement_expense){
-        //     $user_paid_by_reimbursement_expense->amount = '-' . $user_paid_by_reimbursement_expense->amount;
-        //     // dd($user_paid_by_reimbursement_expense->amount);
-        // }
-
         // dd($this->user_paid_by_reimbursements);
-        // dd($this->user_paid_by_reimbursements->first()->reimbursment);
+        // // foreach($this->user_paid_by_reimbursements as $user_paid_by_reimbursement_expense){
+        // //     $user_paid_by_reimbursement_expense->amount = '-' . $user_paid_by_reimbursement_expense->amount;
+        // //     // dd($user_paid_by_reimbursement_expense->amount);
+        // // }
+
+        // // dd($this->user_paid_by_reimbursements);
+        // // dd($this->user_paid_by_reimbursements->first()->reimbursment);
 
         if($this->weekly_timesheets->isEmpty()){
             $this->weekly_timesheets = collect();
@@ -148,9 +149,9 @@ class TimesheetPaymentCreate extends Component
             $this->user_paid_expenses = collect();
         }
 
-        if($this->user_reimbursement_expenses->isEmpty()){
-            $this->user_reimbursement_expenses = collect();
-        }
+        // if($this->user_reimbursement_expenses->isEmpty()){
+        //     $this->user_reimbursement_expenses = collect();
+        // }
 
         if($this->user_paid_by_reimbursements->isEmpty()){
             $this->user_paid_by_reimbursements = collect();
@@ -240,10 +241,10 @@ class TimesheetPaymentCreate extends Component
         }
         $total += $user_paid_expenses_total;
 
-        //user_reimbursement_expenses
-        $total -= $this->user_reimbursement_expenses->where('checkbox', true)->sum('amount');
+        // //user_reimbursement_expenses
+        // $total -= $this->user_reimbursement_expenses->where('checkbox', true)->sum('amount');
 
-        //user_paid_by_reimbursements
+        // //user_paid_by_reimbursements
         $user_paid_by_reimbursements = $this->user_paid_by_reimbursements->where('checkbox', true)->sum('amount');
         if($user_paid_by_reimbursements != '0.00'){
             $confirm_disable[] = TRUE;

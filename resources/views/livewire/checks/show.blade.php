@@ -127,7 +127,7 @@
             <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
-                        <h1><b>{{$check->user->first_name}}</b> Timesheets</h1>
+                        <h1><b>{{$check->user->first_name}}</b>'s Timesheets</h1>
                     </x-slot>
                 </x-cards.heading>
 
@@ -305,6 +305,7 @@
                             {{-- :line_details="$line_details" --}}
                             :line_title="money($paid_expense->amount) . ' | ' . $paid_expense->project->name"
                             href="{{route('expenses.show', $paid_expense->id)}}"
+                            href_target="_blank"
                             :bubble_message="'Expense'"
                             {{-- :checkbox="$checkbox" --}}
                             >
@@ -337,7 +338,7 @@
             @endif
 
             {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
-            @if(!$user_paid_reimburesements->isEmpty())
+            {{-- @if(!$user_paid_reimburesements->isEmpty())
             <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
@@ -349,9 +350,30 @@
                     @foreach($user_paid_reimburesements as $user_distribution_expense)
                         <x-lists.search_li
                             :href="route('expenses.show', $user_distribution_expense)"
-                            {{-- . ' | ' . $user_distribution_expense->vendor->name  --}}
-                            {{--  . ' | ' . $user_distribution_expense->distribution->name --}}
                             :line_title="money($user_distribution_expense->amount)"
+                            :bubble_message="'Reimbursement'"
+                            >
+                        </x-lists.search_li>
+                    @endforeach
+                </x-lists.ul>
+            </x-cards>
+            @endif --}}
+
+            {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
+            @if(!$user_paid_by_reimbursements->isEmpty())
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
+                <x-cards.heading>
+                    <x-slot name="left">
+                        <h1>Paid Other Employee Reimbursements</h1>
+                    </x-slot>
+                </x-cards.heading>
+
+                <x-lists.ul>
+                    @foreach($user_paid_by_reimbursements as $user_distribution_expense)
+                        <x-lists.search_li
+                            :href="route('expenses.show', $user_distribution_expense)"
+                            href_target="_blank"
+                            :line_title="substr($user_distribution_expense->amount, 0, 1) == '-' ? money(substr($user_distribution_expense->amount, 1)) : '-' . money($user_distribution_expense->amount) . ' | ' . $user_distribution_expense->vendor->name . ' | ' . $user_distribution_expense->reimbursment"
                             :bubble_message="'Reimbursement'"
                             >
                         </x-lists.search_li>

@@ -1,6 +1,6 @@
 <div>
     {{-- key="{{ Str::random() }}" --}}
-    <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1' : ''}}">
+    <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1' : ''}}">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -65,7 +65,7 @@
                 Add Google Email
             </a>
         </div>
-    </x-cards.wrapper>
+    </x-cards>
 
     @if(request()->routeIs('company_emails.index'))
         <livewire:receipt-accounts.receipt-accounts-index />

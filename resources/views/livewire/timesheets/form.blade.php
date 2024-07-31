@@ -114,6 +114,8 @@
                         Total Amount | <b>{{money($this->user_hours_amount)}}</b>
                     </button>
                     <button
+                        wire:loading.class="opacity-50"
+                        wire:loading.attr="disabled"
                         type="submit"
                         class="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow focus:outline-none hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                         Confirm Weekly Timesheet

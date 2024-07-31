@@ -1,6 +1,6 @@
 {{-- CREATE RECEIPT ACCOUNT --}}
 <div>
-    <x-cards.wrapper class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1' : ''}}">
+    <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1' : ''}}">
         <x-cards.heading>
             <x-slot name="left">
                 <h1>
@@ -44,7 +44,7 @@
                 </x-lists.ul>
             </div>
         </x-cards.body>
-    </x-cards.wrapper>
+    </x-cards>
 
     <livewire:receipt-accounts.receipt-account-vendor-create :vendors="$vendors"/>
 </div>

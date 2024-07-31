@@ -1538,12 +1538,14 @@ class ReceiptController extends Controller
 
     public function azure_docs_api($file_location, $document_model, $doc_type)
     {
+        // dd($file_location, $document_model, $doc_type);
         //jpg or jpeg
-        if($doc_type == 'jpg'){
+        //['jpg', 'jpeg] ?
+        if(strtolower($doc_type) == 'jpg'){
             $doc_content_type = 'Content-Type: image/jpeg';
-        }elseif($doc_type == 'pdf'){
+        }elseif(strtolower($doc_type) == 'pdf'){
             $doc_content_type = 'Content-Type: application/pdf';
-        }elseif($doc_type == 'png'){
+        }elseif(strtolower($doc_type) == 'png'){
             $doc_content_type = 'Content-Type: image/png';
         }else{
             //RETURN ERROR

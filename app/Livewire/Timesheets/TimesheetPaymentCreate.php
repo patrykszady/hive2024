@@ -29,7 +29,7 @@ class TimesheetPaymentCreate extends Component
     public $weekly_timesheets = [];
     public $employee_weekly_timesheets = [];
     public $user_paid_expenses = [];
-    public $user_reimbursement_expenses = [];
+    // public $user_reimbursement_expenses = [];
     public $user_paid_by_reimbursements = [];
 
     public $disable_paid_by = FALSE;
@@ -40,7 +40,7 @@ class TimesheetPaymentCreate extends Component
             'weekly_timesheets.*.checkbox' => 'nullable',
             'employee_weekly_timesheets.*.checkbox' => 'nullable',
             'user_paid_expenses.*.checkbox' => 'nullable',
-            'user_reimbursement_expenses.*.checkbox' => 'nullable',
+            // 'user_reimbursement_expenses.*.checkbox' => 'nullable',
             'user_paid_by_reimbursements.*.checkbox' => 'nullable',
             'user.via_vendor_back' => 'nullable',
             'user.payee_name' => 'nullable',

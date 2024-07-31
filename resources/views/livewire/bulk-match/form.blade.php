@@ -183,7 +183,7 @@
                     x-show="split && bulk_splits"
                     x-transition
                     >
-                    <x-cards.wrapper class="col-span-4 p-6 lg:col-span-2">
+                    <x-cards class="col-span-4 p-6 lg:col-span-2">
                         <x-cards.body>
                             @foreach ($bulk_splits as $index => $split)
                                 <x-cards.heading>
@@ -276,7 +276,7 @@
                                 </div>
                             @endforeach
                         </x-cards.body>
-                    </x-cards.wrapper>
+                    </x-cards>
                 </div>
 
                 <div
@@ -287,7 +287,7 @@
                     @if(!is_null($new_vendor))
                         {{-- @if(!$new_vendor->vendor_transactions->isEmpty()) --}}
                         @if(!is_null($new_vendor->vendor_transactions))
-                            <x-cards.wrapper class="col-span-4 p-6 lg:col-span-2">
+                            <x-cards class="col-span-4 p-6 lg:col-span-2">
                                 <x-cards.heading class="bg-color-none">
                                     <x-slot name="left">
                                         <h1>Vendor <b>Transactions</b></h1>
@@ -320,10 +320,10 @@
                                         </x-lists.search_li>
                                     @endforeach
                                 </x-lists.ul>
-                            </x-cards.wrapper>
+                            </x-cards>
                         @endif
                         @if(!is_null($new_vendor->vendor_expenses))
-                        <x-cards.wrapper class="col-span-4 p-6 lg:col-span-2">
+                        <x-cards class="col-span-4 p-6 lg:col-span-2">
                             <x-cards.heading class="bg-color-none">
                                 <x-slot name="left">
                                     <h1>Vendor <b>Expenses</b></h1>
@@ -357,7 +357,7 @@
                                     </x-lists.search_li>
                                 @endforeach
                             </x-lists.ul>
-                        </x-cards.wrapper>
+                        </x-cards>
                     @endif
                     @endif
                 </div>

@@ -1279,7 +1279,9 @@ class TransactionController extends Controller
                 if($check->check_type == 'Transfer'){
                     $transactions_by_name = Transaction::withoutGlobalScopes()
                         ->whereNull('deleted_at')
-                        ->whereDoesntHave('check')
+                        // cannot use whereDoesntHave with withoutGlobalScopes
+                        // ->whereDoesntHave('check')
+                        ->whereNull('check_id')
                         ->where('check_number', $check_number)
                         //per hive vendor... checks table foreach bank_account_id
                         // ->where('bank_account_id', $check->bank_account_id)

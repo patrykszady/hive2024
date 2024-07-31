@@ -78,7 +78,6 @@ class TimesheetCreate extends Component
     #[Title('Timesheets Create')]
     public function render()
     {
-        // dd($this->user);
         $weekly_days = $this->weekly_hours->sortBy('date')->groupBy(['date', 'project.project_name']);
         $week_date = $this->week->startOfWeek()->toFormattedDateString();
 

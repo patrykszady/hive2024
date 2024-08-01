@@ -468,8 +468,7 @@ class ReceiptController extends Controller
         // dd($accessToken);
 
         // $guzzle = new Client();
-        // ' . env('MS_GRAPH_TENANT_ID') . '
-        $url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+        $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/authorize';
 
         $params = array(
             'client_id' => env('MS_GRAPH_CLIENT_ID'),
@@ -492,7 +491,7 @@ class ReceiptController extends Controller
         }
 
         $guzzle = new Client();
-        $url = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
+        $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
         $email_account_tokens = json_decode($guzzle->post($url, [
             'form_params' => [
                 'client_id' => env('MS_GRAPH_CLIENT_ID'),

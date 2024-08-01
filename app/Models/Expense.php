@@ -33,11 +33,39 @@ class Expense extends Model
     //Searchable / Typesense
     public function toSearchableArray(): array
     {
+        // if($this->check()->withoutGlobalScopes()){
+        //     if($this->check()->withoutGlobalScopes()->transactions->isNotEmpty()){
+        //         if($this->check()->withoutGlobalScopes()->transactions->sum('amount') == $this->check()->withoutGlobalScopes()->amount){
+        //             $expense_status = 'Complete';
+        //         }else{
+        //             $expense_status = 'Missing Transaction';
+        //         }
+        //     }else{
+        //         $expense_status = 'No Transaction';
+        //     }
+        // }
+        // if(($this->transactions->isNotEmpty() && $this->project->project_name != 'NO PROJECT') || ($this->paid_by != NULL && $this->project->project_name != 'NO PROJECT')){
+        //     $expense_status = 'Complete';
+        // }else{
+        //     if($this->project->project_name != 'NO PROJECT' && $this->transactions->isEmpty()){
+        //         $expense_status = 'No Transaction';
+        //     }elseif($this->project->project_name == 'NO PROJECT' && ($this->transactions->isNotEmpty() || $this->paid_by != NULL)){
+        //         $expense_status = 'No Project';
+        //     }else{
+        //         $expense_status = 'Missing Info';
+        //     }
+        // }
+
         return array_merge($this->toArray(),[
             'id' => (string) $this->id,
             'vendor_id' => (string) $this->vendor_id,
             'project_id' => (string) $this->project_id,
+            'is_project_id_null' => $this->project_id ? false : true,
+            'distribution_id' => (string) $this->distribution_id,
+            'is_distribution_id_null' => $this->distribution_id ? false : true,
+            'has_splits' => $this->splits->isEmpty() ? false : true,
             'amount' => $this->amount,
+            'expense_status' => !is_null($this->project_id) ? "Complete" : "Missing Info",
             'date' => $this->date->format('Y-m-d'),
             'created_at' => $this->created_at->timestamp,
         ]);
@@ -48,7 +76,7 @@ class Expense extends Model
      */
     public function searchableAs(): string
     {
-        return 'expenses_index';
+        return env('APP_ENV') == 'local' ? 'expenses_index_dev' : 'expenses_index';
     }
 
     public function project()

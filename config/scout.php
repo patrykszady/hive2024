@@ -197,6 +197,27 @@ return [
                             'type' => 'string',
                         ],
                         [
+                            'name' => 'is_project_id_null',
+                            'type' => 'auto',
+                        ],
+                        [
+                            'name' => 'distribution_id',
+                            'type' => 'string',
+                        ],
+                        [
+                            'name' => 'is_distribution_id_null',
+                            'type' => 'auto',
+                        ],
+                        [
+                            'name' => 'has_splits',
+                            'type' => 'auto',
+                        ],
+                        [
+                            'name' => 'expense_status',
+                            'type' => 'string',
+                            'sort' => true,
+                        ],
+                        [
                             'name' => 'date',
                             'type' => 'string',
                             'sort' => true,

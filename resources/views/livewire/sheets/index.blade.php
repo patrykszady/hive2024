@@ -1,5 +1,5 @@
 <div class="max-w-xl mx-auto space-y-4 sm:px-6">
-    <x-cards.wrapper>
+    <x-cards>
         <x-lists.ul>
             <x-lists.search_li
                 :basic=true
@@ -9,9 +9,9 @@
                 >
             </x-lists.search_li>
         </x-lists.ul>
-    </x-cards.wrapper>
+    </x-cards>
 
-    <x-cards.wrapper>
+    <x-cards>
         <x-cards.heading>
             <x-slot name="left">
                 <h1 class="text-lg">Cost of Revenue</b></h1>
@@ -41,9 +41,9 @@
                 </x-lists.search_li>
             </x-lists.ul>
         </x-cards.body>
-    </x-cards.wrapper>
+    </x-cards>
 
-    <x-cards.wrapper>
+    <x-cards>
         <x-lists.ul>
             <x-lists.search_li
                 :basic=true
@@ -53,9 +53,9 @@
                 >
             </x-lists.search_li>
         </x-lists.ul>
-    </x-cards.wrapper>
+    </x-cards>
 
-    <x-cards.wrapper>
+    <x-cards>
         <x-cards.heading>
             <x-slot name="left">
                 <h1 class="text-lg">General & Administrative Expenses</b></h1>
@@ -82,9 +82,9 @@
                 </x-lists.search_li>
             </x-lists.ul>
         </x-cards.body>
-    </x-cards.wrapper>
+    </x-cards>
 
-    <x-cards.wrapper>
+    <x-cards>
         <x-lists.ul>
             <x-lists.search_li
                 :basic=true
@@ -94,5 +94,5 @@
                 >
             </x-lists.search_li>
         </x-lists.ul>
-    </x-cards.wrapper>
+    </x-cards>
 </div>

@@ -86,7 +86,7 @@ class ExpenseIndex extends Component
         // $this->banks = Bank::with('accounts')->get()->groupBy('plaid_ins_id')->toBase();
         $this->vendors = Vendor::whereHas('expenses')->orWhereHas('transactions')->orderBy('business_name')->get();
         $this->projects = Project::whereHas('expenses')->orderBy('created_at', 'DESC')->get();
-        // $this->distributions = Distribution::all();
+        $this->distributions = Distribution::all();
     }
 
     // public function placeholder(array $params = [])
@@ -99,17 +99,64 @@ class ExpenseIndex extends Component
     {
         $expenses =
             Expense::search($this->amount)
-                ->when(!empty($this->expense_vendor), function ($query, $item) {
+                ->when(!empty($this->expense_vendor) && $this->expense_vendor != '0', function ($query, $item) {
                     return $query->where('vendor_id', $this->expense_vendor);
                 })
-                ->when(!empty($this->project), function ($query, $item) {
+                ->when($this->expense_vendor == '0', function ($query, $item) {
+                    return $query->where('vendor_id', '0');
+                })
+
+                // && $this->project != 'NO_PROJECT' && $this->project != 'SPLIT'
+                ->when(!empty($this->project) && is_numeric($this->project), function ($query, $item) {
                     return $query->where('project_id', $this->project);
                 })
+                //and no splits
+                ->when($this->project == 'NO_PROJECT', function ($query, $item) {
+                    return
+                        $query
+                            ->where('is_project_id_null', 'true')
+                            ->where('is_distribution_id_null', 'true')
+                            ->where('has_splits', 'false');
+                })
+                ->when($this->project == 'SPLIT', function ($query, $item) {
+                    return $query->where('has_splits', 'true');
+                })
+                ->when(substr($this->project, 0, 1) == 'D', function ($query) {
+                    return
+                        $query
+                            ->where('is_distribution_id_null', 'false')
+                            ->where('distribution_id', substr($this->project, 2));
+                })
+
                 ->orderBy('date', 'desc')
                 // ->get();
                 // ->simplePaginate($paginate_number, ['*'], 'expenses_page');
                 ->paginate($this->paginate_number, pageName: 'expenses-page');
-        // dd($expenses);
+
+                $expenses->getCollection()->each(function ($expense, $key){
+                    // if($expense->check){
+                    //     if($expense->check->transactions->isNotEmpty() && $expense->paid_by != NULL){
+                    //         $expense->status = 'Complete';
+                    //     }else{
+                    //         if($expense->transactions->isNotEmpty()){
+                    //             $expense->status = 'Complete';
+                    //         }else{
+                    //             $expense->status = 'No Transaction';
+                    //         }
+                    //     }
+                    // }else
+                    if(($expense->transactions->isNotEmpty() && $expense->project->project_name != 'NO PROJECT') || ($expense->paid_by != NULL && $expense->project->project_name != 'NO PROJECT')){
+                        $expense->status = 'Complete';
+                    }else{
+                        if($expense->project->project_name != 'NO PROJECT' && $expense->transactions->isEmpty()){
+                            $expense->status = 'No Transaction';
+                        }elseif($expense->project->project_name == 'NO PROJECT' && ($expense->transactions->isNotEmpty() || $expense->paid_by != NULL)){
+                            $expense->status = 'No Project';
+                        }else{
+                            $expense->status = 'Missing Info';
+                        }
+                    }
+                });
 
         $transactions =
             Transaction::search($this->amount)

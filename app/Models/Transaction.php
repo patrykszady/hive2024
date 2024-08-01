@@ -53,7 +53,7 @@ class Transaction extends Model
      */
     public function searchableAs(): string
     {
-        return 'transactions_index';
+        return env('APP_ENV') == 'local' ? 'transaction_index_dev' : 'transaction_index';
     }
 
     public function vendor()

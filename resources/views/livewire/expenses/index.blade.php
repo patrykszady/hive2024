@@ -94,19 +94,20 @@
                             {{-- @disabled($view == 'projects.show') --}}
                             class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             >
-
-                            <option value="" readonly>All Projects</option>
-                            <option value="SPLIT">Project Splits</option>
-                            <option value="NO_PROJECT">No Project</option>
-
-                            @foreach($projects as $index => $project)
-                                <option value="{{$project->id}}">{{$project->name}}</option>
-                            @endforeach
+                            <option value="" readonly>ALL PROJECTS</option>
+                            <option value="SPLIT">PROJECT SPLITS</option>
+                            <option value="NO_PROJECT">NO PROJECT</option>
 
                             <option disabled>----------</option>
 
                             @foreach($distributions as $index => $distribution)
                                 <option value="D-{{$distribution->id}}">{{$distribution->name}}</option>
+                            @endforeach
+
+                            <option disabled>----------</option>
+
+                            @foreach($projects as $index => $project)
+                                <option value="{{$project->id}}">{{$project->name}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -120,8 +121,10 @@
                         class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         >
 
-                        <option value="" readonly>All Vendors</option>
+                        <option value="" readonly>ALL VENDORS</option>
                         <option value="0" readonly>NO VENDOR</option>
+
+                        <option disabled>----------</option>
 
                         @foreach($vendors as $index => $vendor)
                             <option value="{{$vendor->id}}">{{$vendor->business_name}}</option>
@@ -181,6 +184,9 @@
                             wire:click="$dispatchTo('expenses.expense-create', '{{$click_emit_destination}}', { expense: {{$expense->id}}})"
                             :line_details="$line_details"
                             :line_title="money($expense->amount)"
+                            :bubble_message="$expense->status"
+                            {{-- ($expense->status == 'No Project' ? 'yellow' : 'red') --}}
+                            :bubble_color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'yellow' : 'red')"
                             >
                         </x-lists.search_li>
                     @endforeach

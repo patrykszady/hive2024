@@ -121,6 +121,13 @@ return [
             'days' => 30,
         ],
 
+        'company_emails_login_error' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/company_emails_login_error.log'),
+            'level' => 'debug',
+            'days' => 30,
+        ],
+
         'plaid_adds' => [
             'driver' => 'daily',
             'path' => storage_path('logs/plaid_adds.log'),

@@ -47,8 +47,8 @@
                     {{-- href="{{route('banks.show', $bank->id)}}" --}}
                     {{-- :line_details="$line_details" --}}
                     :line_title="$email->email"
-                    :bubble_message="'Connected'"
-                    :bubble_color="'green'"
+                    :bubble_message="isset($email->api_json['errors']) ? 'Disconnected' : 'Connected'"
+                    :bubble_color="isset($email->api_json['errors']) ? 'red' : 'green'"
                     >
                 </x-lists.search_li>
             @endforeach

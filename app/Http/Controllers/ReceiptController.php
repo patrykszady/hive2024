@@ -28,7 +28,9 @@ use Microsoft\Graph\Model\MailFolder;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Http;
 use Microsoft\Graph\Model;
+
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -480,6 +482,148 @@ class ReceiptController extends Controller
         // $accessToken = $token->access_token;
     }
 
+    public function ms_graph_auth_response()
+    {
+        if(isset(request()->query()['code'])){
+            $code = request()->query()['code'];
+        }else{
+            return redirect(route('company_emails.index'));
+        }
+
+        $guzzle = new Client();
+        $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
+        $email_account_tokens = json_decode($guzzle->post($url, [
+            'form_params' => [
+                'client_id' => env('MS_GRAPH_CLIENT_ID'),
+                'scope' => env('MS_GRAPH_USER_SCOPES'),
+                'code' => $code,
+                'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+                'grant_type' => 'authorization_code',
+                'client_secret' => env('MS_GRAPH_SECRET_ID'),
+            ],
+        ])->getBody()->getContents());
+
+        $access_token = $email_account_tokens->access_token;
+
+        $graph = new Graph();
+        $graph->setAccessToken($access_token);
+
+        $user = $graph->createRequest("GET", "/me")
+            ->setReturnType(Model\User::class)
+            ->execute();
+
+        //->whereJsonDoesntContain('api_json->errors->error', 'invalid_grant')
+        $existing_company_email = CompanyEmail::withoutGlobalScopes()->where('email', $user->getMail())->first();
+        if($existing_company_email){
+            //update existing Company_email
+            if(isset($existing_company_email->api_json['errors']['error'])){
+                //json
+                $api_data = array_merge($existing_company_email->api_json, array(
+                    'errors' => null,
+                    'provider' => 'outlook',
+                    'access_token' => $access_token,
+                    'refresh_token' => $email_account_tokens->refresh_token,
+                    'user_id' => $user->getId(),
+                ));
+
+                $api_data = json_encode($api_data);
+
+                $existing_company_email->update([
+                    'api_json' => $api_data,
+                ]);
+            }else{
+                //return back with error
+                session()->flash('error', 'Email already connected.');
+                if(auth()->user()->vendor->registration['registered'] == FALSE){
+                    return redirect(route('vendor_registration', auth()->user()->vendor));
+                }else{
+                    return redirect(route('company_emails.index'));
+                }
+            }
+        }else{
+            //create HIVE folder in mailbox...
+            //HIVE_CONTRACTORS_RECEIPTS
+            try{
+                $create_hive_folder = $graph->createRequest("POST", "/users/" . $user->getId() . "/mailFolders")
+                    ->attachBody(
+                        array(
+                            'displayName' => 'HIVE_CONTRACTORS_RECEIPTS',
+                            'isHidden' => false,
+                            )
+                        )
+                    ->setReturnType(MailFolder::class)
+                    ->execute();
+                $api_data['hive_folder'] = $create_hive_folder->getId();
+            }catch (\Exception $e){
+                //409 = A folder with the specified name already exists.
+                if($e->getCode() == 409){
+                    //get ID of the existing folder...
+                    $user_hive_folder = $graph->createCollectionRequest("GET", "/me/mailFolders?filter=displayName eq 'HIVE_CONTRACTORS_RECEIPTS'&expand=childFolders")
+                    ->setReturnType(MailFolder::class)
+                    ->execute();
+
+                    $api_data['hive_folder'] = $user_hive_folder[0]->getId();
+                }else{
+                    abort(404);
+                }
+            }
+
+            //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
+            $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
+            foreach($sub_folders as $folder){
+                try{
+                    $create_hive_folder = $graph->createRequest("POST", "/users/" . $user->getId() . "/mailFolders/" . $api_data['hive_folder'] . "/childFolders")
+                    ->attachBody(
+                        array(
+                            'displayName' => $folder,
+                            'isHidden' => false,
+                            )
+                        )
+                    ->setReturnType(MailFolder::class)
+                    ->execute();
+
+                    $api_data['hive_folder_' . strtolower($folder)] = $create_hive_folder->getId();
+                }catch (\Exception $e){
+                    //409 = A folder with the specified name already exists.
+                    if($e->getCode() == 409){
+                        //get ID of the existing folder...
+                        $user_hive_folder = $graph->createCollectionRequest("GET", "/me/mailFolders/" . $api_data['hive_folder'] . "/childFolders?filter=displayName eq '" . $folder ."'")
+                        ->setReturnType(MailFolder::class)
+                        ->execute();
+
+                        $api_data['hive_folder_' . strtolower($folder)] = $user_hive_folder[0]->getId();
+                    }else{
+                        abort(404);
+                    }
+                }
+            }
+
+            //json
+            $api_data = array_merge($api_data, array(
+                'provider' => 'outlook',
+                'access_token' => $access_token,
+                'refresh_token' => $email_account_tokens->refresh_token,
+                'user_id' => $user->getId(),
+            ));
+
+            $api_data = json_encode($api_data);
+
+            //6-8-2023 Unique only
+            CompanyEmail::create([
+                'email' => $user->getMail(),
+                'vendor_id' => auth()->user()->vendor->id,
+                'api_json' => $api_data,
+            ]);
+        }
+
+
+        if(auth()->user()->vendor->registration['registered'] == FALSE){
+            return redirect(route('vendor_registration', auth()->user()->vendor));
+        }else{
+            return redirect(route('company_emails.index'));
+        }
+    }
+
     public function google_cloud_client()
     {
         $client = new \Google_Client();
@@ -658,127 +802,6 @@ class ReceiptController extends Controller
 
         CompanyEmail::create([
             'email' => $user_info->email,
-            'vendor_id' => auth()->user()->vendor->id,
-            'api_json' => $api_data,
-        ]);
-
-        if(auth()->user()->vendor->registration['registered'] == FALSE){
-            return redirect(route('vendor_registration', auth()->user()->vendor));
-        }else{
-            return redirect(route('company_emails.index'));
-        }
-    }
-
-    public function ms_graph_auth_response()
-    {
-        if(isset(request()->query()['code'])){
-            $code = request()->query()['code'];
-        }else{
-            return redirect(route('company_emails.index'));
-        }
-
-        $guzzle = new Client();
-        $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
-        $email_account_tokens = json_decode($guzzle->post($url, [
-            'form_params' => [
-                'client_id' => env('MS_GRAPH_CLIENT_ID'),
-                'scope' => env('MS_GRAPH_USER_SCOPES'),
-                'code' => $code,
-                'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
-                'grant_type' => 'authorization_code',
-                'client_secret' => env('MS_GRAPH_SECRET_ID'),
-            ],
-        ])->getBody()->getContents());
-
-        $access_token = $email_account_tokens->access_token;
-
-        $graph = new Graph();
-        $graph->setAccessToken($access_token);
-
-        $user = $graph->createRequest("GET", "/me")
-            ->setReturnType(Model\User::class)
-            ->execute();
-
-        $existing_company_emails = CompanyEmail::withoutGlobalScopes()->where('email', $user->getMail())->get();
-        if(!$existing_company_emails->isEmpty()){
-            //return back with error
-            session()->flash('error', 'Email already connected.');
-            if(auth()->user()->vendor->registration['registered'] == FALSE){
-                return redirect(route('vendor_registration', auth()->user()->vendor));
-            }else{
-                return redirect(route('company_emails.index'));
-            }
-        }
-        //create HIVE folder in mailbox...
-        //HIVE_CONTRACTORS_RECEIPTS
-        try{
-            $create_hive_folder = $graph->createRequest("POST", "/users/" . $user->getId() . "/mailFolders")
-                ->attachBody(
-                    array(
-                        'displayName' => 'HIVE_CONTRACTORS_RECEIPTS',
-                        'isHidden' => false,
-                        )
-                    )
-                ->setReturnType(MailFolder::class)
-                ->execute();
-            $api_data['hive_folder'] = $create_hive_folder->getId();
-        }catch (\Exception $e){
-            //409 = A folder with the specified name already exists.
-            if($e->getCode() == 409){
-                //get ID of the existing folder...
-                $user_hive_folder = $graph->createCollectionRequest("GET", "/me/mailFolders?filter=displayName eq 'HIVE_CONTRACTORS_RECEIPTS'&expand=childFolders")
-                ->setReturnType(MailFolder::class)
-                ->execute();
-
-                $api_data['hive_folder'] = $user_hive_folder[0]->getId();
-            }else{
-                abort(404);
-            }
-        }
-
-        //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
-        $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
-        foreach($sub_folders as $folder){
-            try{
-                $create_hive_folder = $graph->createRequest("POST", "/users/" . $user->getId() . "/mailFolders/" . $api_data['hive_folder'] . "/childFolders")
-                ->attachBody(
-                    array(
-                        'displayName' => $folder,
-                        'isHidden' => false,
-                        )
-                    )
-                ->setReturnType(MailFolder::class)
-                ->execute();
-
-                $api_data['hive_folder_' . strtolower($folder)] = $create_hive_folder->getId();
-            }catch (\Exception $e){
-                //409 = A folder with the specified name already exists.
-                if($e->getCode() == 409){
-                    //get ID of the existing folder...
-                    $user_hive_folder = $graph->createCollectionRequest("GET", "/me/mailFolders/" . $api_data['hive_folder'] . "/childFolders?filter=displayName eq '" . $folder ."'")
-                    ->setReturnType(MailFolder::class)
-                    ->execute();
-
-                    $api_data['hive_folder_' . strtolower($folder)] = $user_hive_folder[0]->getId();
-                }else{
-                    abort(404);
-                }
-            }
-        }
-
-        //json
-        $api_data = array_merge($api_data, array(
-            'provider' => 'outlook',
-            'access_token' => $access_token,
-            'refresh_token' => $email_account_tokens->refresh_token,
-            'user_id' => $user->getId(),
-        ));
-
-        $api_data = json_encode($api_data);
-
-        //6-8-2023 Unique only
-        CompanyEmail::create([
-            'email' => $user->getMail(),
             'vendor_id' => auth()->user()->vendor->id,
             'api_json' => $api_data,
         ]);
@@ -1038,21 +1061,53 @@ class ReceiptController extends Controller
     public function ms_graph_email_api()
     {
         //6-28-2023 catch forwarded messages where From is in database table company_emails
-        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->where('id', 17)->get();
+        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
         foreach($company_emails as $company_email){
+            // dd($company_email->api_json->toArray());
             //check if access_token is expired, if so get new access_token and refresh_token
-            $guzzle = new Client();
-            $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
-            $email_account_tokens = json_decode($guzzle->post($url, [
-                'form_params' => [
-                    'client_id' => env('MS_GRAPH_CLIENT_ID'),
-                    'scope' => env('MS_GRAPH_USER_SCOPES'),
-                    'refresh_token' => $company_email->api_json['refresh_token'],
-                    'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
-                    'grant_type' => 'refresh_token',
-                    'client_secret' => env('MS_GRAPH_SECRET_ID'),
-                ],
-            ])->getBody()->getContents());
+            try{
+                $guzzle = new Client();
+                $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
+                $email_account_tokens = json_decode($guzzle->post($url, [
+                    'form_params' => [
+                        'client_id' => env('MS_GRAPH_CLIENT_ID'),
+                        'scope' => env('MS_GRAPH_USER_SCOPES'),
+                        'refresh_token' => $company_email->api_json['refresh_token'],
+                        'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+                        'grant_type' => 'refresh_token',
+                        'client_secret' => env('MS_GRAPH_SECRET_ID'),
+                    ],
+                ])->getBody()->getContents());
+            }catch(RequestException $e){
+                // dd($company_email->api_json['access_token']);
+                if($e->hasResponse()) {
+                    $response = $e->getResponse();
+                    $responseBody = $response->getBody()->getContents();
+                    $error = $responseBody;
+                }else{
+                    $error = $e->getMessage();
+                }
+
+                if($error){
+                    //ARRAY already
+                    // dd([$company_email->api_json, jso => n_decode($error, true)]);
+                    $company_email->api_json += ['errors' => json_decode($error, true)];
+                    $company_email->save();
+                }
+                // else{
+                //     dd($email_account_tokens);
+                // }
+
+                // $errors = json_encode($error);
+                // dd($errros);
+                //add to $company_email json ('api') errors
+                // $company_email->api_json = json_encode(array_merge($company_email->api_json, $error));
+
+                Log::channel('company_emails_log_in_error')->info($error);
+                continue;
+            }
+
+            // dd($email_account_tokens);
 
             //json
             $api_data = $company_email->api_json;

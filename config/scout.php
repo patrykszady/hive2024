@@ -275,6 +275,11 @@ return [
                             'type' => 'auto',
                         ],
                         [
+                            'name' => 'bank_account_id',
+                            'type' => 'string',
+                            'sort' => true,
+                        ],
+                        [
                             'name' => 'transaction_date',
                             'type' => 'string',
                             'sort' => true,

@@ -214,13 +214,13 @@
                 </x-cards.heading>
 
                 {{-- SUB-HEADING --}}
-                {{-- <x-cards.heading>
+                <x-cards.heading>
                     <div class="mx-auto">
                         <div>
                             <select
-                                wire:model.live="bank"
-                                id="bank"
-                                name="bank"
+                                wire:model.live="bank_plaid_ins_id"
+                                id="bank_plaid_ins_id"
+                                name="bank_plaid_ins_id"
                                 class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 <option value="" readonly>All Banks</option>
                                 @foreach($banks as $institution_id => $bank)
@@ -243,7 +243,7 @@
                             </div>
                         @endif
                     </div>
-                </x-cards.heading> --}}
+                </x-cards.heading>
 
                 {{-- BODY --}}
                 <x-cards.body>

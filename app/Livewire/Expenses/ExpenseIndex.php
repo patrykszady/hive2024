@@ -33,11 +33,11 @@ class ExpenseIndex extends Component
 
     public $distributions = [];
 
-    public $bank = NULL;
+    public $bank_plaid_ins_id = '';
     public $banks = [];
     public $bank_account_ids = [];
-    public $bank_owners = [];
-    public $bank_owner = NULL;
+    // public $bank_owners = [];
+    // public $bank_owner = NULL;
 
     public $status = NULL;
 
@@ -50,7 +50,7 @@ class ExpenseIndex extends Component
         'amount' => ['except' => ''],
         'project' => ['except' => ''],
         'expense_vendor' => ['except' => ''],
-        'bank' => ['except' => ''],
+        'bank_plaid_ins_id' => ['except' => ''],
         'bank_owner' => ['except' => ''],
         'status' => ['except' => ''],
     ];
@@ -82,8 +82,31 @@ class ExpenseIndex extends Component
             $this->paginate_number = 5;
         }
 
-        // $this->resetPage('expenses-page');
-        // $this->banks = Bank::with('accounts')->get()->groupBy('plaid_ins_id')->toBase();
+        $this->banks = Bank::with('accounts')->get()->groupBy('plaid_ins_id')
+            ->each(function($banks, $bank_plaid_ins_id){
+                $this->bank_account_ids[$bank_plaid_ins_id] = [];
+                foreach($banks as $bank){
+                    array_push($this->bank_account_ids[$bank_plaid_ins_id], $bank->accounts->pluck('id')->toArray());
+                    // $this->bank_account_ids[$bank_plaid_ins_id] += $bank->accounts->pluck('id')->toArray();
+                }
+
+                $this->bank_account_ids[$bank_plaid_ins_id] = array_merge(...$this->bank_account_ids[$bank_plaid_ins_id]);
+                // dd($this->bank_account_ids[$bank_plaid_ins_id]);
+                // dd(array_values($this->bank_account_ids[$bank_plaid_ins_id]));
+                // $banks->each(function($bank)){
+                //     dd($bank);
+                // }
+                // $bank->bank_account_ids = $bank->accounts->pluck('id')->toArray();
+                // dd($this->bank_account_ids);
+                // $bank_accounts += $bank->accounts->pluck('id')->toArray();
+                // return array_merge($this->bank_account_ids, $bank->accounts->pluck('id')->toArray());
+            })
+            //
+            ->toBase();
+        // dd($this->bank_account_ids);
+        // dd($this->banks->pluck('banks'));
+        // dd($this->banks->groupBy('plaid_ins_id')->pluck('banks.accounts'));
+
         $this->vendors = Vendor::whereHas('expenses')->orWhereHas('transactions')->orderBy('business_name')->get();
         $this->projects = Project::whereHas('expenses')->orderBy('created_at', 'DESC')->get();
         $this->distributions = Distribution::all();
@@ -167,11 +190,13 @@ class ExpenseIndex extends Component
                 ->where('is_expense_id_null', 'true')
                 ->where('is_check_id_null', 'true')
                 ->whereIn('deposit', ['NOT_DEPOSIT', 'NO_PAYMENTS'])
+                ->when(!empty($this->bank_plaid_ins_id), function ($query, $item) {
+                    return $query->whereIn('bank_account_id', $this->bank_account_ids[$this->bank_plaid_ins_id]);
+                })
                 ->when(!empty($this->expense_vendor), function ($query, $item) {
                     return $query->where('vendor_id', $this->expense_vendor);
                 })
                 ->orderBy('transaction_date', 'desc')
-                // ->get();
                 ->paginate($this->paginate_number, pageName: 'transactions-page');
         // dd($transactions);
 

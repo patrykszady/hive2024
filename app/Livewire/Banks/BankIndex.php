@@ -35,6 +35,8 @@ class BankIndex extends Component
                         $item->error = FALSE;
                     }
                 });
+
+        // dd($this->banks->first()->plaid_options->accounts[0]->balances->available);
     }
 
     public function plaid_link_token()

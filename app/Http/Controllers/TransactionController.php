@@ -104,7 +104,7 @@ class TransactionController extends Controller
             curl_close($ch);
 
             $result = json_decode($exchangeToken, true);
-
+            // dd($result);
             //get bank_account balnace here.
             // dd($bank->plaid_options->next_cursor);
             //save json status/errors
@@ -117,12 +117,9 @@ class TransactionController extends Controller
             // //$bank->plaid_options->error
             // // $options = $bank->plaid_options;
             // // $options->error = $error;
-
             // $bank->plaid_options['error'] = $error;
             // // dd($bank->plaid_options);
-
             // $bank->save();
-
             // dd($bank);
 
             if(isset($result['item']['error'])){
@@ -214,6 +211,7 @@ class TransactionController extends Controller
             "secret" => env('PLAID_SECRET'),
             "access_token" => $bank->plaid_access_token,
             "cursor" => isset($bank->plaid_options->next_cursor) ? $bank->plaid_options->next_cursor : NULL,
+            // "cursor" => NULL,
             "count" => 200,
         );
 
@@ -233,7 +231,6 @@ class TransactionController extends Controller
         curl_close($ch);
 
         $result = json_decode($result, true);
-        // dd($result);
 
         if(!empty($result['added']) OR !empty($result['modified']) OR !empty($result['removed']) OR isset($result['error_code'])){
             Log::channel('plaid_adds')->info([[$bank->getAttributes(), $bank->plaid_options], $result]);
@@ -241,9 +238,13 @@ class TransactionController extends Controller
 
         //if not in error state...
         if(!array_key_exists("error_code", $result)){
-            $next_cursor = array("next_cursor" => $result["next_cursor"],);
+            $add_to_json =
+                array(
+                    "next_cursor" => $result["next_cursor"],
+                    "accounts" => $result["accounts"],
+                );
             //1/9/2023 previous_cursor
-            $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $next_cursor));
+            $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
             $bank->save();
 
             if($result['has_more'] == true){

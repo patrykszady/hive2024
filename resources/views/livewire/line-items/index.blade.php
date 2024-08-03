@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-3xl lg:px-8">
+    <x-cards class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-3xl lg:px-8">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -114,7 +114,7 @@
             theme --}}
             {{-- {{ $projects->links() }} --}}
         </x-cards.footer>
-    </x-cards.wrapper>
+    </x-cards>
 
     {{-- NEW LINE ITEM MODAL --}}
     <livewire:line-items.line-item-create />

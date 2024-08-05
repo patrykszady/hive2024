@@ -173,13 +173,13 @@ class TimesheetPaymentForm extends Form
         }
 
         //user_reimbursement_expenses
-        // foreach($this->component->user_reimbursement_expenses->where('checkbox', 'true') as $expense){
-        //     //ignore 'checkbox'
-        //     $expense->offsetUnset('checkbox');
-        //     $expense->check_id = isset($check) ? $check->id : NULL;
-        //     $expense->paid_by = isset($check) ? NULL : $this->paid_by;
-        //     $expense->save();
-        // }
+        foreach($this->component->user_reimbursement_expenses->where('checkbox', 'true') as $expense){
+            //ignore 'checkbox'
+            $expense->offsetUnset('checkbox');
+            $expense->check_id = isset($check) ? $check->id : NULL;
+            $expense->paid_by = isset($check) ? NULL : $this->paid_by;
+            $expense->save();
+        }
 
         //user_paid_by_reimbursements
         foreach($this->component->user_paid_by_reimbursements->where('checkbox', 'true') as $expense){

@@ -85,8 +85,8 @@
                                 href="{{route('checks.show', $check->id)}}"
                                 :href_target="'blank'"
                                 :basic=true
-                                :line_title="$check->owner"
-                                :line_data="money($check->amount)"
+                                :line_title="money($check->amount)"
+                                :line_data="$check->owner"
                                 >
                             </x-lists.search_li>
                         @endforeach

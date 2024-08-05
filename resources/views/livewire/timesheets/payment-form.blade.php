@@ -219,7 +219,50 @@
             @endif
 
             {{-- USER REIMBURESEMENT EXPENSES --}}
+            @if(!$user_reimbursement_expenses->isEmpty())
+                <x-cards class="col-span-4 lg:col-span-2">
+                    <x-cards.heading>
+                        <x-slot name="left">
+                            <h1><b>{{ $user->first_name }}</b> Reimbursement Expenses</h1>
+                        </x-slot>
+                    </x-cards.heading>
 
+                    <x-lists.ul>
+                        @foreach($user_reimbursement_expenses as $key => $expense)
+                            @php
+                                // $line_details = [
+                                //     1 => [
+                                //         'text' => $project_timesheet->hours,
+                                //         'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
+                                //         ],
+                                //     2 => [
+                                //         'text' => $project_timesheet->project->project_name,
+                                //         'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
+                                //         ],
+                                //     ];
+                                //radio button
+                                $checkbox = [
+                                    // checked vs unchecked
+                                    'id' => "$key",
+                                    'name' => "user_reimbursement_expenses",
+                                ];
+                            @endphp
+
+                            <x-lists.search_li
+                                {{-- wire:click="$dispatch('timesheetWeek')" --}}
+                                {{-- :line_details="$line_details" --}}
+                                href="{{route('expenses.show', $expense->id)}}"
+                                :href_target="'_blank'"
+
+                                :line_title="substr($expense->amount, 0, 1) == '-' ? money(substr($expense->amount, 1)) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment : '-' . money($expense->amount) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment"
+                                :bubble_message="'Expense'"
+                                :checkbox="$checkbox"
+                                >
+                            </x-lists.search_li>
+                        @endforeach
+                    </x-lists.ul>
+                </x-cards>
+            @endif
             {{-- USER PAID REIMBURESEMENT EXPENSES FOR USER --}}
             {{-- USER PAID REIMBURESEMENT EXPENSES FROM ANOHTER USER --}}
             @if(!$user_paid_by_reimbursements->isEmpty())
@@ -250,7 +293,6 @@
                                     'name' => "user_paid_by_reimbursements",
                                 ];
                             @endphp
-
 
                             <x-lists.search_li
                                 {{-- wire:click="$dispatch('timesheetWeek')" --}}

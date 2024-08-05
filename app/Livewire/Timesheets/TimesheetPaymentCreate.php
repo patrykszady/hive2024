@@ -29,7 +29,7 @@ class TimesheetPaymentCreate extends Component
     public $weekly_timesheets = [];
     public $employee_weekly_timesheets = [];
     public $user_paid_expenses = [];
-    // public $user_reimbursement_expenses = [];
+    public $user_reimbursement_expenses = [];
     public $user_paid_by_reimbursements = [];
 
     public $disable_paid_by = FALSE;
@@ -40,7 +40,7 @@ class TimesheetPaymentCreate extends Component
             'weekly_timesheets.*.checkbox' => 'nullable',
             'employee_weekly_timesheets.*.checkbox' => 'nullable',
             'user_paid_expenses.*.checkbox' => 'nullable',
-            // 'user_reimbursement_expenses.*.checkbox' => 'nullable',
+            'user_reimbursement_expenses.*.checkbox' => 'nullable',
             'user_paid_by_reimbursements.*.checkbox' => 'nullable',
             'user.via_vendor_back' => 'nullable',
             'user.payee_name' => 'nullable',
@@ -104,17 +104,18 @@ class TimesheetPaymentCreate extends Component
                 ->keyBy('id');
         // dd($this->user_paid_expenses);
 
-        // $this->user_reimbursement_expenses =
-        //     Expense::
-        //         where('reimbursment', $this->user->id)
-        //         ->whereNull('paid_by')
-        //         ->whereNull('check_id')
-        //         ->orderBy('date', 'DESC')
-        //         ->get()
-        //         ->each(function ($item, $key) {
-        //             $item->checkbox = true;
-        //         })
-        //         ->keyBy('id');
+        $this->user_reimbursement_expenses =
+            Expense::
+                where('reimbursment', $this->user->id)
+                ->whereNull('paid_by')
+                ->whereNull('check_id')
+                ->orderBy('date', 'DESC')
+                ->get()
+                ->each(function ($item, $key) {
+                    $item->checkbox = true;
+                })
+                ->keyBy('id');
+        // dd($this->user_reimbursement_expenses);
 
         $this->user_paid_by_reimbursements =
             Expense::
@@ -149,9 +150,9 @@ class TimesheetPaymentCreate extends Component
             $this->user_paid_expenses = collect();
         }
 
-        // if($this->user_reimbursement_expenses->isEmpty()){
-        //     $this->user_reimbursement_expenses = collect();
-        // }
+        if($this->user_reimbursement_expenses->isEmpty()){
+            $this->user_reimbursement_expenses = collect();
+        }
 
         if($this->user_paid_by_reimbursements->isEmpty()){
             $this->user_paid_by_reimbursements = collect();
@@ -241,8 +242,8 @@ class TimesheetPaymentCreate extends Component
         }
         $total += $user_paid_expenses_total;
 
-        // //user_reimbursement_expenses
-        // $total -= $this->user_reimbursement_expenses->where('checkbox', true)->sum('amount');
+        //user_reimbursement_expenses
+        $total -= $this->user_reimbursement_expenses->where('checkbox', true)->sum('amount');
 
         // //user_paid_by_reimbursements
         $user_paid_by_reimbursements = $this->user_paid_by_reimbursements->where('checkbox', true)->sum('amount');

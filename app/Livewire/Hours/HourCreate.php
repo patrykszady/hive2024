@@ -226,12 +226,11 @@ class HourCreate extends Component
         }else{
             $this->form->store();
             $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
+            $this->dispatch('notify',
+                type: 'success',
+                content: 'Hours Created'
+            );
         }
-
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Hours Created'
-        );
     }
 
     public function edit()

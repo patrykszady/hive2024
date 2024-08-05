@@ -25,6 +25,11 @@ class BankAccount extends Model
         return $this->belongsTo(Bank::class);
     }
 
+    public function checks()
+    {
+        return $this->hasMany(Check::class);
+    }
+
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
@@ -39,6 +44,6 @@ class BankAccount extends Model
     {
         return $this->bank->name . ' | ' . $this->type;
     }
-    
+
     //4-11-2022 accout_number setter... if 3 digits, add 0 in front, if 4 ignore
 }

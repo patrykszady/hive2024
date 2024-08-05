@@ -27,6 +27,9 @@ class BankIndex extends Component
     {
         $this->banks =
             Bank::whereNotNull('plaid_access_token')
+                ->with(['accounts.checks' => function($query) {
+                    $query->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions');
+                }])
                 ->get()
                 ->each(function ($item, $key) {
                     if($item->plaid_options->error != FALSE){
@@ -35,7 +38,8 @@ class BankIndex extends Component
                         $item->error = FALSE;
                     }
                 });
-
+        // dd($this->banks);
+        // dd($this->banks->first()->accounts()->with('checks')->get());
         // dd($this->banks->first()->plaid_options->accounts[0]->balances->available);
     }
 

@@ -1,5 +1,5 @@
 <div>
-    <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
+    <x-cards class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
         {{-- HEADER --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -88,7 +88,7 @@
                 </x-cards.footer>
             </div>
         </form>
-    </x-cards.wrapper>
+    </x-cards>
 
     @if(!$vendors->isEmpty())
         <x-misc.hr :padding="''">
@@ -100,7 +100,7 @@
         </x-misc.hr>
         <br>
 
-        <x-cards.wrapper class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
+        <x-cards class="w-full px-4 pb-5 mb-1 sm:px-6 lg:max-w-4xl lg:px-8">
             <button
                 x-data=""
                 {{-- wire:click="$dispatchTo('vendors.vendor-create', 'vendorModal')" --}}
@@ -116,7 +116,7 @@
                     Create a Hive. <b>Contact us to get started for free.</b> Cell: 224-999-3880 Email: patryk@hive.contractors
                 </span>
             </button>
-        </x-cards.wrapper>
+        </x-cards>
 
         {{-- CREATE NEW VENDOR/BUSINESS --}}
         <livewire:vendors.vendor-create />

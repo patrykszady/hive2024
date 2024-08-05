@@ -1,4 +1,4 @@
-<x-cards accordian="CLOSED">
+<x-cards accordian="OPENED">
     <x-cards.heading>
         <x-slot name="left">
             Vendor Details

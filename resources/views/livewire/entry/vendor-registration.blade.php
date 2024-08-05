@@ -203,11 +203,9 @@
         {{-- REGISTRATION ITEMS --}}
         <div class="space-y-4 lg:col-start-3 lg:col-span-3 xl:col-span-2">
             {{-- VENDOR DETAILS --}}
-            <x-cards.wrapper>
-				<x-cards.body>
-					<livewire:vendors.vendor-details :vendor="$vendor" :registration="!$registration['vendor_info']">
-				</x-cards.body>
-			</x-cards.wrapper>
+
+					<livewire:vendors.vendor-details :accordian="'OPENED'" :vendor="$vendor" :registration="!$registration['vendor_info']">
+
 
             <div
                 x-data="{ showMembers: @entangle('registration.vendor_info') }"
@@ -217,11 +215,11 @@
                 >
 
                 {{-- VENDOR TEAM MEMBERS --}}
-                <x-cards.wrapper>
+                <x-cards>
                     <x-cards.body>
                         <livewire:users.team-members :vendor="$vendor" :registration="!$registration['team_members']">
                     </x-cards.body>
-                </x-cards.wrapper>
+                </x-cards>
 
                 {{-- VENDOR COMPANY EMAILS --}}
                 {{-- DISTRIBUTION LIST --}}

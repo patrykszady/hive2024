@@ -214,6 +214,7 @@
                 </x-cards.heading>
 
                 {{-- SUB-HEADING --}}
+                {{-- <livewire:expenses.expense-index-filters /> --}}
                 <x-cards.heading>
                     <div class="mx-auto">
                         <div>

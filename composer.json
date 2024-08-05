@@ -12,7 +12,6 @@
         "2captcha/2captcha": "*",
         "aws/aws-sdk-php": "^3.247",
         "barryvdh/laravel-snappy": "^1.0",
-        "blade-ui-kit/blade-icons": "*",
         "dcblogdev/laravel-microsoft-graph": "^3.2",
         "doctrine/dbal": "^3.5",
         "guzzlehttp/guzzle": "^7.0.1",

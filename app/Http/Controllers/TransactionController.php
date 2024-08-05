@@ -51,41 +51,39 @@ class TransactionController extends Controller
         $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
 
         foreach($banks as $bank){
-            // $today = Carbon::now()->toDateString();
-            // //Balances
-            // $new_data = array(
-            //     "client_id" => env('PLAID_CLIENT_ID'),
-            //     "secret" => env('PLAID_SECRET'),
-            //     "access_token" => $bank->plaid_access_token,
-            //     "start_date" => $today,
-            //     "end_date" => $today
-            // );
+            $today = Carbon::now()->toDateString();
+            //Balances
+            $new_data = array(
+                "client_id" => env('PLAID_CLIENT_ID'),
+                "secret" => env('PLAID_SECRET'),
+                "access_token" => $bank->plaid_access_token,
+                "start_date" => $today,
+                "end_date" => $today
+            );
 
-            // $new_data = json_encode($new_data);
-            // // dd($new_data);
-            // //initialize session
-            // $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/get");
-            // //set options
-            // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            //     'Content-Type: application/json',
-            //     ));
-            // curl_setopt($ch, CURLOPT_POST, true);
-            // curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
-            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            // //execute session
-            // $result = curl_exec($ch);
-            // //close session
-            // curl_close($ch);
-            // dd($result);
+            $new_data = json_encode($new_data);
+            // dd($new_data);
+            //initialize session
+            $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/get");
+            //set options
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                ));
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            //execute session
+            $balance_result = curl_exec($ch);
+            //close session
+            curl_close($ch);
 
-            // $balances = json_decode($result, true);
-            // dd($balances);
-            //--------------------------------//
+            $balances = json_decode($balance_result, true);
 
             $data = array(
                 "client_id" => env('PLAID_CLIENT_ID'),
                 "secret" => env('PLAID_SECRET'),
-                "access_token" => $bank->plaid_access_token
+                "access_token" => $bank->plaid_access_token,
+                "secret" => env('PLAID_SECRET'),
                 );
             //convert array into JSON
             $data = json_encode($data);
@@ -103,7 +101,7 @@ class TransactionController extends Controller
             //close session
             curl_close($ch);
 
-            $result = json_decode($exchangeToken, true);
+            $result = array_merge(json_decode($exchangeToken, true), $balances);
             // dd($result);
             //get bank_account balnace here.
             // dd($bank->plaid_options->next_cursor);
@@ -128,7 +126,7 @@ class TransactionController extends Controller
                 $error = array("error" => false,);
             }
 
-            $bank->plaid_options = json_encode(array_merge(collect($bank->plaid_options)->toArray(), $error));
+            $bank->plaid_options = json_encode(array_merge(collect($result)->toArray(), $error));
             $bank->save();
             // dd('too far');
 
@@ -241,7 +239,7 @@ class TransactionController extends Controller
             $add_to_json =
                 array(
                     "next_cursor" => $result["next_cursor"],
-                    "accounts" => $result["accounts"],
+                    // "accounts" => $result["accounts"],
                 );
             //1/9/2023 previous_cursor
             $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));

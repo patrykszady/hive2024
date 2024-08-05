@@ -21,10 +21,15 @@ class PlannerProject extends Component
     {
         $project_ids = $this->projects->pluck('id');
 
-        $tasks = 
+        $tasks =
             Task::whereIn('project_id', $project_ids)
-                ->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])
-                ->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])
+                ->where(function ($query) {
+                    $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])
+                        ->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
+                })->orWhere(function ($query) {
+                    $query->whereDate('start_date', '<=', $this->days[0]['database_date'])
+                        ->whereDate('end_date', '>=', $this->days[6]['database_date']);
+                })
                 ->get()
                 ->each(function ($task) {
                     if($task->start_date->between($this->days[0]['database_date'], $this->days[6]['database_date']) && $task->end_date->between($this->days[0]['database_date'], $this->days[6]['database_date'])){
@@ -36,10 +41,15 @@ class PlannerProject extends Component
                     }elseif($task->end_date->between($this->days[0]['database_date'], $this->days[6]['database_date'])){
                         $task->date = $task->end_date->format('Y-m-d');
                         $task->direction = 'right';
+                    }else{
+                        //if going from a previous week, via this week, and to the next
+                        $task->date = $this->days[6]['database_date'];
+                        $task->direction = 'right';
                     }
-                })->groupBy('project_id');
-
-        $no_date_tasks = 
+                })
+                ->groupBy('project_id');
+        // dd($tasks);
+        $no_date_tasks =
             Task::
                 whereIn('project_id', $project_ids)
                 ->where(function ($query) {
@@ -118,7 +128,7 @@ class PlannerProject extends Component
         if(!is_null($days)){
             $this->days = $days;
         }
-        
+
         $this->mount();
     }
 

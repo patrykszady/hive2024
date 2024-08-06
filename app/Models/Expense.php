@@ -170,20 +170,10 @@ class Expense extends Model
         }
     }
 
-    // protected function reimbursment(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn (string $value) => is_numeric($value) ? User::findOrFail($value)->first_name : $value,
-    //     );
-    // }
-
-    // public function getreimbursmentAttribute()
-    // {
-    //     dd($this);
-    //     if(is_numeric($this->reimbursment)){
-    //         return $this->reimbursment = User::findOrFail($this->reimbursment)->first_name;
-    //     }else{
-    //         return $this->reimbursment;
-    //     }
-    // }
+    protected function reimbursment(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => is_numeric($value) ? User::findOrFail($value)->first_name : $value,
+        );
+    }
 }

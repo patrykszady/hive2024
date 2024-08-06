@@ -299,13 +299,11 @@ class ExpenseCreate extends Component
         }
         // return $this->dispatch('validateCheck')->to(CheckCreate::class);
         $expense = $this->form->store();
-
         $this->modal_show = FALSE;
-
         $this->resetModal();
 
         //queue
-        UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
+        // UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
 
         //dispatch and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....

@@ -126,9 +126,15 @@ class TransactionController extends Controller
                 $error = array("error" => false,);
             }
 
-            $bank->plaid_options = json_encode(array_merge(collect($result)->toArray(), $error));
+            // $add_to_json =
+            //     array(
+            //         "balances" => $balances,
+            //         "error" => $error,
+            //     );
+            //1/9/2023 previous_cursor
+            $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $error, $result));
+            // $bank->plaid_options = json_encode(array_merge(collect($result)->toArray(), $error));
             $bank->save();
-            // dd('too far');
 
             // // dd($balances['accounts'][0]['balances']);
             // if(isset($balances) AND !isset($balances['error_code'])){
@@ -204,12 +210,12 @@ class TransactionController extends Controller
     {
         ini_set('max_execution_time', '48000');
 
+        // dd($bank->plaid_options);
         $new_data = array(
             "client_id" => env('PLAID_CLIENT_ID'),
             "secret" => env('PLAID_SECRET'),
             "access_token" => $bank->plaid_access_token,
             "cursor" => isset($bank->plaid_options->next_cursor) ? $bank->plaid_options->next_cursor : NULL,
-            // "cursor" => NULL,
             "count" => 200,
         );
 
@@ -229,7 +235,7 @@ class TransactionController extends Controller
         curl_close($ch);
 
         $result = json_decode($result, true);
-
+        // dd($result);
         if(!empty($result['added']) OR !empty($result['modified']) OR !empty($result['removed']) OR isset($result['error_code'])){
             Log::channel('plaid_adds')->info([[$bank->getAttributes(), $bank->plaid_options], $result]);
         }
@@ -266,8 +272,6 @@ class TransactionController extends Controller
                     }else{
                         $transaction = new Transaction;
                     }
-
-                    // dd($transaction);
 
                     //dates
                     if($new_transaction['pending'] == TRUE){

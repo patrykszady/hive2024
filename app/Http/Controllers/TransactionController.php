@@ -1238,7 +1238,8 @@ class TransactionController extends Controller
 
     public function add_check_id_to_transactions()
     {
-        $checks = Check::withoutGlobalScopes()
+        $checks =
+            Check::withoutGlobalScopes()
                 ->whereDoesntHave('transactions')
                 ->whereNull('deleted_at')
                 ->orderBy('date', 'DESC')
@@ -1264,6 +1265,7 @@ class TransactionController extends Controller
                 ->whereNull('deleted_at')
                 ->whereNull('check_id')
                 ->where('check_number', $check_number)
+                ->where('bank_account_id', $check->bank_account_id)
                 //per hive vendor... checks table foreach bank_account_id
                 // ->where('bank_account_id', $check->bank_account_id)
                 ->whereBetween('transaction_date', [

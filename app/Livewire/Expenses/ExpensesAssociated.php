@@ -39,7 +39,7 @@ class ExpensesAssociated extends Component
             Expense::search($expense->amount)
                 ->orderBy('date', 'desc')
                 ->get()
-                ->whereNotIn('id', array_merge($expense->associated_expenses->pluck('id')->toArray(), [$expense->id]));
+                ->whereNotIn('id', array_merge(!$expense->associated->isEmpty() ? $expense->associated_expenses->pluck('id')->toArray() : [], [$expense->id]));
                 // ->each(function($this_expense, $key) {
                 //     $this_expense->title = money($this_expense->amount);
                 //     $this_expense->desc = $this_expense->date->format('m/d/Y') . ' | ' . $this_expense->vendor->name;

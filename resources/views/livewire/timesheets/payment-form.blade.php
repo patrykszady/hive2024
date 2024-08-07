@@ -30,7 +30,6 @@
                     </x-forms.row>
 
                     @include('livewire.checks._payment_form')
-
                 </x-cards.body>
 
                 <x-cards.footer>

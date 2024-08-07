@@ -45,6 +45,7 @@ class ExpenseCreate extends Component
 
     // public $via_vendor_employees = NULL;
 
+    //OLD
     public $modal_show = FALSE;
 
     protected $listeners = ['resetModal', 'editExpense', 'newExpense', 'createExpenseFromTransaction', 'hasSplits'];

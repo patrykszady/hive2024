@@ -211,8 +211,8 @@ class TimesheetPaymentForm extends Form
         if(isset($check)){
             $expenses = $check->expenses;
             foreach($expenses as $expense){
-                if(is_numeric($expense->reimbursment)){
-                    $expense->amount = -$expense->amount;
+                if($expense->reimbursment != NULL && $expense->reimbursment != 'Client'){
+                    $expense->amount = substr($expense->amount, 0, 1) == '-' ? $expense->amount : '-' . $expense->amount;
                 }
             }
 

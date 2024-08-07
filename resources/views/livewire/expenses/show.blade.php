@@ -13,5 +13,6 @@
 	{{-- top level so content is in front of everything on page --}}
     @can('update', $expense)
 	    <livewire:expenses.expense-create />
+        <livewire:expenses.expenses-associated />
     @endif
 </div>

@@ -266,6 +266,7 @@ class TimesheetPaymentCreate extends Component
 
     public function save()
     {
+        // dd($this);
         // $this->authorize('create', Expense::class);
 
         //validate Pay User Total Check is greater than $0 / $this->weekly_timesheets has at least one Item in Collection

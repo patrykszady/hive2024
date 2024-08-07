@@ -15,6 +15,12 @@
 							>
 							Edit Expense
 						</x-cards.button>
+                        <x-cards.button
+                            :button_color="'white'"
+                            wire:click="$dispatchTo('expenses.expenses-associated', 'addAssociatedExpense', { expense: {{$expense->id}}})"
+                            >
+                            Associated
+                        </x-cards.button>
 					</x-slot>
 				@endcan
 			</x-cards.heading>

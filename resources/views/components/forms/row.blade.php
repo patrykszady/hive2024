@@ -236,7 +236,7 @@
                                                     <span :id="$id('radio-option-left-desc')" class="text-gray-500">
                                                         <span class="block sm:inline">{{$data_data[$attributes['data']['radio_details_left']['desc']]}}</span>
                                                         {{-- center dot / seperator like | --}}
-                                                        <span class="hidden sm:mx-1 sm:inline" aria-hidden="true">&middot;</span>
+                                                        {{-- <span class="hidden sm:mx-1 sm:inline" aria-hidden="true">&middot;</span> --}}
                                                         {{-- <span class="block sm:inline">160 GB SSD disk</span> --}}
                                                     </span>
                                                 </span>

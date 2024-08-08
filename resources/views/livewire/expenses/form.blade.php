@@ -294,7 +294,7 @@
                 >
                 Cancel
             </button>
-            @if($form->amount == '0.00' || ($form->expense_transactions_sum == FALSE && $form->transaction == NULL && $form->bank_account_id == NULL))
+            {{-- @if($form->amount == '0.00' || $form->transaction != NULL || ($form->expense_transactions_sum == FALSE && $form->transaction == NULL && $form->bank_account_id == NULL)) --}}
                 <button
                     type="button"
                     wire:click="remove"
@@ -304,7 +304,7 @@
                     >
                     Remove
                 </button>
-            @endif
+            {{-- @endif --}}
 
             <button
                 type="submit"

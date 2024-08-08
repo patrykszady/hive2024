@@ -265,7 +265,23 @@ class ExpenseCreate extends Component
 
     public function remove()
     {
-        // if($this->expense->amount == 0.00){
+        if($this->form->transaction){
+            $remove_type = 'transaction';
+        }else{
+            $remove_type = 'expense';
+        }
+
+        if($remove_type == 'transaction'){
+            $transaction = $this->form->transaction;
+            $transaction->delete();
+
+            $this->dispatch('refreshComponent')->to('expenses.expense-index');
+
+            $this->dispatch('notify',
+                type: 'success',
+                content: 'Transaction Deleted'
+            );
+        }else{
             $expense = $this->form->delete();
 
             $url = url()->previous();
@@ -285,11 +301,11 @@ class ExpenseCreate extends Component
             }
 
             //queue
-            UpdateProjectDistributionsAmount::dispatch($this->form->expense->project, $this->form->expense->project->distributions->pluck('id')->toArray());
+            // UpdateProjectDistributionsAmount::dispatch($this->form->expense->project, $this->form->expense->project->distributions->pluck('id')->toArray());
             $this->dispatch('refreshComponent')->to('expenses.expense-show');
             $this->dispatch('refreshComponent')->to('expenses.expense-index');
             $this->dispatch('refreshComponent')->to('projects.project-show');
-        // }
+        }
     }
 
     public function save()

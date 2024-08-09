@@ -289,7 +289,6 @@ class ExpenseCreate extends Component
 
             if($route == 'expenses.show'){
                 session()->flash('notify', ['success', 'Expense Deleted']);
-
                 $this->redirect(ExpenseIndex::class);
             }else{
                 $this->dispatch('refreshComponent')->to('expenses.expense-index');

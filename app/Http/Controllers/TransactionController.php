@@ -1529,6 +1529,9 @@ class TransactionController extends Controller
                 $save_payment = Payment::findOrFail($save_payment->id);
                 $save_payment->transaction_id = $transaction->id;
                 $save_payment->save();
+
+                //so Searchable gets send to Scout/TypeSense
+                $transaction->save();
                 // $transaction->payments()->associate($payment->id);
             }else{
                 $payments = Payment::
@@ -1578,6 +1581,8 @@ class TransactionController extends Controller
                             $save_payment->transaction_id = $transaction->id;
                             $save_payment->save();
 
+                            //so Searchable gets send to Scout/TypeSense
+                            $transaction->save();
                             // $payments->fresh();
                         }
                     }

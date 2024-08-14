@@ -35,7 +35,9 @@ class BankShow extends Component
             "access_token" => $this->bank->plaid_access_token
             );
 
-        $data['products'] = array('transactions');
+        $data['products'] = ['transactions'];
+        $data['required_if_supported_products'] = ['statements'];
+        $data['statements'] = ['start_date' => '2024-06-01', 'end_date' => '2024-08-01'];
 
         //convert array into JSON
         $data = json_encode($data);

@@ -148,6 +148,13 @@ return [
             'level' => 'debug',
             'days' => 30,
         ],
+
+        'nylas_connection_errors' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/nylas_connection_errors.log'),
+            'level' => 'debug',
+            'days' => 30,
+        ],
     ],
 
 ];

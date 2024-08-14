@@ -106,24 +106,27 @@ Route::get('expenses/original_receipts/{receipt}', [ReceiptController::class, 'o
 Route::get('expenses/temp_receipt/{receipt}', [ReceiptController::class, 'temp_receipt'])->name('receipts.temp_receipt');
 Route::get('vendor_docs/{document}', [VendorDocsController::class, 'document'])->name('vendor_docs.document');
 
-Route::get('receipts/ms_graph_login', [ReceiptController::class, 'ms_graph_login'])->name('ms_graph_login');
-Route::get('receipts/ms_graph_auth_response', [ReceiptController::class, 'ms_graph_auth_response'])->name('ms_graph_auth_response');
-Route::get('receipts/google_cloud_login', [ReceiptController::class, 'google_cloud_login'])->name('google_cloud_login');
-Route::get('receipts/google_cloud_auth_response', [ReceiptController::class, 'google_cloud_auth_response'])->name('google_cloud_auth_response');
+// Route::get('receipts/ms_graph_login', [ReceiptController::class, 'ms_graph_login'])->name('ms_graph_login');
+// Route::get('receipts/ms_graph_auth_response', [ReceiptController::class, 'ms_graph_auth_response'])->name('ms_graph_auth_response');
+Route::get('receipts/ms_graph_email_api', [ReceiptController::class, 'ms_graph_email_api'])->name('ms_graph_email_api');
+
+Route::get('receipts/nylas_login', [ReceiptController::class, 'nylas_login'])->name('nylas_login');
+Route::get('receipts/nylas_auth_response', [ReceiptController::class, 'nylas_auth_response'])->name('nylas_auth_response');
+Route::get('receipts/nylas_read_email_receipts', [ReceiptController::class, 'nylas_read_email_receipts'])->name('nylas_read_email_receipts');
+// Route::get('receipts/google_cloud_login', [ReceiptController::class, 'google_cloud_login'])->name('google_cloud_login');
+// Route::get('receipts/google_cloud_auth_response', [ReceiptController::class, 'google_cloud_auth_response'])->name('google_cloud_auth_response');
 
 Route::get('receipts/auto_receipt', [ReceiptController::class, 'auto_receipt'])->name('auto_receipt');
-Route::get('receipts/ms_graph_emails', [ReceiptController::class, 'ms_graph_emails'])->name('ms_graph_emails');
-Route::get('receipts/ms_graph_email_api', [ReceiptController::class, 'ms_graph_email_api'])->name('ms_graph_email_api');
 Route::get('receipts/azure_receipts', [ReceiptController::class, 'azure_receipts'])->name('azure_receipts');
 Route::get('receipts/goutte_crawl', [ReceiptController::class, 'goutte_crawl'])->name('goutte_crawl');
 Route::get('receipts/receipt_email', [ReceiptController::class, 'receipt_email'])->name('receipt_email');
 // Route::get('new_ocr_status', [ReceiptController::class, 'new_ocr_status'])->name('new_ocr_status');
 
-Route::get('att', [ReceiptController::class, 'att'])->name('att');
-Route::get('menards', [ReceiptController::class, 'menards'])->name('menards');
-Route::get('floordecor', [ReceiptController::class, 'floordecor'])->name('floordecor');
-Route::get('hd_rebates', [ReceiptController::class, 'hd_rebates'])->name('hd_rebates');
-Route::get('hd_print_certificates', [ReceiptController::class, 'hd_print_certificates'])->name('hd_print_certificates');
+// Route::get('att', [ReceiptController::class, 'att'])->name('att');
+// Route::get('menards', [ReceiptController::class, 'menards'])->name('menards');
+// Route::get('floordecor', [ReceiptController::class, 'floordecor'])->name('floordecor');
+// Route::get('hd_rebates', [ReceiptController::class, 'hd_rebates'])->name('hd_rebates');
+// Route::get('hd_print_certificates', [ReceiptController::class, 'hd_print_certificates'])->name('hd_print_certificates');
 
 Route::get('projects/reimbursments/print/{project}', [ReceiptController::class, 'printReimbursment'])->name('print_reimbursment');
 
@@ -133,6 +136,7 @@ Route::get('projects/reimbursments/print/{project}', [ReceiptController::class, 
 
 // Route::get('plaid_transactions_scheduled', [TransactionController::class, 'plaid_transactions_scheduled']);
 Route::get('transaction_vendor_bulk_match', [TransactionController::class, 'transaction_vendor_bulk_match'])->name('transaction_vendor_bulk_match');
+Route::get('plaid_statements_list', [TransactionController::class, 'plaid_statements_list']);
 Route::get('plaid_transactions_refresh', [TransactionController::class, 'plaid_transactions_refresh']);
 Route::get('plaid_transactions_sync', [TransactionController::class, 'plaid_transactions_sync']);
 Route::get('plaid_item_status', [TransactionController::class, 'plaid_item_status']);

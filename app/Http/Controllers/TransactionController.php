@@ -18,6 +18,11 @@ use App\Models\ReceiptAccount;
 use App\Models\VendorTransaction;
 use App\Models\TransactionBulkMatch;
 
+use Illuminate\Support\Facades\Storage;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Log;
@@ -146,6 +151,84 @@ class TransactionController extends Controller
             // $bank->plaid_options = json_encode(array_merge($plaid_options, $plaid_options1, $plaid_options2, $plaid_options3));
             // $bank->save();
         }
+    }
+
+    public function plaid_statements_list()
+    {
+        dd('in plaid_statements_list');
+        try{
+            $client = new Client();
+            $response = $client->post('https://' . env('PLAID_ENV') . '.plaid.com/statements/list', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'client_id' => env('PLAID_CLIENT_ID'),
+                    'secret' => env('PLAID_SECRET'),
+                    'access_token' => 'access-production-b19234d9-d3d1-475f-9a02-7db2c88259a5',
+                ],
+            ]);
+        }catch(RequestException $e){
+            if($e->hasResponse()) {
+                $response = $e->getResponse();
+                $responseBody = $response->getBody()->getContents();
+                $error = $responseBody;
+            }else{
+                $error = $e->getMessage();
+            }
+            $error = json_decode($error, true);
+            dd($error);
+            // return $this->nylas_errors($error);
+        }
+
+        $body = $response->getBody()->getContents();
+        $statement_id = json_decode($body, true)['accounts'][0]['statements'][1]['statement_id'];
+
+        // $client = new Client();
+        // $response = $client->post('https://' . env('PLAID_ENV') . '.plaid.com/statements/download', [
+        //     'headers' => [
+        //         'Content-Type' => 'application/json',
+        //     ],
+        //     'json' => [
+        //         'client_id' => env('PLAID_CLIENT_ID'),
+        //         'secret' => env('PLAID_SECRET'),
+        //         'access_token' => 'access-production-b19234d9-d3d1-475f-9a02-7db2c88259a5',
+        //         'statement_id' => $statement_id,
+        //     ],
+        // ]);
+
+        // dd($response->getBody());
+
+        $new_data = array(
+                'client_id' => env('PLAID_CLIENT_ID'),
+                'secret' => env('PLAID_SECRET'),
+                'access_token' => 'access-production-b19234d9-d3d1-475f-9a02-7db2c88259a5',
+                'statement_id' => $statement_id,
+        );
+
+        $new_data = json_encode($new_data);
+        //initialize session
+        $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/statements/download");
+        //set options
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            ));
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //execute session
+        $result = curl_exec($ch);
+        //close session
+        curl_close($ch);
+
+        // echo $result;
+
+        // dd();
+        // dd($result);
+        // $result = json_decode($result, true);
+        // dd($result);
+        $contents = base64_decode($result);
+        return Storage::disk('files')->put('/_temp_ocr/TESTSTATEMENT12.pdf', $contents);
     }
 
     public function plaid_transactions_refresh()

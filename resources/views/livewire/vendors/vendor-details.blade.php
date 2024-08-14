@@ -1,4 +1,4 @@
-<x-cards accordian="CLOSED">
+<x-cards accordian="{{$accordian}}">
     <x-cards.heading>
         <x-slot name="left">
             Vendor Details

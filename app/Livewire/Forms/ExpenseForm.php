@@ -420,7 +420,7 @@ class ExpenseForm extends Form
         $this->validate();
         //validate check...
         $expense_details = $this->expenseDetails();
-
+        // dd($this);
         if(empty($this->paid_by) && isset($this->bank_account_id)){
             if($expense_details['distribution_id']){
                 $distribution_user_id = Distribution::findOrFail($expense_details['distribution_id'])->user_id;

@@ -80,6 +80,22 @@ class ReceiptController extends Controller
 
     public function nylas_login()
     {
+        // $guzzle = new Client();
+        // $url = 'https://api.us.nylas.com/v3/connect/auth';
+
+        // $result = $guzzle->request('GET', $url, [
+        //         'headers' => [
+        //             'Location' => $url,
+        //         ],
+        //         'query' => [
+        //             'client_id' => env('NYLAS_CLIENT_ID'),
+        //             'redirect_uri' => env('NYLAS_REDIRECT_URI'),
+        //             'response_type' => 'code',
+        //             'access_type' => 'online'
+        //         ],
+        //     ]);
+
+        // dd($result);
         $url = 'https://api.us.nylas.com/v3/connect/auth';
         $params = array(
             'client_id' => env('NYLAS_CLIENT_ID'),
@@ -139,102 +155,34 @@ class ReceiptController extends Controller
             }else{
                 //create or confirm existance of HIVE folder in mailbox...
                 //HIVE_CONTRACTORS_RECEIPTS
-                //grant_id = nylas mailbox ID
                 $grant_id = $nylas_account->grant_id;
                 $url_endpoint = $grant_id . '/folders';
-                sleep(1);
+                sleep(5);
                 $result = $this->nylas_get_api($url_endpoint);
-                // $trash_folder = collect($result['data'])->where('name', 'Deleted Items')->first();
-                // ->where('parent_id', '!=', $trash_folder['id'])
+
                 $hive_email_folder = collect($result['data'])->where('name', 'HIVE_CONTRACTORS_RECEIPTS')->first();
 
-                //create HIVE_CONTRACTORS_RECEIPTS and subfolders
-                $guzzle = new Client();
-                $url = 'https://api.us.nylas.com/v3/grants/' . $grant_id . '/folders';
+                if($hive_email_folder){
+                    $mailbox_hive_folders['hive_folder'] = $hive_email_folder['id'];
 
-                //CREATE PARENT HIVE MAILBOX FOLDER
-                try{
-                    $result = $guzzle->post($url, [
-                        'headers' => [
-                            'Content-Type' => 'application/json',
-                            'Accept' => 'application/json',
-                            'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
-                        ],
-                        'json' => [
-                            'name' => 'HIVE_CONTRACTORS_RECEIPTS',
-                        ],
-                    ])->getBody()->getContents();
+                    $url_endpoint = $grant_id . '/folders?parent_id=' . $mailbox_hive_folders['hive_folder'];
+                    $child_folders = $this->nylas_get_api($url_endpoint)['data'];
+                    $child_hive_folders = collect($child_folders);
 
-                    $result = json_decode($result, true);
-                    $mailbox_hive_folders['hive_folder'] = $result['data']['id'];
-                }catch(RequestException $e){
-                    if($e->hasResponse()) {
-                        $response = $e->getResponse();
-                        $responseBody = $response->getBody()->getContents();
-                        $error = $responseBody;
-                    }else{
-                        $error = $e->getMessage();
-                    }
-                    $error = json_decode($error, true);
-                    //if 409 / conflict / folder already exists .. continue
-                    if(in_array(($error['error']['provider_error']['error']['code'] ?? null), ['ErrorFolderExists', '409'])){
-                        $url_endpoint = $grant_id . '/folders';
-                        $hive_email_folder = $this->nylas_get_api($url_endpoint);
+                    //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
+                    $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
+                    foreach($sub_folders as $folder){
+                        $child_folder = $child_hive_folders->where('name', $folder)->first();
 
-                        $mailbox_hive_folders['hive_folder'] = collect($hive_email_folder['data'])->where('name', 'HIVE_CONTRACTORS_RECEIPTS')->first()['id'];
-                    }else{
-                        $this->nylas_errors($error);
-                    }
-                }
-
-                //$mailbox_hive_folders['hive_folder'] MUST BE SET BY NOW
-                //LOG ERROR otherwise
-
-                //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
-                $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
-                foreach($sub_folders as $folder){
-                    //CREATE CHILD HIVE MAILBOX FOLDER $folder
-                    try{
-                        $result = $guzzle->post($url, [
-                            'headers' => [
-                                'Content-Type' => 'application/json',
-                                'Accept' => 'application/json',
-                                'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
-                            ],
-                            'json' => [
-                                'name' => $nylas_account->provider == 'microsoft' ? $folder : 'HIVE_CONTRACTORS_RECEIPTS/' . $folder,
-                                'parent_id' => $nylas_account->provider == 'microsoft' ? $mailbox_hive_folders['hive_folder'] : NULL,
-                            ],
-                        ])->getBody()->getContents();
-
-                        $result = json_decode($result, true);
-                        $mailbox_hive_folders['hive_folder_' . strtolower($folder)] = $result['data']['id'];
-                    }catch(RequestException $e){
-                        if($e->hasResponse()) {
-                            $response = $e->getResponse();
-                            $responseBody = $response->getBody()->getContents();
-                            $error = $responseBody;
+                        if($child_folder){
+                            $mailbox_hive_folders['hive_folder_' . strtolower($folder)] = $child_folder['id'];
                         }else{
-                            $error = $e->getMessage();
-                        }
-                        $error = json_decode($error, true);
-                        //if 409 / conflict / folder already exists .. continue
-                        if(in_array(($error['error']['provider_error']['error']['code'] ?? null), ['ErrorFolderExists', '409'])){
-                            if($nylas_account->provider == 'microsoft'){
-                                $url_endpoint = $grant_id . '/folders?parent_id=' . $mailbox_hive_folders['hive_folder'];
-                                $child_folders = $this->nylas_get_api($url_endpoint);
-
-                                $mailbox_hive_folders['hive_folder_' . strtolower($folder)] = collect($child_folders['data'])->where('name', $folder)->first()['id'];
-                            }else{
-                                $url_endpoint = $grant_id . '/folders';
-                                $hive_email_folder = $this->nylas_get_api($url_endpoint);
-
-                                $mailbox_hive_folders['hive_folder_' . strtolower($folder)] = collect($hive_email_folder['data'])->where('name', 'HIVE_CONTRACTORS_RECEIPTS/' . $folder)->first()['id'];
-                            }
-                        }else{
-                            $this->nylas_errors($error);
+                            //create this sub-Hive folder $folder
                         }
                     }
+                }else{
+                    //create HIVE_CONTRACTORS_RECEIPTS and subfolders
+                    dd('in else nylas_read_email_receipts ...no HIVE_CONTRACTORS_RECEIPTS folder');
                 }
 
                 $api_data = array(
@@ -243,6 +191,7 @@ class ReceiptController extends Controller
                 );
 
                 $api_data = array_merge($api_data, $mailbox_hive_folders);
+                // $api_data = json_encode($api_data);
 
                 //6-8-2023 Unique only
                 CompanyEmail::create([
@@ -258,46 +207,180 @@ class ReceiptController extends Controller
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if($hive_email_folder){
+            dd('in if');
+            $mailbox_hive_folders['hive_folder'] = $hive_email_folder['id'];
+
+            $url_endpoint = $grant_id . '/folders?parent_id=' . $mailbox_hive_folders['hive_folder'];
+            $child_folders = $this->nylas_get_api($url_endpoint)['data'];
+            $child_hive_folders = collect($child_folders);
+
+            //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
+            $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
+            foreach($sub_folders as $folder){
+                $child_folder = $child_hive_folders->where('name', $folder)->first();
+
+                if($child_folder){
+                    $mailbox_hive_folders['hive_folder_' . strtolower($folder)] = $child_folder['id'];
+                }else{
+                    //create this sub-Hive folder $folder
+                }
+            }
+        }else{
+            //create HIVE_CONTRACTORS_RECEIPTS and subfolders
+            $client = new Client();
+            $url = 'https://api.us.nylas.com/v3/grants/' . $grant_id . '/folders';
+            $response = $client->post('https://api.us.nylas.com/v3/grants/' . $grant_id . '/folders', [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
+                ],
+                'json' => [
+                    'name' => 'HIVE_CONTRACTORS_RECEIPTS',
+                ],
+            ]);
+
+            echo $response->getBody();
+            dd('past');
+            $response = $client->post($url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
+                    'Content-Type' => 'application/json',
+                ],
+                'data' => [
+                    'name' => 'HIVE_CONTRACTORS_RECEIPTS',
+                ],
+            ]);
+
+            echo $response->getBody();
+
+            dd('past');
+            $guzzle = new Client();
+
+            $result = $guzzle->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
+                    'Content-Type' => 'application/json',
+
+                ]
+            ]);
+
+            dd($result);
+
+            $result = $guzzle->request('POST', $url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
+                    'Content-Type' => 'application/json',
+                ],
+            ])->getBody()->getContents();
+
+            dd($result);
+        return $result = json_decode($result, true);
+            $nylas_account =
+                json_decode($guzzle->post($url, [
+                    'headers' => [
+                        'Accept' => 'application/json',
+                        'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
+                        'Content-Type' => 'application/json',
+                    ],
+                    'form_params' => [
+                        'name' => 'HIVE_CONTRACTORS_RECEIPTS',
+                    ],
+                ])
+                ->getBody()
+                ->getContents()
+            );
+
+            dd($nylas_account);
+            // $guzzle = new Client();
+            // $create_folder =
+            //     $guzzle->post($url, [
+            //         'headers' => [
+            //             'Accept' => 'application/json',
+            //             'Authorization' => 'Bearer ' . env('NYLAS_API_KEY'),
+            //             'Content-Type' => 'application/json',
+            //         ],
+            //         'data' => [
+            //             'name' => 'HIVE_CONTRACTORS_RECEIPTS',
+            //         ],
+            //     ]);
+
+            // dd($create_folder);
+            // //get folder id, create children folders
+            // dd('in else nylas_read_email_receipts ...no HIVE_CONTRACTORS_RECEIPTS folder');
+        }
     }
 
     public function nylas_read_email_receipts()
     {
         //6-28-2023 catch forwarded messages where From is in database table company_emails
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->grant_id')->get();
-        $from_email_receipts = Receipt::withoutGlobalScopes();
 
         foreach($company_emails as $company_email){
             //8-10-2024 where messages NOT READ by THIS API (create a message category)
-            $url_endpoint = $company_email->api_json['grant_id'] . '/messages?limit=5&in=' . $company_email->api_json['hive_folder_test'];
+            $url_endpoint = $company_email->api_json['grant_id'] . '/messages?limit=5&in=AAMkADZhOTM1NDI2LWUzMTktNDViMy05OTlhLWZlYTE2YmU3MzAyZAAuAAAAAAD7PLKGJHQdSbSgom4oDoCdAQDbefzpMlwlT6RiFPh2NXCqAAiSOjp6AAA=';
             //$result['data'] = Messages
-            $result = $this->nylas_get_api($url_endpoint)['data'];
-            //->whereIn('from.email', ['HomeDepot@order.homedepot.com'])
-            $messages = collect($result);
-            $filtered_messages = $messages->map(function ($item) {
-                return (object) $item;
-            });
+            //$result['request_id']
+            //$result['next_cursor']
+            $result = $this->nylas_get_api($url_endpoint);
 
-            $filtered_messages = $filtered_messages->whereIn('from.0.email', $from_email_receipts->pluck('from_address')->unique()->toArray());
-            // dd($filtered_messages);
-            foreach($filtered_messages as $key => $message){
-                $email_from = $message->from[0]['email'];
-                $email_from_domain = substr($email_from, strpos($email_from, "@"));
-                $email_subject = $message->subject;
-                $email_date =
-                    Carbon::parse($message->date)
-                        ->setTimezone('America/Chicago')
-                        ->format('Y-m-d');
-                // dd($email_date, $email_subject);
-                $string = $message->body;
+            dd($result);
+            $hive_email_folder = collect($result['data'])->where('name', 'HIVE_CONTRACTORS_RECEIPTS')->first();
 
-                // SHOW HTML RENDERED
-                print_r($string);
-                dd();
+            if($hive_email_folder){
+                // $parent_hive_folder = $hive_email_folder['id'];
+                $mailbox_hive_folders['hive_folder'] = $hive_email_folder['id'];
 
-                //SHOW EMAIL TEXT
-                // print_r(htmlspecialchars($string));
-                // dd();
+                $url_endpoint = $company_email->api_json['grant_id'] . '/folders?parent_id=' . $mailbox_hive_folders['hive_folder'];
+                $child_hive_folders = collect($this->nylas_get_api($url_endpoint)['data']);
+
+                //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
+                $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
+                foreach($sub_folders as $folder){
+                    $child_folder = $child_hive_folders->where('name', $folder)->first();
+
+                    if($child_folder){
+                        $mailbox_hive_folders['hive_folder_' . strtolower($folder)] = $child_folder['id'];
+                    }else{
+                        //create this sub-Hive folder $folder
+                    }
+                }
+            }else{
+                //create HIVE_CONTRACTORS_RECEIPTS and subfolders
+                dd('in else nylas_read_email_receipts ...no HIVE_CONTRACTORS_RECEIPTS folder');
             }
+
+            $api_data = array_merge($company_email->api_json, $mailbox_hive_folders);
+
+            $company_email->api_json = $api_data;
+            $company_email->save();
         }
     }
 
@@ -704,304 +787,367 @@ class ReceiptController extends Controller
         }
     }
 
-    //foreach outlook/microsoft email get and process emails...
-    public function ms_graph_email_api()
+    public function ms_graph_login()
     {
-        //6-28-2023 catch forwarded messages where From is in database table company_emails
-        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
-        foreach($company_emails as $company_email){
-            // dd($company_email->api_json->toArray());
-            //check if access_token is expired, if so get new access_token and refresh_token
-            try{
-                $guzzle = new Client();
-                $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
-                $email_account_tokens = json_decode($guzzle->post($url, [
-                    'form_params' => [
-                        'client_id' => env('MS_GRAPH_CLIENT_ID'),
-                        'scope' => env('MS_GRAPH_USER_SCOPES'),
-                        'refresh_token' => $company_email->api_json['refresh_token'],
-                        'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
-                        'grant_type' => 'refresh_token',
-                        'client_secret' => env('MS_GRAPH_SECRET_ID'),
-                    ],
-                ])->getBody()->getContents());
-            }catch(RequestException $e){
-                // dd($company_email->api_json['access_token']);
-                if($e->hasResponse()) {
-                    $response = $e->getResponse();
-                    $responseBody = $response->getBody()->getContents();
-                    $error = $responseBody;
+        // $guzzle = new Client();
+        // $url = 'https://login.microsoftonline.com/' . env('TENANT_ID') . '/oauth2/v2.0/token';
+        // $token = json_decode($guzzle->post($url, [
+        //     'form_params' => [
+        //         'client_id' => env('CLIENT_ID'),
+        //         'client_secret' => env('SECRET_ID'),
+        //         // 'response_type' => 'token',
+        //         // 'redirect_uri' => 'https://hive.test/receipts/ms_graph_auth_response',
+        //         'scope' => 'https://graph.microsoft.com/.default',
+        //         'grant_type' => 'client_credentials',
+        //     ],
+        // ])->getBody()->getContents());
+        // $accessToken = $token->access_token;
+
+        // dd($accessToken);
+
+        // $guzzle = new Client();
+        $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/authorize';
+
+        $params = array(
+            'client_id' => env('MS_GRAPH_CLIENT_ID'),
+            'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+            //token
+            'response_type' => 'code',
+            'response_mode' => 'query',
+            'scope' => env('MS_GRAPH_USER_SCOPES'),
+            'state' => '12345');
+        header ('Location: '.$url.'?'.http_build_query ($params));
+        // $accessToken = $token->access_token;
+    }
+
+    public function ms_graph_auth_response()
+    {
+        if(isset(request()->query()['code'])){
+            $code = request()->query()['code'];
+        }else{
+            return redirect(route('company_emails.index'));
+        }
+
+        $guzzle = new Client();
+        $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
+        $email_account_tokens = json_decode($guzzle->post($url, [
+            'form_params' => [
+                'client_id' => env('MS_GRAPH_CLIENT_ID'),
+                'scope' => env('MS_GRAPH_USER_SCOPES'),
+                'code' => $code,
+                'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+                'grant_type' => 'authorization_code',
+                'client_secret' => env('MS_GRAPH_SECRET_ID'),
+            ],
+        ])->getBody()->getContents());
+
+        $access_token = $email_account_tokens->access_token;
+
+        $graph = new Graph();
+        $graph->setAccessToken($access_token);
+
+        $user = $graph->createRequest("GET", "/me")
+            ->setReturnType(Model\User::class)
+            ->execute();
+
+        //->whereJsonDoesntContain('api_json->errors->error', 'invalid_grant')
+        $existing_company_email = CompanyEmail::withoutGlobalScopes()->where('email', $user->getMail())->first();
+        if($existing_company_email){
+            //update existing Company_email
+            if(isset($existing_company_email->api_json['errors']['error'])){
+                //json
+                $api_data = array_merge($existing_company_email->api_json, array(
+                    'errors' => null,
+                    'provider' => 'outlook',
+                    'access_token' => $access_token,
+                    'refresh_token' => $email_account_tokens->refresh_token,
+                    'user_id' => $user->getId(),
+                ));
+
+                $api_data = json_encode($api_data);
+
+                $existing_company_email->update([
+                    'api_json' => $api_data,
+                ]);
+            }else{
+                //return back with error
+                session()->flash('error', 'Email already connected.');
+                if(auth()->user()->vendor->registration['registered'] == FALSE){
+                    return redirect(route('vendor_registration', auth()->user()->vendor));
                 }else{
-                    $error = $e->getMessage();
+                    return redirect(route('company_emails.index'));
                 }
+            }
+        }else{
+            //create HIVE folder in mailbox...
+            //HIVE_CONTRACTORS_RECEIPTS
+            try{
+                $create_hive_folder = $graph->createRequest("POST", "/users/" . $user->getId() . "/mailFolders")
+                    ->attachBody(
+                        array(
+                            'displayName' => 'HIVE_CONTRACTORS_RECEIPTS',
+                            'isHidden' => false,
+                            )
+                        )
+                    ->setReturnType(MailFolder::class)
+                    ->execute();
+                $api_data['hive_folder'] = $create_hive_folder->getId();
+            }catch (\Exception $e){
+                //409 = A folder with the specified name already exists.
+                if($e->getCode() == 409){
+                    //get ID of the existing folder...
+                    $user_hive_folder = $graph->createCollectionRequest("GET", "/me/mailFolders?filter=displayName eq 'HIVE_CONTRACTORS_RECEIPTS'&expand=childFolders")
+                    ->setReturnType(MailFolder::class)
+                    ->execute();
 
-                if($error){
-                    //ARRAY already
-                    // dd([$company_email->api_json, jso => n_decode($error, true)]);
-                    $company_email->api_json += ['errors' => json_decode($error, true)];
-                    $company_email->save();
+                    $api_data['hive_folder'] = $user_hive_folder[0]->getId();
+                }else{
+                    abort(404);
                 }
-                // else{
-                //     dd($email_account_tokens);
-                // }
-
-                // $errors = json_encode($error);
-                // dd($errros);
-                //add to $company_email json ('api') errors
-                // $company_email->api_json = json_encode(array_merge($company_email->api_json, $error));
-
-                Log::channel('company_emails_log_in_error')->info($error);
-                continue;
             }
 
-            // dd($email_account_tokens);
+            //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
+            $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
+            foreach($sub_folders as $folder){
+                try{
+                    $create_hive_folder = $graph->createRequest("POST", "/users/" . $user->getId() . "/mailFolders/" . $api_data['hive_folder'] . "/childFolders")
+                    ->attachBody(
+                        array(
+                            'displayName' => $folder,
+                            'isHidden' => false,
+                            )
+                        )
+                    ->setReturnType(MailFolder::class)
+                    ->execute();
+
+                    $api_data['hive_folder_' . strtolower($folder)] = $create_hive_folder->getId();
+                }catch (\Exception $e){
+                    //409 = A folder with the specified name already exists.
+                    if($e->getCode() == 409){
+                        //get ID of the existing folder...
+                        $user_hive_folder = $graph->createCollectionRequest("GET", "/me/mailFolders/" . $api_data['hive_folder'] . "/childFolders?filter=displayName eq '" . $folder ."'")
+                        ->setReturnType(MailFolder::class)
+                        ->execute();
+
+                        $api_data['hive_folder_' . strtolower($folder)] = $user_hive_folder[0]->getId();
+                    }else{
+                        abort(404);
+                    }
+                }
+            }
 
             //json
-            $api_data = $company_email->api_json;
-            $api_data['access_token'] = $email_account_tokens->access_token;
-            $api_data['refresh_token'] = $email_account_tokens->refresh_token;
-            // $api_data = json_encode($api_data);
+            $api_data = array_merge($api_data, array(
+                'provider' => 'outlook',
+                'access_token' => $access_token,
+                'refresh_token' => $email_account_tokens->refresh_token,
+                'user_id' => $user->getId(),
+            ));
 
-            $company_email->update([
+            $api_data = json_encode($api_data);
+
+            //6-8-2023 Unique only
+            CompanyEmail::create([
+                'email' => $user->getMail(),
+                'vendor_id' => auth()->user()->vendor->id,
                 'api_json' => $api_data,
             ]);
+        }
 
-            $this->ms_graph = new Graph();
-            $this->ms_graph->setAccessToken($company_email->api_json['access_token']);
 
-            // FOLDER name Test etc
-            // $user_hive_folder =
-            //     $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders?filter=displayName eq 'Home Depot Rebates'&expand=childFolders")
-            //         ->setReturnType(MailFolder::class)
-            //         ->execute();
-            // dd($user_hive_folder);
+        if(auth()->user()->vendor->registration['registered'] == FALSE){
+            return redirect(route('vendor_registration', auth()->user()->vendor));
+        }else{
+            return redirect(route('company_emails.index'));
+        }
+    }
 
-            if(env('APP_ENV') == 'production'){
-                //6-12-2023 6-27-2023 6-6-2024 exclude ones already read ... save $message->getId() to a (temp) database/log file?...
-                $messages_inbox = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/inbox/messages?top=20")
-                    ->setReturnType(Message::class)
-                    ->execute();
+    public function google_cloud_client()
+    {
+        $client = new \Google_Client();
+        // load our config.json that contains our credentials for accessing google's api as a json string
+        // $configJson = storage_path('files/client_secret.json');
 
-                $messages_inbox_retry = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_retry'] . "/messages?top=20")
-                    ->setReturnType(Message::class)
-                    ->execute();
+        $applicationName = 'hive-contractors';
+        $client_id = env('GOOGLE_CLOUD_CLIENT_ID');
+        $project_id = 'hive-contractors';
+        $auth_uri = 'https://accounts.google.com/o/oauth2/auth';
+        $token_uri = 'https://oauth2.googleapis.com/token';
+        $auth_provider_x509_cert_url = 'https://www.googleapis.com/oauth2/v1/certs';
+        $client_secret = env('GOOGLE_CLOUD_CLIENT_SECRET');
 
-                $messages = Arr::collapse([$messages_inbox, $messages_inbox_retry]);
+        if(env('APP_ENV') == 'production'){
+            $redirect_uris = ['https://dashboard.hive.contractors/receipts/google_cloud_auth_response', 'https://hive.contractors/receipts/google_cloud_auth_response'];
+        }else{
+            $redirect_uris = ['http://localhost:8000/receipts/google_cloud_auth_response'];
+        }
+
+        $client_credentials = ["web" => [
+            "client_id" => $client_id,
+            "project_id" => $project_id,
+            "auth_uri" => $auth_uri,
+            "token_uri" => $token_uri,
+            "auth_provider_x509_cert_url" => $auth_provider_x509_cert_url,
+            "client_secret" => $client_secret,
+            "redirect_uris" => $redirect_uris
+        ]];
+        // create the client
+        $client = new \Google_Client();
+        $client->setApplicationName($applicationName);
+
+        // $client->setAuthConfig($configJson);
+        $client->setAuthConfig($client_credentials);
+        $client->setPrompt('consent');
+        $client->setAccessType('offline'); // necessary for getting the refresh token
+        $client->setApprovalPrompt('force'); // necessary for getting the refresh token
+        // scopes determine what google endpoints we can access. keep it simple for now.
+        $client->setScopes(
+            [
+                \Google\Service\Oauth2::USERINFO_PROFILE,
+                \Google\Service\Oauth2::USERINFO_EMAIL,
+                \Google\Service\Oauth2::OPENID,
+                \Google\Service\Gmail::GMAIL_MODIFY // allows reading of gmail messages
+            ]
+        );
+        $client->setIncludeGrantedScopes(true);
+
+        return $client;
+    }
+
+    public function google_cloud_login()
+    {
+        $client = $this->google_cloud_client();
+        //Generate the url at google we redirect to
+        //https://console.cloud.google.com/apis/credentials/oauthclient
+        $authUrl = $client->createAuthUrl();
+
+        return redirect($authUrl);
+    }
+
+    public function google_cloud_auth_response()
+    {
+        if(isset(request()->query()['code'])){
+            $code = request()->query()['code'];
+        }else{
+            return redirect(route('company_emails.index'));
+        }
+
+        $client = $this->google_cloud_client();
+
+        $accessToken = $client->fetchAccessTokenWithAuthCode($code);
+        $client->setAccessToken($accessToken);
+
+        $oauth2 = new \Google\Service\Oauth2($client);
+        $user_info = $oauth2->userinfo->get();
+
+        $existing_company_emails = CompanyEmail::withoutGlobalScopes()->where('email', $user_info->email)->get();
+        if(!$existing_company_emails->isEmpty()){
+            //return back with error
+            session()->flash('error', 'Email already connected.');
+            if(auth()->user()->vendor->registration['registered'] == FALSE){
+                return redirect(route('vendor_registration', auth()->user()->vendor));
             }else{
-                //if array key exists
-                if(isset($company_email->api_json['hive_folder_test'])){
-                    $messages = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_test'] . "/messages?top=20")
-                    ->setReturnType(Message::class)
-                    ->execute();
+                return redirect(route('company_emails.index'));
+            }
+        }
+
+        $service = new \Google\Service\Gmail($client);
+
+        //create HIVE folder in mailbox...
+        try{
+            // Create a new label object
+            $label = new \Google\Service\Gmail\Label();
+            $label->setName('HIVE_CONTRACTORS_RECEIPTS');
+            $label->setLabelListVisibility('labelShow');
+            $label->setMessageListVisibility('show');
+
+            $results = $service->users_labels->create('me', $label);
+            $api_data['hive_folder'] = $results->getId();
+        }catch (\Exception $e){
+            //409 = A folder with the specified name already exists.
+            if($e->getCode() == 409){
+                //get ID of the existing folder...
+                $results = $service->users_labels->listUsersLabels('me');
+
+                // Check if there is a label with the given name
+                $label_id = null;
+                foreach ($results->getLabels() as $label) {
+                if($label->getName() == 'HIVE_CONTRACTORS_RECEIPTS'){
+                        // Get the label ID
+                        $label_id = $label->getId();
+                        break;
+                    }
+                }
+
+                if($label_id != NULL){
+                    $api_data['hive_folder'] = $label_id;
                 }else{
-                    continue;
+                    abort(404);
+                }
+            }else{
+                abort(404);
+            }
+        }
+
+        //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
+        $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
+        foreach($sub_folders as $folder){
+            try{
+                // Create the sublabel
+                $subLabel = new \Google\Service\Gmail\Label();
+                $subLabel->setName('HIVE_CONTRACTORS_RECEIPTS/' . $folder);
+                $subLabel->setLabelListVisibility('labelHide');
+                $subLabel->setMessageListVisibility('show');
+                $results = $service->users_labels->create('me', $subLabel);
+                $subLabelId = $results['id'];
+
+                $api_data['hive_folder_' . strtolower($folder)] = $subLabelId;
+            }catch (\Exception $e){
+                //409 = A folder with the specified name already exists.
+                if($e->getCode() == 409){
+                    //get ID of the existing folder...
+                    $results = $service->users_labels->listUsersLabels('me');
+                    // Check if there is a label with the given name
+                    $label_id = null;
+                    foreach ($results->getLabels() as $label) {
+                    if($label->getName() == 'HIVE_CONTRACTORS_RECEIPTS/' . $folder){
+                            // Get the label ID
+                            $label_id = $label->getId();
+                            break;
+                        }
+                    }
+
+                    if($label_id != NULL){
+                        $api_data['hive_folder_' . strtolower($folder)] = $label_id;
+                    }else{
+                        abort(404);
+                    }
+                }else{
+                    abort(404);
                 }
             }
-            // dd($messages);
+        }
 
-            foreach($messages as $key => $message){
-                if(!isset($message->getToRecipients()[0])){
-                    continue;
-                }
+        //json
+        $api_data = array_merge($api_data, array(
+            'provider' => 'gmail',
+            'access_token' => $client->getAccessToken()['access_token'],
+            'refresh_token' => $client->getAccessToken()['refresh_token'],
+            'user_id' => $user_info->id,
+        ));
 
-                $email_from = $message->getFrom()->getEmailAddress()->getAddress();
-                $email_from_domain = substr($email_from, strpos($email_from, "@"));
-                //find the right Receipt:: that belongs to this email....
-                // $email_to = strtolower($message->getToRecipients()[0]['emailAddress']['address']);
-                $email_subject = $message->getSubject();
-                $email_date =
-                    Carbon::parse($message->getReceivedDateTime())
-                        ->setTimezone('America/Chicago')
-                        ->format('Y-m-d');
+        $api_data = json_encode($api_data);
 
-                // dd([$email_from, $email_from_domain, $email_subject, $email_date]);
-                //find the right Receipt:: that belongs to this email....
-                $from_email_receipts = Receipt::withoutGlobalScopes()->where('from_address', $email_from)->orWhere('from_address', $email_from_domain)->get();
-                // dd($from_email_receipts);
+        CompanyEmail::create([
+            'email' => $user_info->email,
+            'vendor_id' => auth()->user()->vendor->id,
+            'api_json' => $api_data,
+        ]);
 
-                if($from_email_receipts->isEmpty()){
-                    //continue... email not a Receipt
-                    continue;
-                }else{
-                    foreach($from_email_receipts as $email_receipt){
-                        if(strpos($email_subject, $email_receipt->from_subject) !== FALSE){
-                            $receipt = $email_receipt;
-                        }else{
-                            //continue... email Subject not a Receipt
-                            continue;
-                        }
-                    }
-                }
-
-                // dd($receipt);
-                //06-17-2023 forwarded/redirected emails? if HIVE doesnt find them? let users forward emails
-                    //use $email_to = strtolower($message->getToRecipients()[0]['emailAddress']['address']);
-
-                //if is_null $receit, move to add_receipt folder
-                if(!isset($receipt)){
-                    //email not a Receipt
-                    continue;
-                }
-
-                // dd($receipt);
-                //NOTE: $receipt MUST be set by now
-                $receipt_account =
-                    ReceiptAccount::withoutGlobalScopes()
-                        ->where('belongs_to_vendor_id', $company_email->vendor_id)
-                        ->where('vendor_id', $receipt->vendor_id)
-                        ->first();
-
-                //missing receipt_account..receipt and companyemail exist but receipt/companyemail combo does not
-                //1-17-2023 6-27-2023 YES!~ should still process without #receipt_account? right?
-                if(is_null($receipt_account)){
-                    //move to Add sub_folder.
-                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
-                        ->attachBody(
-                            array(
-                                'destinationId' => $company_email->api_json['hive_folder_add']
-                                )
-                            )
-                        ->execute();
-
-                    continue;
-                }
-
-                //getContent = HTML or TEXT
-                $string = $message->getBody()->getContent();
-
-                //remove images
-                //ONLY IF {"receipt_image_regex":}  is NOT set
-                if(!isset($receipt->options['receipt_image_regex'])){
-                    $string = preg_replace("/<img[^>]+\>/i", "", $string);
-                }else{
-                    //FIND receipt email image in email html (eg. Floor and Decor)
-                    $re = $receipt->options['receipt_image_regex'];
-                    $str = $string;
-                    preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
-
-                    //iamge/receipt url
-                    $image_email_url = $matches[1][0];
-
-                    //6-27-2023 error if cant find
-                }
-
-                // SHOW HTML RENDERED
-                // print_r($string);
-                // dd();
-
-                //SHOW EMAIL TEXT
-                // print_r(htmlspecialchars($string));
-                // dd();
-
-                if(isset($receipt->options['receipt_start'])){
-                    //if receipt_start = array
-                    //if false, look for next.
-                    if(is_array($receipt->options['receipt_start'])){
-                        foreach($receipt->options['receipt_start'] as $key => $receipt_start_text){
-                            $receipt_start = strpos($string, $receipt_start_text);
-
-                            if(is_numeric($receipt_start)){
-                                $receipt_start_text = $receipt_start_text;
-                                break;
-                            }
-                        }
-                    }else{
-                        $receipt_start = strpos($string, $receipt->options['receipt_start']);
-                    }
-
-                    //include the "receipt_start" text or start receipt_html after the text
-                    if(isset($receipt->options['receipt_start_offset'])){
-                        $receipt_start = strpos($string, $receipt_start_text) + strlen($receipt_start_text);
-                    }
-                }else{
-                    $receipt_start = 0;
-                }
-
-                if(isset($receipt->options['receipt_end'])){
-                    //if receipt_end = array
-                    //if false, look for next.
-                    if(is_array($receipt->options['receipt_end'])){
-                        foreach($receipt->options['receipt_end'] as $key => $receipt_end_text){
-                            $receipt_end = strpos($string, $receipt_end_text, $receipt_start);
-
-                            if(is_numeric($receipt_end)){
-                                break;
-                            }
-                        }
-                    }else{
-                        $receipt_end = strpos($string, $receipt->options['receipt_end'], $receipt_start);
-                    }
-
-                //if receipt_end = null, use last character of $string
-                }else{
-                    $receipt_end = strlen($string);
-                }
-
-                $receipt_position = $receipt_end - $receipt_start;
-                $receipt_html_main = substr($string, $receipt_start, $receipt_position);
-
-                //1-26-23 remove receipt text in the middle (Amazon)
-                //1-28-23 multiple removals? foreach receipt_middle_texts?
-                if(isset($receipt->options['receipt_middle_text'])){
-                    $re = $receipt->options['receipt_middle_text'];
-                    $str = $string;
-                    preg_match($re, $str, $matches);
-
-                    if(!empty($matches)){
-                        $receipt_html_main = str_replace($matches[1], '', $receipt_html_main);
-                    }
-                }
-
-                //PREVIEWS HTML RECEIPT
-                // print_r($receipt_html_main);
-                // dd();
-
-                //create Expense
-                if(!isset($image_email_url)){
-                    $image_email_url = NULL;
-                }
-
-                $move_type = $this->create_expense_from_email($company_email, $message, $receipt_account, $receipt, $receipt_html_main, $email_date, $image_email_url);
-
-                //move message here...
-                if($move_type == 'duplicate'){
-                    //move to duplicate folder
-                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
-                        ->attachBody(
-                            array(
-                                //1-17-2023 or is send to "receipts@hive.contractors? .. Remove...
-                                'destinationId' => $company_email->api_json['hive_folder_duplicate']
-                                )
-                            )
-                        ->execute();
-
-                    continue;
-                }elseif($move_type == 'error'){
-                    // Log::channel('ms_form_amount_not_found')->info($ocr_receipt_extract_prefix);
-
-                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
-                        ->attachBody(
-                            array(
-                                'destinationId' => $company_email->api_json['hive_folder_error']
-                                )
-                            )
-                        ->execute();
-
-                    continue;
-                }else{
-                    //move email to Saved folder
-                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
-                        ->attachBody(
-                            array(
-                                //1-17-2023 or is send to "receipts@hive.contractors? .. Remove...
-                                'destinationId' => $company_email->api_json['hive_folder_saved']
-                                )
-                            )
-                        ->execute();
-
-                    continue;
-                }
-            } //foreach messages
+        if(auth()->user()->vendor->registration['registered'] == FALSE){
+            return redirect(route('vendor_registration', auth()->user()->vendor));
+        }else{
+            return redirect(route('company_emails.index'));
         }
     }
 
@@ -1246,6 +1392,307 @@ class ReceiptController extends Controller
                 //Delete/move email
                 $this->ms_graph->createRequest("DELETE", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId())->execute();
             }
+        }
+    }
+
+    //foreach outlook/microsoft email get and process emails...
+    public function ms_graph_email_api()
+    {
+        //6-28-2023 catch forwarded messages where From is in database table company_emails
+        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
+        foreach($company_emails as $company_email){
+            // dd($company_email->api_json->toArray());
+            //check if access_token is expired, if so get new access_token and refresh_token
+            try{
+                $guzzle = new Client();
+                $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
+                $email_account_tokens = json_decode($guzzle->post($url, [
+                    'form_params' => [
+                        'client_id' => env('MS_GRAPH_CLIENT_ID'),
+                        'scope' => env('MS_GRAPH_USER_SCOPES'),
+                        'refresh_token' => $company_email->api_json['refresh_token'],
+                        'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+                        'grant_type' => 'refresh_token',
+                        'client_secret' => env('MS_GRAPH_SECRET_ID'),
+                    ],
+                ])->getBody()->getContents());
+            }catch(RequestException $e){
+                // dd($company_email->api_json['access_token']);
+                if($e->hasResponse()) {
+                    $response = $e->getResponse();
+                    $responseBody = $response->getBody()->getContents();
+                    $error = $responseBody;
+                }else{
+                    $error = $e->getMessage();
+                }
+
+                if($error){
+                    //ARRAY already
+                    // dd([$company_email->api_json, jso => n_decode($error, true)]);
+                    $company_email->api_json += ['errors' => json_decode($error, true)];
+                    $company_email->save();
+                }
+                // else{
+                //     dd($email_account_tokens);
+                // }
+
+                // $errors = json_encode($error);
+                // dd($errros);
+                //add to $company_email json ('api') errors
+                // $company_email->api_json = json_encode(array_merge($company_email->api_json, $error));
+
+                Log::channel('company_emails_log_in_error')->info($error);
+                continue;
+            }
+
+            // dd($email_account_tokens);
+
+            //json
+            $api_data = $company_email->api_json;
+            $api_data['access_token'] = $email_account_tokens->access_token;
+            $api_data['refresh_token'] = $email_account_tokens->refresh_token;
+            $api_data = json_encode($api_data);
+
+            $company_email->update([
+                'api_json' => $api_data,
+            ]);
+
+            $this->ms_graph = new Graph();
+            $this->ms_graph->setAccessToken($company_email->api_json['access_token']);
+
+            // FOLDER name Test etc
+            // $user_hive_folder =
+            //     $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders?filter=displayName eq 'Home Depot Rebates'&expand=childFolders")
+            //         ->setReturnType(MailFolder::class)
+            //         ->execute();
+            // dd($user_hive_folder);
+
+            if(env('APP_ENV') == 'production'){
+                //6-12-2023 6-27-2023 6-6-2024 exclude ones already read ... save $message->getId() to a (temp) database/log file?...
+                $messages_inbox = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/inbox/messages?top=20")
+                    ->setReturnType(Message::class)
+                    ->execute();
+
+                $messages_inbox_retry = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_retry'] . "/messages?top=20")
+                    ->setReturnType(Message::class)
+                    ->execute();
+
+                $messages = Arr::collapse([$messages_inbox, $messages_inbox_retry]);
+            }else{
+                //if array key exists
+                if(isset($company_email->api_json['hive_folder_test'])){
+                    $messages = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_test'] . "/messages?top=20")
+                    ->setReturnType(Message::class)
+                    ->execute();
+                }else{
+                    continue;
+                }
+            }
+            // dd($messages);
+
+            foreach($messages as $key => $message){
+                if(!isset($message->getToRecipients()[0])){
+                    continue;
+                }
+
+                $email_from = $message->getFrom()->getEmailAddress()->getAddress();
+                $email_from_domain = substr($email_from, strpos($email_from, "@"));
+                //find the right Receipt:: that belongs to this email....
+                // $email_to = strtolower($message->getToRecipients()[0]['emailAddress']['address']);
+                $email_subject = $message->getSubject();
+                $email_date =
+                    Carbon::parse($message->getReceivedDateTime())
+                        ->setTimezone('America/Chicago')
+                        ->format('Y-m-d');
+
+                // dd([$email_from, $email_from_domain, $email_subject, $email_date]);
+                //find the right Receipt:: that belongs to this email....
+                $from_email_receipts = Receipt::withoutGlobalScopes()->where('from_address', $email_from)->orWhere('from_address', $email_from_domain)->get();
+                // dd($from_email_receipts);
+
+                if($from_email_receipts->isEmpty()){
+                    //continue... email not a Receipt
+                    continue;
+                }else{
+                    foreach($from_email_receipts as $email_receipt){
+                        if(strpos($email_subject, $email_receipt->from_subject) !== FALSE){
+                            $receipt = $email_receipt;
+                        }else{
+                            //continue... email Subject not a Receipt
+                            continue;
+                        }
+                    }
+                }
+
+                // dd($receipt);
+                //06-17-2023 forwarded/redirected emails? if HIVE doesnt find them? let users forward emails
+                    //use $email_to = strtolower($message->getToRecipients()[0]['emailAddress']['address']);
+
+                //if is_null $receit, move to add_receipt folder
+                if(!isset($receipt)){
+                    //email not a Receipt
+                    continue;
+                }
+
+                // dd($receipt);
+                //NOTE: $receipt MUST be set by now
+                $receipt_account =
+                    ReceiptAccount::withoutGlobalScopes()
+                        ->where('belongs_to_vendor_id', $company_email->vendor_id)
+                        ->where('vendor_id', $receipt->vendor_id)
+                        ->first();
+
+                //missing receipt_account..receipt and companyemail exist but receipt/companyemail combo does not
+                //1-17-2023 6-27-2023 YES!~ should still process without #receipt_account? right?
+                if(is_null($receipt_account)){
+                    //move to Add sub_folder.
+                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
+                        ->attachBody(
+                            array(
+                                'destinationId' => $company_email->api_json['hive_folder_add']
+                                )
+                            )
+                        ->execute();
+
+                    continue;
+                }
+
+                //getContent = HTML or TEXT
+                $string = $message->getBody()->getContent();
+
+                //remove images
+                //ONLY IF {"receipt_image_regex":}  is NOT set
+                if(!isset($receipt->options['receipt_image_regex'])){
+                    $string = preg_replace("/<img[^>]+\>/i", "", $string);
+                }else{
+                    //FIND receipt email image in email html (eg. Floor and Decor)
+                    $re = $receipt->options['receipt_image_regex'];
+                    $str = $string;
+                    preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+
+                    //iamge/receipt url
+                    $image_email_url = $matches[1][0];
+
+                    //6-27-2023 error if cant find
+                }
+
+                // SHOW HTML RENDERED
+                // print_r($string);
+                // dd();
+
+                //SHOW EMAIL TEXT
+                // print_r(htmlspecialchars($string));
+                // dd();
+
+                if(isset($receipt->options['receipt_start'])){
+                    //if receipt_start = array
+                    //if false, look for next.
+                    if(is_array($receipt->options['receipt_start'])){
+                        foreach($receipt->options['receipt_start'] as $key => $receipt_start_text){
+                            $receipt_start = strpos($string, $receipt_start_text);
+
+                            if(is_numeric($receipt_start)){
+                                $receipt_start_text = $receipt_start_text;
+                                break;
+                            }
+                        }
+                    }else{
+                        $receipt_start = strpos($string, $receipt->options['receipt_start']);
+                    }
+
+                    //include the "receipt_start" text or start receipt_html after the text
+                    if(isset($receipt->options['receipt_start_offset'])){
+                        $receipt_start = strpos($string, $receipt_start_text) + strlen($receipt_start_text);
+                    }
+                }else{
+                    $receipt_start = 0;
+                }
+
+                if(isset($receipt->options['receipt_end'])){
+                    //if receipt_end = array
+                    //if false, look for next.
+                    if(is_array($receipt->options['receipt_end'])){
+                        foreach($receipt->options['receipt_end'] as $key => $receipt_end_text){
+                            $receipt_end = strpos($string, $receipt_end_text, $receipt_start);
+
+                            if(is_numeric($receipt_end)){
+                                break;
+                            }
+                        }
+                    }else{
+                        $receipt_end = strpos($string, $receipt->options['receipt_end'], $receipt_start);
+                    }
+
+                //if receipt_end = null, use last character of $string
+                }else{
+                    $receipt_end = strlen($string);
+                }
+
+                $receipt_position = $receipt_end - $receipt_start;
+                $receipt_html_main = substr($string, $receipt_start, $receipt_position);
+
+                //1-26-23 remove receipt text in the middle (Amazon)
+                //1-28-23 multiple removals? foreach receipt_middle_texts?
+                if(isset($receipt->options['receipt_middle_text'])){
+                    $re = $receipt->options['receipt_middle_text'];
+                    $str = $string;
+                    preg_match($re, $str, $matches);
+
+                    if(!empty($matches)){
+                        $receipt_html_main = str_replace($matches[1], '', $receipt_html_main);
+                    }
+                }
+
+                //PREVIEWS HTML RECEIPT
+                // print_r($receipt_html_main);
+                // dd();
+
+                //create Expense
+                if(!isset($image_email_url)){
+                    $image_email_url = NULL;
+                }
+
+                $move_type = $this->create_expense_from_email($company_email, $message, $receipt_account, $receipt, $receipt_html_main, $email_date, $image_email_url);
+
+                //move message here...
+                if($move_type == 'duplicate'){
+                    //move to duplicate folder
+                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
+                        ->attachBody(
+                            array(
+                                //1-17-2023 or is send to "receipts@hive.contractors? .. Remove...
+                                'destinationId' => $company_email->api_json['hive_folder_duplicate']
+                                )
+                            )
+                        ->execute();
+
+                    continue;
+                }elseif($move_type == 'error'){
+                    // Log::channel('ms_form_amount_not_found')->info($ocr_receipt_extract_prefix);
+
+                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
+                        ->attachBody(
+                            array(
+                                'destinationId' => $company_email->api_json['hive_folder_error']
+                                )
+                            )
+                        ->execute();
+
+                    continue;
+                }else{
+                    //move email to Saved folder
+                    $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
+                        ->attachBody(
+                            array(
+                                //1-17-2023 or is send to "receipts@hive.contractors? .. Remove...
+                                'destinationId' => $company_email->api_json['hive_folder_saved']
+                                )
+                            )
+                        ->execute();
+
+                    continue;
+                }
+            } //foreach messages
         }
     }
 
@@ -1867,6 +2314,399 @@ class ReceiptController extends Controller
 
         $complete = true;
         return $complete;
+    }
+
+    public function hd_rebates()
+    {
+        // dd(base_path() . "/js/browsershot.js");
+        // dd(dirname(__DIR__));
+        ini_set('max_execution_time', '4800');
+
+        //read last expense_id file
+        $last_expense_id_file = Storage::disk('files')->get('/hd_rebates_expense_id.json');
+        $last_expense_id = json_decode($last_expense_id_file, true)['last_expense_id'];
+
+        //3-10-23 foreach vendor that has hd_rebates enabled ...
+        $vendors = Vendor::hiveVendors()->get();
+
+        foreach($vendors as $vendor){
+            $expenses = Expense::withoutGlobalScopes()
+                ->where('belongs_to_vendor_id', $vendor->id)
+                ->with('receipts')
+                ->where('id', '>', $last_expense_id)
+                ->where('vendor_id', 8)
+                ->whereNotNull('invoice')
+                ->whereRaw('LENGTH(invoice) > 14')
+                ->whereBetween('date', [env('HD_REBATE_START'), env('HD_REBATE_END')])
+                ->where('amount', 'not like', '-%')
+                ->get();
+                // dd($expenses);
+
+            foreach($expenses as $expense){
+                $receipt_number = str_replace(' ', '', $expense->invoice);
+                $receipt_date = $expense->date->format('m/d/Y');
+                $receipt_total = $expense->amount;
+
+                $data = ['receipt_number' => $receipt_number, 'receipt_date' => $receipt_date, 'receipt_total' => $receipt_total];
+                // dd($data);
+                $this->hd_puphpeteer($data, $vendor);
+
+                // print_r(Browsershot::url('https://www.homedepotrebates11percent.com/#/home')
+                // ->newHeadless()
+                // ->setNodeBinary('/usr/bin/node')
+                // ->setNpmBinary('/usr/bin/npm')
+                // ->setChromePath('/usr/bin/chromium-browser')
+                // ->waitUntilNetworkIdle()
+                // ->type('#purchaseDateOnlyText', $data['receipt_date'])
+                // ->delay(500)
+                // ->click('#home-offer-purchasedate-continue2')
+
+
+
+                // ->waitUntilNetworkIdle()
+                // ->bodyHtml());
+                // Browsershot::url('https://www.homedepotrebates11percent.com/#/home')
+                //     ->addChromiumArguments(["no-sandbox"])
+                //     // ->newHeadless()
+
+                //     // ->setNodeBinary('/usr/bin/node')
+                //     // ->setNpmBinary('/usr/bin/npm')
+                //     // ->setChromePath('/usr/bin/chromium-browser')
+                //     // //Puppeteer stealth
+                //     // ->setBinPath(base_path() . "/js/browsershot.js")
+                //     ->setBinPath(base_path() . "/vendor/spatie/browsershot/libs/browsershot.js")
+                //     ->waitUntilNetworkIdle()
+                //     ->type('#purchaseDateOnlyText', $data['receipt_date'])
+                //     ->delay(500)
+                //     ->click('#home-offer-purchasedate-continue2')
+
+                //     // ->waitUntilNetworkIdle()
+                //     // ->bodyHtml()
+                //     ->delay(6500)
+                //     ->click('#continueOrSubmitBtn')
+                //     // // ->click('#continue-or-submit-btn')
+                //     // // // //, 'left', 5, 200
+                //     // // ->click('#continueOrSubmitBtn')
+                //     // ->click('document.querySelector("#continueOrSubmitBtn")')
+
+                //     // // ->triggeredRequests();
+
+                //     // // ->bodyHtml()
+
+                //     ->savePdf('example112.pdf');
+
+                //     // dd($html);
+                // // dd($pdf);
+                // dd('far');
+                // sleep(1);
+
+
+                // //change last_expense_id in file
+                // //keep track of last expense_id processed in local/text database
+                Storage::disk('files')->put('hd_rebates_expense_id.json', json_encode(array('last_expense_id' => $expense->id)));
+
+                // //log expense_id and tracking #
+                Log::channel('hd_rebates')->info([$expense->id, $data]);
+            }
+        }
+    }
+
+    public function hd_puphpeteer($data, $vendor)
+    {
+        $user = $vendor->users()->where('role_id', 1)->where('is_employed', 1)->first();
+        //foreach Home Depot receipt betweenDates ... run this now and then every home depot receipt thereafter.
+        $puppeteer = new Puppeteer;
+        $browser = $puppeteer->launch();
+
+        $page = $browser->newPage();
+        $page->goto('https://www.homedepotrebates11percent.com/#/home');
+        $page->waitForTimeout(500);
+
+        $page->type('#purchaseDateOnlyText', $data['receipt_date']);
+        $page->click('#home-offer-purchasedate-continue2');
+        $page->waitForTimeout(1000);
+
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(500);
+
+        $page->type('#Receipt\ Number', $data['receipt_number']);
+        // $page->type('#X\ CPR\ ID', $vendor->business_phone);
+        $page->type('#Gross\ Sales', $data['receipt_total']);
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(500);
+
+        // $page->screenshot(['path' => 'example.png']);
+        // dd('here');
+
+        $page->type('input[name="firstName"]', $user->first_name);
+        $page->type('input[name="lastName"]', $user->last_name);
+        // $page->type('input[name="companyName"]', str_replace(array(',', '.', '-', ':'), ' ', $vendor->business_name));
+        // $page->type('input[name="phoneNumber"]', $vendor->business_phone);
+        // $page->type('input[name="email"]', $vendor->business_email);
+        $page->type('input[name="phoneNumber"]', $vendor->business_phone);
+        $page->type('input[name="email"]', $vendor->business_email);
+        $page->type('input[name="confirmEmail"]', $vendor->business_email);
+        $page->type('input[name="address1"]', $vendor->address);
+        $page->type('input[name="address2"]', !is_null($vendor->address_2) ? (string) $vendor->address_2 : '');
+        $page->type('input[name="postalCode"]', (string) $vendor->zip_code);
+        $page->waitForTimeout(1000);
+
+        // $page->type('input[name="city"]', 'Prospect Heights');
+        $page->type('select[name="country"]', 'US');
+        $page->type('select[name="state"]', $vendor->state);
+        $page->waitForTimeout(500);
+
+        $page->click('button[aria-label="Verify\ Address"]');
+        $page->waitForTimeout(1500);
+
+        $page->click('#recommendedAddressBtn');
+        $page->waitForTimeout(3000);
+
+        $page->click('#continueOrSubmitBtnBottom');
+        $page->waitForTimeout(500);
+
+        //3-4-2023 get tracking #
+        $browser->close();
+
+        // $page->click('#The\ Home\ Depot\ Physical\ Gift\ Card');
+        // $page->click('#continueOrSubmitBtn');
+        // $page->waitForTimeout(1000);
+
+        return;
+    }
+
+    public function hd_print_certificates()
+    {
+        dd('in hd_print_certificates');
+        //get email folder---foreach folder item ... pupetheer (open link)... create pdf
+        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
+        // dd($company_emails);
+
+        foreach($company_emails as $company_email){
+            //check if access_token is expired, if so get new access_token and refresh_token
+            $guzzle = new Client();
+            $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
+            $email_account_tokens = json_decode($guzzle->post($url, [
+                'form_params' => [
+                    'client_id' => env('MS_GRAPH_CLIENT_ID'),
+                    'scope' => env('MS_GRAPH_USER_SCOPES'),
+                    'refresh_token' => $company_email->api_json['refresh_token'],
+                    'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+                    'grant_type' => 'refresh_token',
+                    'client_secret' => env('MS_GRAPH_SECRET_ID'),
+                ],
+            ])->getBody()->getContents());
+
+            //json
+            $api_data = $company_email->api_json;
+            $api_data['access_token'] = $email_account_tokens->access_token;
+            $api_data['refresh_token'] = $email_account_tokens->refresh_token;
+            $api_data = json_encode($api_data);
+
+            $company_email->update([
+                'api_json' => $api_data,
+            ]);
+
+            $this->ms_graph = new Graph();
+            $this->ms_graph->setAccessToken($company_email->api_json['access_token']);
+
+            $folder = 'AQMkADZhOTM1NDI2LWUzMTktNDViMy05OQFhLWZlYTE2YmU3MzAyZAAuAAAD_zyyhiR0HUm0oKJuKA6AnQEA23n86TJcJU_kYhT4djVwqgAHjvLUQAAAAA==';
+            $child_folder = 'AQMkADZhOTM1NDI2LWUzMTktNDViMy05OQFhLWZlYTE2YmU3MzAyZAAuAAAD_zyyhiR0HUm0oKJuKA6AnQEA23n86TJcJU_kYhT4djVwqgAIMO_KYQAAAA==';
+            $messages = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $folder . "/childFolders/" . $child_folder . "/messages?top=5")
+                ->setReturnType(Message::class)
+                ->execute();
+
+            $links = [];
+            foreach($messages as $message){
+                $str = $message->getBody()->getContent();
+                $re = '/<a\s+(?:[^>]*?\s+)?href=(["\'])(.*?)\1/m';
+                preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+
+                $link = $matches[2][0];
+                // dd($link);
+                $html = Browsershot::url($link)
+                ->addChromiumArguments(["no-sandbox"])
+                // ->newHeadless()
+
+                // ->setNodeBinary('/usr/bin/node')
+                // ->setNpmBinary('/usr/bin/npm')
+                // ->setChromePath('/usr/bin/chromium-browser')
+                // //Puppeteer stealth
+                // ->setBinPath(base_path() . "/js/browsershot.js")
+                ->setBinPath(base_path() . "/vendor/spatie/browsershot/libs/browsershot.js")
+                ->waitUntilNetworkIdle()
+                // ->type('#purchaseDateOnlyText', $data['receipt_date'])
+                // ->delay(500)
+                // ->click('#home-offer-purchasedate-continue2')
+
+                // ->waitUntilNetworkIdle()
+                ->bodyHtml();
+
+                dd($html);
+                // ->delay(6500)
+                // ->click('#continueOrSubmitBtn')
+                // // ->click('#continue-or-submit-btn')
+                // // // //, 'left', 5, 200
+                // // ->click('#continueOrSubmitBtn')
+                // ->click('document.querySelector("#continueOrSubmitBtn")')
+
+                // // ->triggeredRequests();
+
+                // // ->bodyHtml()
+
+                // ->savePdf('example112.pdf');
+            }
+        }
+    }
+
+    public function att()
+    {
+        //->newHeadless()
+        $pdf = Browsershot::url('https://signin.att.com')
+        ->setNodeBinary('/usr/bin/node')
+        ->setChromePath('/usr/bin/chromium-browser')
+        // ->format('A4')
+        // ->scale(0.5)
+        // ->authenticate('patryk@gs.construction', 'Pilka123#')
+        // ->type('#login_email', 'patryk@gs.construction')
+        // ->delay(1500)
+        // ->type('#login_password', 'Pilka123#')
+
+        // ->click('.b-account-login_form_submit_group_btn g-button_1')
+        // ->delay(1500)
+        // ->waitUntilNetworkIdle()
+        // ->click('[name="Sign in"] < button')
+        // ->click('body > div.l-main.ug-everyone.ug-unregistered > div.pt_storefront > div:nth-child(1) > div > div.b-account-login_content > div.b-account-login_signin > div > div.b-account-login_form > form > div.b-account-login_form_submit_group > button')
+        // ->click('/html/body/div[1]/div[9]/div[1]/div/div[3]/div[1]/div/div[3]/form/div[3]/button')
+        // ->delay(2500)
+        ->waitUntilNetworkIdle()
+        // ->pdf();
+
+        ->save('example.pdf');
+
+        dd('done');
+    }
+
+    public function menards()
+    {
+
+        // dd($solver);
+        //Browsershot
+
+        // $estimate = $this->estimate;
+        // return view('livewire.estimates.print', compact('estimate'));
+        // ->setNodeBinary('/usr/bin/node')
+        // $pdf = Browsershot::url('https://www.menards.com/main/login.html')
+        // ->setNodeBinary('/usr/bin/node')
+        // ->setChromePath('/usr/bin/chromium-browser')
+        // // ->format('A4')
+        // // ->scale(0.8)
+        // // ->authenticate('patryk@gs.construction', 'Pilka123#')
+        // ->type('#username', 'patryk@gs.construction')
+        // ->type('#login-password', 'Pilka123#')
+        // // ->click('#loginForm > button')
+        // ->delay(500)
+        // // ->pdf();
+        // ->save('example.pdf');
+
+        // $solver = new \TwoCaptcha\TwoCaptcha('df7bdb76483ee8f1082eb612568fe1da');
+
+        // try{
+        //     $result = $solver->recaptcha([
+        //         'sitekey' => '6LfD3PIbAAAAAJs_eEHvoOl75_83eXSqpPSRFJ_u',
+        //         'url'     => 'https://2captcha.com/demo/recaptcha-v2',
+        //     ]);
+        // }catch (\Exception $e){
+        //     die($e->getMessage());
+        // }
+
+        // dd('Captcha solved: ' . $result->code);
+
+        $html = Browsershot::url('https://www.menards.com/main/login.html')
+            ->addChromiumArguments(["no-sandbox"])
+            ->newHeadless()
+            ->waitUntilNetworkIdle()
+            // ->savePdf('exampleMenards.pdf');
+            ->bodyHtml();
+
+        dd($html);
+        print_r($html);
+        dd('done');
+
+
+        $puppeteer = new Puppeteer;
+        // $puppeteer = new Puppeteer([
+        //     'js_extra' => /** @lang JavaScript */
+        //     "
+        //         const puppeteer = require('puppeteer-extra');
+        //         const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+        //         puppeteer.use(StealthPlugin());
+        //         instruction.setDefaultResource(puppeteer);
+        //     "
+        // ]);
+
+        $browser = $puppeteer->launch();
+
+        $page = $browser->newPage();
+        $page->goto('https://www.menards.com/main/login.html');
+        $page->waitForTimeout(3000);
+
+        // $page->type('#username', 'patryk@gs.construction');
+        // $page->type('#login-password', 'Pilka123#');
+        // $page->waitForTimeout(1000);
+        // $page->click('#loginForm > button');
+        // $page->waitForTimeout(2000);
+
+        // dd($page->html());
+        dd($page->content());
+        // $page->screenshot(['path' => 'example_captcha_screen.png']);
+        $browser->close();
+        dd('done');
+
+
+
+        //solve reCAPCHA if challenged
+        // $solver = new \TwoCaptcha\TwoCaptcha(env('2CAPTCHA_API'));
+        // $result = $solver->recaptcha([
+        //     //images
+        //     'sitekey' => '6LfiZEYUAAAAAJD__10WyXUxDcTZh6dfNgPX18lT',
+        //     'url'     => 'https://www.menards.com/main/login.html',
+
+        //     //checkmark
+        //     // 'sitekey' => '6Ld38BkUAAAAAPATwit3FXvga1PI6iVTb6zgXw62',
+        //     // 'url'     => 'https://www.menards.com/main/checkcredentials.html',
+        // ]);
+
+        // sleep(20);
+        // dd($result);
+    }
+
+    public function floordecor()
+    {
+        //->newHeadless()
+        $pdf = Browsershot::url('https://www.flooranddecor.com/account-login')
+        ->setNodeBinary('/usr/bin/node')
+        ->setChromePath('/usr/bin/chromium-browser')
+        ->format('A4')
+        ->scale(0.5)
+        // ->authenticate('patryk@gs.construction', 'Pilka123#')
+        ->type('#login_email', 'patryk@gs.construction')
+        // ->delay(1500)
+        ->type('#login_password', 'Pilka123#')
+
+        // ->click('.b-account-login_form_submit_group_btn g-button_1')
+        // ->delay(1500)
+        // ->waitUntilNetworkIdle()
+        // ->click('[name="Sign in"] < button')
+        // ->click('body > div.l-main.ug-everyone.ug-unregistered > div.pt_storefront > div:nth-child(1) > div > div.b-account-login_content > div.b-account-login_signin > div > div.b-account-login_form > form > div.b-account-login_form_submit_group > button')
+        // ->click('/html/body/div[1]/div[9]/div[1]/div/div[3]/div[1]/div/div[3]/form/div[3]/button')
+        // ->delay(2500)
+        ->waitUntilNetworkIdle()
+        // ->pdf();
+
+        ->save('example.pdf');
+
+        dd('done');
     }
 
     //1-18-2023 combine the next 2 functions into one. Pass type = original or temp

@@ -94,7 +94,9 @@ class TimesheetPaymentCreate extends Component
         $this->user_paid_expenses =
             Expense::
                 where('paid_by', $this->user->id)
-                ->whereIn('reimbursment', ['', 'Client'])
+                ->where(function ($query) {
+                    $query->whereNull('reimbursment')->orWhere('reimbursment', 'Client');
+                })
                 ->whereNull('check_id')
                 ->orderBy('date', 'DESC')
                 ->get()
@@ -102,7 +104,6 @@ class TimesheetPaymentCreate extends Component
                     $item->checkbox = true;
                 })
                 ->keyBy('id');
-        // dd($this->user_paid_expenses);
 
         $this->user_reimbursement_expenses =
             Expense::

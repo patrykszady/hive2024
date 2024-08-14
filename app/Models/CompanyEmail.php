@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Casts\AsCollection;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Scopes\CompanyEmailsScope;
@@ -12,6 +13,10 @@ class CompanyEmail extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'api_json' => 'array',
+    ];
 
     protected static function booted()
     {
@@ -28,8 +33,8 @@ class CompanyEmail extends Model
         return $this->belongsTo(Vendor::class);
     }
 
-    public function getApiJsonAttribute($value)
-    {
-        return json_decode($value, true);
-    }
+    // public function getApiJsonAttribute($value)
+    // {
+    //     return json_decode($value, true);
+    // }
 }

@@ -9,6 +9,7 @@ class VendorDetails extends Component
 {
     public Vendor $vendor;
     public $registration = FALSE;
+    public $accordian = 'CLOSED';
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 

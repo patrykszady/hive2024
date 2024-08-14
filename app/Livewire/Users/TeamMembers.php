@@ -10,8 +10,8 @@ class TeamMembers extends Component
     public Vendor $vendor;
     public $user;
     public $vendor_users = [];
-
     public $registration = FALSE;
+    public $accordian = 'CLOSED';
 
     protected $listeners = ['refreshComponent' => '$refresh', 'fakeRefresh'];
 

@@ -155,7 +155,6 @@ class TransactionController extends Controller
 
     public function plaid_statements_list()
     {
-        dd('in plaid_statements_list');
         try{
             $client = new Client();
             $response = $client->post('https://' . env('PLAID_ENV') . '.plaid.com/statements/list', [
@@ -177,27 +176,31 @@ class TransactionController extends Controller
                 $error = $e->getMessage();
             }
             $error = json_decode($error, true);
-            dd($error);
-            // return $this->nylas_errors($error);
+            Log::channel('plaid_statements')->error($error);
         }
 
         $body = $response->getBody()->getContents();
         $statement_id = json_decode($body, true)['accounts'][0]['statements'][1]['statement_id'];
 
-        // $client = new Client();
-        // $response = $client->post('https://' . env('PLAID_ENV') . '.plaid.com/statements/download', [
-        //     'headers' => [
-        //         'Content-Type' => 'application/json',
-        //     ],
-        //     'json' => [
-        //         'client_id' => env('PLAID_CLIENT_ID'),
-        //         'secret' => env('PLAID_SECRET'),
-        //         'access_token' => 'access-production-b19234d9-d3d1-475f-9a02-7db2c88259a5',
-        //         'statement_id' => $statement_id,
-        //     ],
-        // ]);
+        $client = new Client();
+        $response = $client->post('https://' . env('PLAID_ENV') . '.plaid.com/statements/download', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+            ],
+            'json' => [
+                'client_id' => env('PLAID_CLIENT_ID'),
+                'secret' => env('PLAID_SECRET'),
+                'access_token' => 'access-production-b19234d9-d3d1-475f-9a02-7db2c88259a5',
+                'statement_id' => $statement_id,
+            ],
+        ]);
 
-        // dd($response->getBody());
+        return Storage::disk('files')->put('/_temp_ocr/TESTSTATEMENT12.pdf', $response->getBody()->getContents());
+        dd();
+        // dd($response->getBody()->getContents());
+        print_r($response->getBody()->getContents());
+        dd();
+        dd($response);
 
         $new_data = array(
                 'client_id' => env('PLAID_CLIENT_ID'),
@@ -222,12 +225,16 @@ class TransactionController extends Controller
         curl_close($ch);
 
         // echo $result;
-
         // dd();
+
         // dd($result);
         // $result = json_decode($result, true);
+        // print_r($result);
+        // dd();
+
         // dd($result);
         $contents = base64_decode($result);
+        dd($contents);
         return Storage::disk('files')->put('/_temp_ocr/TESTSTATEMENT12.pdf', $contents);
     }
 
@@ -263,21 +270,6 @@ class TransactionController extends Controller
 
     public function plaid_transactions_sync()
     {
-        // $expenses = Expense::where('reimbursment', '=', 'Client')->whereDoesntHave('receipts')->get();
-        // dd($expenses);
-        // $transactions = Expense::whereHas('transactions', function ($query) {
-        //     return $query->where('amount', '=', 260.02);
-        //     })->get();
-        // $expenses = Expense::whereHas('transactions')->whereYear('date', '2023')->with('transactions')->get();
-        // $transactions = [];
-        // foreach($expenses as $expense){
-        //     if($expense->amount != $expense->transactions->sum('amount')){
-        //         $transactions[] = $expense;
-        //     }
-        // }
-
-        // dd(collect($transactions)->pluck('id'));
-
         //->where('id', 21)
         $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
         $bank_accounts = BankAccount::all();
@@ -622,6 +614,7 @@ class TransactionController extends Controller
     //01-04-2024 get Transaction json details going back as far as possible ...
     public function plaid_transactions_get()
     {
+        dd('in plaid_transactions_get');
         ini_set('max_execution_time', '9900000');
         //foreach access_token / bank
         $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->where('id', env('BANK_ID'))->get();
@@ -1323,10 +1316,11 @@ class TransactionController extends Controller
     {
         $checks =
             Check::withoutGlobalScopes()
+                ->where('id', 3049)
                 ->whereDoesntHave('transactions')
                 ->whereNull('deleted_at')
-                ->orderBy('date', 'DESC')
                 ->where('date', '>', '2021-01-01')
+                ->orderBy('date', 'DESC')
                 ->get();
 
         foreach($checks as $check){
@@ -1340,17 +1334,16 @@ class TransactionController extends Controller
                 $check_number = '2020202';
                 $add_days = 14;
             }else{
-                Log::channel('add_check_id_to_transactions')->info($check);
-                continue;
+                // Log::channel('add_check_id_to_transactions')->info($check);
+                // continue;
             }
 
             $transactions = Transaction::withoutGlobalScopes()
                 ->whereNull('deleted_at')
                 ->whereNull('check_id')
                 ->where('check_number', $check_number)
-                ->where('bank_account_id', $check->bank_account_id)
                 //per hive vendor... checks table foreach bank_account_id
-                // ->where('bank_account_id', $check->bank_account_id)
+                ->where('bank_account_id', $check->bank_account_id)
                 ->whereBetween('transaction_date', [
                         $check->date->subDays(7)->format('Y-m-d'),
                         $check->date->addDays($add_days)->format('Y-m-d')
@@ -1359,9 +1352,9 @@ class TransactionController extends Controller
                 ->orderBy('id', 'DESC')
                 ->get();
 
+            //if check_number matches, that's the one
+                    //NOPE: if not BUT if amount matches, that's the one
             if($transactions->count() == 1){
-                //if check_number matches, that's the one
-                //if not BUT if amount matches, that's the one
                 $transactions->first()->check()->associate($check)->save();
             }else{
                 if($check->check_type == 'Transfer'){
@@ -1372,7 +1365,7 @@ class TransactionController extends Controller
                         ->whereNull('check_id')
                         ->where('check_number', $check_number)
                         //per hive vendor... checks table foreach bank_account_id
-                        // ->where('bank_account_id', $check->bank_account_id)
+                        ->where('bank_account_id', $check->bank_account_id)
                         ->whereBetween('transaction_date', [
                                 $check->date->subDays(7)->format('Y-m-d'),
                                 $check->date->addDays($add_days)->format('Y-m-d')
@@ -1418,6 +1411,26 @@ class TransactionController extends Controller
                             }
 
                             continue;
+                        }
+                    }
+                }elseif($check->check_type == 'Check'){
+                    $transactions = Transaction::withoutGlobalScopes()
+                        ->whereNull('deleted_at')
+                        ->whereNull('check_id')
+                        //per hive vendor... checks table foreach bank_account_id
+                        ->where('bank_account_id', $check->bank_account_id)
+                        ->whereBetween('transaction_date', [
+                                $check->date->subDays(90)->format('Y-m-d'),
+                                $check->date->addDays($add_days)->format('Y-m-d')
+                                ])
+                        ->where('amount', $check->amount)
+                        ->orderBy('id', 'DESC')
+                        ->get();
+
+                    foreach($transactions as $transaction){
+                        //if $check->check_number is inside of $transaction->check_number, associate $check with $transaction
+                        if(strpos($transaction->check_number, $check->check_number) !== false) {
+                            $transaction->check()->associate($check)->save();
                         }
                     }
                 }

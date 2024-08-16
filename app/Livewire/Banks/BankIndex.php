@@ -8,6 +8,8 @@ use App\Models\BankAccount;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
+use Carbon\Carbon;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BankIndex extends Component
@@ -38,9 +40,6 @@ class BankIndex extends Component
                         $item->error = FALSE;
                     }
                 });
-        // dd($this->banks);
-        // dd($this->banks->first()->accounts()->with('checks')->get());
-        // dd($this->banks->first()->plaid_options->accounts[0]->balances->available);
     }
 
     public function plaid_link_token()
@@ -59,7 +58,7 @@ class BankIndex extends Component
 
         $data['products'] = ['transactions'];
         $data['required_if_supported_products'] = ['statements'];
-        $data['statements'] = ['start_date' => '2024-06-01', 'end_date' => '2024-08-01'];
+        $data['statements'] = ['start_date' => Carbon::today()->subMonth()->startOfMonth()->format('Y-m-d'), 'end_date' => Carbon::today()->subMonth()->endOfMonth()->format('Y-m-d')];
         //convert array into JSON
         $data = json_encode($data);
 
@@ -78,9 +77,9 @@ class BankIndex extends Component
         curl_close($ch);
 
         $result = json_decode($exchangeToken, true);
-        // dd($result);
+
         //open Plaid Link Modal
-            //script file in banks.index.blade file.
+        //script file in banks.index.blade file.
         $this->dispatch('linkToken', $result['link_token']);
     }
 

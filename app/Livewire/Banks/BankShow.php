@@ -6,6 +6,8 @@ use App\Models\Bank;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
+use Carbon\Carbon;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BankShow extends Component
@@ -17,7 +19,7 @@ class BankShow extends Component
 
     public function mount()
     {
-        // dd($this->bank->plaid_options->error->error_message);
+
     }
 
     public function plaid_link_token_update()
@@ -37,8 +39,7 @@ class BankShow extends Component
 
         $data['products'] = ['transactions'];
         $data['required_if_supported_products'] = ['statements'];
-        $data['statements'] = ['start_date' => '2024-06-01', 'end_date' => '2024-08-01'];
-
+        $data['statements'] = ['start_date' => Carbon::today()->subMonth()->startOfMonth()->format('Y-m-d'), 'end_date' => Carbon::today()->subMonth()->endOfMonth()->format('Y-m-d')];
         //convert array into JSON
         $data = json_encode($data);
 

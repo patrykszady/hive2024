@@ -17,7 +17,7 @@
 
 @if(isset($attributes['wire:click']))
     <button
-        {{-- {{$attributes}} --}}
+        {{$attributes}}
         type="button"
         class="{{$classes}}"
         wire:click="{{ $attributes['wire:click'] }}"

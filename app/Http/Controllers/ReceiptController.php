@@ -61,7 +61,7 @@ class ReceiptController extends Controller
 
     public function nylas_errors($error)
     {
-        Log::channel('nylas_connection_errors')->info($error, [auth()->user()->first(), auth()->user()->vendor]);
+        Log::channel('nylas_connection_errors')->error($error, [auth()->user()->first(), auth()->user()->vendor]);
 
         if($error['error_code'] == 'exists'){
             $error_message = $error['error_description'];
@@ -710,7 +710,6 @@ class ReceiptController extends Controller
         //6-28-2023 catch forwarded messages where From is in database table company_emails
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
         foreach($company_emails as $company_email){
-            // dd($company_email->api_json->toArray());
             //check if access_token is expired, if so get new access_token and refresh_token
             try{
                 $guzzle = new Client();
@@ -726,7 +725,6 @@ class ReceiptController extends Controller
                     ],
                 ])->getBody()->getContents());
             }catch(RequestException $e){
-                // dd($company_email->api_json['access_token']);
                 if($e->hasResponse()) {
                     $response = $e->getResponse();
                     $responseBody = $response->getBody()->getContents();
@@ -735,26 +733,13 @@ class ReceiptController extends Controller
                     $error = $e->getMessage();
                 }
 
-                if($error){
-                    //ARRAY already
-                    // dd([$company_email->api_json, jso => n_decode($error, true)]);
-                    $company_email->api_json += ['errors' => json_decode($error, true)];
-                    $company_email->save();
-                }
-                // else{
-                //     dd($email_account_tokens);
-                // }
+                $company_email->api_json += ['errors' => json_decode($error, true)];
+                $company_email->save();
 
-                // $errors = json_encode($error);
-                // dd($errros);
                 //add to $company_email json ('api') errors
-                // $company_email->api_json = json_encode(array_merge($company_email->api_json, $error));
-
-                Log::channel('company_emails_log_in_error')->info($error);
+                Log::channel('company_emails_log_in_error')->error($error);
                 continue;
             }
-
-            // dd($email_account_tokens);
 
             //json
             $api_data = $company_email->api_json;

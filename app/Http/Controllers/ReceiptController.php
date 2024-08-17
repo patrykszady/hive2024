@@ -1017,7 +1017,7 @@ class ReceiptController extends Controller
             $api_data = $company_email->api_json;
             $api_data['access_token'] = $email_account_tokens->access_token;
             $api_data['refresh_token'] = $email_account_tokens->refresh_token;
-            $api_data = json_encode($api_data);
+            // $api_data = json_encode($api_data);
 
             $company_email->update([
                 'api_json' => $api_data,

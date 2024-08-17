@@ -32,9 +32,4 @@ class CompanyEmail extends Model
     {
         return $this->belongsTo(Vendor::class);
     }
-
-    // public function getApiJsonAttribute($value)
-    // {
-    //     return json_decode($value, true);
-    // }
 }

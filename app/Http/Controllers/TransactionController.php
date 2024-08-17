@@ -1316,7 +1316,6 @@ class TransactionController extends Controller
     {
         $checks =
             Check::withoutGlobalScopes()
-                ->where('id', 3049)
                 ->whereDoesntHave('transactions')
                 ->whereNull('deleted_at')
                 ->where('date', '>', '2021-01-01')

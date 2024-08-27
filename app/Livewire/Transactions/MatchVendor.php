@@ -41,7 +41,7 @@ class MatchVendor extends Component
 
     public function mount()
     {
-        $this->vendors = Vendor::withoutGlobalScopes()->orderBy('business_name', 'ASC')->where('business_type', 'Retail')->get();
+        $this->vendors = Vendor::withoutGlobalScopes()->orderBy('business_name', 'ASC')->get();
         $this->expense_receipt_merchants =
             Expense::withoutGlobalScopes()
                 ->with('receipts')

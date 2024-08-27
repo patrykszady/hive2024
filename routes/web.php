@@ -69,6 +69,7 @@ use App\Livewire\Projects\ProjectsIndex;
 use App\Livewire\Projects\ProjectShow;
 
 use App\Livewire\Sheets\SheetsIndex;
+use App\Livewire\Sheets\SheetShow;
 
 use App\Livewire\Payments\PaymentsIndex;
 use App\Livewire\Payments\PaymentCreate;
@@ -248,12 +249,13 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
 
     //SHEETS
     Route::get('/sheets', SheetsIndex::class)->name('sheets.index');
+    Route::get('/sheet_show', SheetShow::class)->name('sheets.show');
 
     //TASKS
     Route::get('/planner', Planner::class)->name('planner.index');
 
     //TASKS
-    Route::get('/planner_list', PlannerList::class)->name('planner_list.index');
+    Route::get('/planner_schedule', PlannerList::class)->name('planner_list.index');
 });
 
 require __DIR__.'/auth.php';

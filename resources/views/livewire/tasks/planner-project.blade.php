@@ -70,7 +70,6 @@
                     class="overflow-x-auto"
                     x-bind="scrollSync"
                     >
-                    {{--   --}}
                     <div class="max-w-5xl" style="width: 1400px;">
                         {{-- @if(!$project->no_date_tasks->isEmpty() || !$project->tasks->isEmpty()) --}}
                             <div class="grid grid-cols-7 gap-1 divide-x divide-solid divide-gray-300">

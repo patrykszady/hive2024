@@ -100,7 +100,7 @@
                                 <x-cards.button wire:click="$dispatchTo('bids.bid-create', 'addBids', { vendor: {{$vendor->id}}, project: {{$project->id}} })">
                                     Edit Bid
                                 </x-cards.button>
-                                <x-cards.button x-transition wire:click="removeProject({{$project_id}})" :button_color="'white'">
+                                <x-cards.button wire:click="removeProject({{$project_id}})" :button_color="'white'">
                                     Remove
                                 </x-cards.button>
                             </x-slot>

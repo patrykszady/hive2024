@@ -136,6 +136,7 @@ class VendorPaymentCreate extends Component
         $project->vendor_bids_sum = $project->bids()->vendorBids($this->vendor->id)->sum('amount');
         $project->balance = $project->vendor_bids_sum - $project->vendor_expenses_sum;
 
+        // dd($this);
         // $this->projects->reload();
         $this->project_id = "";
     }

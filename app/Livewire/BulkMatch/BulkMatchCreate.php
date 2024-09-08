@@ -174,6 +174,7 @@ class BulkMatchCreate extends Component
     {
         $this->form->update();
         //refresh main component of transactions/bulk_match
+        $this->dispatch('refreshComponent')->to('transactions.bulk-match');
         $this->showModal = FALSE;
         $this->dispatch('notify',
             type: 'success',
@@ -184,6 +185,7 @@ class BulkMatchCreate extends Component
     public function save()
     {
         $this->form->store();
+        $this->dispatch('refreshComponent')->to('transactions.bulk-match');
         $this->showModal = FALSE;
         $this->dispatch('notify',
             type: 'success',

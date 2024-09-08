@@ -89,49 +89,33 @@
     <x-cards accordian="CLOSED">
         <x-cards.heading>
             <x-slot name="left">
-                <h1 class="text-lg">General & Administrative Expenses</b></h1>
+                <h1 class="text-lg">General & Administrative Expenses</h1>
             </x-slot>
         </x-cards.heading>
 
         <x-cards.body>
             <x-lists.ul>
-                @foreach($general_expense_categories as $category_primary_name => $general_expense_category)
+                @foreach($general_expense_categories as $vendor_category_name => $general_expense_category)
                     <x-lists.search_li
                         :basic=true
                         :bold="TRUE"
-                        :no_hover="TRUE"
-                        :line_title="strtoupper($category_primary_name)"
-                        :line_data="money($general_expense_category->sum('amount'))"
+                        :line_title="strtoupper($vendor_category_name)"
+                        {{-- :line_data="money($general_expense_category->sum('amount'))" --}}
+                        :line_data="'TEST / $'"
                         >
                     </x-lists.search_li>
 
-                    @foreach($general_expense_category->groupBy('category.friendly_detailed') as $category_friendly_detailed => $category_friendly_expenses)
+                    @foreach($general_expense_category->vendors as $vendor)
                         <x-lists.search_li
                             :basic=true
-                            :no_hover="TRUE"
-                            {{-- '&emsp;' .  --}}
-                            {{-- :line_title="strtoupper($category_friendly_detailed) . '<br><i>' . $category_primary_name . '</i>'" --}}
-                            :line_title="$category_friendly_detailed"
-                            :line_data="money($category_friendly_expenses->sum('amount'))"
+                            :line_title="$vendor->name"
+                            :line_data="money($vendor->expenses->sum('amount'))"
                             >
                         </x-lists.search_li>
-
-                        @foreach($category_friendly_expenses->groupBy('vendor.busienss_name') as $vendor_name => $general_expense_vendor_expenses)
-                            <x-lists.search_li
-                                {{-- wire:click="$dispatchTo('categories.vendor-categories-create', 'addCategories', { vendor: {{$general_expense_vendor_expenses->first()->vendor->id}} })" --}}
-                                :basic=true
-                                :line_title="$vendor_name"
-                                :line_data="money($general_expense_vendor_expenses->sum('amount'))"
-                                >
-                            </x-lists.search_li>
-                        @endforeach
                     @endforeach
-
                 @endforeach
             </x-lists.ul>
         </x-cards.body>
-
-        {{-- <livewire:categories.vendor-categories-create /> --}}
 
         <x-cards.footer has_ul="TRUE">
             <x-lists.ul>

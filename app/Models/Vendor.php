@@ -42,6 +42,11 @@ class Vendor extends Model
         return 'vendors_index';
     }
 
+    public function vendor_categories()
+    {
+        return $this->belongsToMany(VendorCategory::class, 'category_vendor', 'vendor_id', 'vendor_category_id')->withTimestamps();
+    }
+
     //Vendors that belong to Logged in vendor / via $user->primary_vendor_id
     public function vendors()
     {

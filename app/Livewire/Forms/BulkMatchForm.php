@@ -100,7 +100,7 @@ class BulkMatchForm extends Form
         $this->validate();
 
         $options = $this->options();
-        
+
         //create new BulkMatch ...
         $bulk_match =
             TransactionBulkMatch::create([

@@ -66,7 +66,7 @@
                 @if($basic)
                     <div class="sm:divide-y sm:divide-gray-200">
                         <div class="items-center sm:grid sm:grid-cols-3 sm:gap-1">
-                            <p class="text-sm {{$bold ? 'font-bold' : 'font-medium'}} text-gray-500 font-col">{{ $lineTitle }}</p>
+                            <p class="text-sm {{$bold ? 'font-bold' : 'font-medium'}} text-gray-500 font-col">{!! $lineTitle !!}</p>
 
                             @if($lineData)
                                 <p @class(['text-md text-gray-900 sm:col-span-2', 'hover:text-indigo-600' => $attributes['href'] || $attributes['wire:click'], 'font-bold' => $bold])>
@@ -95,7 +95,7 @@
                     @endif
                 @else
                     <p class="font-{{$fontWeight}} text-gray-900 text-md font-col">
-                        {{ $lineTitle }}
+                        {!! $lineTitle !!}
                     </p>
                     <div class="ml-auto">
                         <p

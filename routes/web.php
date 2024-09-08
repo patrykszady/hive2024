@@ -26,6 +26,8 @@ use App\Livewire\Vendors\VendorSheetsTypeIndex;
 use App\Livewire\VendorDocs\VendorDocsIndex;
 use App\Livewire\VendorDocs\AuditShow;
 
+use App\Livewire\Categories\CategoriesIndex;
+
 use App\Livewire\Tasks\Planner;
 use App\Livewire\Tasks\PlannerList;
 
@@ -196,6 +198,8 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/vendors/{vendor}', VendorShow::class)->name('vendors.show');
     Route::get('/vendors/{vendor}/payment', VendorPaymentCreate::class)->name('vendors.payment');
 
+    //CATEGORIES
+    Route::get('/categories', CategoriesIndex::class)->name('categories.index');
 
     //ESTIMATES
     Route::get('/estimates/create/{project}', EstimateCreate::class)->name('estimates.create');

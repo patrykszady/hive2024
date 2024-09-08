@@ -7,6 +7,7 @@ use App\Models\Expense;
 use App\Models\Check;
 use App\Models\Payment;
 use App\Models\Vendor;
+use App\Models\VendorCategory;
 
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -36,6 +37,7 @@ class SheetShow extends Component
             return(redirect('sheets'));
         }
 
+
         $vendor_admins = auth()->user()->vendor->users()->employed()->wherePivot('role_id', 1)->pluck('user_id')->toArray();
         // dd($vendor_admins);
 
@@ -62,7 +64,7 @@ class SheetShow extends Component
                 // dd($query->where('title', '!=', 'VIEW ONLY')->first());
                 $query->where('title', '!=', 'VIEW ONLY');
             });
-        })->sum('amount');
+            })->sum('amount');
 
         $cost_of_labor =
             Check::
@@ -85,14 +87,33 @@ class SheetShow extends Component
         $material_vendor_ids = Vendor::where('sheets_type', 'Materials')->pluck('id');
         $sub_vendors_ids = Vendor::whereNot('business_type', 'Retail')->pluck('id');
 
+        // $this->general_expense_categories = VendorCategory::with('vendors')->get()->groupBy('friendly_detailed')->toBase();
+        // dd($this->general_expense_categories);
+
+        // $this->general_expense_categories = Vendor::whereHas('vendor_categories')->get();
+
+
         $this->general_expense_categories =
-            Expense::whereYear('date', $this->year)
-                ->whereNotIn('vendor_id', array_merge($material_vendor_ids->toArray(), $sub_vendors_ids->toArray()))
-                ->with(['category', 'vendor'])
-                ->get()
-                // ->groupBy(['category.friendly_detailed', 'vendor.busienss_name'])
-                ->groupBy('category.friendly_primary')
-                ->toBase();
+            VendorCategory::with(['vendors' => function ($query){
+                $query->with(['expenses' => function ($query){
+                    $query->whereYear('date', $this->year);
+                }]);
+            }])
+            ->get()
+            ->keyBy('friendly_detailed');
+
+        // dd($this->general_expense_categories);
+
+        // $this->general_expense_categories =
+        //     Expense::whereYear('date', $this->year)
+        //         ->whereNotIn('vendor_id', array_merge($material_vendor_ids->toArray(), $sub_vendors_ids->toArray()))
+        //         ->with(['category', 'vendor'])
+        //         ->get()
+        //         // ->groupBy(['category.friendly_detailed', 'vendor.busienss_name'])
+        //         ->groupBy('category.friendly_detailed')
+        //         ->toBase();
+
+
 
         $this->cost_of_materials = Expense::whereYear('date', $this->year)->whereIn('vendor_id', $material_vendor_ids)->sum('amount');
         $this->general_expenses = Expense::whereYear('date', $this->year)->whereNotIn('vendor_id', array_merge($material_vendor_ids->toArray(), $sub_vendors_ids->toArray()))->sum('amount');

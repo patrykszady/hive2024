@@ -39,16 +39,39 @@
             <x-lists.ul>
                 <x-lists.search_li
                     :basic=true
-                    :line_title="'Cost of Labor'"
+                    :bold="TRUE"
+                    :line_title="strtoupper('Cost of Labor')"
                     :line_data="money($cost_of_labor_sum)"
                     >
                 </x-lists.search_li>
+                <x-lists.ul>
+                    @foreach($cost_of_labor_vendors as $vendor_name => $cost_of_labor_vendor)
+                        <x-lists.search_li
+                            :basic=true
+                            :line_title="$vendor_name"
+                            :line_data="money($cost_of_labor_vendor->sum('amount'))"
+                            >
+                        </x-lists.search_li>
+                    @endforeach
+                </x-lists.ul>
+
                 <x-lists.search_li
                     :basic=true
-                    :line_title="'Cost of Materials'"
-                    :line_data="money($cost_of_materials)"
+                    :bold="TRUE"
+                    :line_title="strtoupper('Cost of Materials')"
+                    :line_data="money($cost_of_materials_sum)"
                     >
                 </x-lists.search_li>
+                <x-lists.ul>
+                    @foreach($cost_of_materials_vendors as $vendor_name => $cost_of_materials_vendors)
+                        <x-lists.search_li
+                            :basic=true
+                            :line_title="$vendor_name"
+                            :line_data="money($cost_of_materials_vendors->sum('amount'))"
+                            >
+                        </x-lists.search_li>
+                    @endforeach
+                </x-lists.ul>
             </x-lists.ul>
         </x-cards.body>
 
@@ -58,7 +81,7 @@
                     :basic=true
                     :bold="TRUE"
                     :line_title="'TOTAL'"
-                    :line_data="money($cost_of_labor_sum + $cost_of_materials)"
+                    :line_data="money($cost_of_labor_sum + $cost_of_materials_sum)"
                     >
                 </x-lists.search_li>
             </x-lists.ul>
@@ -83,7 +106,7 @@
                 <x-lists.search_li
                     :basic=true
                     :line_title="'- Cost of Revenue'"
-                    :line_data="money($cost_of_labor_sum + $cost_of_materials)"
+                    :line_data="money($cost_of_labor_sum + $cost_of_materials_sum)"
                     >
                 </x-lists.search_li>
             </x-lists.ul>
@@ -95,7 +118,7 @@
                     :basic=true
                     :bold="TRUE"
                     :line_title="'TOTAL'"
-                    :line_data="money($revenue - $cost_of_labor_sum - $cost_of_materials)"
+                    :line_data="money($revenue - $cost_of_labor_sum - $cost_of_materials_sum)"
                     >
                 </x-lists.search_li>
             </x-lists.ul>
@@ -169,7 +192,7 @@
                 :basic=true
                 :bold="TRUE"
                 :line_title="'NET INCOME'"
-                :line_data="money($revenue - $cost_of_labor_sum - $cost_of_materials - $general_expenses)"
+                :line_data="money($revenue - $cost_of_labor_sum - $cost_of_materials_sum - $general_expenses)"
                 >
             </x-lists.search_li>
         </x-lists.ul>

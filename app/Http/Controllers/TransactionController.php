@@ -1039,6 +1039,7 @@ class TransactionController extends Controller
                 $transactions = Transaction::
                     whereIn('bank_account_id', $hive_vendor_bank_account_ids)
                     ->whereNull('expense_id')
+                    ->where('amount', '!=', '0.00')
                     //03-22 -2023 when negative, ignore vendor_id
                     // ->when(substr($expense->amount, 0, 1) == '-', function ($query) {
                     //     dd($vendor_id);
@@ -1753,6 +1754,7 @@ class TransactionController extends Controller
     // Prints sums of all subsets of array
     public function subsetSums($arr, $n, $ids, $model)
     {
+        // dd([$arr, $n, $ids, $model]);
         ini_set('max_execution_time', 600000);
         // There are totoal 2^n subsets
         $total = 1 << $n;

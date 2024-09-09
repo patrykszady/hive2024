@@ -758,7 +758,7 @@ class TransactionController extends Controller
                     ->get();
 
             foreach($transactions as $transaction){
-                if($transaction->expense){
+                if($transaction->expense->category){
                     $transaction->expense->category()->associate($vendors_with_category->find($transaction->expense->vendor_id)->category);
                     $transaction->expense->timestamps = false;
                     $transaction->expense->save();

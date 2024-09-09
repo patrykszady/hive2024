@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // only in Production not in Development enviroment ... EVERYTHING EMAIL RELATED GOES HERE
-        if(env('APP_ENV') == 'production'){
+        // if(env('APP_ENV') == 'production'){
             //->timezone('America/Chicago')->between('6:00', '20:00')
             $schedule->call('\App\Http\Controllers\ReceiptController@ms_graph_email_api')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@plaid_item_status')->hourly();
@@ -45,7 +45,7 @@ class Kernel extends ConsoleKernel
             $schedule->call('\App\Http\Controllers\TransactionController@add_category_to_expense')->hourly();
 
             $schedule->call('\App\Http\Controllers\TransactionController@transaction_vendor_bulk_match')->everyTenMinutes();
-        }
+        // }
 
         //everyMinute();
         //Laravel 10+ requires this

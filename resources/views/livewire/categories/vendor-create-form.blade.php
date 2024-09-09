@@ -45,6 +45,7 @@
 
                     <option value="">General Expenses</option>
                     <option value="Materials">Materials</option>
+                    {{-- <option value="Not General">Not General Expenses</option> --}}
                 </x-forms.row>
 
                 {{-- VENDOR CATEGORIES --}}

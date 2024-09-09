@@ -1,5 +1,22 @@
 <div class="max-w-xl mx-auto space-y-4 sm:px-6">
     <x-cards>
+        <x-cards.heading>
+            <x-slot name="left">
+                <h1 class="text-lg"></h1>
+            </x-slot>
+            <x-slot name="right">
+                <x-cards.button
+                    wire:click="export_csv"
+                    >
+                    Export CSV
+                </x-cards.button>
+
+                {{-- NEW PROJECT MODAL --}}
+                {{-- <livewire:projects.project-create :$clients /> --}}
+            </x-slot>
+        </x-cards.heading>
+    </x-cards>
+    <x-cards>
         <x-lists.ul>
             <x-lists.search_li
                 :basic=true

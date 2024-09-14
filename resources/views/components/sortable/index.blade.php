@@ -1,13 +1,8 @@
-@props([
-    'handler',
-    'group'
-    ])
+@props(['handler'])
 
 <div
     {{$attributes}}
-    x-sort="$wire.{{$handler}}($item, $position)"
-    @if($group) x-sort:group="{{$group}}" @endif
+    x-sort="$wire.{{ $handler }}($key, $position)"
     >
-
     {{$slot}}
 </div>

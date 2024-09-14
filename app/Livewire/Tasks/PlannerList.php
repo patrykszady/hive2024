@@ -9,6 +9,7 @@ use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 
@@ -35,6 +36,23 @@ class PlannerList extends Component
         ]);
     }
 
+    public function remove($task_id)
+    {
+        $task = $this->query()->findOrFail($task_id);
+
+        //999999 = $position. CHANGE!!!
+        $this->move($task, 999999);
+
+        $task->delete();
+    }
+
+    public function sort($key, $position)
+    {
+        $task = $this->query()->findOrFail($key);
+
+        $this->move($task, $position);
+    }
+
     #[Computed]
     public function tasks()
     {
@@ -45,6 +63,35 @@ class PlannerList extends Component
     protected function query()
     {
         return Task::where('project_id', 241);
+    }
+
+    protected function move($task, $position)
+    {
+        DB::transaction(function() use($task, $position){
+            $current = $task->order;
+            $after = $position;
+
+            //If there was no position change, dont shift
+            if($current === $after) return;
+
+            // move the target todo out of the position stack
+            $task->update(['order' => -1]);
+
+            //Grab the shifted block and shift it up or down
+            $block = $this->query()->whereBetween('order', [
+                    min($current, $after),
+                    max($current, $after),
+                ]);
+
+            $needToShiftBlockBecauseDraggingTargetDown = $current < $after;
+
+            $needToShiftBlockBecauseDraggingTargetDown
+                ? $block->decrement('order')
+                : $block->increment('order');
+
+            //place target back in position stack
+            $task->update(['order' => $after]);
+        });
     }
 
     //render method not needed if view and component follow a convention

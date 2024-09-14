@@ -186,7 +186,7 @@
                             :line_title="money($expense->amount)"
                             :bubble_message="$expense->status"
                             {{-- ($expense->status == 'No Project' ? 'yellow' : 'red') --}}
-                            :bubble_color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'yellow' : 'red')"
+                            :bubble_color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'indigo' : 'red')"
                             >
                         </x-lists.search_li>
                     @endforeach

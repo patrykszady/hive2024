@@ -28,18 +28,18 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ isset($title) ? $title . ' | ' . env('APP_NAME') : env('APP_NAME') }}</title>
-
+    {{-- <script src="//cdn.tailwindcss.com"></script> --}}
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
     <!-- Fonts -->
     {{-- @preloadFonts --}}
 
     <!-- Styles -->
-    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
+    {{-- <link rel="styleaheet" href="{{ asset('css/app.css') }}"> --}}
     {{-- @vite('resources/css/app.css') --}}
-    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
-    @vite('resources/js/app.js')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- @vite('resources/js/app.js') --}}
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> --}}
     {{-- @livewireStyles --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css"> --}}
     {{-- @lagoonStyles --}}
@@ -73,6 +73,8 @@
     <script defer src="https://unpkg.com/@alpinejs/focus@3.14.1/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.1/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
+
     {{-- <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script> --}}
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>

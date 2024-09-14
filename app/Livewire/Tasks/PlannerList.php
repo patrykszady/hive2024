@@ -2,9 +2,11 @@
 
 namespace App\Livewire\Tasks;
 
+use App\Models\Task;
 use App\Models\Project;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 
 use Carbon\Carbon;
@@ -12,50 +14,42 @@ use Carbon\CarbonInterval;
 
 class PlannerList extends Component
 {
-    public $projects = [];
-    public $days = [];
+    // public Project $project;
 
-    public function mount()
+    // public $projects = [];
+    public $draft = '';
+
+    // public function mount()
+    // {
+    //     $this->tasks = Task::where('project_id', 241)->get();
+    //     // $this->projects = Project::with('tasks')->status(['Active']);
+    // }
+
+    public function add()
     {
-        //get this week
-        $days = new \DatePeriod(
-            Carbon::now()->startOfWeek(Carbon::MONDAY),
-            CarbonInterval::day(),
-            Carbon::now()->endOfWeek(Carbon::SUNDAY)
-        );
-
-        $this->days = collect();
-        foreach($days as $day){
-            //need to account for saturday&sunday / days off
-            $this->days[] = collect([
-                'database_date' => $day->format('Y-m-d'),
-                'formatted_date' => $day->format('D, m/d'),
-                'is_today' => $day == today(),
-            ]);
-        }
-        //->where('is_today', false)
-        // dd($this->days->first()['is_today']);
-
-        //tasks where between week
-        $this->projects =
-            Project::
-                // when(!is_null($this->single_project_id), function ($query, $item) {
-                //     return $query->where('id', $this->single_project_id);
-                // })
-                with(['tasks' => function($query) {
-                    $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
-                }])
-                ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
-                ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']])
-                ->take(12)
-                ->values();
-
-        // dd($this->projects->first());
+        Project::findOrFail(241)->tasks()->create([
+            'title' => $this->pull('draft'),
+            'duration' => 0,
+            'order' => $this->query()->max('order') + 1,
+            'type' => 'Task',
+        ]);
     }
 
-    #[Title('Schedule')]
-    public function render()
+    #[Computed]
+    public function tasks()
     {
-        return view('livewire.tasks.planner-list');
+        //orderBy 'order'
+        return $this->query()->orderBy('order')->get();
     }
+
+    protected function query()
+    {
+        return Task::where('project_id', 241);
+    }
+
+    //render method not needed if view and component follow a convention
+    // public function render()
+    // {
+    //     return view('livewire.tasks.planner-list');
+    // }
 }

@@ -1696,12 +1696,13 @@ class ReceiptController extends Controller
         //ITEMS
         if(isset($ocr_receipt_extract_prefix['Items'])){
             $items = $ocr_receipt_extract_prefix['Items']['valueArray'];
+
             foreach($items as $key => $line_item){
                 if(isset($line_item['valueObject']['Quantity'])){
                     if($key == 1){
                         $quantity = $line_item['valueObject']['Quantity']['valueNumber'];
 
-                        if(isset($line_item['valueObject']['Price'])){
+                        if(isset($line_item['valueObject']['Price']['valueNumber'])){
                             $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
                         }elseif(isset($line_item['valueObject']['UnitPrice'])){
                             $line_item_price = $line_item['valueObject']['UnitPrice']['valueCurrency']['amount'];

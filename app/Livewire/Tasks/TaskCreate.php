@@ -73,7 +73,7 @@ class TaskCreate extends Component
             $this->form->duration = $duration;
         }elseif(empty($dates[0])){
             $this->form->duration = 0;
-        }else{    
+        }else{
             $this->form->duration = 1;
         }
     }
@@ -102,6 +102,7 @@ class TaskCreate extends Component
         );
 
         $this->dispatch('refresh_planner')->to(PlannerProject::class);
+        // $this->dispatch('refresh_planner')->to(PlannerList::class);
         $this->showModal = FALSE;
     }
 
@@ -115,6 +116,7 @@ class TaskCreate extends Component
         );
 
         $this->dispatch('refresh_planner')->to(PlannerProject::class);
+        // $this->dispatch('refresh_planner')->to(PlannerList::class);
         $this->showModal = FALSE;
     }
 
@@ -129,6 +131,7 @@ class TaskCreate extends Component
         );
 
         $this->dispatch('refresh_planner')->to(PlannerProject::class);
+        // $this->dispatch('refresh_planner')->to(PlannerList::class);
         $this->showModal = FALSE;
     }
 

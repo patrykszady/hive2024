@@ -1,32 +1,77 @@
-<div class="grid auto-cols-max gap-5">
-    {{-- Add todo --}}
-    {{-- no submit button needed if an input exists under form wire:submit="add" --}}
-    <form wire:submit="add">
-        <div class="flex gap-2">
-            <input wire:model="draft" type="text" class="grow rounded-full shadow shadow-slate-300 px-5 py-3" placeholder="Add next...">
+<div>
+    <div class="sticky top-0 z-30 flex-none shadow bg-white overflow-x-scroll" x-bind="scrollSync">
+        {{-- PROJECTS FOREACH HERE --}}
+        <div class="divide-x divide-gray-100 text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
+            {{-- First. leftmost table column on the first row.  --}}
+            <div class="col-end-1 w-14 z-10"></div>
+
+            @foreach($projects as $project_index => $project)
+                {{-- items-center justify-center  --}}
+                <div class="w-48 p-3 border-b-4">
+                    <span class="font-semibold text-gray-800">
+                        {{ Str::limit($project->address, 22) }}
+                    </span>
+                    <br>
+                    <span class="font-normal italic text-gray-600">
+                        {{ Str::limit($project->project_name, 22) }}
+                    </span>
+                    <br>
+
+                    <x-cards.button
+                        type="button"
+                        wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}} })"
+                        button_color="white"
+                        >
+                        Add Task
+                    </x-cards.button>
+                </div>
+                {{-- Selected Project (why ... makes sense for the tailwind calendar template we're using .. might want to implenent this on the hirizontal Days /dates div) --}}
+                {{-- <div class="flex items-center justify-center py-3">
+                    <span class="flex items-baseline">Wed <span
+                            class="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">12</span></span>
+                </div> --}}
+            @endforeach
         </div>
-    </form>
+    </div>
 
-    {{-- Todo list --}}
-    <x-sortable handler="sort" class="grid gap-3 min-w-[20rem]">
-        @foreach($this->tasks as $task)
-            <x-sortable.item :key="$task->id" class="group flex items-center justify-between p-1.5 bg-white rounded-full shadow shadow-slate-300">
-                <div class="px-3 py-1 flex gap-2 items-center">
-                    <x-sortable.handle class="transition translate-x-[-1.5rem] [body:not(.sorting)_&]:group-hover:translate-x-0 opacity-0 [body:not(.sorting)_&]:group-hover:opacity-100 text-slate-300 cursor-pointer" >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                            <path fill-rule="evenodd" d="M2 3.75A.75.75 0 0 1 2.75 3h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 3.75ZM2 8a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 8Zm0 4.25a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
-                        </svg>
-                    </x-sortable.handle>
+    {{-- HORIZONTAL LINES HERE --}}
+    <div class="flex flex-auto overflow-x-auto" x-bind="scrollSync">
+        <div class="sticky left-0 z-20 w-14 flex-none bg-white ring-1 ring-gray-100"></div>
 
-                    <div class="transition translate-x-[-1.5rem] [body:not(.sorting)_&]:group-hover:translate-x-0 text-sm text-slate-600">{{ $task->title }}</div>
+        <div class="divide-y divide-gray-200">
+            @foreach($days as $day_index => $day)
+                <div class="sticky left-0 z-20 -ml-14 w-14 pr-2 text-right text-xs leading-5 text-gray-800">
+                    <span class="font-semibold text-gray-700">{{strtok($day['formatted_date'], ',')}}</span>
+                    <br>
+                    <span class="italics">{{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}</span>
                 </div>
 
-                <button wire:click="remove({{$task->id}})" type="button" class="transition opacity-0 [body:not(.sorting)_&]:group-hover:opacity-100 text-slate-500 hover:bg-emerald-100/75 hover:text-emerald-700 rounded-full p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                        <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-            </x-sortable.item>
-        @endforeach
-    </x-sortable>
+                <div class="divide-x divide-black text-sm text-gray-500 grid grid-flow-col auto-cols-max">
+                    @foreach($projects as $project)
+                        <div class="w-48 p-3 border-r-4">
+                            <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" />
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('scrollSync', {
+                scrollLeft: 0,
+            })
+            Alpine.bind('scrollSync', {
+                '@scroll'(){
+                    this.$store.scrollSync.scrollLeft = this.$el.scrollLeft
+                },
+                'x-effect'() {
+                    this.$el.scrollLeft = this.$store.scrollSync.scrollLeft
+                }
+            })
+        })
+    </script>
+
+    <livewire:tasks.task-create :projects="$projects" />
 </div>

@@ -1320,6 +1320,7 @@ class TransactionController extends Controller
                 ->whereDoesntHave('transactions')
                 ->whereNull('deleted_at')
                 ->where('date', '>', '2021-01-01')
+                ->where('id', 3085)
                 ->orderBy('date', 'DESC')
                 ->get();
 
@@ -1341,6 +1342,7 @@ class TransactionController extends Controller
             $transactions = Transaction::withoutGlobalScopes()
                 ->whereNull('deleted_at')
                 ->whereNull('check_id')
+                ->whereNull('expense_id')
                 ->where('check_number', $check_number)
                 //per hive vendor... checks table foreach bank_account_id
                 ->where('bank_account_id', $check->bank_account_id)

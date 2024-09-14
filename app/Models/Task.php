@@ -3,19 +3,21 @@
 namespace App\Models;
 
 use App\Observers\TaskObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Traits\Sortable;
 
 use Carbon\Carbon;
 
 #[ObservedBy([TaskObserver::class])]
 class Task extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Sortable;
 
     protected $fillable = ['title', 'project_id', 'start_date', 'end_date', 'duration', 'order', 'type', 'vendor_id', 'user_id', 'progress', 'notes', 'belongs_to_vendor_id', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
 
@@ -25,6 +27,11 @@ class Task extends Model
         'start_date' => 'date:Y-m-d',
         'end_date' => 'date:Y-m-d',
     ];
+
+    protected function scopeSortable($query, $task)
+    {
+        return $task->project->tasks();
+    }
 
     public function project()
     {

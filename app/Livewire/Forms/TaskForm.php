@@ -47,12 +47,17 @@ class TaskForm extends Form
     public function setTask(Task $task)
     {
         $this->task = $task;
+        // if(!isset($task->start_date)){
+        //     $new_dates = [];
+        // }elseif($task->start_date === $task->end_date OR is_null($task->end_date)){
+        //     $new_dates = [$task->start_date->format('m/d/Y')];
+        // }else{
+        //     $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
+        // }
         if(!isset($task->start_date)){
             $new_dates = [];
-        }elseif($task->start_date === $task->end_date){
-            $new_dates = [$task->start_date->format('m/d/Y')];
         }else{
-            $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
+            $new_dates = [$task->start_date->format('m/d/Y'), $task->start_date->format('m/d/Y')];
         }
 
         $this->dates = $new_dates;
@@ -71,8 +76,10 @@ class TaskForm extends Form
         $this->authorize('update', $this->task);
         $this->validate();
         $task = $this->task->update([
+            // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            // 'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
             'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
+            'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,
@@ -90,7 +97,7 @@ class TaskForm extends Form
         $this->validate();
         $task = Task::create([
             'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
+            'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,

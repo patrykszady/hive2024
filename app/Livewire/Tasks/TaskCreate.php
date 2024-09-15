@@ -101,7 +101,7 @@ class TaskCreate extends Component
             content: 'Task Removed'
         );
 
-        $this->dispatch('refresh_planner')->to(PlannerProject::class);
+        $this->dispatch('refreshComponent')->to(PlannerCard::class);
         // $this->dispatch('refresh_planner')->to(PlannerList::class);
         $this->showModal = FALSE;
     }
@@ -115,7 +115,7 @@ class TaskCreate extends Component
             content: 'Task Created'
         );
 
-        $this->dispatch('refresh_planner')->to(PlannerProject::class);
+        $this->dispatch('refreshComponent')->to(PlannerCard::class);
         // $this->dispatch('refresh_planner')->to(PlannerList::class);
         $this->showModal = FALSE;
     }
@@ -130,8 +130,11 @@ class TaskCreate extends Component
             content: 'Task Updated'
         );
 
-        $this->dispatch('refresh_planner')->to(PlannerProject::class);
-        // $this->dispatch('refresh_planner')->to(PlannerList::class);
+        // $this->dispatch('refreshComponent')->to(PlannerList::class);
+        $this->dispatch('refreshComponent')->to(PlannerCard::class);
+        // $this->form->task->move(0);
+        // $this->dispatch('refresh_planner', task: $this->form->task, project: $this->form->task->project, task_date: $this->form->task->start_date->format('Y-m-d'))->to(PlannerCard::class);
+
         $this->showModal = FALSE;
     }
 

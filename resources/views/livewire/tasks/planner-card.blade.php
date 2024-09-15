@@ -8,7 +8,7 @@
     </form> --}}
 
     {{-- Todo list --}}
-    <x-sortable group="tasks" handler="sort" class="grid gap-3">
+    <x-sortable group="tasks_{{$project->id}}" handler="sort" class="grid gap-3" :key="$project->id">
         @foreach($this->tasks as $task)
             {{-- group flex items-center justify-between p-1.5 bg-white rounded-full shadow shadow-slate-300 --}}
             {{-- wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })" --}}

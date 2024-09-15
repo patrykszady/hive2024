@@ -8,47 +8,56 @@
             @foreach($projects as $project_index => $project)
                 {{-- items-center justify-center  --}}
                 <div class="w-48 p-3 border-b-4">
-                    <span class="font-semibold text-gray-800">
-                        {{ Str::limit($project->address, 22) }}
+                    <div class="float-right p-0 m-0">
+                        <x-cards.button
+                            type="button"
+                            wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}} })"
+                            button_color="white"
+                            >
+                            +
+                        </x-cards.button>
+                    </div>
+                    <span class="font-semibold text-gray-800 pb-0 mb-0">
+                        {{ Str::limit($project->address, 15) }}
                     </span>
-                    <br>
-                    <span class="font-normal italic text-gray-600">
-                        {{ Str::limit($project->project_name, 22) }}
+                    {{-- <br class="p-0 m-0"> --}}
+                    <span class="font-normal italic text-gray-600 -pt-2 -mt-2">
+                        {{ Str::limit($project->project_name, 15) }}
                     </span>
                     <br>
 
-                    <x-cards.button
-                        type="button"
-                        wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}} })"
-                        button_color="white"
-                        >
-                        Add Task
-                    </x-cards.button>
+
+
+                    {{-- Selected Project (why ... makes sense for the tailwind calendar template we're using .. might want to implenent this on the hirizontal Days /dates div) --}}
+                    {{-- <div class="flex items-center justify-center py-3">
+                        <span class="flex items-baseline">Wed <span
+                                class="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">12</span></span>
+                    </div> --}}
+
+                    {{-- NO DATE/ NOT SCHEDULE --}}
+                    <div class="mt-2">
+                        <livewire:tasks.planner-card :$project :task_date="NULL" :key="$project->id" />
+                    </div>
                 </div>
-                {{-- Selected Project (why ... makes sense for the tailwind calendar template we're using .. might want to implenent this on the hirizontal Days /dates div) --}}
-                {{-- <div class="flex items-center justify-center py-3">
-                    <span class="flex items-baseline">Wed <span
-                            class="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">12</span></span>
-                </div> --}}
             @endforeach
         </div>
     </div>
 
     {{-- HORIZONTAL LINES HERE --}}
-    <div class="flex flex-auto overflow-x-auto" x-bind="scrollSync">
-        <div class="sticky left-0 z-20 w-14 flex-none bg-white ring-1 ring-gray-100"></div>
+    <div class="flex flex-auto overflow-x-auto bg-white" x-bind="scrollSync">
+        <div class="sticky left-0 z-20 w-14 flex-none bg-white ring-1 ring-gray-100 shadow"></div>
 
-        <div class="divide-y divide-gray-200">
-            @foreach($days as $day_index => $day)
-                <div class="sticky left-0 z-20 -ml-14 w-14 pr-2 text-right text-xs leading-5 text-gray-800">
+        <div class="divide-y divide-gray-200 -mt-1 pb-4">
+            @foreach($this->days as $day_index => $day)
+                <div class="sticky left-0 z-20 -ml-14 w-14 pr-2 text-right text-xs text-gray-800 mt-2">
                     <span class="font-semibold text-gray-700">{{strtok($day['formatted_date'], ',')}}</span>
                     <br>
-                    <span class="italics">{{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}</span>
+                    <span class="italic">{{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}</span>
                 </div>
 
-                <div class="divide-x divide-black text-sm text-gray-500 grid grid-flow-col auto-cols-max">
+                <div class="divide-x divide-gray-200 text-sm text-gray-500 grid grid-flow-col auto-cols-max -mt-8">
                     @foreach($projects as $project)
-                        <div class="w-48 p-3 border-r-4">
+                        <div class="w-48 p-3">
                             <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" />
                         </div>
                     @endforeach

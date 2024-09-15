@@ -85,7 +85,7 @@
                         <!-- Current: "bg-gray-50", Default: "hover:bg-gray-50" -->
                         <a
                             {{-- wire:navigate.hover --}}
-                            href="{{route('planner.index')}}"
+                            href="{{route('planner_list.index')}}"
                             @class(['flex p-2 text-sm leading-6 text-gray-700 font-semibold rounded-md group gap-x-3 hover:bg-gray-50', 'bg-gray-50' => request()->routeIs('planner.*')])
                             >
                             <svg class="w-6 h-6 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

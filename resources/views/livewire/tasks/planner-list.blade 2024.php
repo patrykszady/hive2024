@@ -1,11 +1,11 @@
 <div>
-    <div class="sticky top-0 z-20 flex-none shadow bg-white overflow-x-scroll" x-bind="scrollSync">
+    <div class="sticky top-0 z-30 flex-none shadow bg-white overflow-x-scroll">
         {{-- PROJECTS FOREACH HERE --}}
         <div class="divide-x divide-gray-100 text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
             {{-- First. leftmost table column on the first row.  --}}
-            <div class="col-end-1 w-14"></div>
+            <div class="col-end-1 w-14 z-10"></div>
 
-            @foreach($this->projects as $project_index => $project)
+            @foreach($projects as $project_index => $project)
                 {{-- items-center justify-center  --}}
                 <div class="w-48 p-3 border-b-4">
                     <div class="float-right p-0 m-0">
@@ -33,9 +33,9 @@
                     </div> --}}
 
                     {{-- NO DATE/ NOT SCHEDULE --}}
-                    <div class="mt-2">
+                    {{-- <div class="mt-2">
                         <livewire:tasks.planner-card :$project :task_date="NULL" :key="$project->id" />
-                    </div>
+                    </div> --}}
                 </div>
                 {{-- <livewire:tasks.planner-card :project="$project" /> --}}
             @endforeach
@@ -43,19 +43,19 @@
     </div>
 
     {{-- HORIZONTAL LINES HERE --}}
-    <div class="flex flex-auto overflow-x-auto bg-white" x-bind="scrollSync">
-        <div class="sticky left-0 z-10 w-14 flex-none bg-white ring-1 ring-gray-100 shadow"></div>
+    <div class="flex flex-auto overflow-x-auto bg-white">
+        <div class="sticky left-0 z-20 w-14 flex-none bg-white ring-1 ring-gray-100 shadow"></div>
 
         <div class="divide-y divide-gray-200 -mt-1 pb-4">
-            @foreach($this->days as $day_index => $day)
-                <div class="sticky left-0 z-10 -ml-14 w-14 pr-2 text-right text-xs text-gray-800 mt-2">
+            @foreach($days as $day_index => $day)
+                <div class="sticky left-0 z-20 -ml-14 w-14 pr-2 text-right text-xs text-gray-800 mt-2">
                     <span class="font-semibold text-gray-700">{{strtok($day['formatted_date'], ',')}}</span>
                     <br>
                     <span class="italic">{{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}</span>
                 </div>
 
                 <div class="divide-x divide-gray-200 text-sm text-gray-500 grid grid-flow-col auto-cols-max -mt-8">
-                    @foreach($this->projects as $project)
+                    @foreach($projects as $project)
                         <div class="w-48 p-3">
                             <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" />
                         </div>
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-    <script type="text/javascript">
+    {{-- <script type="text/javascript">
         document.addEventListener('alpine:init', () => {
             Alpine.store('scrollSync', {
                 scrollLeft: 0,
@@ -79,7 +79,7 @@
                 }
             })
         })
-    </script>
+    </script> --}}
 
-    <livewire:tasks.task-create :projects="$this->projects" />
+    <livewire:tasks.task-create :projects="$projects" />
 </div>

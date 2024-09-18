@@ -1320,7 +1320,6 @@ class TransactionController extends Controller
                 ->whereDoesntHave('transactions')
                 ->whereNull('deleted_at')
                 ->where('date', '>', '2021-01-01')
-                ->where('id', 3085)
                 ->orderBy('date', 'DESC')
                 ->get();
 

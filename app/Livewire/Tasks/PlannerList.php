@@ -13,22 +13,12 @@ use Carbon\CarbonInterval;
 
 class PlannerList extends Component
 {
-    public $projects = [];
-    // public $days = [];
     public $week = '';
 
     protected $listeners = ['refreshComponent' => '$refresh', 'refresh_planner'];
-
     protected $queryString = [
         'week' => ['except' => ''],
     ];
-
-    public function mount()
-    {
-        $this->projects = Project::with('tasks')
-            ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
-            ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']]);
-    }
 
     public function set_week_days($monday)
     {
@@ -64,6 +54,13 @@ class PlannerList extends Component
         return $this->set_week_days($monday);
     }
 
+    #[Computed]
+    public function projects()
+    {
+        return Project::with('tasks')
+            ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
+            ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']]);
+    }
     // public function refresh_planner($days = NULL)
     // {
     //     if(!is_null($days)){

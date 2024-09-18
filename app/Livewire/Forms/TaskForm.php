@@ -57,7 +57,7 @@ class TaskForm extends Form
         if(!isset($task->start_date)){
             $new_dates = [];
         }else{
-            $new_dates = [$task->start_date->format('m/d/Y'), $task->start_date->format('m/d/Y')];
+            $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
         }
 
         $this->dates = $new_dates;
@@ -77,9 +77,9 @@ class TaskForm extends Form
         $this->validate();
         $task = $this->task->update([
             // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            // 'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
             'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            // 'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,

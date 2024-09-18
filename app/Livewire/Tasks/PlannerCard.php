@@ -13,16 +13,39 @@ class PlannerCard extends Component
     public Project $project;
     public $task_date = NULL;
 
-    protected $listeners = ['refreshComponent' => '$refresh', 'refresh_planner'];
+    protected $listeners = ['refreshComponent' => '$refresh'];
     // public $draft = '';
 
+    // public function mount()
+    // {
+    //     // dd($this);
+    // }
     // public function add()
     // {
     //     $this->project->tasks()->create([
     //         'title' => $this->pull('draft'),
-    //         'duration' => 0,
+    //         'duration' => 1,
+    //         'start_date' => '2024-09-16',
+    //         'end_date' => '2024-09-16',
     //         'type' => 'Task',
+    //         'order' => 0,
     //     ]);
+    // }
+
+    // public function addnew(Project $project)
+    // {
+    //     $this->project = $project;
+
+    //     Task::create([
+    //             // 'title' => $this->pull('draft'),
+    //             'project_id' => $project->id,
+    //             'title' => 'test',
+    //             'duration' => 1,
+    //             'start_date' => '2024-09-16',
+    //             'end_date' => '2024-09-16',
+    //             'type' => 'Task',
+    //             'order' => 0
+    //         ]);
     // }
 
     // public function remove($task_id)
@@ -54,23 +77,24 @@ class PlannerCard extends Component
     #[Computed]
     public function tasks()
     {
-        return $this->query()->get();
+        return $this->query()->where('start_date', $this->task_date)->get();
     }
 
     protected function query()
     {
-        return $this->project->tasks()->where('start_date', $this->task_date);
+        return $this->project->tasks();
     }
 
     public function refresh_planner(Task $task, $task_date)
     {
         // dd($task);
-        // unset($this->tasks);
+        // $this->task_date = $task_date;
+        // // unset($this->tasks);
         // $task = Task::where('belongs_to_vendor_id', auth()->user()->vendor->id)->findOrFail($task_id);
-        // $task->move(1);
+        // $task->move(0);
         // $this->tasks();
         // $this->project = $task->project;
-        // $this->task_date = $task_date;
+
         // $this->query();
         // dd($this->project);
         // dd($task_id, $task_date);

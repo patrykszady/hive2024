@@ -59,25 +59,6 @@ class TaskCreate extends Component
         $this->showModal = TRUE;
     }
 
-    // 5-7-2024 for flatpickr only... anyay to optimize?
-    public function dateschanged($dates)
-    {
-        $this->form->dates = $dates;
-
-        if(count($dates) > 1){
-            $start = Carbon::parse($dates[0]);
-            $end = Carbon::parse($dates[1]);
-
-            $duration = $end->diff($start)->days + 1;
-
-            $this->form->duration = $duration;
-        }elseif(empty($dates[0])){
-            $this->form->duration = 0;
-        }else{
-            $this->form->duration = 1;
-        }
-    }
-
     public function editTask(Task $task)
     {
         $this->view_text = [
@@ -106,6 +87,25 @@ class TaskCreate extends Component
         $this->showModal = FALSE;
     }
 
+    // 5-7-2024 for flatpickr only... anyway to optimize?
+    public function dateschanged($dates)
+    {
+        $this->form->dates = $dates;
+
+        if(count($dates) > 1){
+            $start = Carbon::parse($dates[0]);
+            $end = Carbon::parse($dates[1]);
+
+            $duration = $end->diff($start)->days + 1;
+
+            $this->form->duration = $duration;
+        }elseif(empty($dates[0])){
+            $this->form->duration = 0;
+        }else{
+            $this->form->duration = 1;
+        }
+    }
+
     public function save()
     {
         $this->form->store();
@@ -130,9 +130,8 @@ class TaskCreate extends Component
             content: 'Task Updated'
         );
 
-        // $this->dispatch('refreshComponent')->to(PlannerList::class);
+        // return redirect(route('planner_list.index'));
         $this->dispatch('refreshComponent')->to(PlannerCard::class);
-        // $this->form->task->move(0);
         // $this->dispatch('refresh_planner', task: $this->form->task, project: $this->form->task->project, task_date: $this->form->task->start_date->format('Y-m-d'))->to(PlannerCard::class);
 
         $this->showModal = FALSE;

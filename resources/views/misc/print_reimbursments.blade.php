@@ -3,13 +3,24 @@
     <head>
         <title>{{$title}}</title>
         <meta charset="utf-8">
-        @vite('resources/js/app.js')
+        {{-- @vite('resources/js/app.js') --}}
+        {{-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap"> --}}
+
+        <!-- Styles -->
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        {{-- <style type="text/css">
+            table { page-break-inside:auto }
+            tr    { page-break-inside:avoid; page-break-after:auto }
+         </style> --}}
+
+        <!-- Scripts -->
+        <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
 
     <body>
         <main class="py-10">
             <div class="px-4 sm:px-6 md:px-8 break-after-page">
-                <div class="col-span-4 space-y-4">
+                <div class="col-span-4">
                     <x-cards.body>
                         {{--  divide-y divide-gray-300 --}}
                         <table class="min-w-full">

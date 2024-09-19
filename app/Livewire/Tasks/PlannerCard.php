@@ -8,6 +8,8 @@ use App\Models\Project;
 use Livewire\Component;
 use Livewire\Attributes\Computed;
 
+use Carbon\Carbon;
+
 class PlannerCard extends Component
 {
     public Project $project;
@@ -16,10 +18,6 @@ class PlannerCard extends Component
     protected $listeners = ['refreshComponent' => '$refresh'];
     // public $draft = '';
 
-    // public function mount()
-    // {
-    //     // dd($this);
-    // }
     // public function add()
     // {
     //     $this->project->tasks()->create([
@@ -67,17 +65,37 @@ class PlannerCard extends Component
         }
 
         $task->start_date = $this->task_date;
-        $task->end_date = $this->task_date;
+
+
+        $task_days_count = $task->duration;
+
+        if(in_array($task_days_count, [0, 1])){
+            $task->end_date = $task->start_date;
+            $task->duration = 1;
+        }else{
+            $task->end_date = Carbon::parse($task->start_date)->addDays($task_days_count - 1)->format('Y-m-d');
+        }
+
         $task->save();
 
         //finish moving task to another project
         $task->move($position);
+
+        $this->render();
     }
 
     #[Computed]
     public function tasks()
     {
-        return $this->query()->where('start_date', $this->task_date)->get();
+        //where $this->task_date is between start_date and end_date on this task
+        // return $this->query()->whereDate('start_date', '>=', $this->task_date)->whereDate('end_date', '<=', $this->task_date)->get();
+        return $this->query()->get()->filter(function($item) {
+            if(is_null($item->start_date) && $this->task_date == NULL){
+                return $item;
+            }elseif(Carbon::parse($this->task_date)->between($item->start_date, $item->end_date)) {
+                return $item;
+            }
+        });
     }
 
     protected function query()

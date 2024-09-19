@@ -10,7 +10,6 @@ use Livewire\Attributes\Title;
 
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use Carbon\CarbonInterval;
 
 class PlannerList extends Component
 {
@@ -23,15 +22,11 @@ class PlannerList extends Component
 
     public function set_week_days($monday)
     {
-        $days = CarbonPeriod::create(Carbon::parse($monday)->startOfWeek(Carbon::MONDAY), '1 day', Carbon::parse($monday)->addWeek()->endOfWeek(Carbon::SUNDAY));
-        // dd($days);
-        // $days = new \DatePeriod(
-        //     Carbon::parse($monday)->startOfWeek(Carbon::MONDAY),
-        //     CarbonInterval::day(),
-        //     Carbon::parse($monday)->addWeek()->startOfWeek(Carbon::MONDAY)->endOfWeek(Carbon::SUNDAY)
-        // );
-
-        // dd($days);
+        $days = CarbonPeriod::create(
+            Carbon::parse($monday)->startOfWeek(Carbon::MONDAY),
+            '1 day',
+            Carbon::parse($monday)->addWeek()->endOfWeek(Carbon::SUNDAY)
+        );
 
         $days_formatted = [];
         foreach($days as $confirmed_date){

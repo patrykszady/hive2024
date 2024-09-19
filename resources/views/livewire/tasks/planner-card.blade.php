@@ -9,29 +9,40 @@
 
     {{-- Todo list --}}
     {{-- _{{$project->id}} --}}
-    <x-sortable group="tasks" handler="sort" class="grid gap-3" :key="$project->id">
+    <x-sortable group="tasks" handler="sort" x-sort:config="{ filter: '.filtered' }" class="grid gap-3" :key="$project->id">
         @foreach($this->tasks as $task)
             {{-- group flex items-center justify-between p-1.5 bg-white rounded-full shadow shadow-slate-300 --}}
-            {{-- wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })" --}}
             <x-sortable.item
                 :key="$task->id"
                 wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
-                class="cursor-pointer pl-1 border border-solid border-gray-300 h-12 hover:bg-gray-100 font-bold rounded-md text-clip overflow-hidden bg-white"
+                @class([
+                    'cursor-pointer pl-1 border border-solid border-gray-300 h-12 hover:bg-gray-100 font-bold rounded-md text-clip overflow-hidden bg-white',
+                    'filtered' => !is_null($task->start_date) ? $task->start_date->format('Y-m-d') != $task_date : false
+                ])
                 >
                 @can('update', $task)
-                    <span
-                        class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
-                        >
-                        {{$task->title}}
-                    </span>
-
-                    @if($task->vendor)
-                        <br>
-                        <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->vendor->name, 15}}</span>
-                    @elseif($task->user)
-                        <br>
-                        <span class="text-sm font-medium text-gray-600 {{$task->direction == 'right' ? 'float-right' : ''}}">{{$task->user->first_name, 15}}</span>
+                    @if(!is_null($task->start_date) ? $task->start_date->format('Y-m-d') == $task_date : true)
+                        <span
+                            class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
+                            >
+                            {{$task->title}}
+                        </span>
+                    @else
+                        <span
+                            class="{{ $task->type == 'Milestone' ? 'text-green-300' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-300' : '' }} {{ $task->type == 'Task' ? 'text-indigo-300' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
+                            >
+                            {{$task->title}}
+                        </span>
                     @endif
+
+                    @if($task->duration > 1)
+                        <span class="float-right text-gray-400 mr-2">{{$task->duration}}</span>
+                    @endif
+
+                    <br>
+                    <span class="text-sm font-medium @if(!is_null($task->start_date) ? $task->start_date->format('Y-m-d') == $task_date : true) text-gray-600 @else text-gray-300 @endif">
+                        @if($task->vendor) {{$task->vendor->name, 15}} @elseif($task->user) {{$task->user->first_name, 15}} @endif
+                    </span>
                 @endcan
             </x-sortable.item>
         @endforeach

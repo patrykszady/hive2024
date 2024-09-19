@@ -9,6 +9,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Carbon\CarbonInterval;
 
 class PlannerList extends Component
@@ -22,11 +23,15 @@ class PlannerList extends Component
 
     public function set_week_days($monday)
     {
-        $days = new \DatePeriod(
-            Carbon::parse($monday)->startOfWeek(Carbon::MONDAY),
-            CarbonInterval::day(),
-            Carbon::parse($monday)->startOfWeek(Carbon::MONDAY)->endOfWeek(Carbon::SUNDAY)
-        );
+        $days = CarbonPeriod::create(Carbon::parse($monday)->startOfWeek(Carbon::MONDAY), '1 day', Carbon::parse($monday)->addWeek()->endOfWeek(Carbon::SUNDAY));
+        // dd($days);
+        // $days = new \DatePeriod(
+        //     Carbon::parse($monday)->startOfWeek(Carbon::MONDAY),
+        //     CarbonInterval::day(),
+        //     Carbon::parse($monday)->addWeek()->startOfWeek(Carbon::MONDAY)->endOfWeek(Carbon::SUNDAY)
+        // );
+
+        // dd($days);
 
         $days_formatted = [];
         foreach($days as $confirmed_date){
@@ -34,7 +39,8 @@ class PlannerList extends Component
             $days_formatted[] = [
                 'database_date' => $confirmed_date->format('Y-m-d'),
                 'formatted_date' => $confirmed_date->format('D, m/d'),
-                'is_today' => $confirmed_date == today()
+                'is_today' => $confirmed_date == today(),
+                'is_weekend' => $confirmed_date->isWeekend()
             ];
         }
 

@@ -16,7 +16,7 @@
             <x-sortable.item
                 :key="$task->id"
                 wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })"
-                class="cursor-pointer pl-1 border border-solid border-gray-300 h-12 hover:bg-gray-100 font-bold rounded-md text-clip overflow-hidden"
+                class="cursor-pointer pl-1 border border-solid border-gray-300 h-12 hover:bg-gray-100 font-bold rounded-md text-clip overflow-hidden bg-white"
                 >
                 @can('update', $task)
                     <span

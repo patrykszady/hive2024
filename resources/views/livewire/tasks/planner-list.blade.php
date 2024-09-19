@@ -43,8 +43,8 @@
     </div>
 
     {{-- HORIZONTAL LINES HERE --}}
-    <div class="flex flex-auto overflow-x-auto bg-white" x-bind="scrollSync">
-        <div class="sticky left-0 z-10 w-14 flex-none bg-white ring-1 ring-gray-100 shadow"></div>
+    <div class="flex flex-auto overflow-x-auto" x-bind="scrollSync">
+        <div class="sticky left-0 z-10 w-14 flex-none ring-1 ring-gray-100 shadow bg-white"></div>
 
         <div class="divide-y divide-gray-200 -mt-1 pb-4">
             @foreach($this->days as $day_index => $day)
@@ -54,9 +54,9 @@
                     <span class="italic">{{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}</span>
                 </div>
 
-                <div class="divide-x divide-gray-200 text-sm text-gray-500 grid grid-flow-col auto-cols-max -mt-8">
+                <div class="divide-x divide-gray-200 text-sm text-gray-500 grid grid-flow-col auto-cols-max -mt-8 -mt-2">
                     @foreach($this->projects as $project)
-                        <div class="w-48 p-3">
+                        <div class="w-48 p-3 @if($day['is_today']) bg-white @elseif($day['is_weekend']) bg-gray-200 @endif">
                             <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" />
                         </div>
                     @endforeach

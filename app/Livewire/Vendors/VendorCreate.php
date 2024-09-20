@@ -274,7 +274,7 @@ class VendorCreate extends Component
 
     public function store()
     {
-        $this->validate();
+        // $this->validate();
 
         if(isset($this->vendor->id)){
             dd('if $this->vendor->id');

@@ -48,9 +48,18 @@ class MoveController extends Controller
         // {
         //     $split->forceDelete();
         // }
-        Mail::to('szady81@gmail.com')->send(new TestMail());
 
-        dd('done');
+        //->first()->sum('amount')
+        $timesheet_totals = Timesheet::where('user_id', 1)->get()->groupBy('date')->each(function($timesheet, $key) {
+            $timesheet->sum = $timesheet->sum('amount');
+        });
+
+        dd($timesheet_totals);
+
+
+        // Mail::to('szady81@gmail.com')->send(new TestMail());
+
+        // dd('done');
 
 
         //queue

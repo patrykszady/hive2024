@@ -86,6 +86,65 @@
                     </x-forms.row>
                 </div>
 
+                {{-- SAT/SUN INCLUSION --}}
+                <x-forms.row
+                    wire:model.live="include_weekend_days"
+                    errorName="include_weekend_days"
+                    name="include_weekend_days"
+                    text="Weekend Days"
+                    type="checkbox_group"
+                    >
+
+                    <div class="space-y-5">
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input
+                                    wire:model.live="form.include_weekend_days.saturday"
+                                    value="true"
+                                    id="form.include_weekend_days.saturday"
+                                    name="form.include_weekend_days.saturday"
+                                    type="checkbox"
+                                    aria-describedby="form.include_weekend_days-description"
+                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                    >
+                            </div>
+                            <div class="ml-3 text-sm leading-6">
+                                <label
+                                    for="form.include_weekend_days.saturday"
+                                    class="font-medium text-gray-900"
+                                    >
+                                    Include Saturday
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div class="relative flex items-start">
+                            <div class="flex h-6 items-center">
+                                <input
+                                    wire:model.live="form.include_weekend_days.sunday"
+                                    value="true"
+                                    id="form.include_weekend_days.sunday"
+                                    name="form.include_weekend_days.sunday"
+                                    type="checkbox"
+                                    aria-describedby="form.include_weekend_days-description"
+                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                    >
+                            </div>
+                            <div class="ml-3 text-sm leading-6">
+                                <label
+                                    for="form.include_weekend_days.sunday"
+                                    class="font-medium text-gray-900"
+                                    >
+                                    Include Sunday
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </x-forms.row>
+
                 {{-- DURATION --}}
                 <x-forms.row
                     wire:model.live="form.duration"

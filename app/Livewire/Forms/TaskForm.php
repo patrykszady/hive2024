@@ -42,7 +42,16 @@ class TaskForm extends Form
     #[Validate('nullable')]
     public $notes = NULL;
 
+    public $include_weekend_days = [];
+
     public ?Task $task;
+
+    public function rules()
+    {
+        return [
+            'include_weekend_days.*.checked' => 'nullable', // multiple checkbox
+        ];
+    }
 
     public function setTask(Task $task)
     {
@@ -60,6 +69,7 @@ class TaskForm extends Form
             $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
         }
 
+        $this->include_weekend_days = isset($task->options['include_weekend_days']) ? $task->options['include_weekend_days'] : ['saturday' => false, 'sunday' => false];
         $this->dates = $new_dates;
         $this->project_id = $task->project_id;
         $this->order = $task->order;
@@ -73,8 +83,10 @@ class TaskForm extends Form
 
     public function update()
     {
+        //$task->options->include_weekend_days = $this->include_weekend_days
         $this->authorize('update', $this->task);
         $this->validate();
+
         $task = $this->task->update([
             // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
             'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
@@ -86,6 +98,7 @@ class TaskForm extends Form
             'user_id' => $this->user_id,
             'title' => $this->title,
             'notes' => $this->notes,
+            'options->include_weekend_days' => $this->include_weekend_days,
             'duration' => $this->duration,
             'order' => $this->order
         ]);
@@ -104,6 +117,7 @@ class TaskForm extends Form
             'user_id' => $this->user_id,
             'title' => $this->title,
             'notes' => $this->notes,
+            'options->include_weekend_days' => $this->include_weekend_days,
             'order' => 1,
             'duration' => $this->duration
         ]);

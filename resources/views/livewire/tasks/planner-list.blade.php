@@ -3,7 +3,7 @@
         {{-- PROJECTS FOREACH HERE --}}
         <div class="divide-x divide-gray-100 text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
             {{-- First. leftmost table column on the first row.  --}}
-            <div class="col-end-1 w-14"></div>
+            <div class="col-end-1 w-14 sticky left-0 z-20 bg-white ring-1 ring-gray-100 shadow"></div>
 
             @foreach($this->projects as $project_index => $project)
                 {{-- items-center justify-center  --}}
@@ -37,7 +37,6 @@
                         <livewire:tasks.planner-card :$project :task_date="NULL" :key="$project->id" />
                     </div>
                 </div>
-                {{-- <livewire:tasks.planner-card :project="$project" /> --}}
             @endforeach
         </div>
     </div>

@@ -87,13 +87,33 @@ class PlannerCard extends Component
     #[Computed]
     public function tasks()
     {
+        $task_date = Carbon::parse($this->task_date);
         //where $this->task_date is between start_date and end_date on this task
         // return $this->query()->whereDate('start_date', '>=', $this->task_date)->whereDate('end_date', '<=', $this->task_date)->get();
-        return $this->query()->get()->filter(function($item) {
+        return $this->query()->get()->filter(function($item) use($task_date){
             if(is_null($item->start_date) && $this->task_date == NULL){
                 return $item;
-            }elseif(Carbon::parse($this->task_date)->between($item->start_date, $item->end_date)) {
-                return $item;
+            }elseif($task_date->between($item->start_date, $item->end_date) && $this->task_date != NULL) {
+                // dd(is_null($item->options->));
+                // dd($item->start_date->isSaturday());
+                if(isset($item->options['include_weekend_days'])){
+                    if($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == true){
+                        return $item;
+                    }elseif($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == false){
+
+                    }else{
+                        if($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == true){
+                            return $item;
+                        }elseif($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == false){
+
+                        }else{
+                            return $item;
+                        }
+                    }
+                    // dd($item->options['include_weekend_days']);
+                }else{
+                    return $item;
+                }
             }
         });
     }
@@ -101,23 +121,6 @@ class PlannerCard extends Component
     protected function query()
     {
         return $this->project->tasks();
-    }
-
-    public function refresh_planner(Task $task, $task_date)
-    {
-        // dd($task);
-        // $this->task_date = $task_date;
-        // // unset($this->tasks);
-        // $task = Task::where('belongs_to_vendor_id', auth()->user()->vendor->id)->findOrFail($task_id);
-        // $task->move(0);
-        // $this->tasks();
-        // $this->project = $task->project;
-
-        // $this->query();
-        // dd($this->project);
-        // dd($task_id, $task_date);
-
-        // $this->sort($task_id, 0);
     }
 
     //render method not needed if view and component follow a convention

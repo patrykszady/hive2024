@@ -15,7 +15,7 @@ class PlannerList extends Component
 {
     public $week = '';
 
-    protected $listeners = ['refreshComponent' => '$refresh', 'refresh_planner'];
+    protected $listeners = ['refreshComponent' => '$refresh'];
     protected $queryString = [
         'week' => ['except' => ''],
     ];
@@ -61,19 +61,6 @@ class PlannerList extends Component
         return Project::with('tasks')
             ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
             ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']]);
-    }
-    // public function refresh_planner($days = NULL)
-    // {
-    //     if(!is_null($days)){
-    //         $this->days = $days;
-    //     }
-
-    //     $this->mount();
-    //     $this->render();
-    // }
-    public function refresh_planner()
-    {
-        // $this->hydrate();
     }
 
     //render method not needed if view and component follow a convention

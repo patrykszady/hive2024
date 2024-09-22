@@ -23,6 +23,7 @@ class TaskCreate extends Component
     public $vendors = [];
     public $employees = [];
 
+
     public $view_text = [
         'card_title' => 'Create Task',
         'button_text' => 'Create',
@@ -32,6 +33,8 @@ class TaskCreate extends Component
     public $showModal = FALSE;
 
     protected $listeners = ['editTask', 'addTask'];
+
+
 
     public function mount()
     {

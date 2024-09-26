@@ -1,25 +1,15 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
-
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-    content: [
-        "./resources/**/*.blade.php",
-        "./resources/**/*.js",
-        "./resources/**/*.vue",
-    ],
+  content: [
+    "./resources/**/*.blade.php",
+    "./resources/**/*.js",
+    "./resources/**/*.vue",
+    "./vendor/livewire/flux-pro/stubs/**/*.blade.php",
+    "./vendor/livewire/flux/stubs/**/*.blade.php",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
 
-    theme: {
-        extend: {
-            fontFamily: {
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
-            },
-            // screens: {
-            //     print: {raw: 'print'},
-            //     screen: {raw: 'screen'},
-            // },
-        },
-    },
-
-    plugins: [
-        require('@tailwindcss/forms')
-    ],
-};

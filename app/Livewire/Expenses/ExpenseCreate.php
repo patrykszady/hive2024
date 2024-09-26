@@ -18,6 +18,7 @@ use App\Jobs\UpdateProjectDistributionsAmount;
 use App\Livewire\Forms\ExpenseForm;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
 
 use Illuminate\Support\Facades\Route;
@@ -42,18 +43,24 @@ class ExpenseCreate extends Component
     public $expense_update = FALSE;
     public $expense_splits = [];
     public $projects = [];
-
+    public $vendors = [];
     // public $via_vendor_employees = NULL;
-
-    //OLD
-    public $modal_show = FALSE;
 
     protected $listeners = ['resetModal', 'editExpense', 'newExpense', 'createExpenseFromTransaction', 'hasSplits'];
 
     public function mount()
     {
         $this->projects = Project::status(['Active', 'Complete', 'Service Call', 'Service Call Complete'])->sortByDesc('last_status.start_date');
+        $this->vendors = Vendor::orderBy('business_name')->get();
     }
+
+    // #[Computed]
+    // public function vendors()
+    // {
+    //     $vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
+
+    //     return $vendors;
+    // }
 
     public function updated($field, $value)
     {
@@ -110,7 +117,6 @@ class ExpenseCreate extends Component
 
     public function newExpense($amount)
     {
-        $this->resetModal();
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->form->amount = $amount;
         $this->view_text = [
@@ -119,12 +125,11 @@ class ExpenseCreate extends Component
             'form_submit' => 'save',
         ];
 
-        $this->modal_show = TRUE;
+        $this->modal('expenses_form_modal')->show();
     }
 
     public function editExpense(Expense $expense)
     {
-        $this->resetModal();
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
 
         $this->expense = $expense;
@@ -142,7 +147,7 @@ class ExpenseCreate extends Component
             'form_submit' => 'edit',
         ];
 
-        $this->modal_show = TRUE;
+        $this->modal('expenses_form_modal')->show();
     }
 
     public function resetModal()
@@ -157,7 +162,7 @@ class ExpenseCreate extends Component
         // $this->dispatch('resetSplits')->to('expenses.expenses-splits-form');
         // $this->dispatch('refreshComponent')->to('expenses.expenses-splits-form');
         // $this->dispatch('resetSplits');
-        // $this->modal_show = FALSE;
+        $this->modal('expenses_form_modal')->close();
 
         // $this->transaction = NULL;
         // $this->check = Check::make();
@@ -233,7 +238,7 @@ class ExpenseCreate extends Component
             $this->form->vendor_id = $transaction->vendor_id;
         }
 
-        $this->modal_show = TRUE;
+        $this->modal('expenses_form_modal')->show();
     }
 
     public function edit()
@@ -245,7 +250,7 @@ class ExpenseCreate extends Component
 
         $expense = $this->form->update();
 
-        $this->modal_show = FALSE;
+        $this->modal('expenses_form_modal')->close();
         $this->resetModal();
 
         //queue
@@ -315,7 +320,7 @@ class ExpenseCreate extends Component
         }
         // return $this->dispatch('validateCheck')->to(CheckCreate::class);
         $expense = $this->form->store();
-        $this->modal_show = FALSE;
+        $this->modal('expenses_form_modal')->close();
         $this->resetModal();
 
         //queue
@@ -339,7 +344,6 @@ class ExpenseCreate extends Component
     {
         $this->authorize('create', Expense::class);
 
-        $vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
         $distributions = Distribution::all(['id', 'name']);
         $team_members = auth()->user()->vendor->users()->employed();
         $employees = $team_members->get();
@@ -355,7 +359,6 @@ class ExpenseCreate extends Component
                 })->get();
 
         return view('livewire.expenses.form', [
-            'vendors' => $vendors,
             'distributions' => $distributions,
             'employees' => $employees,
             'via_vendor_employees' => $via_vendor_employees,

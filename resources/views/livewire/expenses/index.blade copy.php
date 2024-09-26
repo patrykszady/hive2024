@@ -1,6 +1,7 @@
 <div>
     {{-- EXPENSES --}}
-    <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-4xl lg:px-8 pb-5 mb-1' : ''}}">
+    {{-- id is for links/pagination below in footer --}}
+    <x-cards id="expenses_foreach" class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-4xl lg:px-8 pb-5 mb-1' : ''}}">
         {{-- HEADING --}}
         <x-cards.heading>
             <x-slot name="left">
@@ -41,7 +42,7 @@
                         {{-- 08-30-2023 combine into 1 --}}
                         <input
                             {{-- debounce.750ms --}}
-                            wire:model.live.debounce.750ms="amount"
+                            wire:model.live="amount"
                             type="number"
                             inputmode="numeric"
                             {{-- pattern="[-+,0-9.]*" --}}
@@ -86,25 +87,27 @@
                 @if($view == NULL)
                     <div>
                         <select
-                            wire:model.live.debounce.750ms="project"
+                            wire:lazy
+                            wire:model.live="project"
                             id="project"
                             name="project"
                             {{-- @disabled($view == 'projects.show') --}}
                             class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             >
-
-                            <option value="" readonly>All Projects</option>
-                            <option value="SPLIT">Project Splits</option>
-                            <option value="NO_PROJECT">No Project</option>
-
-                            @foreach($projects as $index => $project)
-                                <option value="{{$project->id}}">{{$project->name}}</option>
-                            @endforeach
+                            <option value="" readonly>ALL PROJECTS</option>
+                            <option value="SPLIT">PROJECT SPLITS</option>
+                            <option value="NO_PROJECT">NO PROJECT</option>
 
                             <option disabled>----------</option>
 
                             @foreach($distributions as $index => $distribution)
                                 <option value="D-{{$distribution->id}}">{{$distribution->name}}</option>
+                            @endforeach
+
+                            <option disabled>----------</option>
+
+                            @foreach($projects as $index => $project)
+                                <option value="{{$project->id}}">{{$project->name}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -112,14 +115,16 @@
 
                 <div>
                     <select
-                        wire:model.live.debounce.750ms="expense_vendor"
+                        wire:model.live="expense_vendor"
                         id="expense_vendor"
                         name="expense_vendor"
                         class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         >
 
-                        <option value="" readonly>All Vendors</option>
+                        <option value="" readonly>ALL VENDORS</option>
                         <option value="0" readonly>NO VENDOR</option>
+
+                        <option disabled>----------</option>
 
                         @foreach($vendors as $index => $vendor)
                             <option value="{{$vendor->id}}">{{$vendor->business_name}}</option>
@@ -130,42 +135,29 @@
         </x-cards.heading>
 
         {{-- BODY --}}
+        {{-- EXPENSES --}}
         <x-cards.body>
-            <div id="expenses_foreach">
+            <div>
                 <x-lists.ul wire:loading.class="opacity-50 text-opacity-40">
                     @foreach($expenses as $expense)
                         @php
-                            if($view == 'projects.show'){
-                                $line_details = [
+                            $line_details = [
                                 1 => [
                                     'text' => $expense->date->format('m/d/Y'),
                                     'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
                                     ],
                                 2 => [
-                                    'text' => is_null($expense->vendor->business_name) ? 'NO VENDOR' : $expense->vendor->business_name,
+                                    'text' => $expense->vendor->name,
                                     'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
                                     ],
                                 ];
-                            }else{
-                                $line_details = [
-                                1 => [
-                                    'text' => $expense->date->format('m/d/Y'),
-                                    'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                    ],
-                                2 => [
-                                    'text' => is_null($expense->vendor->business_name) ? 'NO VENDOR' : $expense->vendor->business_name,
-                                    'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
-                                    ],
-                                3 => [
-                                    // $expense->type == 'transaction' ? 'NO PROJECT' :
-                                    'text' => $expense->project->name,
-                                    'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                    ],
-                                // 4 => [
-                                //     'text' => $expense->receipts()->first()->receipt_items->purchase_order ? $expense->receipts()->first()->receipt_items->purchase_order : '',
-                                //     'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                //     ],
-                                ];
+
+                                if(is_null($view)){
+                                    array_push($line_details, [
+                                        'text' => $expense->project->name,
+                                        'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z',
+                                    ]);
+                                }
 
                                 $receipt = $expense->receipts()->latest()->first();
 
@@ -184,46 +176,19 @@
                                         'icon' => 'M10.75 10.818v2.614A3.13 3.13 0 0011.888 13c.482-.315.612-.648.612-.875 0-.227-.13-.56-.612-.875a3.13 3.13 0 00-1.138-.432zM8.33 8.62c.053.055.115.11.184.164.208.16.46.284.736.363V6.603a2.45 2.45 0 00-.35.13c-.14.065-.27.143-.386.233-.377.292-.514.627-.514.909 0 .184.058.39.202.592.037.051.08.102.128.152z M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-6a.75.75 0 01.75.75v.316a3.78 3.78 0 011.653.713c.426.33.744.74.925 1.2a.75.75 0 01-1.395.55 1.35 1.35 0 00-.447-.563 2.187 2.187 0 00-.736-.363V9.3c.698.093 1.383.32 1.959.696.787.514 1.29 1.27 1.29 2.13 0 .86-.504 1.616-1.29 2.13-.576.377-1.261.603-1.96.696v.299a.75.75 0 11-1.5 0v-.3c-.697-.092-1.382-.318-1.958-.695-.482-.315-.857-.717-1.078-1.188a.75.75 0 111.359-.636c.08.173.245.376.54.569.313.205.706.353 1.138.432v-2.748a3.782 3.782 0 01-1.653-.713C6.9 9.433 6.5 8.681 6.5 7.875c0-.805.4-1.558 1.097-2.096a3.78 3.78 0 011.653-.713V4.75A.75.75 0 0110 4z'
                                     ]);
                                 }
-                            }
 
                             $click_emit_destination = 'editExpense';
                         @endphp
 
-                        @can('create', App\Models\Expense::class)
-                            <x-lists.search_li
-                                wire:click="$dispatchTo('expenses.expense-create', '{{$click_emit_destination}}', { expense: {{$expense->id}}})"
-                                :line_details="$line_details"
-                                {{-- :no_hover=true --}}
-                                :line_title="money($expense->amount)"
-                                :bubble_message="$expense->status"
-                                :bubble_color="$expense->status == 'Complete' ? 'green' : 'red'"
-                                >
-                            </x-lists.search_li>
-                        @else
-                            <x-lists.search_li
-                                href="{{route('expenses.show', $expense->id)}}"
-                                href_target="_blank"
-                                :line_details="$line_details"
-                                {{-- :no_hover=true --}}
-                                :line_title="money($expense->amount)"
-                                :bubble_message="$expense->status"
-                                :bubble_color="$expense->status == 'Complete' ? 'green' : 'red'"
-                                >
-                            </x-lists.search_li>
-                        @endcan
-                        @foreach($expense->splits as $split)
-                            @php
-                                $split_details = isset($split->project) ? $split->project->name : $split->distribution->name;
-                                $split_details = '         ' . money($split->amount) . ' | ' . $split_details;
-                            @endphp
-
-                            <x-lists.search_li
-                                :no_hover=true
-                                :line_title="$split_details"
-                                :bubble_message="'Split'"
-                                >
-                            </x-lists.search_li>
-                        @endforeach
+                        <x-lists.search_li
+                            wire:click="$dispatchTo('expenses.expense-create', '{{$click_emit_destination}}', { expense: {{$expense->id}}})"
+                            :line_details="$line_details"
+                            :line_title="money($expense->amount)"
+                            :bubble_message="$expense->status"
+                            {{-- ($expense->status == 'No Project' ? 'yellow' : 'red') --}}
+                            :bubble_color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'indigo' : 'red')"
+                            >
+                        </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
             </div>
@@ -236,9 +201,10 @@
         </x-cards.footer>
     </x-cards>
 
+    {{-- TRANSACTIONS --}}
     @can('create', App\Models\Expense::class)
-        {{-- TRANSACTIONS --}}
-        @if(!$transactions->isEmpty())
+        {{-- @if(!$transactions->isEmpty()) --}}
+        @if($view == NULL)
             <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-4xl lg:px-8 pb-5 mb-1' : ''}}">
                 {{-- HEADING --}}
                 <x-cards.heading>
@@ -248,13 +214,14 @@
                 </x-cards.heading>
 
                 {{-- SUB-HEADING --}}
+                {{-- <livewire:expenses.expense-index-filters /> --}}
                 <x-cards.heading>
                     <div class="mx-auto">
                         <div>
                             <select
-                                wire:model.live="bank"
-                                id="bank"
-                                name="bank"
+                                wire:model.live="bank_plaid_ins_id"
+                                id="bank_plaid_ins_id"
+                                name="bank_plaid_ins_id"
                                 class="block w-full py-2 pl-3 pr-10 mt-1 text-base border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 <option value="" readonly>All Banks</option>
                                 @foreach($banks as $institution_id => $bank)
@@ -285,82 +252,43 @@
                         <x-lists.ul wire:loading.class="opacity-50 text-opacity-40">
                             @foreach($transactions as $expense)
                                 @php
-                                    if($view == 'projects.show'){
-                                        $line_details = [
+                                    $line_details = [
                                         1 => [
-                                            'text' => $expense->date->format('m/d/Y'),
+                                            'text' => $expense->transaction_date->format('m/d/Y'),
                                             'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
                                             ],
                                         2 => [
-                                            'text' => $expense->vendor->business_name,
+                                            'text' => $expense->vendor->name,
                                             'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
                                             ],
-                                        ];
-                                    }else{
-                                        $line_details = [
-                                        1 => [
-                                            'text' => $expense->date->format('m/d/Y'),
-                                            'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                            ],
-                                        2 => [
-                                            'text' => $expense->vendor->business_name,
-                                            'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
-                                            ],
-                                        3 => [
+                                    ];
+
+                                    if(is_null($view)){
+                                        array_push($line_details, [
                                             'text' => $expense->bank_account->bank->name . ' | ' . $expense->bank_account->type,
                                             'icon' => 'M9.674 2.075a.75.75 0 01.652 0l7.25 3.5A.75.75 0 0117 6.957V16.5h.25a.75.75 0 010 1.5H2.75a.75.75 0 010-1.5H3V6.957a.75.75 0 01-.576-1.382l7.25-3.5zM11 6a1 1 0 11-2 0 1 1 0 012 0zM7.5 9.75a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zm3.25 0a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5zm3.25 0a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0v-5.5z'
-                                            ]
-                                        // 3 => [
-                                        //     'text' => 'NO PROJECT',
-                                        //     'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                        //     ],
-                                        // 4 => [
-                                        //     'text' => $expense->plaid_merchant_description,
-                                        //     'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                                        //     ]
+                                        ]);
+                                    }
 
-                                        ];
+                                    if(!is_null($expense->owner)){
+                                        array_push($line_details, [
+                                            'text' => $expense->owner,
+                                            'icon' => 'M2.5 4A1.5 1.5 0 001 5.5V6h18v-.5A1.5 1.5 0 0017.5 4h-15zM19 8.5H1v6A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-6zM3 13.25a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zm4.75-.75a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5z'
+                                        ]);
+                                    }
 
-                                        if(!is_null($expense->owner)){
-                                            array_push($line_details, [
-                                                'text' => $expense->owner,
-                                                'icon' => 'M2.5 4A1.5 1.5 0 001 5.5V6h18v-.5A1.5 1.5 0 0017.5 4h-15zM19 8.5H1v6A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-6zM3 13.25a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zm4.75-.75a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5z'
-                                            ]);
-                                        }
-
-                                        if(is_null($expense->vendor_id)){
-                                            array_push($line_details, [
-                                                'text' => $expense->plaid_merchant_description,
-                                                'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                                            ]);
-                                        }
-                                        // if(strtolower($expense->plaid_merchant_description) != strtolower($expense->vendor->business_name)){
-                                        //     array_push($line_details, [
-                                        //         'text' => $expense->plaid_merchant_description,
-                                        //         'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                                        //     ]);
-                                        // }
-
-                                        // if(strtolower($expense->plaid_merchant_description) != strtolower($expense->vendor->business_name)){
-                                        //     array_push($line_details, [
-                                        //         'text' => $expense->plaid_merchant_description,
-                                        //         'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                                        //     ]);
-
-                                        //     if(strtolower($expense->plaid_merchant_description) != strtolower($expense->plaid_merchant_name)){
-                                        //         array_push($line_details, [
-                                        //             'text' => $expense->plaid_merchant_name,
-                                        //             'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                                        //         ]);
-                                        //     }
-                                        // }
+                                    if(is_null($expense->vendor_id)){
+                                        array_push($line_details, [
+                                            'text' => $expense->plaid_merchant_description,
+                                            'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
+                                        ]);
                                     }
 
                                     $click_emit_destination = "createExpenseFromTransaction";
                                 @endphp
 
                                 <x-lists.search_li
-                                {{-- $emitTo('expenses.expenses-new-form', 'editExpense', {{$expense->id}}) --}}
+                                    {{-- $emitTo('expenses.expenses-new-form', 'editExpense', {{$expense->id}}) --}}
                                     wire:click="$dispatchTo('expenses.expense-create', '{{$click_emit_destination}}', { transaction: {{$expense->id}}})"
                                     :line_details="$line_details"
                                     {{-- :no_hover=true --}}

@@ -33,10 +33,14 @@
 
     <!-- Fonts -->
     {{-- @preloadFonts --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    {{-- <link rel="styleaheet" href="{{ asset('css/app.css') }}"> --}}
+    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
     {{-- @vite('resources/css/app.css') --}}
+    {{-- <script src="//cnd.tailwindcss.com"></script> --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- @vite('resources/js/app.js') --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -45,7 +49,7 @@
     {{-- @lagoonStyles --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" /> --}}
 
-    <style>
+    {{-- <style>
         @media print {
            .noprint {
               visibility: hidden;
@@ -57,7 +61,7 @@
         [x-cloak] {
             display: none !important;
         }
-    </style>
+    </style> --}}
 
     <!-- Scripts -->
     {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
@@ -79,5 +83,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
     {{-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> --}}
-    {{-- @stack('custom_styles') --}}
+    @fluxStyles
 </head>

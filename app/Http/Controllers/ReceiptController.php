@@ -1303,7 +1303,7 @@ class ReceiptController extends Controller
             $doc_type = 'jpg';
         }
 
-        // dd('here');
+        // dd('here, doc saved in folder');
         //ocr the file
         $document_model = $receipt->options['document_model'];
         $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
@@ -1433,8 +1433,8 @@ class ReceiptController extends Controller
         $expense->belongs_to_vendor_id = $receipt_account->belongs_to_vendor_id;
         $expense->save();
 
-        //save ocr data and file/s
         //ATTACHMENTS
+        //save ocr data and file/s
         $attachments = $this->add_attachments_to_expense($expense->id, $message, $ocr_receipt_data, $ocr_filename, $company_email);
 
         $move_type = 'new';
@@ -1767,13 +1767,17 @@ class ReceiptController extends Controller
 
             return $ocr_receipt_data;
         }else{
-            if($amount == 0 && !is_null($subtotal)){
-                $amount = $subtotal;
-            }
+            if(is_array($amount)){
+                $amount = $amount[0];
+            }else{
+                if($amount == 0 && !is_null($subtotal)){
+                    $amount = $subtotal;
+                }
 
-            // if(!is_null($tip_amount)){
-            //     dd([$amount, $ocr_receipt_extract_prefix]);
-            // }
+                // if(!is_null($tip_amount)){
+                //     dd([$amount, $ocr_receipt_extract_prefix]);
+                // }
+            }
         }
 
         $ocr_receipt_data = [

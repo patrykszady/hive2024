@@ -126,7 +126,6 @@ class ExpenseReceipts extends Model
 
     public function getTaxAttribute($value)
     {
-
         try {
             $this_subtotal = $this->subtotal;
         } catch (\Exception $e) {

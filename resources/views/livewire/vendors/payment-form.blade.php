@@ -1,7 +1,7 @@
 <div class="max-w-4xl">
     <form wire:submit="{{$view_text['form_submit']}}">
         <div class="grid max-w-xl grid-cols-5 gap-4 xl:relative lg:max-w-5xl sm:px-6">
-            <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 sticky top-1">
+            <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32">
                 <flux:card>
                     <flux:heading size="lg">Vendor Payment</flux:heading>
                     <flux:subheading><i>Choose Projects to add for {{$vendor->name}} in this Payment</i></flux:subheading>

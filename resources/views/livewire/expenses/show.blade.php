@@ -366,6 +366,31 @@
                                         @endforeach
                                     </flux:rows>
                                 </flux:table>
+
+                                <x-cards.footer>
+                                    <x-lists.ul>
+                                        <x-lists.search_li
+                                            :basic=true
+                                            :line_title="'Subtotal'"
+                                            :line_data="money($receipt->subtotal)"
+                                            >
+                                        </x-lists.search_li>
+
+                                        <x-lists.search_li
+                                            :basic=true
+                                            :line_title="'Tax'"
+                                            :line_data="money($receipt->tax)"
+                                            >
+                                        </x-lists.search_li>
+
+                                        <x-lists.search_li
+                                            :basic=true
+                                            :line_title="'Total'"
+                                            :line_data="money($receipt->total)"
+                                            >
+                                        </x-lists.search_li>
+                                    </x-lists.ul>
+                                </x-cards.footer>
                             @endif
                         @endif
                     </div>

@@ -23,8 +23,6 @@ class ExpenseSplitsCreate extends Component
     public $projects;
     public $distributions;
 
-    public $modal_show = FALSE;
-
     protected $listeners = ['refreshComponent' => '$refresh', 'addSplits', 'addSplit', 'removeSplit', 'resetSplits'];
 
     public function rules()
@@ -38,9 +36,6 @@ class ExpenseSplitsCreate extends Component
         ];
     }
 
-    // public function updatedExpenseSplits($field, $key){
-    //     dd($key);
-    // }
     public function updated($field, $value)
     {
         if(substr($field, 0, 14) == 'expense_splits' && substr($field, -8) == 'checkbox'){
@@ -70,22 +65,17 @@ class ExpenseSplitsCreate extends Component
                 if($items->whereNull('split_index')->count() == 0){
                     // dd($this->getSplitsSumProperty());
                     // $difference = $expense_total - ($this->getSplitsSumProperty() + $split['amount']);
-                    // dd($difference);
                     $split['amount'] = round($total_with_tax, 2);
                     // $this->splits_total = collect($this->expense_splits)->where('amount', '!=', '')->sum('amount');
                     // $split['amount'] = $this->getSplitsSumProperty();
-                    // dd([$expense_total, ]);
                     // dd($expense_total - $this->getSplitsSumProperty());
                     // dd($split['amount'] + $this->getSplitsSumProperty());
                     //$this->getSplitsSumProperty()
                     // $difference = $this->getSplitsSumProperty();
-                    // dd($difference);
-
                 }else{
                     $split['amount'] = round($total_with_tax, 2);
                 }
 
-                // dd($this);
                 return $split;
             });
         }
@@ -156,8 +146,10 @@ class ExpenseSplitsCreate extends Component
             }
         }
 
+        // dd($this->expense_splits);
+
         $this->getSplitsSumProperty();
-        $this->modal_show = TRUE;
+        $this->modal('expense_splits_form_modal')->show();
     }
 
     public function addSplit()
@@ -211,7 +203,7 @@ class ExpenseSplitsCreate extends Component
             //send all SPLITS data back to ExpenseForm view
             //send back to ExpenseForm... all validated and tested here
             $this->dispatch('hasSplits', $this->expense_splits)->to(ExpenseCreate::class);
-            $this->modal_show = FALSE;
+            $this->modal('expense_splits_form_modal')->close();
             // $this->resetSplits();
         }
     }

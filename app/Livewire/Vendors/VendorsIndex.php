@@ -3,6 +3,7 @@
 namespace App\Livewire\Vendors;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 
 use Livewire\WithPagination;
@@ -18,6 +19,9 @@ class VendorsIndex extends Component
     public $vendor_type = '';
     public $view;
 
+    public $sortBy = 'business_name';
+    public $sortDirection = 'asc';
+
     protected $queryString = [
         'business_name' => ['except' => ''],
         'vendor_type' => ['except' => '']
@@ -30,16 +34,28 @@ class VendorsIndex extends Component
         $this->resetPage();
     }
 
+    #[Computed]
+    public function vendors()
+    {
+        return Vendor::
+            where('business_name', 'like', "%{$this->business_name}%")
+            ->where('business_type', 'like', "%{$this->vendor_type}%")
+            ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+            ->paginate(10);
+    }
+
+    public function sort($column) {
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
+    }
+
     #[Title('Vendors')]
     public function render()
     {
-        $vendors = Vendor::orderBy('created_at', 'DESC')
-            ->where('business_name', 'like', "%{$this->business_name}%")
-            ->where('business_type', 'like', "%{$this->vendor_type}%")
-            ->paginate(10);
-
-        return view('livewire.vendors.index', [
-            'vendors' => $vendors,
-        ]);
+        return view('livewire.vendors.index');
     }
 }

@@ -138,8 +138,6 @@
                             class="w-4 h-4 ml-2 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                             >
                     </x-slot>
-
-                    @if(isset($form->notes))
                         <x-slot name="bottom">
                             <span class="mt-2 text-sm text-black-600"><i>{{$form->notes}}</i></span>
                         </x-slot>

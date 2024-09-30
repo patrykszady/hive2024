@@ -8,7 +8,7 @@
         >
     </x-page.top>
 
-	<div class="grid max-w-xl grid-cols-4 gap-4 mx-auto lg:max-w-5xl sm:px-6">
+	<div class="grid max-w-xl grid-cols-4 gap-4 lg:max-w-5xl sm:px-6">
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
             {{-- VENDOR DETAILS --}}
             <div class="col-span-4 lg:col-span-2">

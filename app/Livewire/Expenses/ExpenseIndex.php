@@ -19,7 +19,7 @@ use Livewire\WithPagination;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-// #[Lazy]
+#[Lazy]
 class ExpenseIndex extends Component
 {
     use WithPagination, AuthorizesRequests;

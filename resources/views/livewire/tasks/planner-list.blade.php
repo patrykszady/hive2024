@@ -1,9 +1,9 @@
 <div>
-    <div class="sticky top-0 z-20 flex-none shadow bg-white overflow-x-scroll" x-bind="scrollSync">
+    <div class="sticky top-0 z-10 flex-none shadow bg-white overflow-x-scroll" x-bind="scrollSync">
         {{-- PROJECTS FOREACH HERE --}}
         <div class="divide-x divide-gray-100 text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
             {{-- First. leftmost table column on the first row.  --}}
-            <div class="col-end-1 w-14 sticky left-0 z-20 bg-white ring-1 ring-gray-100 shadow"></div>
+            <div class="col-end-1 w-14 sticky left-0 z-10 bg-white ring-1 ring-gray-100 shadow"></div>
 
             @foreach($this->projects as $project_index => $project)
                 {{-- items-center justify-center  --}}
@@ -43,11 +43,11 @@
 
     {{-- HORIZONTAL LINES HERE --}}
     <div class="flex flex-auto overflow-x-auto" x-bind="scrollSync">
-        <div class="sticky left-0 z-10 w-14 flex-none ring-1 ring-gray-100 shadow bg-white"></div>
+        <div class="sticky left-0 z-5 w-14 flex-none ring-1 ring-gray-100 shadow bg-white"></div>
 
         <div class="divide-y divide-gray-200 -mt-1 pb-4">
             @foreach($this->days as $day_index => $day)
-                <div class="sticky left-0 z-10 -ml-14 w-14 pr-2 text-right text-xs text-gray-800 mt-2">
+                <div class="sticky left-0 z-5 -ml-14 w-14 pr-2 text-right text-xs text-gray-800 mt-2">
                     <span class="font-semibold text-gray-700">{{strtok($day['formatted_date'], ',')}}</span>
                     <br>
                     <span class="italic">{{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}</span>

@@ -1,28 +1,52 @@
-<div class="max-w-4xl">
+<div>
     <form wire:submit="{{$view_text['form_submit']}}">
-        <div class="grid max-w-xl grid-cols-5 gap-4 xl:relative lg:max-w-5xl sm:px-6">
-            <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 sticky top-1">
-                <flux:card>
-                    <flux:heading size="lg">Vendor Payment</flux:heading>
-                    <flux:subheading><i>Choose Projects to add for {{$vendor->name}} in this Payment</i></flux:subheading>
-                    <flux:separator variant="subtle" />
+        <x-page.top
+            h1="{{$vendor->name}} Payment"
+            p="Vendor Payment for {{$vendor->business_name}}"
+            {{-- right_button_href="{{route('vendors.show', $vendor->id)}}"
+            right_button_text="Vendor" --}}
+            >
+        </x-page.top>
+
+        <div class="grid max-w-xl grid-cols-5 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
+            <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
+                <x-cards>
+                    <x-cards.heading>
+                        <x-slot name="left">
+                            <h1>Vendor Payment</h1>
+                            <p class="text-gray-500"><i>Choose Projects to add for {{$vendor->name}} in this Payment</i></p>
+                        </x-slot>
+                    </x-cards.heading>
+
                     <x-cards.body :class="'space-y-2 my-2'">
                         {{-- FORM --}}
                         @include('livewire.checks._payment_form')
                     </x-cards.body>
 
-                    <flux:separator variant="subtle" />
+                    <x-cards.footer>
+                        <div class="w-full space-y-1 text-center">
+                            <button
+                                type="button"
+                                class="w-full px-4 py-2 font-medium text-center border-2 rounded-md shadow-sm focus:outline-none text-md cursor-text
+                                    @error('check_total_min') text-red-900 border-red-600 @else text-gray-900 border-indigo-600 @enderror
+                                ">
+                                Check Total | <b>{{money($this->vendor_check_sum)}}</b>
+                            </button>
 
-                    <div class="space-y-2 mt-2">
-                        <flux:button class="w-full">Check Total | <b>{{money($this->vendor_check_sum)}}</b></flux:button>
-                        <flux:button type="submit" variant="primary" class="w-full">{{$view_text['button_text']}}</flux:button>
-                    </div>
-
-                    <flux:error name="check_total_min" />
-                </flux:card>
+                            <x-forms.error errorName="check_total_min" />
+                            <button
+                                type="submit"
+                                class="w-full px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow focus:outline-none hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                {{$view_text['button_text']}}
+                            </button>
+                        </div>
+                    </x-cards.footer>
+                </x-cards>
 
                 {{-- INSURANCE --}}
-                {{-- <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/> --}}
+                <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/>
+            </div>
+            <div class="col-span-5 space-y-2 lg:col-span-3">
                 {{-- SELECT PROJECT --}}
                 <flux:card>
                     <flux:heading size="lg">Choose Payment Projects</flux:heading>
@@ -37,11 +61,10 @@
 
                         </flux:select>
 
-                        <flux:button variant="primary" wire:click="addProject" icon="plus-circle">Add</flux:button>
+                        <flux:button variant="primary" wire:click="addProject" icon="receipt-percent">Add</flux:button>
                     </flux:input.group>
                 </flux:card>
-            </div>
-            <div class="col-span-5 space-y-2 lg:col-span-3">
+
                 {{-- PAYMENT PROJECTS --}}
                 @foreach($projects->where('show', true) as $project_id => $project)
                     <flux:card class="space-y-6">

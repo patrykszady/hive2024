@@ -35,10 +35,16 @@
                     @endcan
                 </flux:navlist.group>
 
-                @if(auth()->user()->id == 1)
+                @if(auth()->user()->id === 1)
                     <flux:navlist.group expandable heading="Global Actions" class="hidden lg:grid">
                         <flux:navlist.item href="/transactions/match_vendor" icon="eye-slash">Match Vendor</flux:navlist.item>
                         <flux:navlist.item href="/transactions/bulk_match" icon="eye-slash">Match Transactions</flux:navlist.item>
+                    </flux:navlist.group>
+                @endif
+
+                @if(auth()->user()->primary_vendor->pivot->role_id === 1)
+                    <flux:navlist.group expandable heading="Settings" class="hidden lg:grid">
+                        <flux:navlist.item href="/vendor_docs" icon="eye-slash">Vendor Docs</flux:navlist.item>
                     </flux:navlist.group>
                 @endif
             </flux:navlist>
@@ -75,11 +81,6 @@
 
         <flux:main>
             {{ $slot }}
-            {{-- <flux:heading size="xl" level="1">Good afternoon, Olivia</flux:heading>
-
-            <flux:subheading size="lg" class="mb-6">Here's what's new today</flux:subheading>
-
-            <flux:separator variant="subtle" /> --}}
         </flux:main>
 
         @fluxScripts

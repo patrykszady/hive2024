@@ -125,12 +125,6 @@ Route::get('receipts/goutte_crawl', [ReceiptController::class, 'goutte_crawl'])-
 Route::get('receipts/receipt_email', [ReceiptController::class, 'receipt_email'])->name('receipt_email');
 // Route::get('new_ocr_status', [ReceiptController::class, 'new_ocr_status'])->name('new_ocr_status');
 
-// Route::get('att', [ReceiptController::class, 'att'])->name('att');
-// Route::get('menards', [ReceiptController::class, 'menards'])->name('menards');
-// Route::get('floordecor', [ReceiptController::class, 'floordecor'])->name('floordecor');
-// Route::get('hd_rebates', [ReceiptController::class, 'hd_rebates'])->name('hd_rebates');
-// Route::get('hd_print_certificates', [ReceiptController::class, 'hd_print_certificates'])->name('hd_print_certificates');
-
 Route::get('projects/reimbursments/print/{project}', [ReceiptController::class, 'printReimbursment'])->name('print_reimbursment');
 
 // Route::middleware('can:admin')->group(function () {

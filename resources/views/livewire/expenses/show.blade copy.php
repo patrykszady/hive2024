@@ -11,7 +11,7 @@
     <div class="grid max-w-xl grid-cols-4 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
             {{-- EXPENSE DETAILS --}}
-            <x-cards.wrapper>
+            <x-cards accordian="OPENED">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Expense Details</h1>
@@ -20,13 +20,17 @@
 
                     @can('update', $expense)
                         <x-slot name="right">
-                            <x-dialog>
-                                {{-- wire:click="$parent.newProject({{$client_id}})" --}}
-                                <x-dialog.button wire:click="$dispatchTo('expenses.expense-create', 'editExpense', { expense: '{{$expense->id}}' })">
-                                    Edit Expense
-                                </x-dialog.button>
-                                <livewire:expenses.expense-create />
-                            </x-dialog>
+                            <x-cards.button
+                                wire:click="$dispatchTo('expenses.expense-create', 'editExpense', { expense: {{$expense->id}}})"
+                                >
+                                Edit Expense
+                            </x-cards.button>
+                            <x-cards.button
+                                :button_color="'white'"
+                                wire:click="$dispatchTo('expenses.expenses-associated', 'addAssociatedExpense', { expense: {{$expense->id}}})"
+                                >
+                                Associated
+                            </x-cards.button>
                         </x-slot>
                     @endcan
                 </x-cards.heading>
@@ -47,22 +51,13 @@
                             >
                         </x-lists.search_li>
 
-                        @if(is_null($expense->vendor->business_name))
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Vendor'"
-                                :line_data="'NO VENDOR'"
-                                >
-                            </x-lists.search_li>
-                        @else
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Vendor'"
-                                :line_data="$expense->vendor->business_name"
-                                href="{{route('vendors.show', $expense->vendor->id)}}"
-                                >
-                            </x-lists.search_li>
-                        @endif
+                        <x-lists.search_li
+                            :basic=true
+                            :line_title="'Vendor'"
+                            :line_data="$expense->vendor->name"
+                            href="{{isset($expense->vendor->id) ? route('vendors.show', $expense->vendor->id) : ''}}"
+                            >
+                        </x-lists.search_li>
 
                         @if($expense->distribution)
                             <x-lists.search_li
@@ -151,11 +146,11 @@
                         <span class="text-sm"><i>*Expense Created Automatically.</i></span>
                     </x-cards.footer>
                 @endif
-            </x-cards.wrapper>
+            </x-cards>
 
             {{-- TRANSACTIONS --}}
             @if(!$expense->transactions->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Transactions</h1>
@@ -191,14 +186,14 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
         </div>
 
         <div class="col-span-4 space-y-2 lg:col-span-2">
             {{-- ASSOCIATED EXPENSES --}}
             @if(!is_null($expense->associated_expenses))
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Associated Expenses</h1>
@@ -242,12 +237,12 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
 
             {{-- SPLITS --}}
             @if(!$expense->splits->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Splits</h1>
@@ -255,7 +250,7 @@
                 </x-cards.heading>
 
                 <x-lists.ul>
-                    @foreach($splits as $split)
+                    @foreach($expense->splits as $split)
                         @php
                             $line_details = [
                                 1 => [
@@ -276,7 +271,6 @@
 
                         <x-lists.search_li
                             href="{{$split->distribution ? route('distributions.show', $split->distribution->id) : route('projects.show', $split->project->id)}}"
-                            :href_target="'_blank'"
                             :line_details="$line_details"
                             :line_title="money($split->amount)"
                             :bubble_message="$split->distribution ? 'Distribution' : 'Project'"
@@ -284,12 +278,12 @@
                         </x-lists.search_li>
                     @endforeach
                 </x-lists.ul>
-            </x-cards.wrapper>
+            </x-cards>
             @endif
 
             {{-- CHECK --}}
             @if($expense->check)
-                <x-cards.wrapper>
+                <x-cards>
                     <x-cards.heading>
                         <x-slot name="left">
                             <h1>Check</h1>
@@ -322,12 +316,12 @@
                             >
                         </x-lists.search_li>
                     </x-lists.ul>
-                </x-cards.wrapper>
+                </x-cards>
             @endif
 
             {{-- RECEIPTS --}}
             @if(!$expense->receipts->isEmpty())
-            <x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards accordian="OPENED" class="col-span-4 lg:col-span-2 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Receipt</h1>
@@ -430,14 +424,14 @@
                         </x-cards.footer>
                     @endif
                 @endif
-            </x-cards.wrapper>
+            </x-cards>
             @endif
         </div>
     </div>
 
-
 	{{-- top level so content is in front of everything on page --}}
-    {{-- @can('update', $expense)
+    @can('update', $expense)
 	    <livewire:expenses.expense-create />
-    @endif --}}
+        <livewire:expenses.expenses-associated />
+    @endif
 </div>

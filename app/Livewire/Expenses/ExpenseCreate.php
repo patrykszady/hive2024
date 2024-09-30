@@ -39,7 +39,7 @@ class ExpenseCreate extends Component
 
     public $split = FALSE;
     public $splits = FALSE;
-    public $expense = NULL;
+    public Expense $expense;
     public $expense_update = FALSE;
     public $expense_splits = [];
     public $projects = [];
@@ -130,6 +130,7 @@ class ExpenseCreate extends Component
 
     public function editExpense(Expense $expense)
     {
+        $this->resetModal();
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
 
         $this->expense = $expense;
@@ -152,6 +153,7 @@ class ExpenseCreate extends Component
 
     public function resetModal()
     {
+        $this->expense = Expense::make();
         $this->form->reset();
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->split = FALSE;
@@ -306,10 +308,12 @@ class ExpenseCreate extends Component
 
             //queue
             // UpdateProjectDistributionsAmount::dispatch($this->form->expense->project, $this->form->expense->project->distributions->pluck('id')->toArray());
-            $this->dispatch('refreshComponent')->to('expenses.expense-show');
+            // $this->dispatch('refreshComponent')->to('expenses.expense-show');
             $this->dispatch('refreshComponent')->to('expenses.expense-index');
-            $this->dispatch('refreshComponent')->to('projects.project-show');
         }
+
+        $this->modal('expenses_form_modal')->close();
+        $this->resetModal();
     }
 
     public function save()

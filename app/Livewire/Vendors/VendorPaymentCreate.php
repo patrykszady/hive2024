@@ -129,14 +129,13 @@ class VendorPaymentCreate extends Component
     {
         $this->validateOnly('project_id');
 
-        $project = $this->projects[$this->project_id['id']];
+        $project = $this->projects[$this->project_id];
         $project->show = TRUE;
         $project->disabled = TRUE;
         $project->vendor_expenses_sum = $project->expenses()->where('vendor_id', $this->vendor->id)->sum('amount');
         $project->vendor_bids_sum = $project->bids()->vendorBids($this->vendor->id)->sum('amount');
         $project->balance = $project->vendor_bids_sum - $project->vendor_expenses_sum;
 
-        // dd($this);
         // $this->projects->reload();
         $this->project_id = "";
     }
@@ -147,10 +146,6 @@ class VendorPaymentCreate extends Component
         $project['vendor_bids_sum'] = Project::findOrFail($project_id)->bids()->vendorBids($this->vendor->id)->sum('amount');
 
         $this->updateProjectBalance($project_id);
-
-        // $this->payment_projects[$project_id]['bids'] = Project::findOrFail($project_id)->bids()->vendorBids($this->vendor->id)->sum('amount');
-        // $balance = $this->payment_projects[$project_id]['bids'] - $this->payment_projects[$project_id]['vendor_sum'];
-        // $this->payment_projects[$project_id]['balance'] = $balance;
     }
 
     public function updateProjectBalance($project_id)

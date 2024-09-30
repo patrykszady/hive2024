@@ -10,9 +10,12 @@ use App\Models\BankAccount;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Computed;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+#[Lazy]
 class ChecksIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -26,6 +29,9 @@ class ChecksIndex extends Component
     public $vendor = '';
 
     public $view = NULL;
+
+    public $sortBy = 'date';
+    public $sortDirection = 'desc';
 
     protected $queryString = [
         'bank' => ['except' => ''],
@@ -60,10 +66,9 @@ class ChecksIndex extends Component
                 //     })->get()->groupBy('plaid_ins_id');
     }
 
-    #[Title('Checks')]
-    public function render()
+    #[Computed]
+    public function checks()
     {
-        //$this->authorize('viewAny', Expense::class);
         if($this->view == NULL){
             $paginate_number = 10;
         }else{
@@ -109,8 +114,15 @@ class ChecksIndex extends Component
             }
         });
 
+        return $checks;
+    }
+
+    #[Title('Checks')]
+    public function render()
+    {
+        //$this->authorize('viewAny', Expense::class);
+
         return view('livewire.checks.index', [
-            'checks' => $checks,
         ]);
     }
 }

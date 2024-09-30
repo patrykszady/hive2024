@@ -1,7 +1,7 @@
 <form wire:submit="{{$view_text['form_submit']}}">
 	<div class="grid max-w-xl grid-cols-4 gap-4 xl:relative lg:max-w-5xl sm:px-6">
 		{{-- FLOAT CALENDAR --}}
-		<div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 sticky top-1">
+		<div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32">
             <flux:card>
                 <flux:heading size="lg">Daily Hours for {{auth()->user()->first_name}}</flux:heading>
                 <flux:subheading><i>Pick Date to add or edit Daily Hours for {{auth()->user()->first_name}}</i></flux:subheading>

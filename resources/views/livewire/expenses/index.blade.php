@@ -57,42 +57,44 @@
         </div>
     </flux:card>
 
-    <flux:card class="mt-8 space-y-2">
-        <div>
-            <flux:heading size="lg">Transactions</flux:heading>
-        </div>
+    @if($view == NULL)
+        <flux:card class="mt-8 space-y-2">
+            <div>
+                <flux:heading size="lg">Transactions</flux:heading>
+            </div>
 
-        <div class="space-y-6">
-            {{-- wire:loading.class="opacity-50 text-opacity-40" --}}
-            <flux:table :paginate="$this->transactions">
-                <flux:columns>
-                    <flux:column>Amount</flux:column>
-                    <flux:column>Date</flux:column>
-                    <flux:column>Vendor</flux:column>
-                    <flux:column>Bank</flux:column>
-                    <flux:column>Account</flux:column>
-                </flux:columns>
+            <div class="space-y-6">
+                {{-- wire:loading.class="opacity-50 text-opacity-40" --}}
+                <flux:table :paginate="$this->transactions">
+                    <flux:columns>
+                        <flux:column>Amount</flux:column>
+                        <flux:column>Date</flux:column>
+                        <flux:column>Vendor</flux:column>
+                        <flux:column>Bank</flux:column>
+                        <flux:column>Account</flux:column>
+                    </flux:columns>
 
-                <flux:rows>
-                    @foreach ($this->transactions as $transaction)
-                        <flux:row :key="$transaction->id">
-                            <flux:cell
-                                wire:click="$dispatchTo('expenses.expense-create', 'createExpenseFromTransaction', { transaction: {{$transaction->id}}})"
-                                class="cursor-pointer"
-                                variant="strong"
-                                >
-                                {{ money($transaction->amount) }}
-                            </flux:cell>
-                            <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
-                            <flux:cell>{{ Str::limit($transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description, 35)}}</flux:cell>
-                            <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
-                            <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
-                        </flux:row>
-                    @endforeach
-                </flux:rows>
-            </flux:table>
-        </div>
-    </flux:card>
+                    <flux:rows>
+                        @foreach ($this->transactions as $transaction)
+                            <flux:row :key="$transaction->id">
+                                <flux:cell
+                                    wire:click="$dispatchTo('expenses.expense-create', 'createExpenseFromTransaction', { transaction: {{$transaction->id}}})"
+                                    class="cursor-pointer"
+                                    variant="strong"
+                                    >
+                                    {{ money($transaction->amount) }}
+                                </flux:cell>
+                                <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
+                                <flux:cell>{{ Str::limit($transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description, 35)}}</flux:cell>
+                                <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
+                                <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
+                            </flux:row>
+                        @endforeach
+                    </flux:rows>
+                </flux:table>
+            </div>
+        </flux:card>
+    @endif
 </div>
 {{--
 

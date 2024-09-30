@@ -1,7 +1,12 @@
 <div class="max-w-3xl">
     <flux:card class="space-y-2">
-        <div>
+        <div class="flex justify-between">
             <flux:heading size="lg">Filters</flux:heading>
+            @can('create', App\Models\Expense::class)
+                @if($amount && $view == NULL)
+                    <flux:button wire:click="$dispatchTo('expenses.expense-create', 'newExpense', { amount: {{$amount}}})">Add New Expense</flux:button>
+                @endif
+            @endcan
         </div>
 
         <flux:separator variant="subtle" />

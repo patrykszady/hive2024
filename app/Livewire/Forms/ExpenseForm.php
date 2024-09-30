@@ -83,10 +83,10 @@ class ExpenseForm extends Form
                 //ignore if vendor_id of Check is same as request()->vendor_id
                 // ->ignore($this->check),
                 Rule::unique('checks', 'check_number')->where(function ($query) {
-                    //->where('vendor_id', '!=', $this->expense->vendor_id)
+                    //->where('vendor_id', '!=', $this->vendor_id)
 
                     //where per vendor bank_account ... all bank accounts that have the inst ID
-                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->bank_account_id);
+                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->bank_account_id)->where('vendor_id', '!=', $this->vendor_id);
                 }),
                 // ->ignore($this->check),
             ],
@@ -387,18 +387,26 @@ class ExpenseForm extends Form
                 $dist_user = NULL;
             }
 
-            $check = Check::create([
-                'check_type' => $this->check_type,
-                'check_number' => $this->check_number,
-                'date' => $this->date,
-                'bank_account_id' => $this->bank_account_id,
-                'amount' => $this->amount,
-                //user_id if expense project = distribution
-                'user_id' => $dist_user,
-                'vendor_id' => $this->vendor_id,
-                'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
-                'created_by_user_id' => auth()->user()->id,
-            ]);
+            $existing_check = Check::where('deleted_at', NULL)->where('check_type', 'Check')->where('bank_account_id', $this->bank_account_id)->where('check_number', $this->check_number)->where('vendor_id', $this->vendor_id)->first();
+
+            if(isset($existing_check)){
+                $check = $existing_check;
+                $check->amount = $check->amount + $this->amount;
+                $check->save();
+            }else{
+                $check = Check::create([
+                    'check_type' => $this->check_type,
+                    'check_number' => $this->check_number,
+                    'date' => $this->date,
+                    'bank_account_id' => $this->bank_account_id,
+                    'amount' => $this->amount,
+                    //user_id if expense project = distribution
+                    'user_id' => $dist_user,
+                    'vendor_id' => $this->vendor_id,
+                    'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+                    'created_by_user_id' => auth()->user()->id,
+                ]);
+            }
 
             $this->expense->update([
                 'check_id' => $check->id
@@ -433,18 +441,26 @@ class ExpenseForm extends Form
                 $dist_user = NULL;
             }
 
-            $check = Check::create([
-                'check_type' => $this->check_type,
-                'check_number' => $this->check_number,
-                'date' => $this->date,
-                'bank_account_id' => $this->bank_account_id,
-                'amount' => $this->amount,
-                //user_id if expense project = distribution
-                'user_id' => $dist_user,
-                'vendor_id' => $this->vendor_id,
-                'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
-                'created_by_user_id' => auth()->user()->id,
-            ]);
+            $existing_check = Check::where('deleted_at', NULL)->where('check_type', 'Check')->where('bank_account_id', $this->bank_account_id)->where('check_number', $this->check_number)->where('vendor_id', $this->vendor_id)->first();
+
+            if(isset($existing_check)){
+                $check = $existing_check;
+                $check->amount = $check->amount + $this->amount;
+                $check->save();
+            }else{
+                $check = Check::create([
+                    'check_type' => $this->check_type,
+                    'check_number' => $this->check_number,
+                    'date' => $this->date,
+                    'bank_account_id' => $this->bank_account_id,
+                    'amount' => $this->amount,
+                    //user_id if expense project = distribution
+                    'user_id' => $dist_user,
+                    'vendor_id' => $this->vendor_id,
+                    'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+                    'created_by_user_id' => auth()->user()->id,
+                ]);
+            }
         }
 
         // $expense = Expense::create($this->only(['amount', 'date', 'vendor_id', 'project_id', 'reimbursment', 'invoice', 'note', 'paid_by']));

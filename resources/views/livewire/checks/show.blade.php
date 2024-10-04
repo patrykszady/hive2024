@@ -1,130 +1,79 @@
 <div>
-    <x-page.top
-        h1="Check for {{$check->owner}}"
-        p="Check for {{$check->owner}}"
-        {{-- right_button_href="{{route('checks.index')}}"
-        right_button_text="Edit Check" --}}
-        >
-    </x-page.top>
+    <div class="grid max-w-xl grid-cols-5 gap-4 xl:relative lg:max-w-5xl sm:px-6">
+        <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
+            {{-- CHECK DETAILS --}}
+            <x-lists.details_card>
+                {{-- HEADING --}}
+                <x-slot:heading>
+                    <div>
+                        <flux:heading size="lg" class="mb-0">Check Details</flux:heading>
+                    </div>
 
-    <div class="grid max-w-xl grid-cols-4 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
-        <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
-            <x-cards>
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Check Details</h1>
-                    </x-slot>
+                    <flux:button
+                        wire:click="$dispatchTo('checks.check-create', 'editCheck', { check: {{$check->id}}})"
+                        size="sm"
+                        >
+                        Edit Check
+                    </flux:button>
+                </x-slot>
 
-                    @if($check->transactions->sum('amount') != $check->amount)
-                        <x-slot name="right">
-                            <div class="space-x-2">
-                                <x-cards.button
-                                    wire:click="$dispatchTo('checks.check-create', 'editCheck', { check: {{$check->id}}})"
-                                    >
-                                    Edit Check
-                                </x-cards.button>
-                            </div>
-                        </x-slot>
+                {{-- DETAILS --}}
+                <x-lists.details_list>
+                    <x-lists.details_item title="Amount" detail="{{money($check->amount)}}" />
+                    <x-lists.details_item title="Payee" detail="{{$check->owner}}" href="{{$check->vendor_id ? route('vendors.show', $check->vendor->id) : '#'}}" />
+                    <x-lists.details_item title="Date" detail="{{$check->date->format('m/d/Y')}}" />
+                    <x-lists.details_item title="Type" detail="{{$check->check_type}}" />
+
+                    @if($check->bank_account)
+                        <x-lists.details_item title="Bank" detail="{{$check->bank_account->getNameAndType()}}" />
                     @endif
-                </x-cards.heading>
 
-                <x-cards.body>
-                    <x-lists.ul>
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Check Payee'"
-                            :line_data="$check->owner"
-                            href="{{$check->vendor_id ? route('vendors.show', $check->vendor->id) : '#'}}"
-                            >
-                        </x-lists.search_li>
-
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Check Amount'"
-                            :line_data="money($check->amount)"
-                            >
-                        </x-lists.search_li>
-
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Check Date'"
-                            :line_data="$check->date->format('m/d/Y')"
-                            >
-                        </x-lists.search_li>
-
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Check Type'"
-                            :line_data="$check->check_type"
-                            >
-                        </x-lists.search_li>
-
-                        @if($check->bank_account)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Check Bank'"
-                                :line_data="$check->bank_account->getNameAndType()"
-                                >
-                            </x-lists.search_li>
-                        @endif
-
-                        @if($check->check_number)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Check Number'"
-                                :line_data="$check->check_number"
-                                >
-                            </x-lists.search_li>
-                        @endif
-                    </x-lists.ul>
-                </x-cards.body>
-            </x-cards>
+                    @if($check->check_number)
+                        <x-lists.details_item title="Check Number" detail="{{$check->check_number}}" />
+                    @endif
+                </x-lists.details_list>
+            </x-lists.details_card>
 
             {{-- CHECK TRANSACTIONS --}}
             @if(!$check->transactions->isEmpty())
-                <x-cards>
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1>Transactions</h1>
-                        </x-slot>
-                    </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <flux:heading size="lg" class="mb-0">Transactions</flux:heading>
+                    <flux:separator variant="subtle" />
 
-                    <x-lists.ul>
-                        @foreach($check->transactions as $transaction)
-                            @php
-                                $line_details = [
-                                    1 => [
-                                        'text' => $transaction->transaction_date->format('m/d/Y'),
-                                        'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                        ],
-                                    2 => [
-                                        'text' => $transaction->bank_account->bank->name . ' | ' . $transaction->bank_account->type,
-                                        'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
-                                        ],
-                                    3 => [
-                                        'text' => $transaction->plaid_merchant_description,
-                                        'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                                        ],
-                                    ];
-                            @endphp
+                    <div class="space-y-6">
+                        {{-- wire:loading.class="opacity-50 text-opacity-40" --}}
+                        <flux:table>
+                            <flux:columns>
+                                <flux:column>Amount</flux:column>
+                                <flux:column>Date</flux:column>
+                                <flux:column>Bank</flux:column>
+                                <flux:column>Account</flux:column>
+                                <flux:column>Desc</flux:column>
+                            </flux:columns>
 
-                            <x-lists.search_li
-                                href=""
-                                :line_details="$line_details"
-                                :line_title="money($transaction->amount)"
-                                :bubble_message="'Transaction'"
-                                >
-                            </x-lists.search_li>
-                        @endforeach
-                    </x-lists.ul>
-                </x-cards>
+                            <flux:rows>
+                                @foreach ($check->transactions as $transaction)
+                                    <flux:row :key="$transaction->id">
+                                        <flux:cell variant="strong">
+                                            {{ money($transaction->amount) }}
+                                        </flux:cell>
+                                        <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
+                                        <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
+                                        <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
+                                        <flux:cell>{{ $transaction->plaid_merchant_description }}</flux:cell>
+                                    </flux:row>
+                                @endforeach
+                            </flux:rows>
+                        </flux:table>
+                    </div>
+                </flux:card>
             @endif
         </div>
 
-        <div class="col-span-4 space-y-2 lg:col-span-2">
+        <div class="col-span-5 space-y-2 lg:col-span-3">
             {{-- THIS CHECK USER PAID TIMESHEETS --}}
             @if(!$weekly_timesheets->isEmpty())
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1><b>{{$check->user->first_name}}</b>'s Timesheets</h1>
@@ -181,7 +130,7 @@
 
             {{-- THIS CHECK USER PAID EMPLOYEE TIMESHEETS --}}
             @if(!$employee_weekly_timesheets->isEmpty())
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Employee Paid Timesheets</h1>
@@ -265,33 +214,16 @@
             </x-cards.wrapper>
             @endif --}}
 
-            {{-- THIS CHECK USER PAID EXPENSES --}}
+            {{-- THIS CHECK EXPENSES EXPENSES --}}
             @if(!$vendor_expenses->isEmpty())
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Expenses</h1>
-                    </x-slot>
-                </x-cards.heading>
-
-                <x-lists.ul>
-                    @foreach($vendor_expenses as $expense)
-                        <x-lists.search_li
-                            {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                            {{-- :line_details="$line_details" --}}
-                            :line_title="money($expense->amount) . ' | ' . $expense->project->name"
-                            href="{{route('expenses.show', $expense->id)}}"
-                            :bubble_message="'Expense'"
-                            >
-                        </x-lists.search_li>
-                    @endforeach
-                </x-lists.ul>
-            </x-cards>
+                <div class="col-span-5 lg:col-span-3 lg:col-start-3">
+                    <livewire:expenses.expense-index :check="$check->id" :view="'checks.show'"/>
+                </div>
             @endif
 
             {{-- THIS CHECK USER PAID EXPENSES --}}
             @if(!$user_paid_expenses->isEmpty())
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Paid Expenses</h1>
@@ -317,24 +249,24 @@
 
             {{-- THIS CHECK DISTRIBUTIONS --}}
             @if(!$user_distributions->isEmpty())
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Paid Distrbutions</h1>
-                    </x-slot>
-                </x-cards.heading>
+                <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
+                    <x-cards.heading>
+                        <x-slot name="left">
+                            <h1>Paid Distrbutions</h1>
+                        </x-slot>
+                    </x-cards.heading>
 
-                <x-lists.ul>
-                    @foreach($user_distributions as $user_distribution_expense)
-                        <x-lists.search_li
-                            :href="route('expenses.show', $user_distribution_expense)"
-                            :line_title="money($user_distribution_expense->amount) . ' | ' . $user_distribution_expense->distribution->name"
-                            :bubble_message="'Distribution'"
-                            >
-                        </x-lists.search_li>
-                    @endforeach
-                </x-lists.ul>
-            </x-cards>
+                    <x-lists.ul>
+                        @foreach($user_distributions as $user_distribution_expense)
+                            <x-lists.search_li
+                                :href="route('expenses.show', $user_distribution_expense)"
+                                :line_title="money($user_distribution_expense->amount) . ' | ' . $user_distribution_expense->distribution->name"
+                                :bubble_message="'Distribution'"
+                                >
+                            </x-lists.search_li>
+                        @endforeach
+                    </x-lists.ul>
+                </x-cards>
             @endif
 
             {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
@@ -361,7 +293,7 @@
 
             {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
             @if(!$user_paid_by_reimbursements->isEmpty())
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
+            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Paid Other Employee Reimbursements</h1>

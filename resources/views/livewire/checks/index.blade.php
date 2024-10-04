@@ -1,13 +1,13 @@
 <div class="max-w-3xl">
-    @if($view != 'vendors.show')
-        <flux:card class="space-y-2">
+    @if($view === NULL)
+        <flux:card class="space-y-2 mb-4">
             <div>
                 <flux:heading size="lg">Check Filters</flux:heading>
             </div>
 
             <flux:separator variant="subtle" />
 
-            <div class="grid grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <flux:input wire:model.debounce.500ms.live="amount" label="Amount" icon="magnifying-glass" placeholder="123.45" />
                 <flux:input wire:model.debounce.500ms.live="check_number" label="Check Number" icon="magnifying-glass" placeholder="1234" />
 
@@ -21,7 +21,7 @@
         </flux:card>
     @endif
 
-    <flux:card class="mt-4 space-y-2">
+    <flux:card class="space-y-2">
         <div>
             <flux:heading size="lg">Checks</flux:heading>
         </div>
@@ -35,7 +35,7 @@
                     <flux:column sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
                     <flux:column>Check #</flux:column>
                     <flux:column>Bank</flux:column>
-                    @if($view != 'vendors.show')
+                    @if($view === NULL)
                         <flux:column>Payee</flux:column>
                     @endif
                     <flux:column>Status</flux:column>
@@ -48,14 +48,14 @@
                                 variant="strong"
                                 class="cursor-pointer"
                                 >
-                                <a href="{{route('checks.show', $check->id)}}" target="_blank">
+                                <a wire:navigate.hover href="{{route('checks.show', $check->id)}}">
                                     {{ money($check->amount) }}
                                 </a>
                             </flux:cell>
                             <flux:cell>{{ $check->date->format('m/d/Y') }}</flux:cell>
                             <flux:cell>{{$check->check_type != 'Check' ? $check->check_type : $check->check_number}}</flux:cell>
                             <flux:cell>{{$check->bank_account->bank->name}}</flux:cell>
-                            @if($view != 'vendors.show')
+                            @if($view === NULL)
                                 <flux:cell>{{$check->owner}}</flux:cell>
                             @endif
                             <flux:cell>

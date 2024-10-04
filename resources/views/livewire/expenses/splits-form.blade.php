@@ -1,4 +1,4 @@
-<flux:modal name="expense_splits_form_modal" class="space-y-8">
+<flux:modal name="expense_splits_form_modal" class="space-y-2">
     <flux:heading size="lg">Expense Splits</flux:heading>
     <flux:separator variant="subtle" />
 

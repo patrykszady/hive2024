@@ -60,6 +60,7 @@ class Expense extends Model
             'id' => (string) $this->id,
             'vendor_id' => (string) $this->vendor_id,
             'project_id' => (string) $this->project_id,
+            'check_id' => (string) $this->check_id,
             'is_project_id_null' => $this->project_id ? false : true,
             'distribution_id' => (string) $this->distribution_id,
             'is_distribution_id_null' => $this->distribution_id ? false : true,

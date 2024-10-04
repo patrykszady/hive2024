@@ -17,8 +17,8 @@ class CheckCreate extends Component
     public $bank_accounts = [];
     public $employees = [];
 
-    public $check = NULL;
-    public $modal_show = FALSE;
+    public Check $check;
+
     public $view_text = [
         'card_title' => 'Edit Check',
         'button_text' => 'Update',
@@ -37,12 +37,6 @@ class CheckCreate extends Component
 
         $this->employees = auth()->user()->vendor->users()->where('is_employed', 1)->whereNot('users.id', auth()->user()->id)->get();
     }
-
-    // public function updated($field)
-    // {
-    //     $this->validate();
-    //     // $this->validateOnly($field);
-    // }
 
     public function updated($field)
     {
@@ -67,14 +61,14 @@ class CheckCreate extends Component
     public function validateCheck()
     {
         dd('in validateCheck');
-        // $this->modal_show = TRUE;
     }
 
     public function editCheck(Check $check)
     {
         $this->check = $check;
         $this->form->setCheck($check);
-        $this->modal_show = TRUE;
+
+        $this->modal('check_form_modal')->show();
     }
 
     public function edit()
@@ -86,7 +80,7 @@ class CheckCreate extends Component
             route: 'checks/' . $check->id
         );
 
-        $this->modal_show = FALSE;
+        // $this->modal_show = FALSE;
 
         $this->dispatch('refreshComponent')->to('checks.check-show');
     }
@@ -135,6 +129,7 @@ class CheckCreate extends Component
 
         // $employees = $this->user->vendor->users()->where('is_employed', 1)->whereNot('users.id', $this->user->id)->get();
 
+        // 10-02-2024 CHANGE NEW_FORM ASAP
         return view('livewire.checks.new_form', [
             // 'bank_accounts' => $bank_accounts,
             // 'employees' => $employees,

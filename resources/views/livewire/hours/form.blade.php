@@ -22,62 +22,50 @@
 		</div>
 
 		<div class="col-span-4 space-y-2 lg:col-span-2">
-            <x-cards accordian="OPENED">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        Projects
-                    </x-slot>
-				</x-cards.heading>
-                <x-cards.body :class="'space-y-2 my-2 divide-gray-200'">
-                    {{-- PROJECT HOUR AMOUNT --}}
-                    @foreach ($projects as $index => $project)
-                        <x-forms.row
-                            wire:model.live="form.projects.{{$index}}.hours"
-                            errorName="form.projects.{{$index}}.hours"
-                            name="form.projects.{{$index}}.hours"
-                            label_text_color_custom="{{ !empty($day_project_tasks[$index]) ? 'indigo' : NULL}}"
-                            text="{!! '<b>' . $project->address . '</b><br>' . $project->project_name !!}"
-                            type="number"
-                            hint="Hours"
-                            textSize="xl"
-                            placeholder="1.00"
-                            inputmode="decimal"
-                            step="0.25"
-                            >
+            <flux:card class="space-y-2">
+                <flux:heading size="lg">Projects</flux:heading>
+                <flux:separator variant="subtle" />
 
-                            <x-slot name="titleslot">
-                                <div>
-                                    @if(!empty($day_project_tasks[$index]))
-                                        @foreach($day_project_tasks[$index] as $task)
-                                            <span class="mt-2 text-sm text-indigo-600"><i>{{$task['title']}}</i></span>
-                                            <br>
-                                            {{-- @if(!$loop->last)
-                                                <br>
-                                            @endif --}}
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </x-slot>
-                        </x-forms.row>
+                {{-- PROJECT HOUR AMOUNT --}}
+                @foreach ($projects as $index => $project)
+                    <flux:field>
+                        {{-- label_text_color_custom="{{ !empty($day_project_tasks[$index]) ? 'text-indigo-600' : NULL}}" --}}
+                        <div class="grid gap-2 grid-cols-2">
+                            <div>
+                                <flux:label>{{$project->address}}</flux:label>
+                                <flux:description><i>{{$project->project_name}}</i></flux:description>
+                            </div>
+                            <div>
+                                <flux:input.group>
+                                    <flux:input.group.prefix>Hours</flux:input.group.prefix>
+                                    <flux:input wire:model.live="form.projects.{{$index}}.hours" type="number" placeholder="1.00" inputmode="decimal" step="0.25" placeholder="2.5" />
+                                </flux:input.group>
+                                @if(!empty($day_project_tasks[$index]))
+                                    @foreach($day_project_tasks[$index] as $task)
+                                        <flux:description><i class="text-indigo-600">{{$task['title']}}</i></flux:description>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </flux:field>
 
-                        @if(!$loop->last)
-                            <hr>
-                        @endif
-                    @endforeach
-                </x-cards.body>
-            </x-cards>
+                    @if(!$loop->last)
+                        <flux:separator variant="subtle" />
+                    @endif
+                @endforeach
+            </flux:card>
 
             <flux:card>
                 <flux:heading size="lg">Different Project</flux:heading>
-                <flux:separator variant="subtle" />
                 <flux:input.group>
-                    <flux:select wire:model.live="new_project_id">
-                        <flux:option value="" readonly>Select Project...</flux:option>
+                    <flux:select wire:model.live="new_project_id" variant="listbox" searchable placeholder="Choose project...">
+                        <x-slot name="search">
+                            <flux:select.search placeholder="Search..." />
+                        </x-slot>
 
                         @foreach($other_projects as $project)
                             <flux:option value="{{$project->id}}">{{$project->name}}</flux:option>
                         @endforeach
-
                     </flux:select>
 
                     <flux:button variant="primary" wire:click="add_project" icon="plus-circle">Add</flux:button>

@@ -1,243 +1,131 @@
 <div>
-	<x-page.top
-		h1="{{ money($expense->amount) }}"
-		p="Expense for {!! $expense->vendor->business_name !!}"
-		{{-- right_button_href="{{auth()->user()->can('update', $expense) ? route('expenses.edit', $expense->id) : ''}}" --}}
-		{{-- right_button_text="Edit Expense" --}}
-		>
-
-	</x-page.top>
-
-    <div class="grid max-w-xl grid-cols-4 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
+    <div class="grid max-w-xl grid-cols-4 gap-4 xl:relative lg:max-w-5xl sm:px-6">
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
             {{-- EXPENSE DETAILS --}}
-            <x-cards accordian="OPENED">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Expense Details</h1>
-                        {{-- <p>Expense and related details like Expense Splits and Expense Receipts.</p> --}}
-                    </x-slot>
+            <x-lists.details_card>
+                {{-- HEADING --}}
+                <x-slot:heading>
+                    <div>
+                        <flux:heading size="lg" class="mb-0">Expense Details</flux:heading>
+                        <flux:subheading>Expense and related details like Expense Splits and Expense Receipts.</flux:subheading>
+                    </div>
 
-                    @can('update', $expense)
-                        <x-slot name="right">
-                            <x-cards.button
-                                wire:click="$dispatchTo('expenses.expense-create', 'editExpense', { expense: {{$expense->id}}})"
-                                >
-                                Edit Expense
-                            </x-cards.button>
-                            <x-cards.button
-                                :button_color="'white'"
-                                wire:click="$dispatchTo('expenses.expenses-associated', 'addAssociatedExpense', { expense: {{$expense->id}}})"
-                                >
-                                Associated
-                            </x-cards.button>
-                        </x-slot>
-                    @endcan
-                </x-cards.heading>
-
-                <x-cards.body>
-                    <x-lists.ul>
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Amount'"
-                            :line_data="money($expense->amount)"
+                    <flux:button.group>
+                        <flux:button
+                            wire:click="$dispatchTo('expenses.expense-create', 'editExpense', { expense: {{$expense->id}}})"
+                            size="sm"
                             >
-                        </x-lists.search_li>
+                            Edit Expense
+                        </flux:button>
+                        <flux:button icon="chevron-down" size="sm">
+                            {{-- ASSOCIATED EXPENSE MODAL --}}
+                        </flux:button>
+                    </flux:button.group>
+                </x-slot>
 
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Date'"
-                            :line_data="$expense->date->format('m/d/Y')"
-                            >
-                        </x-lists.search_li>
+                {{-- DETAILS --}}
+                <x-lists.details_list>
+                    <x-lists.details_item title="Amount" detail="{{money($expense->amount)}}" />
+                    <x-lists.details_item title="Date" detail="{{$expense->date->format('m/d/Y')}}" />
+                    <x-lists.details_item title="Vendor" detail="{{$expense->vendor->name}}" href="{{isset($expense->vendor->id) ? route('vendors.show', $expense->vendor->id) : ''}}"/>
+                    <x-lists.details_item title="Project" detail="{{$expense->project->name}}" href="{{isset($expense->project->id) ? route('projects.show', $expense->project->id) : '#'}}"/>
 
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Vendor'"
-                            :line_data="$expense->vendor->name"
-                            href="{{isset($expense->vendor->id) ? route('vendors.show', $expense->vendor->id) : ''}}"
-                            >
-                        </x-lists.search_li>
+                    @if($expense->reimbursment)
+                        <x-lists.details_item title="Reimbursment" detail="{{$expense->reimbursment}}" />
+                    @endif
 
-                        @if($expense->distribution)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Account'"
-                                :line_data="$expense->distribution->name"
-                                {{-- href="{{route('vendors.show', $expense->vendor->id)}}" --}}
-                                >
-                                <x-slot name="span">
-                                    {{isset($receipt) ? $receipt->notes : ''}}
-                                </x-slot>
-                            </x-lists.search_li>
-                        @elseif($expense->splits()->exists())
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Project'"
-                                :line_data="$expense->project->name"
-                                >
-                                <x-slot name="span">
-                                    {{isset($receipt) ? $receipt->notes : ''}}
-                                </x-slot>
-                            </x-lists.search_li>
-                        @elseif($expense->project->name == 'NO PROJECT')
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Project'"
-                                :line_data="$expense->project->name"
-                                >
-                                <x-slot name="span">
-                                    {{isset($receipt) ? $receipt->notes : ''}}
-                                </x-slot>
-                            </x-lists.search_li>
-                        @else
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Project'"
-                                :line_data="$expense->project->name"
-                                href="{{route('projects.show', $expense->project->id)}}"
-                                >
+                    @if($expense->paid_by)
+                        <x-lists.details_item title="Paid By" detail="{{$expense->paidby->full_name}}" />
+                    @endif
 
-                                <x-slot name="span">
-                                    {{isset($receipt) ? $receipt->notes : ''}}
-                                </x-slot>
-                            </x-lists.search_li>
-                        @endif
+                    @if($expense->invoice)
+                        <x-lists.details_item title="Invoice" detail="{{$expense->invoice}}" />
+                    @endif
 
-                        @if($expense->reimbursment)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Reimbursment'"
-                                :line_data="$expense->reimbursment"
-                                >
-                            </x-lists.search_li>
-                        @endif
+                    @if($expense->note)
+                        <x-lists.details_item title="Note" detail="{{$expense->note}}" />
+                    @endif
+                </x-lists.details_list>
 
-                        @if($expense->paid_by)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Paid By'"
-                                :line_data="$expense->paidby->full_name"
-                                >
-                            </x-lists.search_li>
-                        @endif
-
-                        @if($expense->invoice)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Invoice'"
-                                :line_data="$expense->invoice"
-                                >
-                            </x-lists.search_li>
-                        @endif
-
-                        @if($expense->note)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Note/PO'"
-                                :line_data="$expense->note"
-                                >
-                            </x-lists.search_li>
-                        @endif
-                    </x-lists.ul>
-                </x-cards.body>
-                @if($expense->created_by_user_id == 0)
-                    <x-cards.footer>
-                        <span class="text-sm"><i>*Expense Created Automatically.</i></span>
-                    </x-cards.footer>
-                @endif
-            </x-cards>
+                {{-- FOOTER --}}
+                <div>
+                    @if($expense->created_by_user_id === 0)
+                        <flux:subheading><i>*Expense Created Automatically.</i></flux:subheading>
+                    @endif
+                </div>
+            </x-lists.details_card>
 
             {{-- TRANSACTIONS --}}
+            {{-- 10-01-2024 USE FROM EXPENSES.INDEX @include --}}
             @if(!$expense->transactions->isEmpty())
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Transactions</h1>
-                    </x-slot>
-                </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <flux:heading size="lg" class="mb-0">Transactions</flux:heading>
+                    <flux:separator variant="subtle" />
 
-                <x-lists.ul>
-                    @foreach($expense->transactions as $transaction)
-                        @php
-                            $line_details = [
-                                1 => [
-                                    // $transaction->posted_date ? $transaction->posted_date->format('m/d/Y') : $transaction->transaction_date->format('m/d/Y')
-                                    'text' => $transaction->transaction_date->format('m/d/Y'),
-                                    'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                    ],
-                                2 => [
-                                    'text' => $transaction->bank_account->bank->name,
-                                    'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
-                                    ],
-                                3 => [
-                                    'text' => $transaction->plaid_merchant_description,
-                                    'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                                    ],
-                                ];
-                        @endphp
+                    <div class="space-y-6">
+                        {{-- wire:loading.class="opacity-50 text-opacity-40" --}}
+                        <flux:table>
+                            <flux:columns>
+                                <flux:column>Amount</flux:column>
+                                <flux:column>Date</flux:column>
+                                <flux:column>Vendor</flux:column>
+                                <flux:column>Bank</flux:column>
+                                <flux:column>Account</flux:column>
+                            </flux:columns>
 
-                        <x-lists.search_li
-                            href=""
-                            :line_details="$line_details"
-                            :line_title="money($transaction->amount)"
-                            :bubble_message="'Transaction'"
-                            >
-                        </x-lists.search_li>
-                    @endforeach
-                </x-lists.ul>
-            </x-cards>
+                            <flux:rows>
+                                @foreach ($expense->transactions as $transaction)
+                                    <flux:row :key="$transaction->id">
+                                        <flux:cell variant="strong">
+                                            {{ money($transaction->amount) }}
+                                        </flux:cell>
+                                        <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
+                                        <flux:cell>{{ Str::limit($transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description, 35)}}</flux:cell>
+                                        <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
+                                        <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
+                                    </flux:row>
+                                @endforeach
+                            </flux:rows>
+                        </flux:table>
+                    </div>
+                </flux:card>
             @endif
         </div>
 
         <div class="col-span-4 space-y-2 lg:col-span-2">
             {{-- ASSOCIATED EXPENSES --}}
             @if(!is_null($expense->associated_expenses))
-            <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Associated Expenses</h1>
-                    </x-slot>
-                </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <flux:heading size="lg" class="mb-0">Linked Expenses</flux:heading>
+                    <flux:subheading>Associated Expenses are expenses that are linked to this Expense. For example, a debit from one account and a credit to another. Or a purchase and return expenses that belong together.</flux:subheading>
+                    <flux:separator variant="subtle" />
 
-                <x-lists.ul>
-                    @foreach($expense->associated_expenses as $associated_expenses)
-                        @php
-                            $line_details = [
-                                1 => [
-                                    'text' => $associated_expenses->date->format('m/d/Y'),
-                                    'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                    ],
-                                2 => [
-                                    'text' => $associated_expenses->vendor->business_name,
-                                    'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
-                                    ],
-                                    2 => [
-                                    'text' => !$associated_expenses->transactions->isEmpty() ? $associated_expenses->transactions()->first()->bank_account->bank->name : '',
-                                    'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
-                                    ],
-                                ];
-                        @endphp
+                    <div class="space-y-6">
+                        <flux:table>
+                            <flux:columns>
+                                <flux:column>Amount</flux:column>
+                                <flux:column>Date</flux:column>
+                                <flux:column>Bank</flux:column>
+                                <flux:column>Account</flux:column>
+                            </flux:columns>
 
-                        {{-- @if($expense->reimbursment == 'Client')
-                            @php
-                                $line_details[] = [
-                                    'text' => $expense->reimbursment,
-                                    'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z'
-                                ];
-                            @endphp
-                        @endif --}}
-
-                        <x-lists.search_li
-                            href="{{ route('expenses.show', $associated_expenses->id) }}"
-                            :line_details="$line_details"
-                            :line_title="money($associated_expenses->amount)"
-                            :bubble_message="'Associated'"
-                            >
-                        </x-lists.search_li>
-                    @endforeach
-                </x-lists.ul>
-            </x-cards>
+                            <flux:rows>
+                                @foreach ($expense->associated_expenses as $associated_expense)
+                                    <flux:row :key="$associated_expense->id">
+                                        <flux:cell variant="strong">
+                                            <a href="{{route('expenses.show', $associated_expense->id)}}">
+                                                {{ money($associated_expense->amount) }}
+                                            </a>
+                                        </flux:cell>
+                                        <flux:cell>{{ $associated_expense->date->format('m/d/Y') }}</flux:cell>
+                                        <flux:cell>{{ !$associated_expense->transactions->isEmpty() ? $associated_expense->transactions()->first()->bank_account->bank->name : '' }}</flux:cell>
+                                        <flux:cell>{{ !$associated_expense->transactions->isEmpty() ? $associated_expense->transactions()->first()->bank_account->account_number : '' }}</flux:cell>
+                                    </flux:row>
+                                @endforeach
+                            </flux:rows>
+                        </flux:table>
+                    </div>
+                </flux:card>
             @endif
 
             {{-- SPLITS --}}
@@ -273,40 +161,7 @@
 
             {{-- CHECK --}}
             @if($expense->check)
-                <x-cards>
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1>Check</h1>
-                        </x-slot>
-                    </x-cards.heading>
-
-                    <x-lists.ul>
-                        @php
-                            $line_details = [
-                                    1 => [
-                                        'text' => $expense->check->check_type,
-                                        'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                        ],
-                                    2 => [
-                                        'text' => $expense->check->check_number,
-                                        'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
-                                        ],
-                                    3 => [
-                                        'text' => is_null($expense->check->bank_account) ? '' : $expense->check->bank_account->getNameAndType(),
-                                        'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
-                                        ],
-                                ];
-                        @endphp
-
-                        <x-lists.search_li
-                            href="{{ route('checks.show', $expense->check->id) }}"
-                            :line_details="$line_details"
-                            :line_title="money($expense->check->amount)"
-                            :bubble_message="'Check'"
-                            >
-                        </x-lists.search_li>
-                    </x-lists.ul>
-                </x-cards>
+                <livewire:checks.checks-index :expense_check_id="$expense->check->id" :view="'expenses.show'"/>
             @endif
 
             {{-- RECEIPTS --}}
@@ -347,7 +202,6 @@
                                 <flux:table>
                                     <flux:columns>
                                         <flux:column>Desc</flux:column>
-                                        <flux:column>SKU</flux:column>
                                         <flux:column>Price</flux:column>
                                         <flux:column>Qty</flux:column>
                                         <flux:column>Total</flux:column>
@@ -356,41 +210,37 @@
                                     <flux:rows>
                                         @foreach($receipt->receipt_items->items as $line_item)
                                             <flux:row>
-                                                <flux:cell>{{Str::limit($line_item->desc, 20)}}</flux:cell>
-                                                {{-- 09/28/24 URL TO ITEM --}}
-                                                <flux:cell>{{Str::limit($line_item->product_code, 5)}}</flux:cell>
+                                                <flux:cell>{{Str::limit($line_item->desc, 30)}}</flux:cell>
                                                 <flux:cell>{{money($line_item->price_each)}}</flux:cell>
                                                 <flux:cell>{{$line_item->quantity}}</flux:cell>
                                                 <flux:cell variant="strong">{{money($line_item->price_total)}}</flux:cell>
+                                            </flux:row>
+                                            <flux:row>
+                                                {{-- 09/28/24 URL TO ITEM --}}
+                                                <flux:cell class="text-right"><i>{{$line_item->product_code}}</i></flux:cell>
                                             </flux:row>
                                         @endforeach
                                     </flux:rows>
                                 </flux:table>
 
-                                <x-cards.footer>
-                                    <x-lists.ul>
-                                        <x-lists.search_li
-                                            :basic=true
-                                            :line_title="'Subtotal'"
-                                            :line_data="money($receipt->subtotal)"
-                                            >
-                                        </x-lists.search_li>
+                                <flux:separator variant="subtle" />
 
-                                        <x-lists.search_li
-                                            :basic=true
-                                            :line_title="'Tax'"
-                                            :line_data="money($receipt->tax)"
-                                            >
-                                        </x-lists.search_li>
+                                <dl class="divide-y divide-gray-100 space-y-3">
+                                    <div class="py-3 grid grid-cols-3 gap-4">
+                                        <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Subtotal</dt>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($receipt->subtotal)}}</dd>
+                                    </div>
 
-                                        <x-lists.search_li
-                                            :basic=true
-                                            :line_title="'Total'"
-                                            :line_data="money($receipt->total)"
-                                            >
-                                        </x-lists.search_li>
-                                    </x-lists.ul>
-                                </x-cards.footer>
+                                    <div class="py-3 grid grid-cols-3 gap-4">
+                                        <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Tax</dt>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($receipt->tax)}}</dd>
+                                    </div>
+
+                                    <div class="py-3 grid grid-cols-3 gap-4">
+                                        <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Total</dt>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($receipt->total)}}</dd>
+                                    </div>
+                                </dl>
                             @endif
                         @endif
                     </div>

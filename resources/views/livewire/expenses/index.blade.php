@@ -1,28 +1,33 @@
 <div class="max-w-3xl">
-    <flux:card class="space-y-2">
-        <div class="flex justify-between">
-            <flux:heading size="lg">Filters</flux:heading>
-            @can('create', App\Models\Expense::class)
-                @if($amount && $view == NULL)
-                    <flux:button wire:click="$dispatchTo('expenses.expense-create', 'newExpense', { amount: {{$amount}}})">Add New Expense</flux:button>
-                @endif
-            @endcan
-        </div>
+    @if($view === NULL)
+        <flux:card class="space-y-2 mb-4">
+            <div class="flex justify-between">
+                <flux:heading size="lg">Filters</flux:heading>
+                @can('create', App\Models\Expense::class)
+                    @if($amount && $view == NULL)
+                        <flux:button wire:click="$dispatchTo('expenses.expense-create', 'newExpense', { amount: {{$amount}}})">Add New Expense</flux:button>
+                    @endif
+                @endcan
+            </div>
 
-        <flux:separator variant="subtle" />
+            <flux:separator variant="subtle" />
 
-        <div class="grid grid-cols-3 gap-4">
-            <flux:input wire:model.debounce.500ms.live="amount" label="Amount" icon="magnifying-glass" placeholder="123.45" />
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <flux:input wire:model.debounce.500ms.live="amount" label="Amount" icon="magnifying-glass" placeholder="123.45" />
 
-            <flux:autocomplete label="Vendor" placeholder="Select Vendor..." icon="chevron-up-down">
-                @foreach ($this->vendors as $vendor)
-                    <flux:autocomplete.item value="{{$vendor->id}}">{{ $vendor->name }}</flux:autocomplete.item>
-                @endforeach
-            </flux:autocomplete>
-        </div>
-    </flux:card>
+                <flux:select wire.model.live="expense_vendor" label="Vendor" variant="listbox" searchable placeholder="Vendor...">
+                    <x-slot name="search">
+                        <flux:select.search placeholder="Search..." />
+                    </x-slot>
+                    @foreach ($vendors as $vendor)
+                        <flux:option value="{{$vendor->id}}">{{ $vendor->name }}</flux:option>
+                    @endforeach
+                </flux:select>
+            </div>
+        </flux:card>
+    @endif
 
-    <flux:card class="mt-4 space-y-2">
+    <flux:card class="space-y-2" lazy>
         <div>
             <flux:heading size="lg">Expenses</flux:heading>
         </div>
@@ -32,7 +37,9 @@
                 <flux:columns>
                     <flux:column>Amount</flux:column>
                     <flux:column sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
-                    <flux:column >Vendor</flux:column>
+                    @if($view != 'checks.show')
+                        <flux:column >Vendor</flux:column>
+                    @endif
                     <flux:column>Project</flux:column>
                     <flux:column>Status</flux:column>
                 </flux:columns>
@@ -48,7 +55,9 @@
                                 {{ money($expense->amount) }}
                             </flux:cell>
                             <flux:cell>{{ $expense->date->format('m/d/Y') }}</flux:cell>
-                            <flux:cell><a href="{{route('vendors.show', $expense->vendor->id)}}" target="_blank">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
+                            @if($view != 'checks.show')
+                                <flux:cell><a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
+                            @endif
                             <flux:cell>{{ Str::limit($expense->project->name, 25) }}</flux:cell>
                             <flux:cell>
                                 <flux:badge size="sm" :color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'yellow' : 'red')" inset="top bottom">{{ $expense->status }}</flux:badge>
@@ -57,8 +66,6 @@
                     @endforeach
                 </flux:rows>
             </flux:table>
-
-            <livewire:expenses.expense-create />
         </div>
     </flux:card>
 
@@ -100,6 +107,8 @@
             </div>
         </flux:card>
     @endif
+
+    <livewire:expenses.expense-create />
 </div>
 {{--
 

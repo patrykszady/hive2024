@@ -9,10 +9,10 @@
 
         <flux:separator variant="subtle" />
 
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <flux:input wire:model.live="business_name" label="Vendor Name" icon="magnifying-glass" placeholder="Search Vendors" />
             <flux:select wire:model.live="vendor_type" label="Business Type" wire:model="vendor_type" placeholder="Choose type...">
-                <flux:option value="" readonly>Vendor Type</flux:option>
+                <flux:option value="" readonly>All Vendor Types</flux:option>
                 <flux:option value="Sub">Subcontractor</flux:option>
                 <flux:option value="Retail">Retail</flux:option>
                 <flux:option value="1099">1099/Independent</flux:option>

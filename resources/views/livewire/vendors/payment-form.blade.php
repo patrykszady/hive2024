@@ -28,13 +28,14 @@
                     <flux:heading size="lg">Choose Payment Projects</flux:heading>
                     <flux:separator variant="subtle" />
                     <flux:input.group>
-                        <flux:select wire:model.live="project_id">
-                            <flux:option value="" readonly>Select Project...</flux:option>
+                        <flux:select wire:model.live="project_id" variant="listbox" searchable placeholder="Choose project...">
+                            <x-slot name="search">
+                                <flux:select.search placeholder="Search..." />
+                            </x-slot>
 
                             @foreach($this->projects->where('show', false) as $project)
                                 <flux:option value="{{$project->id}}">{{$project->name}}</flux:option>
                             @endforeach
-
                         </flux:select>
 
                         <flux:button variant="primary" wire:click="addProject" icon="plus-circle">Add</flux:button>

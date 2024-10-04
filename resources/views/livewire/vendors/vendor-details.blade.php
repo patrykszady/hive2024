@@ -73,6 +73,7 @@
             @if($vendor->id != auth()->user()->vendor->id)
                 <x-cards.footer>
                     <x-cards.button
+                        wire:navigate.hover
                         href="{{route('vendors.payment', $vendor->id)}}"
                         >
                         Vendor Payment

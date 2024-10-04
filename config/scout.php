@@ -197,6 +197,10 @@ return [
                             'type' => 'string',
                         ],
                         [
+                            'name' => 'check_id',
+                            'type' => 'string',
+                        ],
+                        [
                             'name' => 'is_project_id_null',
                             'type' => 'auto',
                         ],

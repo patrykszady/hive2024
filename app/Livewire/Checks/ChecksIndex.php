@@ -29,6 +29,7 @@ class ChecksIndex extends Component
     public $vendor = '';
 
     public $view = NULL;
+    public $expense_check_id = '';
 
     public $sortBy = 'date';
     public $sortDirection = 'desc';
@@ -94,6 +95,9 @@ class ChecksIndex extends Component
                 ->where('check_type', 'like', "%{$this->check_type}%")
                 ->when($check_number, function ($query) {
                     return $query->where('check_number', 'like', "%{$this->check_number}%");
+                })
+                ->when($this->expense_check_id, function ($query) {
+                    return $query->where('id', $this->expense_check_id);
                 })
                 ->when($amount, function ($query) {
                     return $query->where('amount', 'like', "{$this->amount}%");

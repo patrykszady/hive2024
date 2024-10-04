@@ -34,6 +34,7 @@ class ExpenseIndex extends Component
 
     public $distributions = [];
 
+    public $check = '';
     public $bank_plaid_ins_id = '';
     public $banks = [];
     public $bank_account_ids = [];
@@ -53,6 +54,7 @@ class ExpenseIndex extends Component
     protected $queryString = [
         'amount' => ['except' => ''],
         'project' => ['except' => ''],
+        // 'check' => ['except' => ''],
         'expense_vendor' => ['except' => ''],
         'bank_plaid_ins_id' => ['except' => ''],
         'bank_owner' => ['except' => ''],
@@ -66,17 +68,18 @@ class ExpenseIndex extends Component
         $this->resetPage('transactions-page');
     }
 
-    // public function updated($field, $value)
-    // {
-    //     // && $value == 'NO_PROJECT'
-    //     // if($field == 'project'){
-    //     //     $this->expense_vendor = NULL;
-    //     // }
+    public function updated($field, $value)
+    {
+        // dd($field, $value);
+        // && $value == 'NO_PROJECT'
+        // if($field == 'project'){
+        //     $this->expense_vendor = NULL;
+        // }
 
-    //     // if($field == 'vendor'){
-    //     //     $this->project = NULL;
-    //     // }
-    // }
+        // if($field == 'vendor'){
+        //     $this->project = NULL;
+        // }
+    }
 
     public function mount()
     {
@@ -143,10 +146,16 @@ class ExpenseIndex extends Component
                         ->where('is_distribution_id_null', 'false')
                         ->where('distribution_id', substr($this->project, 2));
             })
-
+            ->when(!empty($this->check) && is_numeric($this->check), function ($query, $item) {
+                return $query->where('check_id', $this->check);
+            })
+            ->whereIn(
+                'expense_status', ['Complete', 'Missing Info', 'No Project', 'No Transaction']
+            )
             // ->orderBy('date', 'desc')
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-            // ->get();
+            // ->take(10)->get();
+            // dd($expenses);
             // ->simplePaginate($paginate_number, ['*'], 'expenses_page');
             ->paginate($this->paginate_number, pageName: 'expenses-page');
 

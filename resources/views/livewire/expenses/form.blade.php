@@ -1,8 +1,8 @@
-<flux:modal name="expenses_form_modal" class="space-y-8">
+<flux:modal name="expenses_form_modal" class="space-y-2">
     <div class="flex justify-between">
         <flux:heading size="lg">{{$view_text['card_title']}}</flux:heading>
         @if(isset($expense->id))
-            <flux:button href="{{route('expenses.show', $expense->id)}}" target="_blank">Show Expense</flux:button>
+            <flux:button wire:navigate.hover href="{{route('expenses.show', $expense->id)}}">Show Expense</flux:button>
         @endif
     </div>
 
@@ -33,19 +33,13 @@
             type="date"
         />
 
-        {{-- VENDOR --}}
-        <flux:field>
-            <flux:label>Vendor</flux:label>
-
-            {{-- <flux:autocomplete --}}
-            <flux:select wire:model.live="form.vendor_id">
-                <flux:option value="">Choose vendor...</flux:option>
-                @foreach($vendors as $vendor)
-                    <flux:option value="{{$vendor->id}}">{{$vendor->name}}</flux:option>
-                @endforeach
-            </flux:select>
-
-            <flux:error name="form.vendor_id" />
+        <flux:select label="Vendor" wire:model.live="form.vendor_id" variant="listbox" searchable placeholder="Choose vendor...">
+            <x-slot name="search">
+                <flux:select.search placeholder="Search..." />
+            </x-slot>
+            @foreach($vendors as $vendor)
+                <flux:option value="{{$vendor->id}}">{{$vendor->name}}</flux:option>
+            @endforeach
 
             @if(isset($form->merchant_name))
                 <flux:description><i>{{$form->merchant_name}}</i></flux:description>
@@ -61,7 +55,7 @@
                     @endif
                 @endif
             @endif
-        </flux:field>
+        </flux:select>
 
         {{-- PROJECT --}}
         <div
@@ -69,25 +63,31 @@
             x-show="open"
             x-transition
             >
-            <flux:input.group>
-                <flux:select wire:model.live="form.project_id" x-bind:disabled="split" placeholder="Choose project...">
-                    <flux:option value="" readonly x-text="split ? 'Expense is Split' : 'Select Project'"></flux:option>
+            <flux:field>
+                <flux:label>Project</flux:label>
+                <flux:input.group>
+                    <flux:select wire:model.live="form.project_id" variant="listbox" searchable x-bind:disabled="split" placeholder="Choose project...">
+                        <x-slot name="search">
+                            <flux:select.search placeholder="Search..." />
+                        </x-slot>
+                        {{-- <flux:option value="" readonly x-text="split ? 'Expense is Split' : 'Select Project'"></flux:option> --}}
 
-                    @foreach($projects as $project)
-                        <flux:option value="{{$project->id}}">{{$project->name}}</flux:option>
-                    @endforeach
 
-                    <flux:option disabled>--------------</flux:option>
+                        @foreach($projects as $project)
+                            <flux:option value="{{$project->id}}">{{$project->name}}</flux:option>
+                        @endforeach
 
-                    @foreach($distributions as $distribution)
-                        <flux:option value="D:{{$distribution->id}}">{{$distribution->name}}</flux:option>
-                    @endforeach
-                </flux:select>
+                        <flux:option disabled>--------------</flux:option>
 
-                <flux:button wire:click="$toggle('split')" icon="receipt-percent">Split</flux:button>
-            </flux:input.group>
+                        @foreach($distributions as $distribution)
+                            <flux:option value="D:{{$distribution->id}}">{{$distribution->name}}</flux:option>
+                        @endforeach
+                    </flux:select>
 
-            <flux:error name="form.project_id" />
+                    <flux:button wire:click="$toggle('split')" icon="receipt-percent">Split</flux:button>
+                </flux:input.group>
+            </flux:field>
+
             @if($expense)
                 @if($expense->note)
                     <flux:description><i>{{$expense->note}}</i></flux:description>
@@ -218,7 +218,7 @@
             />
         </div>
 
-        <div class="flex">
+        <div class="flex space-x-2 sticky bottom-0">
             <flux:spacer />
 
             @if($form->amount == '0.00' || $form->transaction != NULL || ($form->expense_transactions_sum == FALSE && $form->transaction == NULL && $form->bank_account_id == NULL))

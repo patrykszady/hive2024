@@ -15,12 +15,30 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <flux:input wire:model.debounce.500ms.live="amount" label="Amount" icon="magnifying-glass" placeholder="123.45" />
 
-                <flux:select wire.model.live="expense_vendor" label="Vendor" variant="listbox" searchable placeholder="Vendor...">
+                <flux:select wire:model.live="expense_vendor" label="Vendor" variant="listbox" searchable placeholder="Choose Vendor...">
                     <x-slot name="search">
                         <flux:select.search placeholder="Search..." />
                     </x-slot>
+
+                    <flux:option value="">ALL VENDORS</flux:option>
+                    <flux:option value="0">NO VENDOR</flux:option>
+                    <flux:option disabled>---------</flux:option>
                     @foreach ($vendors as $vendor)
                         <flux:option value="{{$vendor->id}}">{{ $vendor->name }}</flux:option>
+                    @endforeach
+                </flux:select>
+
+                <flux:select wire:model.live="project" label="Project" variant="listbox" searchable placeholder="Choose Project...">
+                    <x-slot name="search">
+                        <flux:select.search placeholder="Search..." />
+                    </x-slot>
+
+                    <flux:option value="">ALL PROJECTS</flux:option>
+                    <flux:option value="NO_PROJECT">NO PROJECT</flux:option>
+                    <flux:option value="SPLIT">SPLIT</flux:option>
+                    <flux:option disabled>---------</flux:option>
+                    @foreach ($projects as $project)
+                        <flux:option value="{{$project->id}}">{{ $project->name }}</flux:option>
                     @endforeach
                 </flux:select>
             </div>
@@ -40,7 +58,10 @@
                     @if($view != 'checks.show')
                         <flux:column >Vendor</flux:column>
                     @endif
-                    <flux:column>Project</flux:column>
+
+                    @if($view != 'projects.show')
+                        <flux:column>Project</flux:column>
+                    @endif
                     <flux:column>Status</flux:column>
                 </flux:columns>
 
@@ -58,7 +79,9 @@
                             @if($view != 'checks.show')
                                 <flux:cell><a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
                             @endif
-                            <flux:cell>{{ Str::limit($expense->project->name, 25) }}</flux:cell>
+                            @if($view != 'projects.show')
+                                <flux:cell><a wire:navigate.hover href="{{route('projects.show', $expense->project->id)}}">{{ Str::limit($expense->project->name, 25) }}</a></flux:cell>
+                            @endif
                             <flux:cell>
                                 <flux:badge size="sm" :color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'yellow' : 'red')" inset="top bottom">{{ $expense->status }}</flux:badge>
                             </flux:cell>

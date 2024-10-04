@@ -38,7 +38,7 @@ class CheckForm extends Form
     // required_with:check.paid_by
     // #[Rule('nullable')]
     // public $invoice = NULL;
-    // public $transaction = TRUE;
+    public $transaction = FALSE;
     // protected $messages =
     // [
     //     'check.check_number' => 'Check Number is required if Payment Type is Check',
@@ -73,9 +73,9 @@ class CheckForm extends Form
         $this->check_type = $this->check->check_type;
         $this->check_number = $this->check->check_number;
 
-        // if($this->check->transactions->sum('amount') == $this->check->amount){
-        //     $this->transaction = TRUE;
-        // }
+        if($this->check->transactions->sum('amount') == $this->check->amount){
+            $this->transaction = TRUE;
+        }
     }
 
     public function update()
@@ -91,6 +91,11 @@ class CheckForm extends Form
         ]);
 
         return $this->check;
+    }
+
+    public function delete()
+    {
+        $this->check->delete();
     }
 
     public function store()

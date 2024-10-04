@@ -12,6 +12,7 @@ use App\Livewire\Forms\VendorPaymentForm;
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
 
 use Carbon\Carbon;
 
@@ -88,6 +89,7 @@ class VendorPaymentCreate extends Component
 
     public function updated($field, $value)
     {
+        // dd($field, $value);
         if($field == 'form.bank_account_id'){
             $this->form->check_type = NULL;
             $this->form->check_number = NULL;
@@ -124,6 +126,14 @@ class VendorPaymentCreate extends Component
             $this->validateOnly('form.paid_by');
         }
     }
+
+    // #[Computed]
+    // public function projects()
+    // {
+    //     $vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
+
+    //     return $vendors;
+    // }
 
     public function addProject()
     {

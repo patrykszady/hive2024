@@ -1,7 +1,7 @@
 <div class="max-w-4xl">
     <form wire:submit="{{$view_text['form_submit']}}">
-        <div class="grid max-w-xl grid-cols-5 gap-4 xl:relative lg:max-w-5xl sm:px-6">
-            <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32">
+        <div class="grid max-w-xl grid-cols-4 gap-4 xl:relative lg:max-w-5xl sm:px-6">
+            <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
                 <flux:card>
                     <flux:heading size="lg">Vendor Payment</flux:heading>
                     <flux:subheading><i>Choose Projects to add for {{$vendor->name}} in this Payment</i></flux:subheading>
@@ -22,27 +22,31 @@
                 </flux:card>
 
                 {{-- INSURANCE --}}
-                {{-- <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true"/> --}}
+                <livewire:vendor-docs.vendor-docs-card :vendor="$vendor" :view="true" lazy />
+
                 {{-- SELECT PROJECT --}}
                 <flux:card>
                     <flux:heading size="lg">Choose Payment Projects</flux:heading>
-                    <flux:separator variant="subtle" />
+
                     <flux:input.group>
                         <flux:select wire:model.live="project_id" variant="listbox" searchable placeholder="Choose project...">
                             <x-slot name="search">
                                 <flux:select.search placeholder="Search..." />
                             </x-slot>
 
-                            @foreach($this->projects->where('show', false) as $project)
-                                <flux:option value="{{$project->id}}">{{$project->name}}</flux:option>
+                            {{-- ->where('show', false) --}}
+                            @foreach($projects as $project)
+                                <flux:option value="{{$project->id}}"><div>{{$project->address}} <br> <i>{{$project->project_name}}</i></div></flux:option>
                             @endforeach
                         </flux:select>
 
                         <flux:button variant="primary" wire:click="addProject" icon="plus-circle">Add</flux:button>
                     </flux:input.group>
+
+                    <flux:error name="project_id" />
                 </flux:card>
             </div>
-            <div class="col-span-5 space-y-2 lg:col-span-3">
+            <div class="col-span-4 space-y-2 lg:col-span-2">
                 {{-- PAYMENT PROJECTS --}}
                 @foreach($projects->where('show', true) as $project_id => $project)
                     <flux:card class="space-y-6">

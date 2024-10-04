@@ -8,9 +8,12 @@ use App\Models\Client;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Lazy;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+#[Lazy]
 class ProjectsIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -19,7 +22,7 @@ class ProjectsIndex extends Component
     public $client_id = '';
     public $client = NULL;
     public $project_status_title = 'Active';
-    public $view;
+    public $view = NULL;
 
     protected $queryString = [
         'project_name_search' => ['except' => ''],
@@ -43,11 +46,21 @@ class ProjectsIndex extends Component
         $this->resetPage();
     }
 
-    #[Title('Projects')]
-    public function render()
+    public function updated($field)
     {
-        $this->authorize('viewAny', Project::class);
+        if($field === 'client_id'){
+            $this->project_status_title = '';
+        }
 
+        if($field === 'project_name_search'){
+            $this->project_status_title = '';
+            $this->client_id = '';
+        }
+    }
+
+    #[Computed]
+    public function projects()
+    {
         if(!is_null($this->client)){
             if(isset($this->client->vendor_id)){
                 //all clients(projects) with $client->vendor_id
@@ -59,9 +72,7 @@ class ProjectsIndex extends Component
             $client_ids = [];
         }
 
-        $clients = Client::orderBy('created_at', 'DESC')->get();
-
-        $projects = Project::orderBy('created_at', 'DESC')
+        return Project::orderBy('created_at', 'DESC')
             ->withWhereHas('vendors', function ($query) {
                 $query->where('vendor_id', auth()->user()->vendor->id);
             })
@@ -72,10 +83,20 @@ class ProjectsIndex extends Component
             ->when($this->client != NULL, function ($query) use ($client_ids) {
                 return $query->whereIn('client_id', $client_ids);
             })
+            ->when($this->client_id != NULL, function ($query) {
+                return $query->where('client_id', $this->client_id);
+            })
             ->paginate(10);
+    }
+
+    #[Title('Projects')]
+    public function render()
+    {
+        $this->authorize('viewAny', Project::class);
+
+        $clients = Client::orderBy('created_at', 'DESC')->get();
 
         return view('livewire.projects.index', [
-            'projects' => $projects,
             'clients' => $clients,
         ]);
     }

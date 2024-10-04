@@ -85,6 +85,12 @@ class CheckCreate extends Component
         $this->dispatch('refreshComponent')->to('checks.check-show');
     }
 
+    public function remove()
+    {
+        $this->form->delete();
+        $this->redirect(ChecksIndex::class);
+    }
+
     public function store()
     {
         dd('in store Check');

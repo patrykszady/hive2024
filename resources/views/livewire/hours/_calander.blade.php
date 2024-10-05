@@ -1,4 +1,4 @@
-<div class="m-4 text-center">
+<div class="text-center">
     <div class="flex items-center text-gray-900">
         <div class="flex-auto font-semibold">
             {{$this->selected_date->format('F Y')}}

@@ -12,11 +12,12 @@
                 <flux:input wire:model.debounce.500ms.live="check_number" label="Check Number" icon="magnifying-glass" placeholder="1234" />
 
                 {{-- 09-28-2024 NEED TYPE AND VENDOR FILTERS --}}
-                <flux:autocomplete label="Bank" placeholder="Select Bank..." icon="chevron-up-down">
+                <flux:select wire:model.live="bank" label="Bank" placeholder="Select Bank..." variant="listbox" placeholder="Choose Bank...">
+                    <flux:option value="">All Banks</flux:option>
                     @foreach ($banks->groupBy('plaid_ins_id') as $bank)
-                        <flux:autocomplete.item value="{{$bank->first()->id}}">{{$bank->first()->name}}</flux:autocomplete.item>
+                        <flux:option value="{{$bank->first()->id}}">{{$bank->first()->name}}</flux:option>
                     @endforeach
-                </flux:autocomplete>
+                </flux:select>
             </div>
         </flux:card>
     @endif

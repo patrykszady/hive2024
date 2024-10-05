@@ -1,62 +1,32 @@
 <div>
-	<x-page.top
-        class="lg:max-w-5xl max-w-xl"
-        h1="{!! $client->name !!}"
-        p="Client"
-        {{-- right_button_href="{{route('clients.edit', $client->id)}}" --}}
-        {{-- right_button_href="#"
-        right_button_text="Edit Client" --}}
-        >
-    </x-page.top>
-
-    <div class="grid max-w-xl grid-cols-4 gap-4 mx-auto lg:max-w-5xl sm:px-6">
+    <div class="grid max-w-xl grid-cols-4 gap-4 lg:max-w-5xl sm:px-6">
 		{{--  lg:h-32 lg:sticky lg:top-5 --}}
 		<div class="col-span-4 lg:col-span-2">
 			{{-- CLIENT DETAILS --}}
-			<x-cards>
-				<x-cards.heading>
-					<x-slot name="left">
-						<h1 class="text-lg">Client Details</b></h1>
-					</x-slot>
+            <x-lists.details_card>
+                {{-- HEADING --}}
+                <x-slot:heading>
+                    <div>
+                        <flux:heading size="lg" class="mb-0">Client Details</flux:heading>
+                    </div>
 
                     @can('update', $client)
-                        <x-slot name="right">
-                            <x-cards.button
-                                wire:click="$dispatchTo('clients.client-create', 'editClient', { client: {{$client->id}}})"
-                                >
-                                Edit Client
-                            </x-cards.button>
-                        </x-slot>
-                    @endcan
-				</x-cards.heading>
-
-				<x-cards.body>
-					<x-lists.ul>
-						<x-lists.search_li
-							:basic=true
-							:line_title="'Client Name'"
-							{{-- href="{{route('clients.show', $project->client)}}" --}}
-							:line_data="$client->name"
-							>
-						</x-lists.search_li>
-
-                        @can('update', $client)
-                            <x-lists.search_li
-                                :basic=true
-                                :line_title="'Billing Address'"
-                                :line_data="$client->full_address"
-                                >
-                            </x-lists.search_li>
-                        @endcan
-                        <x-lists.search_li
-                            :basic=true
-                            :line_title="'Client Source'"
-                            :line_data="$client->source"
+                        <flux:button
+                            wire:click="$dispatchTo('clients.client-create', 'editClient', { client: {{$client->id}}})"
+                            size="sm"
                             >
-                        </x-lists.search_li>
-					</x-lists.ul>
-				</x-cards.body>
-			</x-cards>
+                            Edit Client
+                        </flux:button>
+                    @endcan
+                </x-slot>
+
+                {{-- DETAILS --}}
+                <x-lists.details_list>
+                    <x-lists.details_item title="Client Name" detail="{{$client->name}}" />
+                    <x-lists.details_item title="Billing Address" detail="{!!$client->full_address!!}" />
+                    <x-lists.details_item title="Client Source" detail="{{$client->source}}" />
+                </x-lists.details_list>
+            </x-lists.details_card>
 		</div>
 
         <div class="col-span-4 lg:col-span-2">
@@ -107,8 +77,8 @@
         {{-- CLIENT PROJECT --}}
         {{-- show only Client Projects... --}}
         {{-- @if(!$client->projects->isEmpty()) --}}
-            <div class="col-span-4 lg:col-span-3">
-                <livewire:projects.projects-index :client="$client" :view="true" />
+            <div class="col-span-4 lg:col-span-2">
+                <livewire:projects.projects-index :client="$client" :view="'clients.index'" />
             </div>
         {{-- @endif --}}
 	</div>

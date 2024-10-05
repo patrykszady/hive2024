@@ -39,7 +39,9 @@
             <flux:table :paginate="$this->projects">
                 <flux:columns>
                     <flux:column>Address</flux:column>
-                    <flux:column>Client</flux:column>
+                    @if($view != 'clients.index')
+                        <flux:column>Client</flux:column>
+                    @endif
                     <flux:column>Name</flux:column>
                     {{-- <flux:column sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
                     @if($view != 'checks.show')
@@ -63,7 +65,15 @@
                                 >
                                 {{ $project->address }}
                             </flux:cell>
-                            <flux:cell>{{ $project->client->name }}</flux:cell>
+                            @if($view != 'clients.index')
+                                <flux:cell
+                                    wire:navigate.hover
+                                    href="{{route('clients.show', $project->client->id)}}"
+                                    class="cursor-pointer"
+                                    >
+                                    {{ $project->client->name }}
+                                </flux:cell>
+                            @endif
                             <flux:cell>{{ $project->project_name }}</flux:cell>
                             {{-- <flux:cell
                                 wire:click="$dispatchTo('projects.expense-create', 'editExpense', { expense: {{$project->id}}})"

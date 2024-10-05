@@ -51,11 +51,11 @@
         </div>
 
         <div class="space-y-2">
-            <flux:table :paginate="$this->expenses">
+            <flux:table :paginate="$this->expenses" wire:loading.class="opacity-50 text-opacity-40">
                 <flux:columns>
                     <flux:column>Amount</flux:column>
                     <flux:column sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
-                    @if($view != 'checks.show')
+                    @if(!in_array($view, ['checks.show', 'vendors.show']))
                         <flux:column >Vendor</flux:column>
                     @endif
 
@@ -76,11 +76,18 @@
                                 {{ money($expense->amount) }}
                             </flux:cell>
                             <flux:cell>{{ $expense->date->format('m/d/Y') }}</flux:cell>
-                            @if($view != 'checks.show')
+                            @if(!in_array($view, ['checks.show', 'vendors.show']))
                                 <flux:cell><a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
                             @endif
+
                             @if($view != 'projects.show')
-                                <flux:cell><a wire:navigate.hover href="{{route('projects.show', $expense->project->id)}}">{{ Str::limit($expense->project->name, 25) }}</a></flux:cell>
+                                <flux:cell>
+                                    @if($expense->project_id)
+                                        <a wire:navigate.hover href="{{route('projects.show', $expense->project->id)}}">{{ Str::limit($expense->project->name, 25) }}</a>
+                                    @else
+                                        {{ Str::limit($expense->project->name, 25) }}
+                                    @endif
+                                </flux:cell>
                             @endif
                             <flux:cell>
                                 <flux:badge size="sm" :color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'yellow' : 'red')" inset="top bottom">{{ $expense->status }}</flux:badge>

@@ -38,7 +38,7 @@
                             <div>
                                 <flux:input.group>
                                     <flux:input.group.prefix>Hours</flux:input.group.prefix>
-                                    <flux:input wire:model.live="form.projects.{{$index}}.hours" type="number" placeholder="1.00" inputmode="decimal" step="0.25" placeholder="2.5" />
+                                    <flux:input wire:model.live="form.projects.{{$index}}.hours" type="number" inputmode="decimal" step="0.25" />
                                 </flux:input.group>
                                 @if(!empty($day_project_tasks[$index]))
                                     @foreach($day_project_tasks[$index] as $task)

@@ -16,11 +16,11 @@ class VendorsIndex extends Component
     use WithPagination, AuthorizesRequests;
 
     public $business_name = '';
-    public $vendor_type = '';
+    public $vendor_type = 'Sub';
     public $view;
 
-    public $sortBy = 'business_name';
-    public $sortDirection = 'asc';
+    public $sortBy = 'expense_count';
+    public $sortDirection = 'desc';
 
     protected $queryString = [
         'business_name' => ['except' => ''],
@@ -34,14 +34,32 @@ class VendorsIndex extends Component
         $this->resetPage();
     }
 
+    public function updated($field)
+    {
+        if($field === 'business_name'){
+            $this->vendor_type = '';
+        }
+    }
+
     #[Computed]
     public function vendors()
     {
         return Vendor::
             where('business_name', 'like', "%{$this->business_name}%")
             ->where('business_type', 'like', "%{$this->vendor_type}%")
+            ->withCount([
+                'expenses',
+                'expenses as expense_count' => function ($query) {
+                    $query->where('created_at', '>=', today()->subYear());
+                }
+            ])
+            // ->with(['expenses' => function ($query) {
+            //     $query->where('created_at', '>=', today()->subYear())->count();
+            // }])
+            //as expense count
+            // sort by expenses ytd
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-            ->paginate(10);
+            ->paginate(20);
     }
 
     public function sort($column) {

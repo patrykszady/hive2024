@@ -398,7 +398,7 @@ class ReceiptController extends Controller
                     continue;
                 }
 
-                dd($amazon_account_tokens);
+                // dd($amazon_account_tokens);
 
                 $receipt_account->update([
                     'options->expires_in' => Carbon::now()->addMinutes(55)->toIso8601String(),
@@ -414,7 +414,7 @@ class ReceiptController extends Controller
                     'host' => 'api.business.amazon.com',
                     'x-amz-access-token' => $receipt_account->options['access_token'],
                     'x-amz-date' => Carbon::now()->toIso8601String(),
-                    'user-agent' => 'Hive Production Test/0.2 (Language=PHP;Platform=Linux)',
+                    'user-agent' => 'Hive Production/0.2 (Language=PHP;Platform=Linux)',
                     ]
                 ]);
 
@@ -468,6 +468,7 @@ class ReceiptController extends Controller
                 //Send the (signed) API request.
                 $response = $client->send($signedRequest);
                 $orders = collect(json_decode($response->getBody()->getContents(), true)['orders']);
+                // dd($orders);
 
                 foreach($orders as $key => $order){
                     $order_date = Carbon::parse($order['orderDate'])->setTimezone('America/Chicago')->format('Y-m-d');
@@ -532,19 +533,18 @@ class ReceiptController extends Controller
 
                         $receipt = $expense->receipts()->latest()->first();
 
-                        if(is_null($receipt->receipt_items)){
-                            dd($expense);
-                        }
-                        $items = $receipt->receipt_items;
-                        $items->charges = $charges;
+                        if(!is_null($receipt)){
+                            $items = $receipt->receipt_items;
+                            $items->charges = $charges;
 
-                        $receipt->receipt_items = json_encode($items);
-                        $receipt->save();
+                            $receipt->receipt_items = json_encode($items);
+                            $receipt->save();
+                        }
 
                         continue;
                     }
 
-                    dd($expense);
+                    // dd($expense);
                     //only runs/continues below IF
                     //$expense makes it here / doenst "continue" in the else above
 
@@ -554,7 +554,7 @@ class ReceiptController extends Controller
                     foreach($order['lineItems'] as $key => $item){
                         $items[$key]['valueObject']['Price']['valueNumber'] = $item['purchasedPricePerUnit']['amount'];
                         $items[$key]['valueObject']['Quantity']['valueNumber'] = $item['itemQuantity'];
-                        $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $item['itemSubTotal']['amount'];
+                        $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $item['itemSubTotal']['amount'] ?? 0.00;
                         $items[$key]['valueObject']['Description']['valueString'] = $item['title'];
                         $items[$key]['valueObject']['ProductCode']['valueString'] = $item['asin'];
                     }

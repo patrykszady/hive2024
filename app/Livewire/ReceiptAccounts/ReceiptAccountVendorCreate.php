@@ -47,7 +47,7 @@ class ReceiptAccountVendorCreate extends Component
         }
 
         // $this->vendor->logged_in = $this->vendor->receipt_account && $this->vendor->receipt_account->options ? ($this->vendor->receipt_account->options['access_token'] ? true : false) : false;
-        $this->vendor->logged_in = isset($this->vendor->receipt_account->options['errors']) ? false : true;
+        $this->vendor->logged_in = isset($this->vendor->receipt_account->options) ? (isset($this->vendor->receipt_account->options['errors']) ? false : true) : false;
 
         $this->modal('receipt_account_vendor_form_modal')->show();
     }

@@ -362,24 +362,43 @@ class ReceiptController extends Controller
         //Initialize the Credentials object.
         //access token and secret from AWS
         $credentials = new \Aws\Credentials\Credentials(env('AMAZON_AWS_ACCESS_TOKEN'), env('AMAZON_AWS_SECRET_TOKEN'));
-
         foreach($receipt_accounts as $receipt_account){
             //if NOW  is greater than > expires_in ... get new access_token
             //get new access_token valid for 1 hour and change 'expires_in' to 55 minutes from when submitted
             //ONLY if access token is expired....
 
             if(Carbon::now() > Carbon::parse($receipt_account->options['expires_in'])){
-                $guzzle = new Client();
-                $url = 'https://api.amazon.com/auth/O2/token';
-                $amazon_account_tokens = json_decode($guzzle->post($url, [
-                    'form_params' => [
-                        'client_id' => env('AMAZON_CLIENT_ID'),
-                        'client_secret' => env('AMAZON_CLIENT_SECRET'),
-                        'refresh_token' => $receipt_account->options['refresh_token'],
-                        'access_token' => $receipt_account->options['access_token'],
-                        'grant_type' => 'refresh_token',
-                    ],
-                ])->getBody()->getContents());
+                try{
+                    $guzzle = new Client();
+                    $url = 'https://api.amazon.com/auth/O2/token';
+                    $amazon_account_tokens = json_decode($guzzle->post($url, [
+                        'form_params' => [
+                            'client_id' => env('AMAZON_CLIENT_ID'),
+                            'client_secret' => env('AMAZON_CLIENT_SECRET'),
+                            'refresh_token' => $receipt_account->options['refresh_token'],
+                            'access_token' => $receipt_account->options['access_token'],
+                            'grant_type' => 'refresh_token',
+                        ],
+                    ])->getBody()->getContents());
+                }catch(RequestException $e){
+                    if($e->hasResponse()) {
+                        $response = $e->getResponse();
+                        $responseBody = $response->getBody()->getContents();
+                        $error = $responseBody;
+                    }else{
+                        $error = $e->getMessage();
+                    }
+
+                    $receipt_account->options += ['errors' => json_decode($error, true)];
+                    $receipt_account->save();
+
+                    //add to $company_email json ('api') errors
+                    Log::channel('company_emails_log_in_error')->error($error);
+
+                    continue;
+                }
+
+                dd($amazon_account_tokens);
 
                 $receipt_account->update([
                     'options->expires_in' => Carbon::now()->addMinutes(55)->toIso8601String(),
@@ -448,11 +467,9 @@ class ReceiptController extends Controller
                 $signedRequest = $s4->signRequest($request, $credentials);
                 //Send the (signed) API request.
                 $response = $client->send($signedRequest);
-
                 $orders = collect(json_decode($response->getBody()->getContents(), true)['orders']);
 
                 foreach($orders as $key => $order){
-                    //->setTimezone('America/Chicago')
                     $order_date = Carbon::parse($order['orderDate'])->setTimezone('America/Chicago')->format('Y-m-d');
 
                     //check for expense duplicates
@@ -486,7 +503,6 @@ class ReceiptController extends Controller
                         ]);
                     }else{
                         $expense = $duplicates->first();
-
                         if($order['orderStatus'] == 'CANCELLED'){
                             $expense->amount = 0.00;
                             $expense->save();
@@ -515,6 +531,10 @@ class ReceiptController extends Controller
                         }
 
                         $receipt = $expense->receipts()->latest()->first();
+
+                        if(is_null($receipt->receipt_items)){
+                            dd($expense);
+                        }
                         $items = $receipt->receipt_items;
                         $items->charges = $charges;
 
@@ -524,6 +544,7 @@ class ReceiptController extends Controller
                         continue;
                     }
 
+                    dd($expense);
                     //only runs/continues below IF
                     //$expense makes it here / doenst "continue" in the else above
 

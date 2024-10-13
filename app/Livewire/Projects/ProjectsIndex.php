@@ -13,7 +13,7 @@ use Livewire\Attributes\Lazy;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-#[Lazy]
+// #[Lazy]
 class ProjectsIndex extends Component
 {
     use WithPagination, AuthorizesRequests;

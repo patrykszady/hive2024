@@ -26,8 +26,9 @@ class BidForm extends Form
         $this->component->validate();
 
         foreach($this->component->bids as $index => $bid){
-            if($bid->id){
-                $bid->update([
+            if(isset($bid['id'])){
+                $updated_bid = Bid::withoutGlobalScopes()->findOrFail($bid['id']);
+                $updated_bid->update([
                     'amount' => $bid['amount'],
                     'project_id' => $this->component->project->id,
                 ]);

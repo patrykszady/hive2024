@@ -9,6 +9,7 @@ use App\Models\Vendor;
 use App\Livewire\Forms\BidForm;
 
 use Livewire\Component;
+// use Livewire\Attributes\Computed;
 // use Livewire\Attributes\Lazy;
 
 use Illuminate\Validation\Rule;
@@ -30,8 +31,6 @@ class BidCreate extends Component
         'form_submit' => 'save',
     ];
 
-    public $showModal = FALSE;
-
     protected $listeners = ['addBids', 'addChangeOrder', 'removeChangeOrder'];
 
     public function rules()
@@ -44,25 +43,9 @@ class BidCreate extends Component
         ];
     }
 
-    //$vendor, $project
-    public function mount()
+    public function updated($field)
     {
-        // $this->vendor = $vendor;
-        // $this->project = $project;
-
-
-    }
-
-    public function updated($field, $value)
-    {
-        // $index = substr($field, 10, -7);
-        // if($field == 'form.bids.' . $index . '.amount'){
-        //     $this->bids[$index]['amount'] = $value;
-        //     $this->form->bids[$index]['amount'] = $value;
-        // }
-
         $this->validateOnly($field);
-        // $this->validate();
     }
 
     public function addBids(Vendor $vendor, Project $project)
@@ -80,43 +63,50 @@ class BidCreate extends Component
                     if($item->amount == 0.00){
                         $item->amount = NULL;
                     }
-                });
+                    $item->name = $item->name;
+                })
+                ->toArray();
 
-        if($this->bids->isEmpty()){
-            $bid = Bid::make([
-                'amount' => 0.00,
+        if(empty($this->bids)){
+            $bid = [
+                'amount' => NULL,
                 'type' => 1,
                 'project_id' => $this->project->id,
                 'vendor_id' =>  $this->vendor->id,
-            ]);
+                'name' => 'Original Bid'
+            ];
 
-            $bid->amount = NULL;
-            $this->bids->push($bid);
+            $this->bids[] = $bid;
         }
 
-        $this->showModal = TRUE;
+        $this->modal('bids_form_modal')->show();
     }
 
     public function addChangeOrder()
     {
-        $bid_index = count($this->bids);
+        $bid_index = count($this->bids) + 1;
 
-        $bid = Bid::make([
+        $bid = [
             'amount' => NULL,
-            'type' => $bid_index + 1,
+            'type' => $bid_index,
             'project_id' => $this->project->id,
             'vendor_id' => $this->vendor->id,
-        ]);
-
-        $this->bids->push($bid);
+            'name' => 'Change Order ' . $bid_index
+            // 'name' => 'Change Order ' . $bid_index === 1 ? $bid_index : $bid_index + 1
+        ];
+        $this->bids[] = $bid;
     }
 
     public function removeChangeOrder($index)
     {
         $bid = $this->bids[$index];
-        $bid->delete();
+        if(isset($bid['id'])){
+            $bid = Bid::withoutGlobalScopes()->findOrFail($bid['id']);
+            $bid->delete();
+        }
 
-        $this->bids->forget($index);
+        unset($this->bids[$index]);
+        // $this->bids->forget($index);
     }
 
     public function save()
@@ -138,15 +128,14 @@ class BidCreate extends Component
         // }
 
         $this->dispatch('updateProjectBids', $this->project->id)->to('vendors.vendor-payment-create');
-        $this->dispatch('refreshComponent')->to('projects.project-show');
+        // $this->dispatch('refreshComponent')->to('projects.project-show');
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Bids Updated'
-        );
+        // $this->dispatch('notify',
+        //     type: 'success',
+        //     content: 'Bids Updated'
+        // );
 
-        //reset
-        $this->showModal = FALSE;
+        $this->modal('bids_form_modal')->close();
     }
 
     public function render()

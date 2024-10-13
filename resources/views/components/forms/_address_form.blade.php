@@ -1,54 +1,15 @@
-<x-forms.row
-    wire:model.live.debounce.500ms="form.address"
-    errorName="form.address"
-    name="address"
-    text="Address"
-    type="text"
-    placeholder="Street Address"
-    >
-</x-forms.row>
+<flux:fieldset>
+    <flux:legend>Address</flux:legend>
+    <div class="space-y-6">
+        <div class="grid grid-cols-3 gap-x-4 gap-y-6">
+            <flux:input wire:model.live.debounce.500ms="form.address" label="Street Address" placeholder="123 Main St" class="max-w-sm" />
+            <flux:input wire:model.live.debounce.500ms="form.address_2" label="Unit Number" placeholder="#1N" class="max-w-sm" />
+        </div>
 
-<x-forms.row
-    wire:model.live.debounce.500ms="form.address_2"
-    errorName="form.address_2"
-    name="address_2"
-    text=""
-    type="text"
-    placeholder="Unit Number"
-    >
-</x-forms.row>
-
-<x-forms.row
-    wire:model.live.debounce.500ms="form.city"
-    errorName="form.city"
-    name="city"
-    text=""
-    type="text"
-    placeholder="City"
-    >
-</x-forms.row>
-
-<x-forms.row
-    wire:model.live.debounce.250ms="form.state"
-    errorName="form.state"
-    name="state"
-    text=""
-    type="text"
-    placeholder="State"
-    maxlength="2"
-    minlength="2"
-    >
-</x-forms.row>
-
-<x-forms.row
-    wire:model.live.debounce.500ms="form.zip_code"
-    errorName="form.zip_code"
-    name="zip_code"
-    text=""
-    type="number"
-    placeholder="Zip Code"
-    maxlength="5"
-    minlength="5"
-    inputmode="numeric"
-    >
-</x-forms.row>
+        <div class="grid grid-cols-3 gap-x-4 gap-y-6">
+            <flux:input wire:model.live.debounce.500ms="form.city" label="City" placeholder="Chicago" />
+            <flux:input wire:model.live.debounce.250ms="form.state" label="State" maxlength="2" minlength="2" placeholder="IL" />
+            <flux:input wire:model.live.debounce.500ms="form.zip_code" label="Zip Code" maxlength="5" minlength="5" placeholder="60640" />
+        </div>
+    </div>
+</flux:fieldset>

@@ -210,15 +210,16 @@
                                     <flux:rows>
                                         @foreach($receipt->receipt_items->items as $line_item)
                                             <flux:row>
-                                                <flux:cell>{{Str::limit($line_item->desc, 30)}}</flux:cell>
-                                                <flux:cell>{{money($line_item->price_each)}}</flux:cell>
-                                                <flux:cell>{{$line_item->quantity}}</flux:cell>
-                                                <flux:cell variant="strong">{{money($line_item->price_total)}}</flux:cell>
+                                                <flux:cell colspan="4">{{$line_item->desc}}</flux:cell>
                                             </flux:row>
                                             <flux:row>
                                                 {{-- 09/28/24 URL TO ITEM --}}
                                                 <flux:cell class="text-right"><i>{{$line_item->product_code}}</i></flux:cell>
+                                                <flux:cell>{{money($line_item->price_each)}}</flux:cell>
+                                                <flux:cell>{{$line_item->quantity}}</flux:cell>
+                                                <flux:cell variant="strong">{{money($line_item->price_total)}}</flux:cell>
                                             </flux:row>
+
                                         @endforeach
                                     </flux:rows>
                                 </flux:table>

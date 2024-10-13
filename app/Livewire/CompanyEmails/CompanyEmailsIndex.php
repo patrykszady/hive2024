@@ -22,7 +22,6 @@ class CompanyEmailsIndex extends Component
     {
         $this->authorize('viewAny', CompanyEmail::class);
 
-        // dd(CompanyEmail::all());
         return view('livewire.company-emails.index', [
             'emails' => CompanyEmail::all(),
         ]);

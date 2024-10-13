@@ -1,74 +1,45 @@
-<x-modals.modal>
-    <form wire:submit="store">
-        <x-cards.heading>
-            <x-slot name="left">
-                <h1>{{$vendor ? $vendor->name : 'NO VENDOR'}}</h1>
-            </x-slot>
-        </x-cards.heading>
-        <x-cards.body :class="'space-y-4 my-4'">
-            <x-forms.row
-                wire:model.live="distribution_id"
-                errorName="distribution_id"
-                name="distribution_id"
-                text="Distribution"
-                type="dropdown"
-                >
+<flux:modal name="receipt_account_vendor_form_modal" class="space-y-2">
+    <div class="flex justify-between">
+        <flux:heading size="lg">{{$vendor ? $vendor->name : 'NO VENDOR'}}</flux:heading>
+    </div>
 
-                <option
-                    value=""
-                    readonly
-                    x-text="'CONNECT'"
-                    >
-                </option>
-                <option
-                    value="NO_PROJECT"
-                    x-text="'NO PROJECT'"
-                    >
-                </option>
+    <flux:separator variant="subtle" />
 
-                @foreach($distributions as $distribution)
-                    <option
-                        value="{{$distribution->id}}"
-                        >
-                        {{$distribution->name}}
-                    </option>
-                @endforeach
-            </x-forms.row>
+    <form wire:submit="store" class="grid gap-6">
+        <flux:select label="Connection" wire:model.live="distribution_id" placeholder="Connect Vendor">
+            <flux:option readonly value="">CONNECT</flux:option>
+            <flux:option value="NO_PROJECT">NO PROJECT</flux:option>
+            @foreach($distributions as $distribution)
+                <flux:option value="{{$distribution->id}}">{{$distribution->name}}</flux:option>
+            @endforeach
+        </flux:select>
 
-            @if($vendor ? $vendor->receipts->first()->from_type == 4 : false)
-                <div
-                    x-data="{ logged_in: @entangle('vendor.logged_in') }">
-                    <x-forms.row
-                        wire:click="api_login"
-                        name=""
-                        text=""
-                        type="button"
-                        x-text="logged_in == true ? 'Logout' : 'Login'"
-                        >
-                    </x-forms.row>
-                </div>
-            @endif
-        </x-cards.body>
-        <x-cards.footer>
-            <button
-                type="button"
-                x-on:click="open = false"
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                Cancel
-            </button>
+        @if($vendor ? $vendor->receipts->first()->from_type == 4 : false)
             <div
-                x-data="{ open: @entangle('distribution_id') }"
-                x-show="open"
-                x-transition
+                x-data="{ logged_in: @entangle('vendor.logged_in') }"
                 >
-                <button
-                    type="submit"
-                    class="inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                    Save
-                </button>
+                <div>
+                    <flux:button
+                        wire:click="api_login"
+                        x-text="logged_in == true ? 'Logout' : 'Login'"
+                        variant="primary"
+                        class="w-full"
+                        >
+                    </flux:button>
+                </div>
             </div>
-        </x-cards.footer>
+        @endif
+
+        <div
+            x-data="{ open: @entangle('distribution_id'); connect_logged_in: @entangle('vendor.logged_in') }"
+            x-show="open && connect_logged_in"
+            x-transition
+            >
+            <div class="flex space-x-2 sticky bottom-0">
+                <flux:spacer />
+
+                <flux:button type="submit" variant="primary">Connect</flux:button>
+            </div>
+        </div>
     </form>
-</x-modals.modal>
+</flux:modal>

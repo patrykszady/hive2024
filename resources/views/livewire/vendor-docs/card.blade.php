@@ -26,19 +26,20 @@
                 <flux:column>Type</flux:column>
                 <flux:column>Exp Date</flux:column>
                 <flux:column>Policy #</flux:column>
-                <flux:column>Status</flux:column>
             </flux:columns>
 
             <flux:rows>
                 @foreach($vendor_docs as $doc_index => $doc)
                     <flux:row :key="$doc_index">
                         <flux:cell variant="strong">{{$doc->first()->type}}</flux:cell>
-                        <flux:cell>{{$doc->first()->expiration_date->format('m/d/Y')}}</flux:cell>
-                        <flux:cell>{{$doc->first()->number}}</flux:cell>
                         <flux:cell>
-                            <flux:badge size="sm" :color="$doc->first()->expiration_date > today() ? 'green' : 'red'" inset="top bottom">{{$doc->first()->expiration_date > today() ? 'Active' : 'Expired'}}</flux:badge>
+                            <flux:badge size="sm" :color="$doc->first()->expiration_date > today() ? 'green' : 'red'" inset="top bottom">
+                                {{$doc->first()->expiration_date->format('m/d/Y')}}
+                            </flux:badge>
                         </flux:cell>
+                        <flux:cell>{{$doc->first()->number}}</flux:cell>
                     </flux:row>
+                    {{-- <flux:badge size="sm" :color="$doc->first()->expiration_date > today() ? 'green' : 'red'" inset="top bottom">{{$doc->first()->expiration_date > today() ? 'Active' : 'Expired'}}</flux:badge> --}}
                 @endforeach
             </flux:rows>
         </flux:table>

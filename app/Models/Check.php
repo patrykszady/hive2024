@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Scopes\CheckScope;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,6 +64,14 @@ class Check extends Model
     public function expenses()
     {
         return $this->hasMany(Expense::class);
+    }
+
+    protected function checkNumber(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $this->check_type === 'Check' ? $value : '# ' . $this->id,
+        );
+        //->shouldCache();
     }
 
     public function getOwnerAttribute()

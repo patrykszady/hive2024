@@ -30,16 +30,16 @@
             <flux:table :paginate="$this->vendors">
                 <flux:columns>
                     <flux:column sortable :sorted="$sortBy === 'business_name'" :direction="$sortDirection" wire:click="sort('business_name')">Vendor</flux:column>
-                    <flux:column sortable :sorted="$sortBy === 'expense_count'" :direction="$sortDirection" wire:click="sort('expense_count')">Score</flux:column>
                     <flux:column>Type</flux:column>
+                    <flux:column sortable :sorted="$sortBy === 'expense_count'" :direction="$sortDirection" wire:click="sort('expense_count')">Score</flux:column>
                 </flux:columns>
 
                 <flux:rows>
                     @foreach ($this->vendors as $vendor)
                         <flux:row :key="$vendor->id">
                             <flux:cell variant="strong"><a wire:navigate.hover href="{{route('vendors.show', $vendor->id)}}">{{$vendor->name}}</a></flux:cell>
+                            <flux:cell><flux:badge color="green" inset="top bottom">{{$vendor->business_type}}</flux:badge></flux:cell>
                             <flux:cell>{{$vendor->expense_count}}</flux:cell>
-                            <flux:cell><flux:badge color="lime" inset="top bottom">{{$vendor->business_type}}</flux:badge></flux:cell>
                         </flux:row>
                     @endforeach
                 </flux:rows>

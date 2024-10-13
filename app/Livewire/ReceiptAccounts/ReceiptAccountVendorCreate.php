@@ -17,7 +17,6 @@ class ReceiptAccountVendorCreate extends Component
     public $distribution_id = NULL;
     public $vendors = [];
     public $vendor = NULL;
-    public $modal_show = FALSE;
 
     protected function rules()
     {
@@ -47,9 +46,10 @@ class ReceiptAccountVendorCreate extends Component
             $this->distribution_id = NULL;
         }
 
-        $this->vendor->logged_in = $this->vendor->receipt_account && $this->vendor->receipt_account->options ? ($this->vendor->receipt_account->options['access_token']  ? true : false) : false;
+        // $this->vendor->logged_in = $this->vendor->receipt_account && $this->vendor->receipt_account->options ? ($this->vendor->receipt_account->options['access_token'] ? true : false) : false;
+        $this->vendor->logged_in = isset($this->vendor->receipt_account->options['errors']) ? false : true;
 
-        $this->modal_show = TRUE;
+        $this->modal('receipt_account_vendor_form_modal')->show();
     }
 
     public function api_login()
@@ -87,8 +87,10 @@ class ReceiptAccountVendorCreate extends Component
             $receipt_account->save();
         }
 
-        $this->modal_show = FALSE;
+        $this->modal('receipt_account_vendor_form_modal')->close();
+
         $this->dispatch('refreshComponent')->to('receipt-accounts.receipt-accounts-index');
+
         $this->dispatch('notify',
             type: 'success',
             content: 'Receipt Account Connected'

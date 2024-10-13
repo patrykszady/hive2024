@@ -124,8 +124,8 @@
                     </flux:card>
                 @endforeach
 
-                <livewire:bids.bid-create />
                 <livewire:vendor-docs.vendor-doc-create />
+                <livewire:bids.bid-create />
             </div>
         </div>
     </form>

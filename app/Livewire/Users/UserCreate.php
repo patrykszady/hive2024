@@ -8,7 +8,7 @@ use App\Models\Client;
 
 use App\Livewire\Forms\UserForm;
 use App\Livewire\Clients\ClientCreate;
-use App\Livewire\Users\TeamMembers;
+// use App\Livewire\Users\TeamMembers;
 use App\Livewire\Vendors\VendorCreate;
 
 use Livewire\Component;
@@ -42,7 +42,6 @@ class UserCreate extends Component
 
     // public $user_vendor_id = NULL;
     // public $user_clients = NULL;
-    public $modal_show = FALSE;
 
     protected $listeners = ['refreshComponent' => '$refresh', 'newMember', 'removeMember', 'ViaVendorId'];
 
@@ -127,7 +126,8 @@ class UserCreate extends Component
             abort(404);
         }
 
-        // $this->resetErrorBag();
+        // $this->form->reset();
+        $this->resetErrorBag();
         // $this->user_form = TRUE;
     }
 
@@ -143,7 +143,6 @@ class UserCreate extends Component
     //new Vendor or Client member
     public function newMember($model, $model_id = NULL)
     {
-        // dd([$model, $model_id]);
         $this->user_cell = FALSE;
         $this->user_form = NULL;
 
@@ -151,11 +150,11 @@ class UserCreate extends Component
         $this->model['type'] = $model;
         $this->model['id'] = $model_id;
 
-        // // 5-17-2023 ... this creates duplicates in the array of $this->model
+        // 5-17-2023 ... this creates duplicates in the array of $this->model
         if($model == 'client'){
             if($this->model['id'] == 'NEW'){
                 $this->view_text['card_title'] = 'Create Client';
-                $this->view_text['button_text'] = 'Create Client';
+                $this->view_text['button_text'] = 'Continue to Client';
             }else{
                 $this->view_text['card_title'] = 'Add User to Client';
                 $this->view_text['button_text'] = 'Add User';
@@ -167,25 +166,25 @@ class UserCreate extends Component
                 $this->view_text['button_text'] = 'Add Owner';
             }else{
                 $this->view_text['card_title'] = 'Add User to Vendor';
-                $this->view_text['button_text'] = 'Add User to Vendor';
+                $this->view_text['button_text'] = 'Add User';
             }
         }
 
-        $this->modal_show = TRUE;
+        $this->modal('user_form_modal')->show();
     }
 
     public function removeMember(User $user)
     {
-        // 2-7-22 need REMOVAL MODAL to confirm     
+        // 2-7-22 need REMOVAL MODAL to confirm
         $user->vendors()
             ->updateExistingPivot(
-                auth()->user()->vendor, 
+                auth()->user()->vendor,
                 array(
-                    'is_employed' => 0, 
+                    'is_employed' => 0,
                     'end_date' => today()->format('Y-m-d')
                 )
             );
-        // ->where('id', auth()->user()->vendor->id)->first();        
+        // ->where('id', auth()->user()->vendor->id)->first();
         $this->redirect(DashboardShow::class, navigate: true);
         //6-1-2024 set blurry background...
         $this->dispatch('notify',
@@ -195,17 +194,6 @@ class UserCreate extends Component
     }
 
     // Everthing in top pulbic should be reset here
-    // public function resetModal()
-    // {
-    //     // $this->user_cell = NULL;
-    //     // $this->user_form = NULL;
-    //     // $this->model = NULL;
-    //     // $this->client_user_form = NULL;
-    //     // $this->user->role = NULL;
-    //     // $this->user->hourly_rate = NULL;
-    //     // $this->user_vendor_id = NULL;
-        //     // $this->user_clients = NULL;
-    // }
 
     function validateMultiple($fields) {
         $validated = [];
@@ -268,7 +256,7 @@ class UserCreate extends Component
                 $user->hourly_rate = 0;
                 $user->role = 1;
 
-                $this->modal_show = FALSE;
+                $this->modal('user_form_modal')->close();
                 $this->dispatch('userVendor', $user->toArray());
             }else{
                 $vendor = Vendor::findOrFail($this->model['id']);
@@ -282,10 +270,10 @@ class UserCreate extends Component
                         ]
                     );
 
-                    $this->modal_show = FALSE;
+                    $this->modal('user_form_modal')->close();
 
                     $this->dispatch('confirmProcessStep', 'team_members')->to('entry.vendor-registration');
-                    $this->dispatch('fakeRefresh', vendor: $vendor->id)->to(TeamMembers::class);
+                    // $this->dispatch('fakeRefresh', vendor: $vendor->id)->to(TeamMembers::class);
 
                     $this->dispatch('notify',
                         type: 'success',
@@ -299,13 +287,12 @@ class UserCreate extends Component
         //if existing User .. dispatchTo ClientCreate with user (show existing users the User is part of) and close $this->modal.
         }elseif($this->model['type'] == 'client'){
             $this->dispatch('addUser', user: $user->id, client_id: $this->model['id'])->to(ClientCreate::class);
-            $this->modal_show = FALSE;
+            $this->modal('user_form_modal')->close();
         }
     }
 
     public function render()
     {
-        // dd('her ein render');
         return view('livewire.users.form');
     }
 }

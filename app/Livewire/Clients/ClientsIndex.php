@@ -5,10 +5,14 @@ namespace App\Livewire\Clients;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Title;
+// use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Computed;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 use App\Models\Client;
 
+// #[Lazy]
 class ClientsIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -22,18 +26,28 @@ class ClientsIndex extends Component
         'client_name_search' => ['except' => '']
     ];
 
+    public $sortBy = 'created_at';
+    public $sortDirection = 'desc';
+
     public function updating($field)
     {
         $this->resetPage();
     }
 
-    #[Title('Clients')]
-    public function render()
+    public function sort($column) {
+        if ($this->sortBy === $column) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $column;
+            $this->sortDirection = 'asc';
+        }
+    }
+
+    #[Computed]
+    public function clients()
     {
-        $clients = Client::orderBy('created_at', 'DESC')
-            // ->where('business_name', 'like', "%{$this->business_name}%")
-            // ->where('business_type', 'like', "%{$this->vendor_type}%")
-            ->when($this->client_name_search, function($query) {
+        $clients =
+            Client::when($this->client_name_search, function($query) {
                 return $query->whereHas('users', function ($query) {
                     return $query->where('last_name', 'like', "%{$this->client_name_search}%")
                         ->orWhere('first_name', 'like', "%{$this->client_name_search}%");
@@ -41,10 +55,15 @@ class ClientsIndex extends Component
             })
             ->orWhere('address', 'like', "%{$this->client_name_search}%")
             ->orWhere('business_name', 'like', "%{$this->client_name_search}%")
+            ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             ->paginate(10);
 
-        return view('livewire.clients.index', [
-            'clients' => $clients,
-        ]);
+        return $clients;
+    }
+
+    #[Title('Clients')]
+    public function render()
+    {
+        return view('livewire.clients.index');
     }
 }

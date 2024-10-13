@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Livewire\Forms\ClientForm;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -20,21 +21,18 @@ class ClientCreate extends Component
     public Client $client;
     public User $user;
 
-    // public $client = NULL;
     public $client_name = NULL;
     public $user_clients = [];
     public $user_client_id = NULL;
 
     public $view_text = [
-        'card_title' => 'Create Client',
+        'card_title' => 'Add Client',
         'button_text' => 'Create Client',
         'form_submit' => 'save',
     ];
 
     // public $address = NULL;
     public $team_member = FALSE;
-
-    public $modal_show = FALSE;
 
     protected $listeners = ['addUser', 'resetModal', 'editClient'];
 
@@ -47,13 +45,24 @@ class ClientCreate extends Component
     //     ];
     // }
 
-    public function mount()
-    {
+    // #[Computed]
+    // public function expenses()
+    // {
 
-    }
+    // }
 
     public function updated($field)
     {
+        if($this->user_client_id != 'NEW'){
+            if(is_null($this->user_client_id)){
+                $this->view_text['button_text'] = "Update Client";
+            }else{
+                $this->view_text['button_text'] = "View Existing Client";
+            }
+        }else{
+            $this->view_text['button_text'] = "Create Client";
+        }
+
         $this->validateOnly($field);
     }
 
@@ -87,12 +96,11 @@ class ClientCreate extends Component
         //     $this->team_member = 'index';
         // }
 
-        $this->modal_show = TRUE;
+        $this->modal('client_form_modal')->show();
     }
 
     public function newClient()
     {
-        $this->user_client_id = NULL;
         $this->user_client_id = 'NEW';
 
         // if(is_numeric($team_member)){
@@ -104,14 +112,14 @@ class ClientCreate extends Component
         //     $this->team_member = 'index';
         // }
 
-        // $this->modal_show = TRUE;
+
         // $this->address = TRUE;
     }
 
     // // Everthing in top pulbic should be reset here
     // public function resetModal()
     // {
-    //     // $this->modal_show = FALSE;
+
     //     // $this->client = Client::make();
     //     // $this->user = NULL;
     //     // $this->address = NULL;
@@ -128,7 +136,7 @@ class ClientCreate extends Component
             route: 'clients/' . $this->client->id
         );
 
-        $this->modal_show = FALSE;
+        $this->modal('client_form_modal')->close();
 
         $this->dispatch('refreshComponent')->to('clients.clients-show');
     }
@@ -160,14 +168,14 @@ class ClientCreate extends Component
         //     'form_submit' => 'edit',
         // ];
 
-        $this->modal_show = TRUE;
+        $this->modal('client_form_modal')->show();
     }
 
     public function edit()
     {
         $client = $this->form->update();
 
-        $this->modal_show = FALSE;
+        $this->modal('client_form_modal')->close();
 
         $this->dispatch('notify',
             type: 'success',
@@ -180,6 +188,12 @@ class ClientCreate extends Component
 
     public function save()
     {
+        //if existing Client ... redirect to that with Livewire.navigate
+        if(is_numeric($this->user_client_id)){
+            $this->modal('client_form_modal')->close();
+            return $this->redirect('/clients/' . $this->user_client_id, navigate: true);
+
+        }
         //12-3-22 authorize
         if(!is_numeric($this->user_client_id)){
             $client = $this->form->store();
@@ -212,8 +226,7 @@ class ClientCreate extends Component
             }
         }
 
-        //resetModal
-        $this->modal_show = FALSE;
+        $this->modal('client_form_modal')->close();
         // $this->resetModal();
         $this->dispatch('refreshComponent')->to('clients.clients-index');
     }

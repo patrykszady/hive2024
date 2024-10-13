@@ -45,7 +45,7 @@
         </flux:card>
     @endif
 
-    <flux:card class="space-y-2" lazy>
+    <flux:card class="space-y-2">
         <div>
             <flux:heading size="lg">Expenses</flux:heading>
         </div>

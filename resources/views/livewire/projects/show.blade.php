@@ -1,34 +1,34 @@
 <div>
-	<x-page.top
-        class="max-w-xl lg:max-w-5xl"
-        h1="{!! $project->name !!}"
-        p="{!! $project->client->name !!}"
-		{{-- right_button_href="{{auth()->user()->can('update', $project) ? route('estimates.create', $project->id) : ''}}"
-        right_button_text="Create Estimate" --}}
-        >
-    </x-page.top>
-
-	<div class="grid max-w-xl grid-cols-4 gap-4 mx-auto lg:max-w-5xl sm:px-6">
+	<div class="grid max-w-xl grid-cols-4 gap-4 lg:max-w-5xl sm:px-6">
 		{{--  lg:h-32 lg:sticky lg:top-5 --}}
-		<div class="col-span-4 space-y-4 lg:col-span-2">
+		<div class="col-span-4 lg:col-span-2 space-y-4">
 			{{-- PROJECT DETAILS --}}
-			<x-cards>
-				<x-cards.heading>
-					<x-slot name="left">
-						<h1>Project Details</b></h1>
-					</x-slot>
+            <x-lists.details_card>
+                {{-- HEADING --}}
+                <x-slot:heading>
+                    <div>
+                        <flux:heading size="lg" class="mb-0">Project Details</flux:heading>
+                    </div>
 
-					@can('update', $project)
-						<x-slot name="right">
-                            {{-- {{route('projects.show', $project->id)}} --}}
-							<x-cards.button
-                                wire:click="$dispatchTo('projects.project-create', 'editProject', { project: {{$project->id}}})"
-                                >
-								Edit Project
-							</x-cards.button>
-						</x-slot>
-					@endcan
-				</x-cards.heading>
+                    @can('update', $project)
+                        <flux:button
+                            wire:click="$dispatchTo('projects.project-create', 'editProject', { project: {{$project->id}}})"
+                            size="sm"
+                            >
+                            Edit Project
+                        </flux:button>
+                    @endcan
+                </x-slot>
+
+                {{-- DETAILS --}}
+                <x-lists.details_list>
+                    <x-lists.details_item title="Project Client" detail="{{$project->client->name}}" href="{{route('clients.show', $project->client)}}" />
+                    <x-lists.details_item title="Project Name" detail="{!! $project->project_name !!}" />
+                    <x-lists.details_item title="Jobsite Address" detail="{{$project->full_address}}" href="{{$project->getAddressMapURI()}}" />
+                </x-lists.details_list>
+            </x-lists.details_card>
+
+			<x-cards>
 				<x-cards.body>
 					<x-lists.ul>
 						<x-lists.search_li

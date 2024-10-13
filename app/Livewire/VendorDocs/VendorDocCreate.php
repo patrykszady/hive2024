@@ -21,7 +21,6 @@ class VendorDocCreate extends Component
     public Vendor $vendor;
     // public VendorDoc $vendor_doc;
     public $doc_file = NULL;
-    public $modal_show = FALSE;
 
     protected $listeners = ['addDocument', 'requestDocument', 'downloadDocuments'];
 
@@ -35,14 +34,14 @@ class VendorDocCreate extends Component
     public function addDocument(Vendor $vendor)
     {
         $this->vendor = $vendor;
-        $this->modal_show = TRUE;
+        $this->modal('vendor_doc_form_modal')->show();
     }
 
     public function downloadDocuments($doc_filenames)
     {
         dd('in downloadDocuments');
         $this->vendor = $vendor;
-        $this->modal_show = TRUE;
+        $this->modal('vendor_doc_form_modal')->show();
     }
 
     public function requestDocument(Vendor $vendor)
@@ -156,7 +155,7 @@ class VendorDocCreate extends Component
             }
         }
 
-        $this->modal_show = FALSE;
+        $this->modal('vendor_doc_form_modal')->close();
         $this->doc_file = NULL;
 
         $this->dispatch('refreshComponent')->to('vendor-docs.vendor-docs-card');

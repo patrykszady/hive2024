@@ -78,6 +78,11 @@ class Vendor extends Model
         return $this->hasOne(ReceiptAccount::class);
     }
 
+    public function receipt_accounts()
+    {
+        return $this->hasMany(ReceiptAccount::class, 'belongs_to_vendor_id');
+    }
+
     public function receipts()
     {
         return $this->hasMany(Receipt::class);

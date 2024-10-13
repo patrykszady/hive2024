@@ -28,9 +28,7 @@
                         <x-lists.details_item title="Bank" detail="{{$check->bank_account->getNameAndType()}}" />
                     @endif
 
-                    @if($check->check_number)
-                        <x-lists.details_item title="Check Number" detail="{{$check->check_number}}" />
-                    @endif
+                    <x-lists.details_item title="{{$check->check_type === 'Check' ? 'Check Number' : ($check->check_type === 'Transfer' ? 'Transfer ID' : ($check->check_type === 'Cash' ? 'Chas ID' : ''))}}" detail="{{$check->check_number}}" />
                 </x-lists.details_list>
             </x-lists.details_card>
 
@@ -73,123 +71,99 @@
         <div class="col-span-5 space-y-2 lg:col-span-3">
             {{-- THIS CHECK USER PAID TIMESHEETS --}}
             @if(!$weekly_timesheets->isEmpty())
-            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1><b>{{$check->user->first_name}}</b>'s Timesheets</h1>
-                    </x-slot>
-                </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <div>
+                        <flux:heading size="lg"><b>{{$check->user->first_name}}</b>'s Timesheets</flux:heading>
+                    </div>
 
-                <x-lists.ul>
+                    <flux:separator />
+
                     @foreach($weekly_timesheets->groupBy('date') as $weekly_project_timesheets)
-                        <x-lists.search_li
-                            {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                            :no_hover=true
-                            href="{{route('timesheets.show', $weekly_project_timesheets->first()->id)}}"
-                            :line_title="'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString() . ' | ' . money($weekly_project_timesheets->sum('amount'))"
-                            :bubble_message="'Timesheets'"
-                            {{-- :class="'pointer-events-none'" --}}
-                            >
-                        </x-lists.search_li>
+                        <flux:card>
+                            <div>
+                                <flux:heading size="lg">{{'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString()}}</flux:heading>
+                                <flux:separator variant="subtle" />
+                            </div>
 
-                        {{-- 7-15-2022 Each foreach li shoud be a checkbox wherever it is clicked like an href --}}
-                        @foreach($weekly_project_timesheets as $key => $project_timesheet)
-                            @php
-                                $line_details = [
-                                    1 => [
-                                        'text' => $project_timesheet->hours,
-                                        'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
-                                        ],
-                                    2 => [
-                                        'text' => $project_timesheet->project->name,
-                                        'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                        ],
-                                    ];
+                            <flux:table>
+                                <flux:columns>
+                                    <flux:column>Amount</flux:column>
+                                    <flux:column>Hours</flux:column>
+                                    <flux:column>Project</flux:column>
+                                </flux:columns>
 
-                                // $checkbox = [
-                                //     'wire_click' => "like($project_timesheet->id)",
-                                //     'id' => "$key",
-                                //     'name' => "project_timesheet",
-                                // ]
-                            @endphp
-
-                            <x-lists.search_li
-                                {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                                {{-- :line_details="$line_details" --}}
-                                href="{{route('projects.show', $project_timesheet->project->id)}}"
-                                :line_title="money($project_timesheet->amount) . ' | ' . $line_details[1]['text'] . ' Hours | ' . $line_details[2]['text']"
-                                :bubble_message="'Project'"
-                                {{-- :checkbox="$checkbox" --}}
-                                >
-                            </x-lists.search_li>
-                        @endforeach
+                                <flux:rows>
+                                    @foreach($weekly_project_timesheets as $key => $project_timesheet)
+                                        <flux:row :key="$project_timesheet->id">
+                                            <flux:cell>
+                                                <a wire:navigate.hover href="{{route('timesheets.show', $project_timesheet->id)}}">{{ money($project_timesheet->amount) }}</a>
+                                            </flux:cell>
+                                            <flux:cell>{{ $project_timesheet->hours }}</flux:cell>
+                                            <flux:cell>
+                                                <a wire:navigate.hover href="{{route('projects.show', $project_timesheet->project->id)}}">{{ Str::limit($project_timesheet->project->name, 25) }}</a>
+                                            </flux:cell>
+                                        </flux:row>
+                                    @endforeach
+                                </flux:rows>
+                            </flux:table>
+                        </flux:card>
                     @endforeach
-                </x-lists.ul>
-            </x-cards>
+                </flux:card>
             @endif
 
             {{-- THIS CHECK USER PAID EMPLOYEE TIMESHEETS --}}
             @if(!$employee_weekly_timesheets->isEmpty())
-            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Employee Paid Timesheets</h1>
-                    </x-slot>
-                </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <div class="flex justify-between">
+                        <flux:heading size="lg">Employee Paid Timesheets</flux:heading>
+                        <flux:button>
+                            {{-- {{$employee_weekly_timesheets->sum('amount')}} --}}
+                        </flux:button>
+                    </div>
 
-                <x-lists.ul>
+                    <flux:separator />
+
                     @foreach($employee_weekly_timesheets as $user_id => $employee_timesheet_weeks)
-                        {{--  . ' | ' . $employee_timesheets_total[3] --}}
-                        <x-lists.search_li
-                            :no_hover=true
-                            :line_title="$employee_timesheet_weeks->first()->first()->user->full_name"
-                            :bubble_message="'Team Member'"
-                            {{-- :class="'pointer-events-none'" --}}
-                            >
-                        </x-lists.search_li>
+                        <div>
+                            <flux:heading size="lg">{{$employee_timesheet_weeks->first()->first()->user->full_name}}</flux:heading>
+                        </div>
 
                         @foreach($employee_timesheet_weeks as $week => $employee_timesheet_week)
-                            <x-lists.search_li
-                                href="{{route('timesheets.show', $employee_timesheet_week->first()->id)}}"
-                                :no_hover=true
-                                :line_title="'Week of ' . $employee_timesheet_week->first()->date->toFormattedDateString() . ' | ' . money($employee_timesheet_week->sum('amount'))"
-                                :bubble_message="'Timesheet'"
-                                {{-- :class="'pointer-events-none'" --}}
-                                >
-                            </x-lists.search_li>
-                            @foreach($employee_timesheet_week as $key => $employee_timesheet_week_project)
-                                @php
-                                    $line_details = [
-                                        1 => [
-                                            'text' => $employee_timesheet_week_project->hours,
-                                            'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
-                                            ],
-                                        2 => [
-                                            'text' => $employee_timesheet_week_project->project->name,
-                                            'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                            ],
-                                        ];
+                            <flux:card>
+                                <div>
+                                    <flux:heading size="lg">{{'Week of ' . $employee_timesheet_week->first()->date->toFormattedDateString()}}</flux:heading>
+                                    <flux:separator variant="subtle" />
+                                </div>
 
-                                    // $checkbox = [
-                                    //     'wire_click' => "like($project_timesheet->id)",
-                                    //     'id' => "$key",
-                                    //     'name' => "project_timesheet",
-                                    // ]
-                                @endphp
+                                <flux:table>
+                                    <flux:columns>
+                                        <flux:column>Amount</flux:column>
+                                        <flux:column>Hours</flux:column>
+                                        <flux:column>Project</flux:column>
+                                    </flux:columns>
 
-                                <x-lists.search_li
-                                    {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                                    {{-- :line_details="$line_details" --}}
-                                    href="{{route('projects.show', $employee_timesheet_week_project->project->id)}}"
-                                    :line_title="money($employee_timesheet_week_project->amount)  . ' | ' . $line_details[1]['text'] . ' Hours | ' . $line_details[2]['text']"
-                                    :bubble_message="'Project'"
-                                    >
-                                </x-lists.search_li>
-                            @endforeach
+                                    <flux:rows>
+                                        @foreach($employee_timesheet_week as $key => $employee_timesheet_week_project)
+                                            <flux:row :key="$employee_timesheet_week_project->id">
+                                                <flux:cell>
+                                                    <a wire:navigate.hover href="{{route('timesheets.show', $employee_timesheet_week_project->id)}}">{{ money($employee_timesheet_week_project->amount) }}</a>
+                                                </flux:cell>
+                                                <flux:cell>{{ $employee_timesheet_week_project->hours }}</flux:cell>
+                                                <flux:cell>
+                                                    <a wire:navigate.hover href="{{route('projects.show', $employee_timesheet_week_project->project->id)}}">{{ Str::limit($employee_timesheet_week_project->project->name, 25) }}</a>
+                                                </flux:cell>
+                                            </flux:row>
+                                        @endforeach
+                                    </flux:rows>
+                                </flux:table>
+                            </flux:card>
                         @endforeach
+
+                        @if(!$loop->last)
+                            <flux:separator />
+                        @endif
                     @endforeach
-                </x-lists.ul>
-            </x-cards>
+                </flux:card>
             @endif
 
             {{-- THIS CHECK VENDOR PAID EXPENSES --}}
@@ -223,28 +197,37 @@
 
             {{-- THIS CHECK USER PAID EXPENSES --}}
             @if(!$user_paid_expenses->isEmpty())
-            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Paid Expenses</h1>
-                    </x-slot>
-                </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <div>
+                        <flux:heading size="lg">Paid Expenses</flux:heading>
+                    </div>
 
-                <x-lists.ul>
-                    @foreach($user_paid_expenses as $paid_expense)
-                        <x-lists.search_li
-                            {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                            {{-- :line_details="$line_details" --}}
-                            :line_title="money($paid_expense->amount) . ' | ' . $paid_expense->project->name"
-                            href="{{route('expenses.show', $paid_expense->id)}}"
-                            href_target="_blank"
-                            :bubble_message="'Expense'"
-                            {{-- :checkbox="$checkbox" --}}
-                            >
-                        </x-lists.search_li>
-                    @endforeach
-                </x-lists.ul>
-            </x-cards>
+                    <flux:separator />
+
+                    <div class="space-y-2">
+                        <flux:table>
+                            <flux:columns>
+                                <flux:column>Amount</flux:column>
+                                <flux:column>Date</flux:column>
+                                <flux:column>Vendor</flux:column>
+                                <flux:column>Project</flux:column>
+                            </flux:columns>
+
+                            <flux:rows>
+                                @foreach ($user_paid_expenses as $expense)
+                                    <flux:row :key="$expense->id">
+                                        <flux:cell variant="strong">
+                                            <a wire:navigate.hover href="{{route('expenses.show', $expense->id)}}">{{ money($expense->amount) }}</a>
+                                        </flux:cell>
+                                        <flux:cell>{{ $expense->date->format('m/d/Y') }}</flux:cell>
+                                        <flux:cell><a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
+                                        <flux:cell><a wire:navigate.hover href="{{route('projects.show', $expense->project->id)}}">{{ Str::limit($expense->project->name, 25) }}</a></flux:cell>
+                                    </flux:row>
+                                @endforeach
+                            </flux:rows>
+                        </flux:table>
+                    </div>
+                </flux:card>
             @endif
 
             {{-- THIS CHECK DISTRIBUTIONS --}}
@@ -293,25 +276,38 @@
 
             {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
             @if(!$user_paid_by_reimbursements->isEmpty())
-            <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Paid Other Employee Reimbursements</h1>
-                    </x-slot>
-                </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <div>
+                        <flux:heading size="lg">Paid Other Employee Reimbursements</flux:heading>
+                        {{-- right button/or not with total of $user_paid_by_reimbursements->sum('amount') --}}
+                    </div>
+                    <flux:separator variant="subtle" />
 
-                <x-lists.ul>
-                    @foreach($user_paid_by_reimbursements as $user_distribution_expense)
-                        <x-lists.search_li
-                            :href="route('expenses.show', $user_distribution_expense)"
-                            href_target="_blank"
-                            :line_title="substr($user_distribution_expense->amount, 0, 1) == '-' ? money(substr($user_distribution_expense->amount, 1)) : '-' . money($user_distribution_expense->amount) . ' | ' . $user_distribution_expense->vendor->name . ' | ' . $user_distribution_expense->reimbursment"
-                            :bubble_message="'Reimbursement'"
-                            >
-                        </x-lists.search_li>
-                    @endforeach
-                </x-lists.ul>
-            </x-cards>
+                    <div class="space-y-2">
+                        <flux:table>
+                            <flux:columns>
+                                <flux:column>Amount</flux:column>
+                                {{--  sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')" --}}
+                                <flux:column>Date</flux:column>
+                                <flux:column>Team Member</flux:column>
+                                <flux:column>Vendor</flux:column>
+                            </flux:columns>
+
+                            <flux:rows>
+                                @foreach ($user_paid_by_reimbursements as $expense)
+                                    <flux:row :key="$expense->id">
+                                        <flux:cell variant="strong">
+                                            <a wire:navigate.hover href="{{route('expenses.show', $expense->id)}}">{{ money($expense->amount) }}</a>
+                                        </flux:cell>
+                                        <flux:cell>{{ $expense->date->format('m/d/Y') }}</flux:cell>
+                                        <flux:cell>{{ $expense->reimbursment }}</flux:cell>
+                                        <flux:cell><a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
+                                    </flux:row>
+                                @endforeach
+                            </flux:rows>
+                        </flux:table>
+                    </div>
+                </flux:card>
             @endif
         </div>
     </div>

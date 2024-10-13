@@ -21,6 +21,7 @@
         {{-- VENDOR TEAM MEMBERS --}}
         @if($vendor->business_type != 'Retail')
             <div class="col-span-4 lg:col-span-2 space-y-4">
+                <livewire:users.users-index :vendor="$vendor" :view="'vendors.show'"/>
                 {{-- <livewire:users.team-members :vendor="$vendor"> --}}
 
                 @if($vendor->business_type != 'Retail')
@@ -29,6 +30,7 @@
             </div>
         @endif
 	</div>
-
-    {{-- <livewire:vendor-docs.vendor-doc-create /> --}}
+    <livewire:users.user-create />
+    <livewire:clients.client-create />
+    <livewire:vendor-docs.vendor-doc-create />
 </div>

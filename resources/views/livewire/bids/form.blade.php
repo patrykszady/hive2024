@@ -1,73 +1,81 @@
-<x-modal wire:model="showModal">
-    <x-modal.panel>
-        <form wire:submit="{{$view_text['form_submit']}}">
-            <x-cards.heading>
-                <x-slot name="left">
-                    <h1>Project Bid</h1>
-                </x-slot>
 
-                <x-slot name="right">
-                    <x-cards.button
-                        wire:click="addChangeOrder"
-                        >
-                        Add Change Order
-                    </x-cards.button>
-                </x-slot>
-            </x-cards.heading>
+    <flux:modal name="bids_form_modal" class="space-y-2">
+        <div class="flex justify-between">
+            <flux:heading size="lg">Project Bids</flux:heading>
+            <flux:button wire:navigate.hover wire:click="addChangeOrder" icon="plus" size="sm">Change Order</flux:button>
+        </div>
 
-            <x-cards.body :class="'space-y-2 my-2'">
-                @foreach($bids as $bid_index => $bid)
-                    <div
-                        class="mt-2 space-y-2"
-                        >
-                        {{-- ROWS --}}
-                        <x-forms.row
-                            wire:model.live="bids.{{$bid_index}}.amount"
-                            errorName="bids.{{$bid_index}}.amount"
-                            name="bids.{{$bid_index}}.amount"
-                            text="{{$bid->name}}"
-                            type="number"
-                            hint="$"
-                            textSize="xl"
-                            placeholder="00.00"
-                            inputmode="numeric"
-                            step="0.01"
-                            x-bind:disabled="{{!$bid->estimate_sections->isEmpty()}}"
-                            radioHint="{{$loop->first ? '' : 'Remove'}}"
-                            >
-                            <x-slot name="radio">
-                                <input
-                                    wire:click="removeChangeOrder({{$bid_index}})"
-                                    id="remove{{$bid_index}}"
-                                    name="remove"
-                                    value="true"
-                                    type="checkbox"
-                                    x-bind:disabled="{{!$bid->estimate_sections->isEmpty()}}"
-                                    class="w-4 h-4 ml-2 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                    >
-                            </x-slot>
+        <flux:separator variant="subtle" />
 
-                            {{-- if disabled, show a span: "" --}}
-                        </x-forms.row>
+        <form wire:submit="{{$view_text['form_submit']}}" class="grid gap-6">
+            @foreach($bids as $bid_index => $bid)
+                <flux:card class="space-y-6">
+                    <div class="flex justify-between">
+                        <flux:heading size="lg">{{$bid['name']}}</flux:heading>
+                        @if(!$loop->first)
+                            <flux:button size="sm" wire:click="removeChangeOrder({{$bid_index}})">Remove</flux:button>
+                        @endif
                     </div>
-                @endforeach
-            </x-cards.body>
 
-            <x-cards.footer>
-                <button
-                    type="button"
-                    x-on:click="open = false"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                    Cancel
-                </button>
+                    <flux:input.group>
+                        <flux:input.group.prefix>Amount</flux:input.group.prefix>
 
-                <x-forms.button
-                    type="submit"
-                    >
-                    {{$view_text['button_text']}}
-                </x-forms.button>
-            </x-cards.footer>
+                        <flux:input
+                            wire:model.live.debounce.500ms="bids.{{$bid_index}}.amount"
+                            icon="currency-dollar"
+                            type="number"
+                            size="lg"
+                            inputmode="decimal"
+                            pattern="[0-9]*"
+                            step="0.01"
+                            placeholder="123.45"
+                        />
+                    </flux:input.group>
+                </flux:card>
+            @endforeach
+
+            <div class="flex space-x-2">
+                <flux:spacer />
+
+                <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
+            </div>
         </form>
-    </x-modal.panel>
-</x-modal>
+    </flux:modal>
+
+
+
+{{-- @foreach($bids as $bid_index => $bid)
+<div
+    class="mt-2 space-y-2"
+    >
+
+    <x-forms.row
+        wire:model.live="bids.{{$bid_index}}.amount"
+        errorName="bids.{{$bid_index}}.amount"
+        name="bids.{{$bid_index}}.amount"
+        text="{{$bid->name}}"
+        type="number"
+        hint="$"
+        textSize="xl"
+        placeholder="00.00"
+        inputmode="numeric"
+        step="0.01"
+        x-bind:disabled="{{!$bid->estimate_sections->isEmpty()}}"
+        radioHint="{{$loop->first ? '' : 'Remove'}}"
+        >
+        <x-slot name="radio">
+            <input
+                wire:click="removeChangeOrder({{$bid_index}})"
+                id="remove{{$bid_index}}"
+                name="remove"
+                value="true"
+                type="checkbox"
+                x-bind:disabled="{{!$bid->estimate_sections->isEmpty()}}"
+                class="w-4 h-4 ml-2 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                >
+        </x-slot>
+
+        if disabled, show a span: ""
+    </x-forms.row>
+</div>
+@endforeach --}}

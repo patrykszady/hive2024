@@ -25,7 +25,6 @@ class Client extends Model
     public function projects()
     {
         return $this->belongsToMany(Project::class, 'project_vendor', 'client_id', 'project_id');
-        // return $this->hasMany(Project::class);
     }
 
     public function users()
@@ -43,34 +42,8 @@ class Client extends Model
         return $this->belongsToMany(Vendor::class)->withPivot('source', 'vendor_id')->withTimestamps();
     }
 
-    /**
-     * Get the user's first name.
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute
-     */
-    // protected function address(): Attribute
-    // {
-    //     return Attribute::make(
-    //         get: fn ($value) => ucfirst($value),
-    //     );
-    // }
-
-    // public function getAddressAttribute()
-    // {
-    //     // dd($this->vendor);
-    //     return $this->vendor ? $this->vendor->address : 'HEres';
-    //     // if($this->vendor){
-    //     //     return $this->vendor->address;
-    //     // }else{
-    //     //     $client = Client::findOrFail($this->id);
-    //     //     dd($client->address);
-    //     //     return Client::findOrFail($this->id)->address;
-    //     // }
-    // }
-
     public function getNameAttribute()
     {
-        // return implode(' & ', $users);
         if($this->business_name == NULL){
             $users = $this->users;
 
@@ -142,10 +115,14 @@ class Client extends Model
         $this->attributes['address'] = ucwords(strtolower($value));
     }
 
-    public function setAddress2Attribute($value)
-    {
-        $this->attributes['address_2'] = ucwords(strtolower($value));
-    }
+    // public function Address2(): Attribute
+    // {
+    //     return Attribute::make(
+    //         // get: fn (string $value) => strto
+    //         // ucwords(strtoupper($value))upper($value),
+    //         set: fn (string $value) => strtoupper($value),
+    //     );
+    // }
 
     public function setCityAttribute($value)
     {

@@ -44,9 +44,27 @@ class ReceiptAccountsIndex extends Component
                 //     return $query->where('belongs_to_vendor_id', $auth_vendor->id);
                 //     })
                 ->with(['receipts', 'receipt_account'])
-                ->orderBy('business_name')
-                ->get();
 
+                ->orderBy('business_name')
+                ->get()
+                ->each(function ($vendor, $key){
+                    if(!isset($vendor->receipt_account)){
+                        $vendor->type = "Not Connected";
+                        $vendor->status = "Yellow";
+                    }elseif($vendor->receipts->first()->from_type == 4){
+                        if(isset($vendor->receipt_account->options['errors'])){
+                            $vendor->type = "ERROR";
+                            $vendor->status = "Disabled";
+                        }else{
+                            $vendor->type = "Login";
+                            $vendor->status = "Active";
+                        }
+                    }else{
+                        $vendor->type = "Email";
+                        $vendor->status = "Active";
+                    }
+                });
+        // dd($this->vendors);
         // dd($this->vendors->first()->receipt_accounts->first()->distribution ? $this->vendors->first()->receipt_accounts->first()->distribution->name : 'NO PROJECT');
 
         // $this->vendor_vendors_ids = auth()->user()->vendor->vendors->pluck('id')->toArray();

@@ -75,4 +75,3 @@
         <livewire:receipt-accounts.receipt-accounts-index />
     @endif
 </div>
-

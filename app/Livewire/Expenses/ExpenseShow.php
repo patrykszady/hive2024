@@ -22,6 +22,7 @@ class ExpenseShow extends Component
 
     public function mount()
     {
+        // dd($this->expense->transactions);
         $this->receipt = $this->expense->receipts()->latest()->first();
     }
 

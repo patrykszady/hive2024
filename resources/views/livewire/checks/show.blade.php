@@ -46,7 +46,6 @@
                                 <flux:column>Date</flux:column>
                                 <flux:column>Bank</flux:column>
                                 <flux:column>Account</flux:column>
-                                <flux:column>Desc</flux:column>
                             </flux:columns>
 
                             <flux:rows>
@@ -58,7 +57,9 @@
                                         <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
                                         <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
                                         <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
-                                        <flux:cell>{{ $transaction->plaid_merchant_description }}</flux:cell>
+                                    </flux:row>
+                                    <flux:row>
+                                        <flux:cell colspan="4"><i>{{ $transaction->plaid_merchant_description }}</i></flux:cell>
                                     </flux:row>
                                 @endforeach
                             </flux:rows>
@@ -76,13 +77,13 @@
                         <flux:heading size="lg"><b>{{$check->user->first_name}}</b>'s Timesheets</flux:heading>
                     </div>
 
-                    <flux:separator />
-
                     @foreach($weekly_timesheets->groupBy('date') as $weekly_project_timesheets)
                         <flux:card>
-                            <div>
+                            <div class="flex justify-between">
                                 <flux:heading size="lg">{{'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString()}}</flux:heading>
-                                <flux:separator variant="subtle" />
+                                <flux:button disabled>
+                                    {{ money($weekly_project_timesheets->sum('amount')) }}
+                                </flux:button>
                             </div>
 
                             <flux:table>
@@ -116,9 +117,9 @@
                 <flux:card class="space-y-2">
                     <div class="flex justify-between">
                         <flux:heading size="lg">Employee Paid Timesheets</flux:heading>
-                        <flux:button>
-                            {{-- {{$employee_weekly_timesheets->sum('amount')}} --}}
-                        </flux:button>
+                        {{-- <flux:button>
+                            {{$employee_weekly_timesheets->sum('amount')}}
+                        </flux:button> --}}
                     </div>
 
                     <flux:separator />
@@ -130,10 +131,16 @@
 
                         @foreach($employee_timesheet_weeks as $week => $employee_timesheet_week)
                             <flux:card>
-                                <div>
+                                <div class="flex justify-between">
+                                    <flux:heading size="lg">{{'Week of ' . $employee_timesheet_week->first()->date->toFormattedDateString()}}</flux:heading>
+                                    <flux:button disabled>
+                                        {{ money($employee_timesheet_week->sum('amount')) }}
+                                    </flux:button>
+                                </div>
+                                {{-- <div>
                                     <flux:heading size="lg">{{'Week of ' . $employee_timesheet_week->first()->date->toFormattedDateString()}}</flux:heading>
                                     <flux:separator variant="subtle" />
-                                </div>
+                                </div> --}}
 
                                 <flux:table>
                                     <flux:columns>
@@ -150,7 +157,7 @@
                                                 </flux:cell>
                                                 <flux:cell>{{ $employee_timesheet_week_project->hours }}</flux:cell>
                                                 <flux:cell>
-                                                    <a wire:navigate.hover href="{{route('projects.show', $employee_timesheet_week_project->project->id)}}">{{ Str::limit($employee_timesheet_week_project->project->name, 25) }}</a>
+                                                    <a wire:navigate.hover href="{{route('projects.show', $employee_timesheet_week_project->project->id)}}">{{ $employee_timesheet_week_project->project->name }}</a>
                                                 </flux:cell>
                                             </flux:row>
                                         @endforeach
@@ -198,11 +205,12 @@
             {{-- THIS CHECK USER PAID EXPENSES --}}
             @if(!$user_paid_expenses->isEmpty())
                 <flux:card class="space-y-2">
-                    <div>
+                    <div class="flex justify-between">
                         <flux:heading size="lg">Paid Expenses</flux:heading>
+                        <flux:button disabled>
+                            {{ money($user_paid_expenses->sum('amount')) }}
+                        </flux:button>
                     </div>
-
-                    <flux:separator />
 
                     <div class="space-y-2">
                         <flux:table>
@@ -232,24 +240,36 @@
 
             {{-- THIS CHECK DISTRIBUTIONS --}}
             @if(!$user_distributions->isEmpty())
-                <x-cards class="col-span-5 lg:col-span-3 lg:col-start-3">
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1>Paid Distrbutions</h1>
-                        </x-slot>
-                    </x-cards.heading>
+                <flux:card class="space-y-2">
+                    <div class="flex justify-between">
+                        <flux:heading size="lg">Paid Distrbutions</flux:heading>
+                        <flux:button disabled>
+                            {{ money($user_distributions->sum('amount')) }}
+                        </flux:button>
+                    </div>
 
-                    <x-lists.ul>
-                        @foreach($user_distributions as $user_distribution_expense)
-                            <x-lists.search_li
-                                :href="route('expenses.show', $user_distribution_expense)"
-                                :line_title="money($user_distribution_expense->amount) . ' | ' . $user_distribution_expense->distribution->name"
-                                :bubble_message="'Distribution'"
-                                >
-                            </x-lists.search_li>
-                        @endforeach
-                    </x-lists.ul>
-                </x-cards>
+                    <div class="space-y-2">
+                        <flux:table>
+                            <flux:columns>
+                                <flux:column>Amount</flux:column>
+                                <flux:column>Distribution</flux:column>
+                            </flux:columns>
+
+                            <flux:rows>
+                                @foreach($user_distributions as $user_distribution_expense)
+                                    <flux:row :key="$user_distribution_expense->id">
+                                        <flux:cell variant="strong">
+                                            <a wire:navigate.hover href="{{route('distributions.show', $user_distribution_expense->distribution->id)}}">{{ money($user_distribution_expense->amount) }}</a>
+                                        </flux:cell>
+                                        <flux:cell>
+                                            <a wire:navigate.hover href="{{route('distributions.show', $user_distribution_expense->distribution->id)}}">{{ $user_distribution_expense->distribution->name }}</a>
+                                        </flux:cell>
+                                    </flux:row>
+                                @endforeach
+                            </flux:rows>
+                        </flux:table>
+                    </div>
+                </flux:card>
             @endif
 
             {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
@@ -277,10 +297,13 @@
             {{-- THIS CHECK USER PAID REIMBURESEMENT RECEIPTS FROM ANOTHER EMPLOYEE --}}
             @if(!$user_paid_by_reimbursements->isEmpty())
                 <flux:card class="space-y-2">
-                    <div>
+                    <div class="flex justify-between">
                         <flux:heading size="lg">Paid Other Employee Reimbursements</flux:heading>
-                        {{-- right button/or not with total of $user_paid_by_reimbursements->sum('amount') --}}
+                        <flux:button disabled>
+                            {{ '-' .  money($user_paid_by_reimbursements->sum('amount')) }}
+                        </flux:button>
                     </div>
+
                     <flux:separator variant="subtle" />
 
                     <div class="space-y-2">
@@ -313,6 +336,3 @@
     </div>
     <livewire:checks.check-create />
 </div>
-
-
-

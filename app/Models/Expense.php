@@ -133,15 +133,16 @@ class Expense extends Model
 
     public function transactions()
     {
-        if($this->check){
-            if($this->check->transactions){
-                return $this->check->hasMany(Transaction::class);
-            }else{
-                return $this->hasMany(Transaction::class);
-            }
-        }else{
-            return $this->hasMany(Transaction::class);
-        }
+        return $this->hasMany(Transaction::class);
+        // if($this->check){
+        //     if($this->check->transactions){
+        //         return $this->check->hasMany(Transaction::class);
+        //     }else{
+        //         return $this->hasMany(Transaction::class);
+        //     }
+        // }else{
+        //     return $this->hasMany(Transaction::class);
+        // }
     }
 
     public function receipts()

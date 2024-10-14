@@ -3,9 +3,6 @@
         <flux:card class="space-y-2 mb-4">
             <div class="flex justify-between">
                 <flux:heading size="lg">Filters</flux:heading>
-                @can('create', App\Models\Project::class)
-                    <flux:button wire:click="$dispatchTo('projects.project-create', 'newProject', { client_id: '{{$client_id}}' })">Create Project</flux:button>
-                @endcan
             </div>
             {{-- NEW PROJECT MODAL --}}
             <livewire:projects.project-create :$clients />
@@ -31,8 +28,11 @@
     @endif
 
     <flux:card class="space-y-2" lazy>
-        <div>
+        <div class="flex justify-between">
             <flux:heading size="lg">Projects</flux:heading>
+            @can('create', App\Models\Project::class)
+                <flux:button wire:click="$dispatchTo('projects.project-create', 'newProject', { client_id: '{{$view === NULL ? $client_id : $client->id}}' })">Create Project</flux:button>
+            @endcan
         </div>
 
         <div class="space-y-2">

@@ -42,9 +42,7 @@
         {{-- @endif --}}
 	</div>
 
+    <livewire:projects.project-create />
     <livewire:users.user-create />
     <livewire:clients.client-create />
 </div>
-
-{{-- NEW PROJECT MODAL --}}
-{{-- @livewire('projects.projects-form', ['client_id' => $client->id]) --}}

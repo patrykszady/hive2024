@@ -6,7 +6,9 @@ use App\Livewire\Forms\ProjectForm;
 
 use App\Models\Project;
 use App\Models\Client;
+
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 
 // use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -17,10 +19,8 @@ class ProjectCreate extends Component
 
     public ProjectForm $form;
     public Project $project;
-    public $clients = [];
     public $existing_client = NULL;
     public $client_addresses = [];
-    public $showModal = FALSE;
 
     public $view_text = [
         'card_title' => 'Create Project',
@@ -30,18 +30,14 @@ class ProjectCreate extends Component
 
     protected $listeners = ['newProject', 'editProject'];
 
-    public function mount()
-    {
-        $this->clients = Client::orderBy('created_at', 'DESC')->get();
-    }
-
     public function updated($field, $value)
     {
+        // dd($field, $value);
         $this->validateOnly($field);
         if($field == 'form.client_id'){
             if($value){
                 $this->resetAddress();
-                $client = $this->clients->where('id', $value['id'])->first();
+                $client = $this->clients->where('id', $value)->first();
                 $this->client_addresses = $client->projects;
 
                 if($this->client_addresses->isEmpty()){
@@ -85,6 +81,12 @@ class ProjectCreate extends Component
                 $this->resetAddress();
             }
         }
+    }
+
+    #[Computed]
+    public function clients()
+    {
+        return Client::orderBy('created_at', 'DESC')->get();
     }
 
     public function resetAddress()
@@ -156,7 +158,7 @@ class ProjectCreate extends Component
             // dd($this->client_addresses->first());
         }
 
-        $this->showModal = TRUE;
+        $this->modal('project_form_modal')->show();
     }
 
     public function editProject(Project $project)
@@ -172,7 +174,7 @@ class ProjectCreate extends Component
             'form_submit' => 'edit',
         ];
 
-        $this->showModal = TRUE;
+        $this->modal('project_form_modal')->show();
     }
 
     public function save()
@@ -187,7 +189,7 @@ class ProjectCreate extends Component
     {
         $project = $this->form->update();
 
-        $this->showModal = FALSE;
+        $this->modal('project_form_modal')->close();
 
         $this->dispatch('notify',
             type: 'success',

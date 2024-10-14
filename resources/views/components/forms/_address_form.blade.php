@@ -1,5 +1,5 @@
 <flux:fieldset>
-    <flux:legend>Address</flux:legend>
+    {{-- <flux:legend>Address</flux:legend> --}}
     <div class="space-y-6">
         <div class="grid grid-cols-3 gap-x-4 gap-y-6">
             <flux:input wire:model.live.debounce.500ms="form.address" label="Street Address" placeholder="123 Main St" class="max-w-sm" />

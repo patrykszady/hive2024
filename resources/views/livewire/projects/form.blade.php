@@ -1,95 +1,87 @@
-<x-modal wire:model="showModal">
-    <x-modal.panel>
-        <form wire:submit="{{$view_text['form_submit']}}">
-            <x-cards.heading>
-                <x-slot name="left">
-                    <h1>
-                        {{$view_text['card_title']}}
-                    </h1>
+<flux:modal name="project_form_modal" class="space-y-2 min-w-2xl">
+    <div class="flex justify-between">
+        <flux:heading size="lg">{{$view_text['card_title']}}</flux:heading>
+    </div>
+
+    <flux:separator variant="subtle" />
+
+    <form wire:submit="{{$view_text['form_submit']}}" class="grid gap-6">
+        {{-- CLIENT ID --}}
+        <div
+            x-data="{ existing_client: @entangle('existing_client') }"
+            >
+            <flux:select label="Client" wire:model.live="form.client_id" x-bind:disabled="existing_client" variant="listbox" searchable placeholder="Choose client...">
+                <x-slot name="search">
+                    <flux:select.search placeholder="Search..." />
                 </x-slot>
-            </x-cards.heading>
 
-            <x-cards.body :class="'space-y-2 my-4'">
-                {{-- CLIENT ID --}}
-                <div
-                    x-data="{ existing_client: @entangle('existing_client') }"
-                    >
-                    <x-forms.row
-                        wire:model.live="form.client_id"
-                        errorName="form.client_id"
-                        name="form.client_id"
-                        text="Client"
-                        type="new_dropdown"
-                        placeholder="Select Client"
-                        :options="$this->clients"
-                        {{-- :dropdown_options="{{$clients->toArray()}}" --}}
-                        {{-- x-bind:disabled="existing_client" --}}
-                        >
-                    </x-forms.row>
-                </div>
+                @foreach($this->clients as $client)
+                    <flux:option value="{{$client->id}}">{{$client->name}}</flux:option>
+                @endforeach
+            </flux:select>
+        </div>
 
-                {{-- PROJECT NAME --}}
-                <x-forms.row
-                    wire:model="form.project_name"
-                    errorName="form.project_name"
-                    name="project_name"
-                    text="Project Name"
-                    >
-                </x-forms.row>
+        <div
+            x-data="{ client: @entangle('form.client_id') }"
+            x-show="client"
+            x-transition
+            class="my-4 space-y-4"
+            >
 
-                {{-- ADDRESS --}}
-                <div
-                    x-data="{ client: @entangle('form.client_id') }"
-                    x-show="client"
-                    x-transition
-                    class="my-4 space-y-4"
-                    >
+            {{-- ADDRESS --}}
+            <flux:fieldset>
+                <flux:legend>Address</flux:legend>
 
-                    <x-forms.row
-                        wire:model.live="form.project_existing_address"
-                        errorName="form.project_existing_address"
-                        name="project_existing_address"
-                        text="Address"
-                        type="dropdown"
-                        {{-- :disabled="isset($client) ? isset($client['id']) ? true : false : false" --}}
-                        {{-- x-bind:disabled="!vendor_id_disabled || business_type_disabled == '1099'" --}}
-                        >
-                        <option value="" readonly>Select Address</option>
-                        @foreach($this->client_addresses as $project_address)
-                            @if(isset($project_address->id))
-                                <option value="{{$project_address->id}}" selected>{{$project_address->address}}</option>
-                            @else
-                                <option value="CLIENT_PROJECT" selected>{{$project_address['address']}}</option>
-                            @endif
-                        @endforeach
-                        <option value="NEW" readonly>New Address</option>
-                    </x-forms.row>
+                <flux:radio.group wire:model.live="form.project_existing_address">
+                    @foreach($client_addresses as $project_address)
+                        @if(isset($project_address->id))
+                            <flux:radio
+                                value="{{$project_address->id}}"
+                                label="{{$project_address->address}}"
+                                description="{{$project_address->city . ', ' . $project_address->state . ' ' . $project_address->zip_code}}"
+                                {{-- @if($loop->first)
+                                    checked
+                                @endif --}}
+                            />
+                        @else
+                            <flux:radio
+                                value="CLIENT_PROJECT"
+                                label="{{$project_address['address']}}"
+                                description="{{$project_address['city'] . ', ' . $project_address['state'] . ' ' . $project_address['zip_code']}}"
+                                {{-- checked --}}
+                            />
+                        @endif
+                    @endforeach
 
-                    {{-- only show if new address --}}
-                    <div
-                        x-data="{ new_address: @entangle('form.project_existing_address') }"
-                        x-show="new_address == 'NEW'"
-                        x-transition
-                        class="my-4 space-y-4"
-                        >
-                        @include('components.forms._address_form', ['model' => 'form'])
-                    </div>
-                </div>
-            </x-cards.body>
+                    <flux:radio
+                        value="NEW"
+                        label="New Address"
+                    />
+                </flux:radio.group>
+            </flux:fieldset>
 
-            <x-cards.footer>
-                <button
-                    type="button"
-                    x-on:click="open = false"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Cancel
-                </button>
-                <x-forms.button
-                    type="submit"
-                    >
-                    {{$view_text['button_text']}}
-                </x-forms.button>
-            </x-cards.footer>
-        </form>
-    </x-modal.panel>
-</x-modal>
+            {{-- only show if new address --}}
+            <div
+                x-data="{ new_address: @entangle('form.project_existing_address') }"
+                x-show="new_address == 'NEW'"
+                x-transition
+                class="my-4 space-y-4"
+                >
+                @include('components.forms._address_form', ['model' => 'form'])
+            </div>
+
+            {{-- PROJECT NAME --}}
+            <flux:input
+                wire:model.live.debounce.500ms="form.project_name"
+                label="Project Name"
+                type="text"
+            />
+        </div>
+
+        <div class="flex space-x-2 sticky bottom-0">
+            <flux:spacer />
+
+            <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
+        </div>
+    </form>
+</flux:modal>

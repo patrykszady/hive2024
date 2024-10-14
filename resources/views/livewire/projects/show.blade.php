@@ -24,62 +24,24 @@
                 <x-lists.details_list>
                     <x-lists.details_item title="Project Client" detail="{{$project->client->name}}" href="{{route('clients.show', $project->client)}}" />
                     <x-lists.details_item title="Project Name" detail="{!! $project->project_name !!}" />
-                    <x-lists.details_item title="Jobsite Address" detail="{{$project->full_address}}" href="{{$project->getAddressMapURI()}}" />
+                    <x-lists.details_item title="Jobsite Address" detail="{!!$project->full_address!!}" href="{{$project->getAddressMapURI()}}" target="_blank" />
+                    @can('update', $project)
+                        <x-lists.details_item title="Billing Address" detail="{!!$project->client->full_address!!}" />
+                        {{-- @if($project->belongs_to_vendor_id == auth()->user()->vendor->id)
+                            <x-lists.search_li
+                                :basic=true
+                                :line_title="'Invite Contractors'"
+                                :line_data="'Choose Vendors'"
+                                :button_wire="TRUE"
+                                wire:click="$dispatchTo('projects.project-vendors', 'addVendors')"
+                                >
+                            </x-lists.search_li>
+
+                            <livewire:projects.project-vendors :project="$project"/>
+                        @endif --}}
+                    @endcan
                 </x-lists.details_list>
             </x-lists.details_card>
-
-			<x-cards>
-				<x-cards.body>
-					<x-lists.ul>
-						<x-lists.search_li
-                            wire:navigate.hover
-							:basic=true
-							:line_title="'Project Client'"
-							href="{{route('clients.show', $project->client)}}"
-							:line_data="$project->client->name"
-							>
-						</x-lists.search_li>
-
-						<x-lists.search_li
-							:basic=true
-							:line_title="'Project Name'"
-							:line_data="$project->project_name"
-							>
-						</x-lists.search_li>
-
-						<x-lists.search_li
-							:basic=true
-							:line_title="'Jobsite Address'"
-							href="{{$project->getAddressMapURI()}}"
-							:href_target="'blank'"
-							:line_data="$project->full_address"
-							>
-						</x-lists.search_li>
-
-						@can('update', $project)
-							<x-lists.search_li
-								:basic=true
-								:line_title="'Billing Address'"
-								:line_data="$project->client->full_address"
-								>
-							</x-lists.search_li>
-
-                            @if($project->belongs_to_vendor_id == auth()->user()->vendor->id)
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Invite Contractors'"
-                                    :line_data="'Choose Vendors'"
-                                    :button_wire="TRUE"
-                                    wire:click="$dispatchTo('projects.project-vendors', 'addVendors')"
-                                    >
-                                </x-lists.search_li>
-
-                                <livewire:projects.project-vendors :project="$project"/>
-                            @endif
-						@endcan
-					</x-lists.ul>
-				</x-cards.body>
-			</x-cards>
 		</div>
 
         @can('update', $project)

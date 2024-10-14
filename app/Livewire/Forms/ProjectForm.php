@@ -86,7 +86,7 @@ class ProjectForm extends Form
 
         return Project::create([
             'project_name' => $this->project_name,
-            'client_id' => $this->client_id['id'],
+            'client_id' => $this->client_id,
             'address' => $this->address,
             'address_2' => $this->address_2,
             'city' => $this->city,

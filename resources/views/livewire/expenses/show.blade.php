@@ -28,7 +28,7 @@
                     <x-lists.details_item title="Amount" detail="{{money($expense->amount)}}" />
                     <x-lists.details_item title="Date" detail="{{$expense->date->format('m/d/Y')}}" />
                     <x-lists.details_item title="Vendor" detail="{{$expense->vendor->name}}" href="{{isset($expense->vendor->id) ? route('vendors.show', $expense->vendor->id) : ''}}"/>
-                    <x-lists.details_item title="Project" detail="{{$expense->project->name}}" href="{{isset($expense->project->id) ? route('projects.show', $expense->project->id) : '#'}}"/>
+                    <x-lists.details_item title="Project" detail="{{$expense->project->name}}" href="{{isset($expense->project->id) ? route('projects.show', $expense->project->id) : ''}}"/>
 
                     @if($expense->reimbursment)
                         <x-lists.details_item title="Reimbursment" detail="{{$expense->reimbursment}}" />
@@ -68,7 +68,6 @@
                             <flux:columns>
                                 <flux:column>Amount</flux:column>
                                 <flux:column>Date</flux:column>
-                                <flux:column>Vendor</flux:column>
                                 <flux:column>Bank</flux:column>
                                 <flux:column>Account</flux:column>
                             </flux:columns>
@@ -80,9 +79,11 @@
                                             {{ money($transaction->amount) }}
                                         </flux:cell>
                                         <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
-                                        <flux:cell>{{ Str::limit($transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description, 35)}}</flux:cell>
                                         <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
                                         <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
+                                    </flux:row>
+                                    <flux:row>
+                                        <flux:cell colspan="4">{{ $transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description}}</flux:cell>
                                     </flux:row>
                                 @endforeach
                             </flux:rows>

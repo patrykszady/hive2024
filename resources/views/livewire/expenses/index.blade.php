@@ -77,7 +77,7 @@
                             </flux:cell>
                             <flux:cell>{{ $expense->date->format('m/d/Y') }}</flux:cell>
                             @if(!in_array($view, ['checks.show', 'vendors.show']))
-                                <flux:cell><a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
+                                <flux:cell><a wire:navigate.hover href="{{isset($expense->vendor->id) ? route('vendors.show', $expense->vendor->id) : ''}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
                             @endif
 
                             @if($view != 'projects.show')

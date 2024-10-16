@@ -107,7 +107,7 @@
 
             <div class="space-y-6">
                 {{-- wire:loading.class="opacity-50 text-opacity-40" --}}
-                <flux:table :paginate="$this->transactions">
+                <flux:table>
                     <flux:columns>
                         <flux:column>Amount</flux:column>
                         <flux:column>Date</flux:column>

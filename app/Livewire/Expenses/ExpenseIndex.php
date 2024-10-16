@@ -85,6 +85,8 @@ class ExpenseIndex extends Component
 
     public function mount()
     {
+        // $transactions = Transaction::where('expense_id', NULL)->where('check_id', NULL)->where('deposit', NULL)->get();
+        // dd($transactions);
         $this->authorize('viewAny', Expense::class);
 
         if(!is_null($this->view)){
@@ -208,7 +210,8 @@ class ExpenseIndex extends Component
                     return $query->where('vendor_id', $this->expense_vendor);
                 })
                 ->orderBy('transaction_date', 'desc')
-                ->paginate($this->paginate_number, pageName: 'transactions-page');
+                // $this->paginate_number
+                ->paginate(100, pageName: 'transactions-page');
 
         return $transactions;
     }

@@ -20,6 +20,7 @@ use Carbon\CarbonInterval;
 use Intervention\Image\Facades\Image;
 use Spatie\Browsershot\Browsershot;
 use Nesk\Puphpeteer\Puppeteer;
+
 use setasign\Fpdi\Fpdi;
 
 use Microsoft\Graph\Model\Message;
@@ -1469,8 +1470,8 @@ class ReceiptController extends Controller
             $pdf = new Fpdi();
             $pdf->setSourceFile(storage_path($ocr_path));
             $pageId = $pdf->importPage(1);
-            //unit = mm
-            $width = $pdf->getTemplateSize($pageId)['width'];
+
+            $width = $pdf->getTemplateSize($pageId);
 
             //$document_model = based on file dimensions. receipt vs invoice
             if($width < 180 ){
@@ -1681,6 +1682,10 @@ class ReceiptController extends Controller
             $transaction_date = NULL;
         }
 
+        // if(is_null($transaction_date)){
+        //     $this->
+        // }
+
         //change year
         if($transaction_date != NULL){
             //if transaction date has letters
@@ -1696,13 +1701,15 @@ class ReceiptController extends Controller
             $transaction_date = $transaction_date->format('Y-m-d');
         }else{
             //if coming from creating email, allow $transaction_date to be NULL. if from auto_receipts, send error
-            if($email == NULL){
-                $ocr_receipt_data = [
-                    'error' => true,
-                ];
 
-                return $ocr_receipt_data;
-            }
+            //if coming from UPDATE EXPENSE ... allow.... otherwire deny.
+            // if($email == NULL){
+            //     $ocr_receipt_data = [
+            //         'error' => true,
+            //     ];
+
+            //     return $ocr_receipt_data;
+            // }
         }
 
         //SUBTOTAL

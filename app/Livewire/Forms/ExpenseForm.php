@@ -502,10 +502,24 @@ class ExpenseForm extends Form
         $this->receipt_file->storeAs('_temp_ocr', $ocr_filename, 'files');
 
         $document_model = app('App\Http\Controllers\ReceiptController')->azure_document_model($doc_type, $ocr_path);
+
         //send to ReceiptController@azure_receipts with $location and $document_model
         $ocr_receipt_extracted = app('App\Http\Controllers\ReceiptController')->azure_receipts($ocr_path, $doc_type, $document_model);
         //pass receipt info to ocr_extract method
         $ocr_receipt_data = app('App\Http\Controllers\ReceiptController')->ocr_extract($ocr_receipt_extracted, $expense_amount);
+
+        if(is_null($ocr_receipt_data['fields']['transaction_date'])){
+            //send to ReceiptController@azure_receipts with $location and $document_model
+            if($document_model === 'prebuilt-invoice'){
+                $document_model = 'prebuilt-receipt';
+            }else{
+                $document_model = 'prebuilt-invoice';
+            }
+
+            $ocr_receipt_extracted = app('App\Http\Controllers\ReceiptController')->azure_receipts($ocr_path, $doc_type, $document_model);
+            //pass receipt info to ocr_extract method
+            $ocr_receipt_data = app('App\Http\Controllers\ReceiptController')->ocr_extract($ocr_receipt_extracted, $expense_amount);
+        }
 
         //ATTACHMENT
         //send to ReceiptController@add_attachments_to_expense

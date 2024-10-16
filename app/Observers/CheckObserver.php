@@ -28,6 +28,7 @@ class CheckObserver
     public function deleted(Check $check): void
     {
         $check->expenses()->delete();
+        $check->timesheets()->update(['check_id' => null]);
     }
 
     /**

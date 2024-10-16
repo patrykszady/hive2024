@@ -30,7 +30,6 @@
                     </x-forms.row>
 
                     @include('livewire.checks._payment_form')
-
                 </x-cards.body>
 
                 <x-cards.footer>
@@ -113,7 +112,7 @@
                 </x-cards>
             @endif
 
-            {{-- USER PAID EMPLOYEE TIMESHEETS --}}
+            {{-- USER PAID (OTHER) EMPLOYEE TIMESHEETS --}}
             @if(!$employee_weekly_timesheets->isEmpty())
                 <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
@@ -223,7 +222,7 @@
                 <x-cards class="col-span-4 lg:col-span-2">
                     <x-cards.heading>
                         <x-slot name="left">
-                            <h1><b>{{ $user->first_name }}</b> Owns {!! $user->via_vendor_back->name !!}</h1>
+                            <h1><b>{{ $user->first_name }}</b> Reimbursement Expenses</h1>
                         </x-slot>
                     </x-cards.heading>
 
@@ -243,7 +242,7 @@
                                 //radio button
                                 $checkbox = [
                                     // checked vs unchecked
-                                    'id' => "$expense->id",
+                                    'id' => "$key",
                                     'name' => "user_reimbursement_expenses",
                                 ];
                             @endphp
@@ -253,8 +252,8 @@
                                 {{-- :line_details="$line_details" --}}
                                 href="{{route('expenses.show', $expense->id)}}"
                                 :href_target="'_blank'"
-                                {{-- '-' .  --}}
-                                :line_title="money($expense->amount) . ' | ' . $expense->vendor->name"
+
+                                :line_title="substr($expense->amount, 0, 1) == '-' ? money(substr($expense->amount, 1)) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment : '-' . money($expense->amount) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment"
                                 :bubble_message="'Expense'"
                                 :checkbox="$checkbox"
                                 >
@@ -263,7 +262,7 @@
                     </x-lists.ul>
                 </x-cards>
             @endif
-
+            {{-- USER PAID REIMBURESEMENT EXPENSES FOR USER --}}
             {{-- USER PAID REIMBURESEMENT EXPENSES FROM ANOHTER USER --}}
             @if(!$user_paid_by_reimbursements->isEmpty())
                 <x-cards class="col-span-4 lg:col-span-2">
@@ -293,7 +292,6 @@
                                     'name' => "user_paid_by_reimbursements",
                                 ];
                             @endphp
-
 
                             <x-lists.search_li
                                 {{-- wire:click="$dispatch('timesheetWeek')" --}}

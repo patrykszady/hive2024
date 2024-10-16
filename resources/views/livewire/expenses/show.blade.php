@@ -80,7 +80,7 @@
                                         </flux:cell>
                                         <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
                                         <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
-                                        <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
+                                        <flux:cell>{{ isset($transaction->owner) ? $transaction->owner : $transaction->bank_account->account_number }}</flux:cell>
                                     </flux:row>
                                     <flux:row>
                                         <flux:cell colspan="4">{{ $transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description}}</flux:cell>
@@ -186,17 +186,17 @@
                     <flux:separator variant="subtle" />
 
                     <div class="space-y-6">
-                        @if($receipt->receipt_items == NULL)
+                        @if($expense->receipts()->latest()->first()->receipt_items == NULL)
                             <div class="flow-root">
                                 <div class="m-2">
-                                    <pre style="background-color:transparent; overflow: auto;" >{!! $receipt->receipt_html !!}</pre>
+                                    <pre style="background-color:transparent; overflow: auto;" >{!! $expense->receipts()->latest()->first()->receipt_html !!}</pre>
                                 </div>
                             </div>
                         @else
-                            @if($receipt->receipt_items->items == NULL)
+                            @if($expense->receipts()->latest()->first()->receipt_items->items == NULL)
                                 <div class="flow-root">
                                     <div class="m-2">
-                                        <pre style="background-color:transparent; overflow: auto;" >{!! $receipt->receipt_html !!}</pre>
+                                        <pre style="background-color:transparent; overflow: auto;" >{!! $expense->receipts()->latest()->first()->receipt_html !!}</pre>
                                     </div>
                                 </div>
                             @else
@@ -209,7 +209,7 @@
                                     </flux:columns>
 
                                     <flux:rows>
-                                        @foreach($receipt->receipt_items->items as $line_item)
+                                        @foreach($expense->receipts()->latest()->first()->receipt_items->items as $line_item)
                                             <flux:row>
                                                 <flux:cell colspan="4">{{$line_item->desc}}</flux:cell>
                                             </flux:row>
@@ -230,17 +230,17 @@
                                 <dl class="divide-y divide-gray-100 space-y-3">
                                     <div class="py-3 grid grid-cols-3 gap-4">
                                         <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Subtotal</dt>
-                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($receipt->subtotal)}}</dd>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->subtotal)}}</dd>
                                     </div>
 
                                     <div class="py-3 grid grid-cols-3 gap-4">
                                         <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Tax</dt>
-                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($receipt->tax)}}</dd>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->tax)}}</dd>
                                     </div>
 
                                     <div class="py-3 grid grid-cols-3 gap-4">
                                         <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Total</dt>
-                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($receipt->total)}}</dd>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->total)}}</dd>
                                     </div>
                                 </dl>
                             @endif

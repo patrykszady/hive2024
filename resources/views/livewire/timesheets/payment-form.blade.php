@@ -1,315 +1,230 @@
-<form wire:submit="{{$view_text['form_submit']}}">
-    <x-page.top
-		h1="Pay {{ $form->first_name }}"
-		p="{{ $form->first_name }}'s outstanding payments from {!! $form->via_vendor_back->business_name !!}"
-		right_button_href="{{route('timesheets.index')}}"
-		right_button_text="View Timesheets"
-		>
-	</x-page.top>
-
-    <div class="grid max-w-xl grid-cols-5 gap-4 mx-auto xl:relative lg:max-w-5xl sm:px-6">
-        <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
-            <x-cards>
-                <x-cards.heading>
-                    <x-slot name="left">
-                        <h1>Payment</h1>
-                        <p class="text-gray-500"><i>Create a Payment for {{$form->payee_name}}</i></p>
-                    </x-slot>
-                </x-cards.heading>
-
-                <x-cards.body :class="'space-y-2 my-2'">
-                    {{-- ROWS --}}
-                    <x-forms.row
-                        wire:model.live="form.payee_name"
-                        errorName="form.payee_name"
-                        name="payee_name"
-                        text="Payee"
-                        type="text"
-                        disabled
-                        >
-                    </x-forms.row>
-
-                    @include('livewire.checks._payment_form')
-                </x-cards.body>
-
-                <x-cards.footer>
-                    <div class="w-full space-y-1 text-center">
-                        <button
-                            type="button"
-                            class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none">
-                            Check Total | <b>{{money($this->weekly_timesheets_total)}}</b>
-                        </button>
-
-                        <x-forms.error errorName="weekly_timesheets_total" />
-
-                        <button
-                            type="submit"
-                            class="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow focus:outline-none hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50">
-                            {{$view_text['button_text']}}
-                        </button>
-                    </div>
-                </x-cards.footer>
-            </x-cards>
-        </div>
-
-        <div class="col-span-5 space-y-2 lg:col-span-3">
-            {{-- USER UNPAID TIMESHEETS --}}
-            @if(!$weekly_timesheets->isEmpty())
-                <x-cards class="col-span-4 lg:col-span-2">
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1><b>{{ $user->first_name }}</b>'s Timesheets</h1>
-                        </x-slot>
-                    </x-cards.heading>
-
-                    <x-lists.ul>
-                        @foreach($weekly_timesheets->groupBy(function ($each) {
-                                return $each->date->startOfWeek()->toFormattedDateString();
-                            }, true) as $week_date => $weekly_project_timesheets)
-
-                            <x-lists.search_li
-                                href="{{route('timesheets.show', $weekly_project_timesheets->first()->id)}}"
-                                :href_target="'_blank'"
-                                :no_hover=true
-                                :line_title="'Week of ' . $week_date . ' | ' . money($weekly_project_timesheets->sum('amount'))"
-                                :bubble_message="'Timesheets'"
-                                {{-- :class="'pointer-events-none'" --}}
-                                >
-                            </x-lists.search_li>
-
-                            @foreach($weekly_project_timesheets as $timesheet_id => $project_timesheet)
-                                {{-- 7-15-2022 Each foreach li shoud be a checkbox wherever it is clicked like an href --}}
-                                @php
-                                    $line_details = [
-                                        1 => [
-                                            'text' => (float)$project_timesheet->hours,
-                                            'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
-                                            ],
-                                        2 => [
-                                            'text' => $project_timesheet->project->name,
-                                            'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                            ],
-                                        ];
-                                    //radio button
-                                    $checkbox = [
-                                        // checked vs unchecked
-                                        'id' => "$timesheet_id",
-                                        'name' => "weekly_timesheets",
-                                    ];
-                                @endphp
-
-                                <x-lists.search_li
-                                    {{-- :line_title="money($project_timesheet->amount) . ' | ' . $line_details[1]['text'] . ' Hours | ' . $line_details[2]['text']" --}}
-                                    :line_title="money($project_timesheet->amount)"
-                                    :line_details="$line_details"
-                                    :bubble_message="'Project'"
-                                    :checkbox="$checkbox"
-                                    >
-                                </x-lists.search_li>
-                            @endforeach
-                        @endforeach
-                    </x-lists.ul>
-                </x-cards>
-            @endif
-
-            {{-- USER PAID (OTHER) EMPLOYEE TIMESHEETS --}}
-            @if(!$employee_weekly_timesheets->isEmpty())
-                <x-cards class="col-span-4 lg:col-span-2">
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1><b>{{ $user->first_name }}</b> Paid Timesheets</h1>
-                        </x-slot>
-                    </x-cards.heading>
-
-                    <x-lists.ul>
-                        @foreach($this->employee_weekly_timesheets->groupBy('date') as $week_key => $weekly_project_timesheets)
-
-                        <x-lists.search_li
-                            :no_hover=true
-                            :line_title="'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString() . ' | ' . money($weekly_project_timesheets->sum('amount'))"
-                            :bubble_message="'Timesheets'"
+<div class="max-w-4xl">
+    <form wire:submit="{{$view_text['form_submit']}}">
+        <div class="grid max-w-xl grid-cols-5 gap-4 xl:relative lg:max-w-5xl sm:px-6">
+            <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
+                <flux:card>
+                    <flux:heading size="lg">{{$form->payee_name}} Payment</flux:heading>
+                    <flux:subheading><i>Create a Payment for {{$form->payee_name}}</i></flux:subheading>
+                    <flux:separator variant="subtle" />
+                    <x-cards.body :class="'space-y-2 my-2'">
+                        {{-- FORM --}}
+                        <x-forms.row
+                            wire:model.live="form.payee_name"
+                            errorName="form.payee_name"
+                            name="payee_name"
+                            text="Payee"
+                            type="text"
+                            disabled
                             >
-                        </x-lists.search_li>
-                            {{-- 7-15-2022 Each foreach li shoud be a checkbox wherever it is clicked like an href --}}
-                            @foreach($employee_weekly_timesheets->where('date', $week_key) as $key => $project_timesheet)
-                                @php
-                                    $line_details = [
-                                        1 => [
-                                            'text' => $project_timesheet->user->first_name,
-                                            'icon' => 'M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z'
-                                            ],
-                                        2 => [
-                                            'text' => $project_timesheet->project->name,
-                                            'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                            ],
-                                        3 => [
-                                            'text' => (float)$project_timesheet->hours,
-                                            'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
-                                            ],
-                                        ];
+                        </x-forms.row>
+                        @include('livewire.checks._payment_form')
+                    </x-cards.body>
 
-                                    //radio button
-                                    $checkbox = [
-                                        // checked vs unchecked
-                                        'id' => "$key",
-                                        'name' => "employee_weekly_timesheets",
-                                    ];
-                                @endphp
+                    <flux:separator variant="subtle" />
 
-                                <x-lists.search_li
-                                    :line_title="money($project_timesheet->amount)"
-                                    :line_details="$line_details"
-                                    {{-- href="{{route('timesheets.show', $project_timesheet->id)}}"
-                                    :href_target="'_blank'" --}}
+                    <div class="space-y-2 mt-2">
+                        <flux:button class="w-full">Check Total | <b>{{money($this->weekly_timesheets_total)}}</b></flux:button>
+                        <flux:button type="submit" variant="primary" class="w-full">{{$view_text['button_text']}}</flux:button>
+                    </div>
 
-                                    :bubble_message="'Project'"
-                                    :checkbox="$checkbox"
-                                    >
-                                </x-lists.search_li>
-                            @endforeach
+                    <flux:error name="weekly_timesheets_total" />
+                </flux:card>
+            </div>
+            <div class="col-span-5 space-y-2 lg:col-span-3 lg:col-start-3">
+                {{-- USER UNPAID TIMESHEETS --}}
+                @if(!$weekly_timesheets->isEmpty())
+                    <flux:card class="space-y-2">
+                        <div>
+                            <flux:heading size="lg"><b>{{$user->first_name}}</b>'s Timesheets</flux:heading>
+                        </div>
+
+                        @foreach($weekly_timesheets->groupBy('date') as $weekly_project_timesheets)
+                            <flux:card>
+                                <div class="flex justify-between">
+                                    <flux:heading size="lg">{{'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString()}}</flux:heading>
+                                    <flux:button disabled>
+                                        {{ money($weekly_project_timesheets->where('checkbox', true)->sum('amount')) }}
+                                    </flux:button>
+                                </div>
+
+                                <flux:table>
+                                    <flux:columns>
+                                        <flux:column></flux:column>
+                                        <flux:column>Amount</flux:column>
+                                        <flux:column>Hours</flux:column>
+                                        <flux:column>Project</flux:column>
+                                    </flux:columns>
+
+                                    <flux:rows>
+                                        @foreach($weekly_project_timesheets as $timesheet_id => $project_timesheet)
+                                            <flux:row :key="$project_timesheet->id">
+                                                <flux:cell>
+                                                    <flux:checkbox
+                                                        wire:model.live="weekly_timesheets.{{$project_timesheet->id}}.checkbox"
+                                                    />
+                                                </flux:cell>
+                                                <flux:cell variant="strong">
+                                                    <a wire:navigate.hover href="{{route('timesheets.show', $project_timesheet->id)}}">{{ money($project_timesheet->amount) }}</a>
+                                                </flux:cell>
+                                                <flux:cell>{{ $project_timesheet->hours }}</flux:cell>
+                                                <flux:cell>
+                                                    <a wire:navigate.hover href="{{route('projects.show', $project_timesheet->project->id)}}">{{ Str::limit($project_timesheet->project->name, 25) }}</a>
+                                                </flux:cell>
+                                            </flux:row>
+                                        @endforeach
+                                    </flux:rows>
+                                </flux:table>
+                            </flux:card>
                         @endforeach
-                    </x-lists.ul>
-                </x-cards>
-            @endif
+                    </flux:card>
+                @endif
 
-            {{-- USER PAID FOR EXPENSES --}}
-            @if(!$user_paid_expenses->isEmpty())
-                <x-cards class="col-span-4 lg:col-span-2">
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1><b>{{ $user->first_name }}</b> Paid For Expenses</h1>
-                        </x-slot>
-                    </x-cards.heading>
+                {{-- USER PAID (OTHER) EMPLOYEE TIMESHEETS --}}
+                @if(!$employee_weekly_timesheets->isEmpty())
+                    <flux:card class="space-y-2">
+                        <div>
+                            <flux:heading size="lg"><b>{{ $user->first_name }}</b> Paid Timesheets</flux:heading>
+                        </div>
 
-                    <x-lists.ul>
-                        @foreach($user_paid_expenses as $key => $expense)
-                            @php
-                                // $line_details = [
-                                //     1 => [
-                                //         'text' => $project_timesheet->hours,
-                                //         'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
-                                //         ],
-                                //     2 => [
-                                //         'text' => $project_timesheet->project->project_name,
-                                //         'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                //         ],
-                                //     ];
-                                //radio button
-                                $checkbox = [
-                                    // checked vs unchecked
-                                    'id' => "$key",
-                                    'name' => "user_paid_expenses",
-                                ];
-                            @endphp
+                        @foreach($this->employee_weekly_timesheets->groupBy('date') as $week_key => $weekly_project_timesheets)
+                            <flux:card>
+                                <div class="flex justify-between">
+                                    <flux:heading size="lg">{{'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString()}}</flux:heading>
+                                    <flux:button disabled>
+                                        {{ money($weekly_project_timesheets->where('checkbox', true)->sum('amount')) }}
+                                    </flux:button>
+                                </div>
 
-                            <x-lists.search_li
-                                {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                                {{-- :line_details="$line_details" --}}
-                                href="{{route('expenses.show', $expense->id)}}"
-                                :href_target="'_blank'"
-                                :line_title="money($expense->amount) . ' | ' . $expense->vendor->business_name"
-                                :bubble_message="'Expense'"
-                                :checkbox="$checkbox"
-                                >
-                            </x-lists.search_li>
+                                <flux:table>
+                                    <flux:columns>
+                                        <flux:column></flux:column>
+                                        <flux:column>Amount</flux:column>
+                                        <flux:column>User</flux:column>
+                                        <flux:column>Hours</flux:column>
+                                        <flux:column>Project</flux:column>
+                                    </flux:columns>
+
+                                    <flux:rows>
+                                        @foreach($weekly_project_timesheets as $timesheet_id => $project_timesheet)
+                                            <flux:row :key="$project_timesheet->id">
+                                                <flux:cell>
+                                                    <flux:checkbox
+                                                        wire:model.live="employee_weekly_timesheets.{{$project_timesheet->id}}.checkbox"
+                                                    />
+                                                </flux:cell>
+                                                <flux:cell variant="strong">
+                                                    <a wire:navigate.hover href="{{route('timesheets.show', $project_timesheet->id)}}">{{ money($project_timesheet->amount) }}</a>
+                                                </flux:cell>
+                                                <flux:cell>{{ $project_timesheet->user->first_name }}</flux:cell>
+                                                <flux:cell>{{ $project_timesheet->hours }}</flux:cell>
+                                                <flux:cell>
+                                                    <a wire:navigate.hover href="{{route('projects.show', $project_timesheet->project->id)}}">{{ Str::limit($project_timesheet->project->name, 25) }}</a>
+                                                </flux:cell>
+                                            </flux:row>
+                                        @endforeach
+                                    </flux:rows>
+                                </flux:table>
+                            </flux:card>
                         @endforeach
-                    </x-lists.ul>
-                </x-cards>
-            @endif
+                    </flux:card>
+                @endif
 
-            {{-- USER REIMBURESEMENT EXPENSES --}}
-            @if(!$user_reimbursement_expenses->isEmpty())
-                <x-cards class="col-span-4 lg:col-span-2">
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1><b>{{ $user->first_name }}</b> Reimbursement Expenses</h1>
-                        </x-slot>
-                    </x-cards.heading>
+                {{-- USER PAID FOR EXPENSES --}}
+                @if(!$user_paid_expenses->isEmpty())
+                    <flux:card>
+                        <div class="flex justify-between">
+                            <flux:heading size="lg">{{ $user->first_name }}</b> Paid For Expenses</flux:heading>
+                            <flux:button disabled>
+                                {{ money($user_paid_expenses->where('checkbox', true)->sum('amount')) }}
+                            </flux:button>
+                        </div>
 
-                    <x-lists.ul>
-                        @foreach($user_reimbursement_expenses as $key => $expense)
-                            @php
-                                // $line_details = [
-                                //     1 => [
-                                //         'text' => $project_timesheet->hours,
-                                //         'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
-                                //         ],
-                                //     2 => [
-                                //         'text' => $project_timesheet->project->project_name,
-                                //         'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                //         ],
-                                //     ];
-                                //radio button
-                                $checkbox = [
-                                    // checked vs unchecked
-                                    'id' => "$key",
-                                    'name' => "user_reimbursement_expenses",
-                                ];
-                            @endphp
+                        <flux:table>
+                            <flux:columns>
+                                <flux:column></flux:column>
+                                <flux:column>Amount</flux:column>
+                                <flux:column>Vendor</flux:column>
+                                <flux:column>Project</flux:column>
+                            </flux:columns>
 
-                            <x-lists.search_li
-                                {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                                {{-- :line_details="$line_details" --}}
-                                href="{{route('expenses.show', $expense->id)}}"
-                                :href_target="'_blank'"
+                            <flux:rows>
+                                @foreach($user_paid_expenses as $key => $expense)
+                                    <flux:row :key="$expense->id">
+                                        <flux:cell>
+                                            <flux:checkbox
+                                                wire:model.live="user_paid_expenses.{{$expense->id}}.checkbox"
+                                            />
+                                        </flux:cell>
+                                        <flux:cell variant="strong">
+                                            <a wire:navigate.hover href="{{route('expenses.show', $expense->id)}}">{{ money($expense->amount) }}</a>
+                                        </flux:cell>
+                                        <flux:cell>
+                                            <a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{ $expense->vendor->name }}</a>
+                                        </flux:cell>
+                                        <flux:cell>
+                                            @if($expense->project_id)
+                                                <a wire:navigate.hover href="{{route('projects.show', $expense->project->id)}}">{{ Str::limit($expense->project->name, 25) }}</a>
+                                            @else
+                                                {{ Str::limit($expense->project->name, 25) }}
+                                            @endif
+                                        </flux:cell>
+                                    </flux:row>
+                                @endforeach
+                            </flux:rows>
+                        </flux:table>
+                    </flux:card>
+                @endif
 
-                                :line_title="substr($expense->amount, 0, 1) == '-' ? money(substr($expense->amount, 1)) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment : '-' . money($expense->amount) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment"
-                                :bubble_message="'Expense'"
-                                :checkbox="$checkbox"
-                                >
-                            </x-lists.search_li>
+                {{-- USER REIMBURESEMENT EXPENSES --}}
+                {{-- @if(!$user_reimbursement_expenses->isEmpty())
+                    <flux:card class="space-y-2">
+                        <div>
+                            <flux:heading size="lg"><b>{{ $user->first_name }}</b> Paid Timesheets</flux:heading>
+                        </div>
+
+                        @foreach($this->employee_weekly_timesheets->groupBy('date') as $week_key => $weekly_project_timesheets)
+                            <flux:card>
+                                <div class="flex justify-between">
+                                    <flux:heading size="lg">{{'Week of ' . $weekly_project_timesheets->first()->date->startOfWeek()->toFormattedDateString()}}</flux:heading>
+                                    <flux:button disabled>
+                                        {{ money($weekly_project_timesheets->where('checkbox', true)->sum('amount')) }}
+                                    </flux:button>
+                                </div>
+
+                                <flux:table>
+                                    <flux:columns>
+                                        <flux:column></flux:column>
+                                        <flux:column>Amount</flux:column>
+                                        <flux:column>User</flux:column>
+                                        <flux:column>Hours</flux:column>
+                                        <flux:column>Project</flux:column>
+                                    </flux:columns>
+
+                                    <flux:rows>
+                                        @foreach($weekly_project_timesheets as $timesheet_id => $project_timesheet)
+                                            <flux:row :key="$project_timesheet->id">
+                                                <flux:cell>
+                                                    <flux:checkbox
+                                                        wire:model.live="employee_weekly_timesheets.{{$project_timesheet->id}}.checkbox"
+                                                    />
+                                                </flux:cell>
+                                                <flux:cell variant="strong">
+                                                    <a wire:navigate.hover href="{{route('timesheets.show', $project_timesheet->id)}}">{{ money($project_timesheet->amount) }}</a>
+                                                </flux:cell>
+                                                <flux:cell>{{ $project_timesheet->user->first_name }}</flux:cell>
+                                                <flux:cell>{{ $project_timesheet->hours }}</flux:cell>
+                                                <flux:cell>
+                                                    <a wire:navigate.hover href="{{route('projects.show', $project_timesheet->project->id)}}">{{ Str::limit($project_timesheet->project->name, 25) }}</a>
+                                                </flux:cell>
+                                            </flux:row>
+                                        @endforeach
+                                    </flux:rows>
+                                </flux:table>
+                            </flux:card>
                         @endforeach
-                    </x-lists.ul>
-                </x-cards>
-            @endif
-            {{-- USER PAID REIMBURESEMENT EXPENSES FOR USER --}}
-            {{-- USER PAID REIMBURESEMENT EXPENSES FROM ANOHTER USER --}}
-            @if(!$user_paid_by_reimbursements->isEmpty())
-                <x-cards class="col-span-4 lg:col-span-2">
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1><b>{{ $user->first_name }}</b> Paid Reimbursement Expenses</h1>
-                        </x-slot>
-                    </x-cards.heading>
-
-                    <x-lists.ul>
-                        @foreach($user_paid_by_reimbursements as $key => $expense)
-                            @php
-                                // $line_details = [
-                                //     1 => [
-                                //         'text' => $project_timesheet->hours,
-                                //         'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
-                                //         ],
-                                //     2 => [
-                                //         'text' => $project_timesheet->project->project_name,
-                                //         'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                //         ],
-                                //     ];
-                                //radio button
-                                $checkbox = [
-                                    // checked vs unchecked
-                                    'id' => "$key",
-                                    'name' => "user_paid_by_reimbursements",
-                                ];
-                            @endphp
-
-                            <x-lists.search_li
-                                {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                                {{-- :line_details="$line_details" --}}
-                                href="{{route('expenses.show', $expense->id)}}"
-                                :href_target="'_blank'"
-
-                                :line_title="substr($expense->amount, 0, 1) == '-' ? money(substr($expense->amount, 1)) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment : '-' . money($expense->amount) . ' | ' . $expense->vendor->business_name . ' | ' . $expense->reimbursment"
-                                :bubble_message="'Expense'"
-                                :checkbox="$checkbox"
-                                >
-                            </x-lists.search_li>
-                        @endforeach
-                    </x-lists.ul>
-                </x-cards>
-            @endif
+                    </flux:card>
+                @endif --}}
+            </div>
         </div>
-    </div>
-</form>
-
-
+    </form>
+</div>

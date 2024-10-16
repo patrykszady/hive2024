@@ -16,15 +16,15 @@ class ExpenseShow extends Component
     use AuthorizesRequests;
 
     public Expense $expense;
-    public $receipt = NULL;
+    // public $receipt = NULL;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
-    public function mount()
-    {
-        // dd($this->expense->transactions);
-        $this->receipt = $this->expense->receipts()->latest()->first();
-    }
+    // public function mount()
+    // {
+    //     // dd($this->expense->transactions);
+    //     $this->receipt = $this->expense->receipts()->latest()->first();
+    // }
 
     #[Title('Expense')]
     public function render()

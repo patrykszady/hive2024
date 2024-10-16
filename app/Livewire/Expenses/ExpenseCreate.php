@@ -262,12 +262,6 @@ class ExpenseCreate extends Component
         $this->dispatch('refreshComponent')->to('expenses.expense-show');
         $this->dispatch('refreshComponent')->to('expenses.expense-index');
         $this->dispatch('refreshComponent')->to('projects.project-show');
-
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Expense Updated',
-            route: 'expenses/' . $expense->id
-        );
     }
 
     public function remove()

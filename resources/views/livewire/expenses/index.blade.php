@@ -129,7 +129,7 @@
                                 <flux:cell>{{ $transaction->transaction_date->format('m/d/Y') }}</flux:cell>
                                 <flux:cell>{{ Str::limit($transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description, 35)}}</flux:cell>
                                 <flux:cell>{{ $transaction->bank_account->bank->name }}</flux:cell>
-                                <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
+                                <flux:cell>{{ isset($transaction->owner) ? $transaction->owner : $transaction->bank_account->account_number }}</flux:cell>
                             </flux:row>
                         @endforeach
                     </flux:rows>

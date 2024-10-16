@@ -85,11 +85,11 @@
         @endcan
 
         @can('update', $project)
-            @if($project->tasks->count() != 0)
+            {{-- @if($project->tasks->count() != 0)
                 <div class="col-span-4 space-y-4">
                     <livewire:tasks.planner :single_project_id="$project->id" />
                 </div>
-            @endif
+            @endif --}}
 
             <div class="col-span-4 space-y-4 lg:col-span-2">
                 @if(!$project->expenses->isEmpty())

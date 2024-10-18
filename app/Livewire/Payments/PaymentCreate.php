@@ -4,9 +4,9 @@ namespace App\Livewire\Payments;
 
 use App\Models\Client;
 use App\Models\Payment;
-use App\Models\Project;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 
 use App\Livewire\Forms\PaymentForm;
@@ -22,20 +22,17 @@ class PaymentCreate extends Component
     public PaymentForm $form;
 
     public Client $client;
-
+    public $client_id = NULL;
     public $projects = [];
-    // public $project = NULL;
-    // public $project_id = NULL;
-    // public $payment_projects = [];
-    // public $payment = NULL;
-    // public $parent_payment = NULL;
+
+    public $view = FALSE;
 
     protected $listeners = ['addProject', 'removeProject'];
 
     protected function rules()
     {
         return [
-            'projects.*.show' => 'nullable',
+            'client_id' => 'nullable',
             'projects.*.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
         ];
     }
@@ -43,22 +40,6 @@ class PaymentCreate extends Component
     public function mount()
     {
         $this->authorize('create', Payment::class);
-
-        $this->projects =
-            Project::where('created_at', '>', Carbon::now()->subYears(4)->format('Y-m-d'))
-                ->where('client_id', $this->client->id)
-                ->orderBy('created_at', 'DESC')
-                ->status(['Active', 'Complete', 'Service Call Complete', 'Service Call'])->sortByDesc('last_status.start_date')
-                // ->with(['expenses' => function ($query) {
-                //     return $query->where('vendor_id', '4');
-                //     }])
-                // ->get()
-                ->each(function ($item, $key) {
-                    $item->show = false;
-                    // $item->show_timestamp = now();
-                })
-                ->keyBy('id');
-
         $this->form->date = today()->format('Y-m-d');
     }
 
@@ -67,37 +48,49 @@ class PaymentCreate extends Component
         $this->validateOnly($field);
     }
 
-    // public function updatedProjectId()
-    // {
-    //     $this->project = Project::findOrFail($this->project_id);
-    // }
+    public function updatedClientId(Client $client)
+    {
+        $this->client = $client;
+        $this->projects = $client->projects;
+    }
+
+    #[Computed]
+    public function clients()
+    {
+        return Client::orderBy('created_at', 'DESC')->get();
+    }
 
     public function getClientPaymentSumProperty()
     {
-        return collect($this->projects)->where('show', true)->where('amount', '!=', NULL)->sum('amount');
+        return collect($this->projects)->where('amount', '!=', NULL)->sum('amount');
     }
 
-    // 8-31-2022 | 9-10-2023 same on VendorPaymentForm
-    public function addProject()
+    // 8-31-2022 | 9-10-2023 similar on VendorPaymentForm
+    public function addProject(Client $client = NULL)
     {
-        $project = $this->projects->where('id', $this->form->project_id)->first();
-        $project->show = true;
-        $project->amount = 0;
+        if(isset($client->id)){
+            $this->view = TRUE;
+            $this->client_id = $client->id;
+            $this->updatedClientId($client);
+        }else{
+            $this->client_id = NULL;
+        }
 
-        $this->form->project_id = "";
+        $this->modal('payment_form_modal')->show();
     }
 
-    public function removeProject($project_id_to_remove)
-    {
-        $project = $this->projects->where('id', $project_id_to_remove)->first();
-        $project->show = false;
-        $project->amount = 0;
+    // public function removeProject($project_id_to_remove)
+    // {
+    //     $project = $this->projects->where('id', $project_id_to_remove)->first();
+    //     $project->show = false;
+    //     $project->amount = 0;
 
-        $this->form->project_id = "";
-    }
+    //     $this->form->project_id = "";
+    // }
 
     public function save()
     {
+        // dd($this);
         //validate payment total is greater than $0
         //if less than or equal to 0... send back with error
         if($this->getClientPaymentSumProperty() === 0){
@@ -112,18 +105,13 @@ class PaymentCreate extends Component
     #[Title('Payment')]
     public function render()
     {
-        //client projects ONLY
-        //8-31-2022 wherre project belongs to auth()->user()->vendor
-        $projects = $this->projects;
-
         $view_text = [
             'card_title' => 'Create Client Payment',
-            'button_text' => 'Add Payment for Projects',
+            'button_text' => 'Add Payment',
             'form_submit' => 'save',
         ];
 
         return view('livewire.payments.form', [
-            'projects' => $projects,
             'view_text' => $view_text,
         ]);
     }

@@ -17,17 +17,11 @@ class ProjectShow extends Component
     use AuthorizesRequests;
 
     public Project $project;
-    public $finances = [];
 
-    protected $listeners = ['refreshComponent' => '$refresh'];
-
-    public function mount()
-    {
-        $this->finances = $this->project->finances;
-        $this->project = Project::with(['payments', 'client', 'expenses', 'estimates'])->findOrFail($this->project->id);
-    }
+    protected $listeners = ['refreshComponent' => '$refresh', 'print_reimbursements'];
 
     //Reimbursement print
+    //10-16-2024 MOVE TO RECEIPT CONTROLLER
     public function print_reimbursements()
     {
         //11-6-2022 QUEUE THIS??

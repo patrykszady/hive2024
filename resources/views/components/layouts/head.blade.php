@@ -31,6 +31,12 @@
     {{-- <script src="//cdn.tailwindcss.com"></script> --}}
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
+    <style>
+        [data-flux-button] {
+            @apply !bg-emerald-800 !dark:bg-emerald-400 !hover:bg-emerald-700 !dark:hover:bg-emerald-300;
+        }
+    </style>
+
     <!-- Fonts -->
     {{-- @preloadFonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,22 +44,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    {{-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> --}}
-    {{-- @vite('resources/css/app.css') --}}
-    {{-- <script src="//cnd.tailwindcss.com"></script> --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    {{-- @vite('resources/js/app.js') --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-    <style>
-        [data-flux-button] {
-            @apply bg-zinc-800 dark:bg-zinc-400 hover:bg-zinc-700 dark:hover:bg-zinc-300;
-        }
-    </style>
-    {{-- @livewireStyles --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css"> --}}
     {{-- @lagoonStyles --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" /> --}}
+
 
     {{-- <style>
         @media print {

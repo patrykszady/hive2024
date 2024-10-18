@@ -1,21 +1,13 @@
 {{--  x-data="{ check_input_existing: @entangle('check_input_existing') }" --}}
 <div>
-    <x-forms.row
-        wire:model.live="form.bank_account_id"
-        errorName="form.bank_account_id"
-        name="bank_account_id"
-        text="Bank"
-        type="dropdown"
-        {{-- x-bind:disabled="check_input_existing" --}}
-        >
-
-        <option value="" readonly>Select Bank</option>
-        @foreach ($bank_accounts as $index => $bank_account)
-            <option value="{{$bank_account->id}}">
-                {{$bank_account->getNameAndType()}}
-            </option>
-        @endforeach
-    </x-forms.row>
+    <x-forms.one_line label="Bank">
+        <flux:select wire:model.live="form.bank_account_id" placeholder="Choose bank...">
+            <flux:option value="" readonly>Select Bank</flux:option>
+            @foreach ($bank_accounts as $bank_account)
+                <flux:option value="{{$bank_account->id}}">{{$bank_account->getNameAndType()}}</flux:option>
+            @endforeach
+        </flux:select>
+    </x-forms.one_line>
 
     <div
         x-data="{ bank_account: @entangle('form.bank_account_id') }"
@@ -23,45 +15,27 @@
         x-transition
         class="mt-2 space-y-2"
         >
-        <x-forms.row
-            wire:model.live="form.check_type"
-            errorName="form.check_type"
-            name="check_type"
-            text="Type"
-            type="dropdown"
-            {{-- x-bind:disabled="check_input_existing" --}}
-            >
-            <option value="" readonly>Select Payment Type</option>
-            <option value="Check">Check</option>
-            <option value="Transfer">Transfer</option>
-            <option value="Cash">Cash</option>
-        </x-forms.row>
+        <x-forms.one_line label="Bank">
+            <flux:select wire:model.live="form.check_type" placeholder="Choose payment type...">
+                <flux:option value="" readonly>Select Payment Type</flux:option>
+                <flux:option value="Check">Check</flux:option>
+                <flux:option value="Transfer">Transfer</flux:option>
+                <flux:option value="Cash">Cash</flux:option>
+            </flux:select>
+        </x-forms.one_line>
 
         <div
             x-data="{ check_type: @entangle('form.check_type') }"
             x-show="check_type == 'Check'"
             x-transition
             >
-            <x-forms.row
-                wire:model.live="form.check_number"
-                errorName="form.check_number"
-                name="check_number"
-                text="Check Number"
-                type="number"
-                placeholder="Check Number"
-                inputmode="numeric"
-                step="1"
-                label_text_color_custom="{{ $next_check_auto ? 'indigo' : NULL}}"
-                {{-- x-bind:disabled="check_input_existing" --}}
-                >
-                <x-slot name="titleslot">
-                    <div>
-                        @if($next_check_auto)
-                            <span class="mt-2 text-sm text-indigo-600"><i>Automatic Next Check Number</i></span>
-                        @endif
-                    </div>
-                </x-slot>
-            </x-forms.row>
+            <x-forms.one_line label="Check Number">
+                <flux:input wire:model.live="form.check_number" type="number" inputmode="numeric" step="1"/>
+                <flux:error name="form.check_number" />
+                @if($next_check_auto)
+                    <flux:description><i class="text-indigo-600">Automatic Next Check Number</i></flux:description>
+                @endif
+            </x-forms.one_line>
         </div>
     </div>
 </div>

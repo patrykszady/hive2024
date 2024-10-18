@@ -20,7 +20,7 @@ class EstimateSection extends Model
 
     public function estimate_line_items()
     {
-        return $this->hasMany(EstimateLineItem::class);
+        return $this->hasMany(EstimateLineItem::class, 'section_id');
     }
 
     public function bid()

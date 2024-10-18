@@ -8,15 +8,13 @@
                     <flux:separator variant="subtle" />
                     <x-cards.body :class="'space-y-2 my-2'">
                         {{-- FORM --}}
-                        <x-forms.row
-                            wire:model.live="form.payee_name"
-                            errorName="form.payee_name"
-                            name="payee_name"
-                            text="Payee"
-                            type="text"
-                            disabled
-                            >
-                        </x-forms.row>
+
+                        {{-- PAYEE --}}
+                        <x-forms.one_line label="Payee">
+                            <flux:input wire:model.live="form.payee_name" type="text" disabled />
+                            <flux:error name="form.payee_name" />
+                        </x-forms.one_line>
+
                         @include('livewire.checks._payment_form')
                     </x-cards.body>
 

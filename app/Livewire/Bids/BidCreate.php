@@ -63,6 +63,7 @@ class BidCreate extends Component
                     if($item->amount == 0.00){
                         $item->amount = NULL;
                     }
+                    $item->has_estimate_sections = $item->estimate_sections->isEmpty() ? false : true;
                     $item->name = $item->name;
                 })
                 ->toArray();
@@ -73,7 +74,8 @@ class BidCreate extends Component
                 'type' => 1,
                 'project_id' => $this->project->id,
                 'vendor_id' =>  $this->vendor->id,
-                'name' => 'Original Bid'
+                'name' => 'Original Bid',
+                'has_estimate_sections' => false
             ];
 
             $this->bids[] = $bid;
@@ -91,8 +93,9 @@ class BidCreate extends Component
             'type' => $bid_index,
             'project_id' => $this->project->id,
             'vendor_id' => $this->vendor->id,
-            'name' => 'Change Order ' . $bid_index
+            'name' => 'Change Order ' . $bid_index,
             // 'name' => 'Change Order ' . $bid_index === 1 ? $bid_index : $bid_index + 1
+            'has_estimate_sections' => false
         ];
         $this->bids[] = $bid;
     }

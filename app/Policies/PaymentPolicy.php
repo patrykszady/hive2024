@@ -21,6 +21,8 @@ class PaymentPolicy
             $vendor_id = request()->route()->project->client->vendor_id;
         }elseif(request()->route()->action['as'] == 'payments.create'){
             $vendor_id = request()->route()->client->vendor_id;
+        }elseif(request()->route()->action['as'] == 'payments.index'){
+            $vendor_id = FALSE;
         }else{
             $vendor_id = TRUE;
         }

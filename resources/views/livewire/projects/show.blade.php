@@ -102,112 +102,7 @@
             <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 @if(in_array($this->project->last_status->title, ['Active', 'Complete',  'Service Call', 'Service Call Complete', 'VIEW ONLY']))
                     {{-- PROJECT FINANCIALS --}}
-                    <x-cards>
-                        <x-cards.heading>
-                            <x-slot name="left">
-                                <h1>Project Finances</b></h1>
-                            </x-slot>
-
-                            <x-slot name="right">
-                                <x-cards.button
-                                    wire:click="$dispatchTo('bids.bid-create', 'addBids', { vendor: {{auth()->user()->vendor->id}}, project: {{$project->id}} })"
-                                    {{-- wire:loading.attr="disabled"
-                                    wire:loading.class="opacity-50" --}}
-                                    >
-                                    Edit Bid
-                                </x-cards.button>
-                            </x-slot>
-                            <livewire:bids.bid-create />
-                        </x-cards.heading>
-
-                        <x-cards.body>
-                            {{-- wire:loading should just target the Reimbursment search_li not the entire Proejct Finances card--}}
-                            <x-lists.ul
-                                wire:target="print_reimbursements"
-                                wire:loading.attr="disabled"
-                                wire:loading.class="opacity-50 text-opacity-40"
-                                >
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Estimate'"
-                                    :line_data="money($finances['estimate'])"
-                                    >
-                                </x-lists.search_li>
-
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Change Order'"
-                                    :line_data="money($finances['change_orders'])"
-                                    >
-                                </x-lists.search_li>
-
-                                <x-lists.search_li
-                                    wire:click="print_reimbursements"
-                                    :basic=true
-                                    :line_title="'Reimbursements'"
-                                    :line_data="money($finances['reimbursments'])"
-                                    >
-                                </x-lists.search_li>
-
-                                <x-lists.search_li
-                                    :basic=true
-                                    :bold="TRUE"
-                                    {{-- make gray --}}
-                                    :line_title="'TOTAL PROJECT'"
-                                    :line_data="money($finances['total_project'])"
-                                    >
-                                </x-lists.search_li>
-
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Expenses'"
-                                    :line_data="money($finances['expenses'])"
-                                    >
-                                </x-lists.search_li>
-
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Timesheets'"
-                                    :line_data="money($finances['timesheets'])"
-                                    >
-                                </x-lists.search_li>
-
-                                <x-lists.search_li
-                                    :basic=true
-                                    :bold="TRUE"
-                                    {{-- make gray --}}
-                                    :line_title="'TOTAL COST'"
-                                    :line_data="money($finances['total_cost'])"
-                                    >
-                                </x-lists.search_li>
-
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Payments'"
-                                    :line_data="money($finances['payments'])"
-                                    >
-                                </x-lists.search_li>
-
-                                @if(in_array($this->project->last_status->title, ['Complete',  'Service Call', 'Service Call Complete']))
-                                    <x-lists.search_li
-                                        :basic=true
-                                        :bold="TRUE"
-                                        :line_title="'PROFIT'"
-                                        :line_data="money($finances['profit'])"
-                                        >
-                                    </x-lists.search_li>
-                                @endif
-
-                                <x-lists.search_li
-                                    :basic=true
-                                    {{-- make gray --}}
-                                    :line_title="'Balance'"
-                                    :line_data="money($finances['balance'])"
-                                    >
-                                </x-lists.search_li>
-                            </x-lists.ul>
-                        </x-cards.body>
-                    </x-cards>
+                    <livewire:projects.project-finances :project="$project" lazy />
 
                     {{-- PROJECT DISTRIBUTIONS --}}
                     @if(!$this->project->distributions->isEmpty())
@@ -233,51 +128,7 @@
                     @endif
 
                     {{-- PROJECT PAYMENTS --}}
-                    <x-cards class="col-span-4 lg:col-span-2 lg:col-start-3" lazy>
-                        <x-cards.heading>
-                            <x-slot name="left">
-                                <h1>Payments</b></h1>
-                            </x-slot>
-
-                            @can('create', App\Models\Payment::class)
-                                <x-slot name="right">
-                                    {{-- 12-09-22 modal not page reload --}}
-                                    {{-- wire:navigate.hover --}}
-                                    <x-cards.button href="{{route('payments.create', $project->client->id)}}">
-                                        Add Payment
-                                    </x-cards.button>
-                                </x-slot>
-                            @endcan
-                        </x-cards.heading>
-
-                        @if(!$project->payments->isEmpty())
-                            <x-lists.ul>
-                                @foreach($project->payments()->orderBy('date', 'DESC')->get() as $payment)
-                                    @php
-                                        $line_details = [
-                                            1 => [
-                                                'text' => $payment->date->format('m/d/Y'),
-                                                'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                                ],
-                                            2 => [
-                                                'text' => $payment->reference,
-                                                'icon' => 'M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z'
-                                                ],
-                                            ];
-                                    @endphp
-
-                                    <x-lists.search_li
-                                        href=""
-                                        :line_details="$line_details"
-                                        :line_title="money($payment->amount)"
-                                        :bubble_message="$payment->transaction ? 'Complete' : 'No Transaction'"
-                                        :bubble_color="$payment->transaction ? 'green' : 'red'"
-                                        >
-                                    </x-lists.search_li>
-                                @endforeach
-                            </x-lists.ul>
-                        @endif
-                    </x-cards>
+                    <livewire:payments.payments-index :project="$project" :view="'projects.show'" />
                 @endif
             </div>
 		@endcan
@@ -285,4 +136,3 @@
 
     <livewire:projects.project-create />
 </div>
-

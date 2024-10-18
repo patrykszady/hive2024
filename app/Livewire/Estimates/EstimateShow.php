@@ -70,7 +70,6 @@ class EstimateShow extends Component
     public function sectionAdd()
     {
         $this->create_new_section();
-
         $this->estimate_refresh();
 
         $this->dispatch('notify',

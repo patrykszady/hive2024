@@ -27,7 +27,7 @@
         </flux:card>
     @endif
 
-    <flux:card class="space-y-2" lazy>
+    <flux:card class="space-y-2">
         <div class="flex justify-between">
             <flux:heading size="lg">Projects</flux:heading>
             @can('create', App\Models\Project::class)
@@ -98,6 +98,4 @@
             </flux:table>
         </div>
     </flux:card>
-
-    {{-- <livewire:expenses.expense-create /> --}}
 </div>

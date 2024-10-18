@@ -1,4 +1,3 @@
-{{-- <form wire:submit="store"> --}}
 <div>
     <x-forms.row
         wire:model.live="form.bank_account_id"

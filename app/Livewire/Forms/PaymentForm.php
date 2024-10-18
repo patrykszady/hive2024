@@ -9,9 +9,6 @@ use Livewire\Form;
 
 class PaymentForm extends Form
 {
-    #[Rule('nullable')]
-    public $project_id = '';
-
     #[Rule('required|date|before_or_equal:today|after:2017-01-01')]
     public $date = NULL;
 
@@ -26,10 +23,7 @@ class PaymentForm extends Form
         $this->validate();
 
         $parent_payment_id = NULL;
-        foreach($this->component->projects->where('show', 'true')->where('amount', '!=', NULL) as $key => $project){
-            //ignore 'show' attribute when saving
-            $project->offsetUnset('show');
-
+        foreach($this->component->projects->where('amount', '!=', NULL) as $key => $project){
             if($key == 0){
                 $parent_payment_id = NULL;
             }else{

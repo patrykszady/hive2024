@@ -61,8 +61,11 @@
                 <flux:navlist.item wire:navigate.hover icon="calendar" href="/planner_schedule">Planner</flux:navlist.item>
 
                 @canany(['viewAny', 'create'], App\Models\Expense::class)
-                    <flux:navlist.group expandable heading="Expenses">
+                    <flux:navlist.group expandable heading="Finances">
                         <flux:navlist.item wire:navigate.hover href="/expenses" icon="banknotes">Expenses</flux:navlist.item>
+                        @can('viewAny', App\Models\Bank::class)
+                            <flux:navlist.item wire:navigate.hover href="/payments" icon="credit-card">Payments</flux:navlist.item>
+                        @endcan
                         <flux:navlist.item wire:navigate.hover href="/checks" icon="pencil-square">Checks</flux:navlist.item>
                     </flux:navlist.group>
                 @endcanany
@@ -79,11 +82,15 @@
                 </flux:navlist.group>
 
                 @can('viewAny', App\Models\Bank::class)
-                    <flux:navlist.group expandable heading="Finances">
+                    <flux:navlist.group expandable heading="Accounting">
                         <flux:navlist.item wire:navigate.hover href="/banks" icon="building-library">Banks</flux:navlist.item>
                         <flux:navlist.item wire:navigate.hover href="/distributions" icon="receipt-percent">Distributions</flux:navlist.item>
                         <flux:navlist.item wire:navigate.hover href="/sheets" icon="document-currency-dollar">Sheets</flux:navlist.item>
                         <flux:navlist.item wire:navigate.hover href="/company_emails" icon="inbox-stack">Company Emails</flux:navlist.item>
+
+                        @if(auth()->user()->primary_vendor->pivot->role_id === 1)
+                            <flux:navlist.item wire:navigate.hover href="/vendor_docs" icon="eye-slash">Vendor Docs</flux:navlist.item>
+                        @endif
                     </flux:navlist.group>
                 @endcan
 
@@ -91,12 +98,6 @@
                     <flux:navlist.group expandable heading="Global Actions">
                         <flux:navlist.item wire:navigate.hover href="/transactions/match_vendor" icon="eye-slash">Match Vendor</flux:navlist.item>
                         <flux:navlist.item wire:navigate.hover href="/transactions/bulk_match" icon="eye-slash">Match Transactions</flux:navlist.item>
-                    </flux:navlist.group>
-                @endif
-
-                @if(auth()->user()->primary_vendor->pivot->role_id === 1)
-                    <flux:navlist.group expandable heading="Settings">
-                        <flux:navlist.item wire:navigate.hover href="/vendor_docs" icon="eye-slash">Vendor Docs</flux:navlist.item>
                     </flux:navlist.group>
                 @endif
             </flux:navlist>

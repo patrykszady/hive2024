@@ -1,4 +1,4 @@
-<div class="grid grid-cols-5 gap-4 xl:relative sm:px-6 lg:max-w-7xl">
+<div class="grid grid-cols-5 gap-4 xl:relative sm:px-6 lg:max-w-5xl">
     <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
         {{-- TIMESHEET DETAILS --}}
         {{-- user info/ confirm/ change hourly if you can update Hours/Timesheets...ONLY if you Admin --}}
@@ -50,40 +50,8 @@
     <div class="col-span-5 space-y-2 lg:col-span-3 lg:col-start-3 overflow-y-auto">
         {{-- HOURS / DAYS --}}
         {{-- EACH PROJECT DURING WEEK & DAY --}}
-        @foreach($weekly_days as $weekly_day => $daily_projects)
-            <flux:card class="space-y-2">
-                <flux:accordion transition>
-                    <flux:accordion.item expanded>
-                        <div class="flex justify-between">
-                            <flux:accordion.heading>
-                                <flux:heading size="lg" class="mb-0">{{ \Carbon\Carbon::parse($weekly_day)->format('l, F jS Y') }}</flux:heading>
-                                {{-- <flux:button disabled>
-                                    {{ $daily_projects->sum('hours') }}
-                                </flux:button> --}}
-                            </flux:accordion.heading>
-                        </div>
-
-                        <flux:accordion.content>
-                            <flux:separator variant="subtle"/>
-                                <flux:table>
-                                    <flux:columns>
-                                        <flux:column>Hours</flux:column>
-                                        <flux:column>Project</flux:column>
-                                    </flux:columns>
-
-                                    <flux:rows>
-                                        @foreach($daily_projects as $project_name => $daily_project)
-                                            <flux:row>
-                                                <flux:cell variant="strong">{{$daily_project->sum('hours')}}</flux:cell>
-                                                <flux:cell><a wire:navigate.hover href="{{route('projects.show', $daily_project->first()->project->id)}}">{{$daily_project->first()->project->name}}</a></flux:cell>
-                                            </flux:row>
-                                        @endforeach
-                                    </flux:rows>
-                                </flux:table>
-                        </flux:accordion.content>
-                    </flux:accordion.item>
-                </flux:accordion>
-            </flux:card>
+        @foreach($daily_hours as $date => $hours)
+            @include('livewire.timesheets._daily_hours')
         @endforeach
     </div>
 </div>

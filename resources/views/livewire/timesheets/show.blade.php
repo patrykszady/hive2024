@@ -146,32 +146,8 @@
                     </x-slot>
                 </x-cards.heading>
 
-                @foreach($daily_hours as $hours)
-                    <x-lists.ul>
-                        <x-lists.search_li
-                            {{-- wire:click="$dispatch('timesheetWeek')" --}}
-                            :no_hover="true"
-                            :line_title="$hours->first()->date->format('l, M d, Y')"
-                            :bubble_message="$hours->sum('hours') . ' Hours'"
-                            :font_weight="'medium'"
-                            {{-- :class="'pointer-events-none'" --}}
-                            >
-                        </x-lists.search_li>
-                    </x-lists.ul>
-                    <x-lists.ul>
-                        @foreach($hours as $hour)
-                            <x-lists.search_li
-                                href="{{ route('projects.show', $hour->project->id) }}"
-                                :hrefTarget="'_blank'"
-                                {{-- :line_details="$line_details" --}}
-                                :line_title="$hour->project->name"
-                                :bubbleColor="'gray'"
-                                :bubble_message="(float)$hour->hours"
-                                :font_weight="'small'"
-                                >
-                            </x-lists.search_li>
-                        @endforeach
-                    </x-lists.ul>
+                @foreach($daily_hours as $date => $hours)
+                    @include('livewire.timesheets._daily_hours')
                 @endforeach
             </x-cards>
         </div>

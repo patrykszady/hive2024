@@ -78,11 +78,12 @@ class TimesheetCreate extends Component
     #[Title('Timesheets Create')]
     public function render()
     {
-        $weekly_days = $this->weekly_hours->sortBy('date')->groupBy(['date', 'project.project_name']);
+        $daily_hours = $this->weekly_hours->sortBy('date')->groupBy('date');
+
         $week_date = $this->week->startOfWeek()->toFormattedDateString();
 
         return view('livewire.timesheets.form', [
-            'weekly_days' => $weekly_days,
+            'daily_hours' => $daily_hours,
             'week_date' => $week_date,
         ]);
     }

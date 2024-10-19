@@ -3,8 +3,20 @@
 		{{-- FLOAT CALENDAR --}}
 		<div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32">
             <flux:card>
-                <flux:heading size="lg">Daily Hours for {{auth()->user()->first_name}}</flux:heading>
-                <flux:subheading><i>Pick Date to add or edit Daily Hours for {{auth()->user()->first_name}}</i></flux:subheading>
+                <div class="flex justify-between">
+                    <div>
+                        <flux:heading size="lg">Daily Hours for {{auth()->user()->first_name}}</flux:heading>
+                        <flux:subheading><i>Pick Date to add or edit Daily Hours for {{auth()->user()->first_name}}</i></flux:subheading>
+                    </div>
+                    <flux:button
+                        wire:navigate.hover
+                        href="{{route('timesheets.index')}}"
+                        size="sm"
+                        >
+                        Confirm Timesheets
+                    </flux:button>
+                </div>
+
                 <flux:separator variant="subtle" />
 
                 @include('livewire.hours._calander')

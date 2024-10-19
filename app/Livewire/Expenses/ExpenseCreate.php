@@ -17,6 +17,8 @@ use App\Jobs\UpdateProjectDistributionsAmount;
 
 use App\Livewire\Forms\ExpenseForm;
 
+use Flux;
+
 use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Livewire\WithFileUploads;
@@ -253,10 +255,19 @@ class ExpenseCreate extends Component
         $expense = $this->form->update();
 
         $this->modal('expenses_form_modal')->close();
-        $this->resetModal();
+        // $this->resetModal();
 
         //queue
-        UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
+        // UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
+
+        Flux::toast(
+            duration: 10000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Expense Updated.',
+            // route / href / wire:click
+            text: money($expense->amount),
+        );
 
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         $this->dispatch('refreshComponent')->to('expenses.expense-show');

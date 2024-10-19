@@ -4,8 +4,8 @@
             <div class="flex justify-between">
                 <flux:accordion.heading>
                     <flux:heading size="lg" class="mb-0">
-                        {{ \Carbon\Carbon::parse($date)->format('l, F jS Y') }}
-                        <flux:badge color="lime" inset="top bottom" size="lg" icon="clock" >{{ $hours->sum('hours') }} Hours</flux:badge>
+                        {{ \Carbon\Carbon::parse($date)->format('l, M jS \'y') }}
+                        <flux:badge color="green" inset="top bottom" size="lg" icon="clock" >{{ $hours->sum('hours') }} Hours</flux:badge>
                     </flux:heading>
                 </flux:accordion.heading>
             </div>

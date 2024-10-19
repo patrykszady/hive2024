@@ -62,9 +62,9 @@
 
                 @canany(['viewAny', 'create'], App\Models\Expense::class)
                     <flux:navlist.group expandable heading="Finances">
-                        <flux:navlist.item wire:navigate.hover href="/expenses" icon="banknotes">Expenses</flux:navlist.item>
+                        <flux:navlist.item wire:navigate.hover href="/expenses" icon="credit-card">Expenses</flux:navlist.item>
                         @can('viewAny', App\Models\Bank::class)
-                            <flux:navlist.item wire:navigate.hover href="/payments" icon="credit-card">Payments</flux:navlist.item>
+                            <flux:navlist.item wire:navigate.hover href="/payments" icon="banknotes">Payments</flux:navlist.item>
                         @endcan
                         <flux:navlist.item wire:navigate.hover href="/checks" icon="pencil-square">Checks</flux:navlist.item>
                     </flux:navlist.group>

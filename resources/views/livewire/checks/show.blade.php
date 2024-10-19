@@ -20,7 +20,7 @@
                 {{-- DETAILS --}}
                 <x-lists.details_list>
                     <x-lists.details_item title="Amount" detail="{{money($check->amount)}}" />
-                    <x-lists.details_item title="Payee" detail="{{$check->owner}}" href="{{$check->vendor_id ? route('vendors.show', $check->vendor->id) : '#'}}" />
+                    <x-lists.details_item title="Payee" detail="{{$check->owner}}" href="{{$check->vendor_id ? route('vendors.show', $check->vendor->id) : ''}}" />
                     <x-lists.details_item title="Date" detail="{{$check->date->format('m/d/Y')}}" />
                     <x-lists.details_item title="Type" detail="{{$check->check_type}}" />
 
@@ -259,7 +259,7 @@
                                 @foreach($user_distributions as $user_distribution_expense)
                                     <flux:row :key="$user_distribution_expense->id">
                                         <flux:cell variant="strong">
-                                            <a wire:navigate.hover href="{{route('distributions.show', $user_distribution_expense->distribution->id)}}">{{ money($user_distribution_expense->amount) }}</a>
+                                            <a wire:navigate.hover href="{{route('expenses.show', $user_distribution_expense->id)}}">{{ money($user_distribution_expense->amount) }}</a>
                                         </flux:cell>
                                         <flux:cell>
                                             <a wire:navigate.hover href="{{route('distributions.show', $user_distribution_expense->distribution->id)}}">{{ $user_distribution_expense->distribution->name }}</a>

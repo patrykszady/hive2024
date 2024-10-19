@@ -28,48 +28,21 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ isset($title) ? $title . ' | ' . env('APP_NAME') : env('APP_NAME') }}</title>
-    {{-- <script src="//cdn.tailwindcss.com"></script> --}}
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
-    <style>
-        [data-flux-button] {
-            @apply !bg-emerald-800 !dark:bg-emerald-400 !hover:bg-emerald-700 !dark:hover:bg-emerald-300;
-        }
-    </style>
 
     <!-- Fonts -->
-    {{-- @preloadFonts --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css"> --}}
     {{-- @lagoonStyles --}}
     {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" /> --}}
 
-
-    {{-- <style>
-        @media print {
-           .noprint {
-              visibility: hidden;
-           }
-        }
-    </style>
-
-    <style>
-        [x-cloak] {
-            display: none !important;
-        }
-    </style> --}}
-
     <!-- Scripts -->
-    {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
-    {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
-    {{-- @stack('custom_scripts') --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script> --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script> --}}
     {{-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> --}}
@@ -77,14 +50,12 @@
     {{-- ALPINE CORE INCLUDED WITH LIVEWIRE --}}
     <!-- Alpine Plugins -->
     <script defer src="https://unpkg.com/@alpinejs/ui@3.14.1-beta.0/dist/cdn.min.js"></script>
-    <script defer src="https://unpkg.com/@alpinejs/focus@3.14.1/dist/cdn.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.1/dist/cdn.min.js"></script>
-    <script defer src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script>
+    {{-- <script defer src="https://unpkg.com/@alpinejs/focus@3.14.1/dist/cdn.min.js"></script> --}}
+    {{-- <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.14.1/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/@nextapps-be/livewire-sortablejs@0.4.0/dist/livewire-sortable.js"></script> --}}
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/sort@3.x.x/dist/cdn.min.js"></script>
 
-    {{-- <script defer src="https://unpkg.com/alpinejs@3.14.1/dist/cdn.min.js"></script> --}}
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-    {{-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> --}}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     @fluxStyles
 </head>

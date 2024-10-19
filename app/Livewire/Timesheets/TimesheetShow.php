@@ -40,7 +40,6 @@ class TimesheetShow extends Component
                 ->groupBy('date');
 
         return view('livewire.timesheets.show', [
-            'timesheet' => $this->timesheet,
             'weekly_hours' => $weekly_hours,
             'daily_hours' => $daily_hours,
         ]);

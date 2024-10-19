@@ -55,11 +55,14 @@ class TimesheetsIndex extends Component
                         return Carbon::parse($item->date)->startOfWeek()->toFormattedDateString();
                     })->each(function ($group) {
                         // $group->sum_amount = $group->sum('amount');
+                        $group->timesheet_id = $group->first()->id;
                         $group->sum_hours = $group->sum('hours');
                     });
                 });
 
-        $confirmed_weekly_hours =
+        // dd($weekly_hours_to_confirm);
+
+        $timesheets =
             Timesheet::
                 orderBy('date', 'DESC')
                 ->with('user')
@@ -67,21 +70,22 @@ class TimesheetsIndex extends Component
                 // ->withCount('hours')
                 ->get()
                 ->groupBy(function($item) {
-                    return $item->date->toFormattedDateString();
+                    return $item->date->format('m/d/Y');
                 })
                 ->transform(function($item, $k) {
                     return $item->groupBy(function($item) {
                         return $item->user->first_name;
                     })->each(function ($group) {
+                        $group->timesheet_id = $group->first()->id;
+                        $group->date = $group->first()->date->format('m/d/Y');
                         $group->sum_amount = $group->sum('amount');
                         $group->sum_hours = $group->sum('hours');
                     });
-                })
-                ->paginate(5);
+                })->paginate(4);
 
         return view('livewire.timesheets.index', [
             'weekly_hours_to_confirm' => $weekly_hours_to_confirm,
-            'confirmed_weekly_hours' => $confirmed_weekly_hours,
+            'timesheets' => $timesheets,
         ]);
     }
 }

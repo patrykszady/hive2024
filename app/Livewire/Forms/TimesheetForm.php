@@ -44,7 +44,7 @@ class TimesheetForm extends Form
 
         foreach($weekly_projects as $project_id => $project_weekly_hours){
             $project = Project::findOrFail($project_id);
-            UpdateProjectDistributionsAmount::dispatch($project, $project->distributions->pluck('id')->toArray());
+            // UpdateProjectDistributionsAmount::dispatch($project, $project->distributions->pluck('id')->toArray());
 
             $hours = $project_weekly_hours->sum('hours');
             $timesheet = Timesheet::create([

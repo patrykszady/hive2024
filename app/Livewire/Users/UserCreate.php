@@ -15,6 +15,7 @@ use Livewire\Component;
 use App\Livewire\Dashboard\DashboardShow;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -176,15 +177,16 @@ class UserCreate extends Component
     public function removeMember(User $user)
     {
         // 2-7-22 need REMOVAL MODAL to confirm
-        $user->vendors()
-            ->updateExistingPivot(
-                auth()->user()->vendor,
-                array(
-                    'is_employed' => 0,
-                    'end_date' => today()->format('Y-m-d')
-                )
-            );
-        // ->where('id', auth()->user()->vendor->id)->first();
+        $user->vendor->users()->wherePivot('is_employed', '1')
+            ->updateExistingPivot($user->id, [
+                'end_date' => today()->format('Y-m-d'),
+                'is_employed' => 0,
+                'updated_at' => now()
+            ]);
+
+        // Assuming you have User and Role models with a many-to-many relationship
+        // Fetch all pivot entries for this user
+
         $this->redirect(DashboardShow::class, navigate: true);
         //6-1-2024 set blurry background...
         $this->dispatch('notify',

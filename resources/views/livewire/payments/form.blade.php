@@ -61,7 +61,7 @@
                         <div>
                             <flux:input.group>
                                 <flux:input.group.prefix>$</flux:input.group.prefix>
-                                <flux:input wire:model.live="projects.{{$index}}.amount" type="number" inputmode="decimal" />
+                                <flux:input wire:model.live="projects.{{$index}}.amount" type="number" inputmode="decimal" step="0.01" />
                             </flux:input.group>
                         </div>
                     </div>

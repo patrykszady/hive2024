@@ -1,127 +1,89 @@
-<div>
-    <x-cards class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
-        {{-- HEADING --}}
-        <x-cards.heading>
-            <x-slot name="left">
-                <h1>Confirm week of <b>{{$week_date}}</b> for {{$user->first_name}}</h1>
-            </x-slot>
-
-            <x-slot name="right">
-                <x-cards.button href="{{route('hours.create')}}">
-                    Add Hours
-                </x-cards.button>
-            </x-slot>
-        </x-cards.heading>
-    </x-cards>
-
-    {{-- EACH PROJECT DURING WEEK & DAY --}}
-    @foreach($weekly_days as $weekly_day => $daily_projects)
-        <x-cards class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
-            {{-- HEADING --}}
-            <x-cards.heading>
-                <x-slot name="left">
-                    <h1>{{ \Carbon\Carbon::parse($weekly_day)->format('l, F jS Y') }}</h1>
+<div class="grid grid-cols-5 gap-4 xl:relative sm:px-6 lg:max-w-7xl">
+    <div class="col-span-5 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
+        {{-- TIMESHEET DETAILS --}}
+        {{-- user info/ confirm/ change hourly if you can update Hours/Timesheets...ONLY if you Admin --}}
+        <form wire:submit="save">
+            <x-lists.details_card>
+                {{-- HEADING --}}
+                <x-slot:heading>
+                    <div>
+                        <flux:heading size="lg" class="mb-0">Confirm week of <b>{{$week_date}}</b> for {{$user->first_name}}</flux:heading>
+                        <flux:subheading><i>Confirm Timesheet Info for {{$user->first_name}}</i></flux:subheading>
+                    </div>
                 </x-slot>
 
-                <x-slot name="right">
-                    {{-- 7-2-2022 SEND TO hours.create DATE = $this date --}}
-                    {{-- <x-cards.button href="{{route('hours.create')}}">
-                        Edit Hours
-                    </x-cards.button> --}}
-                </x-slot>
-            </x-cards.heading>
+                <x-forms.one_line label="Payee">
+                    <flux:input wire:model="form.full_name" type="text" disabled />
+                    <flux:error name="form.full_name" />
+                </x-forms.one_line>
 
-            {{-- LIST / using List as a table because of mobile layouts vs a table mobile layout --}}
-            <x-lists.ul>
-                @foreach($daily_projects as $project_name => $daily_project)
-                    <x-lists.search_li
-                        :line_title="'Hours: ' . $daily_project->sum('hours') . ' | ' .  $daily_project->first()->project->name"
-                        :bubble_message="'Hours'"
-                        >
-                    </x-lists.search_li>
-                @endforeach
-            </x-lists.ul>
-        </x-cards>
-    @endforeach
+                <x-forms.one_line label="Hours">
+                    <flux:input wire:model="form.hours" type="text" disabled />
+                    <flux:error name="form.hours" />
+                </x-forms.one_line>
 
-    {{-- user info/ confirm/ change hourly if you can update Hours/Timesheets...ONLY if you Admin --}}
-    <form wire:submit="save">
-        <x-cards class="max-w-xl px-4 pb-5 mb-1 sm:px-6">
-            <x-cards.heading>
-                <x-slot name="left">
-                    <h1>Timesheet User Details</h1>
-                    <p class="text-gray-500"><i>Confirm Timesheet Info for {{$user->first_name}}</i></p>
-                </x-slot>
-            </x-cards.heading>
+                {{-- is user admin and not Timesheet being confirmed owner? not disabled. is Member or admin confirming own timesheets? disabled --}}
+                <x-forms.one_line label="Hourly">
+                    <flux:input.group>
+                        <flux:input.group.prefix>$</flux:input.group.prefix>
+                        <flux:input wire:model="form.hourly" type="numeric" disabled inputmode="numeric" step="0.25" :disabled="$user->user_role == 'Member' ? true : ($user->logged_in ? true : false)" />
+                        <flux:error name="form.hourly" />
+                    </flux:input.group>
+                </x-forms.one_line>
 
-            <x-cards.body :class="'space-y-2 my-2'">
-                {{-- ROWS --}}
-                <x-forms.row
-                    wire:model="form.full_name"
-                    errorName="form.full_name"
-                    name="full_name"
-                    text="Payee"
-                    type="text"
-                    disabled
-                    >
-                </x-forms.row>
+                <x-forms.one_line label="Amount">
+                    <flux:input.group>
+                        <flux:input.group.prefix>$</flux:input.group.prefix>
+                        <flux:input wire:model="form.amount" type="text" disabled />
+                        <flux:error name="form.amount" />
+                    </flux:input.group>
+                </x-forms.one_line>
 
-                <x-forms.row
-                    wire:model="form.hours"
-                    errorName="form.hours"
-                    name="hours"
-                    text="Hours"
-                    type="text"
-                    textSize="xl"
-                    hint=" "
-                    disabled
-                    >
-                </x-forms.row>
-
-                {{-- is user admin and not Timesheet being confirmed owner? not disabled.
-                    is Member or admin confirming own timesheets? disabled --}}
-                <x-forms.row
-                    wire:model.live.debounce.500ms="form.hourly"
-                    errorName="form.hourly"
-                    name="hourly"
-                    text="Hourly"
-                    type="number"
-                    inputmode="numeric"
-                    step="0.25"
-                    hint="$"
-                    :disabled="$user->user_role == 'Member' ? true : ($user->logged_in ? true : false)"
-                    >
-                </x-forms.row>
-
-                <x-forms.row
-                    wire:model="form.amount"
-                    errorName="form.amount"
-                    name="form.amount"
-                    text="Amount"
-                    type="text"
-                    textSize="xl"
-                    hint="$"
-                    disabled
-                    >
-                </x-forms.row>
-            </x-cards.body>
-
-            <x-cards.footer>
-                <div class="w-full space-y-1 text-center">
-                    <button
-                        type="button"
-                        class="w-full px-4 py-2 text-lg font-medium text-center text-gray-900 border-2 border-indigo-600 rounded-md shadow-sm focus:outline-none">
-                        Total Amount | <b>{{money($this->user_hours_amount)}}</b>
-                    </button>
-                    <button
-                        wire:loading.class="opacity-50"
-                        wire:loading.attr="disabled"
-                        type="submit"
-                        class="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow focus:outline-none hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                        Confirm Weekly Timesheet
-                    </button>
+                <div class="space-y-2 mt-2">
+                    <flux:button class="w-full">Total Amount | <b>{{money($this->user_hours_amount)}}</b></flux:button>
+                    <flux:button type="submit" variant="primary" class="w-full">Confirm Weekly Timesheet</flux:button>
                 </div>
-            </x-cards.footer>
-        </x-cards>
-    </form>
+            </x-lists.details_card>
+        </form>
+    </div>
+
+    <div class="col-span-5 space-y-2 lg:col-span-3 lg:col-start-3 overflow-y-auto">
+        {{-- HOURS / DAYS --}}
+        {{-- EACH PROJECT DURING WEEK & DAY --}}
+        @foreach($weekly_days as $weekly_day => $daily_projects)
+            <flux:card class="space-y-2">
+                <flux:accordion transition>
+                    <flux:accordion.item expanded>
+                        <div class="flex justify-between">
+                            <flux:accordion.heading>
+                                <flux:heading size="lg" class="mb-0">{{ \Carbon\Carbon::parse($weekly_day)->format('l, F jS Y') }}</flux:heading>
+                                {{-- <flux:button disabled>
+                                    {{ $daily_projects->sum('hours') }}
+                                </flux:button> --}}
+                            </flux:accordion.heading>
+                        </div>
+
+                        <flux:accordion.content>
+                            <flux:separator variant="subtle"/>
+                                <flux:table>
+                                    <flux:columns>
+                                        <flux:column>Hours</flux:column>
+                                        <flux:column>Project</flux:column>
+                                    </flux:columns>
+
+                                    <flux:rows>
+                                        @foreach($daily_projects as $project_name => $daily_project)
+                                            <flux:row>
+                                                <flux:cell variant="strong">{{$daily_project->sum('hours')}}</flux:cell>
+                                                <flux:cell><a wire:navigate.hover href="{{route('projects.show', $daily_project->first()->project->id)}}">{{$daily_project->first()->project->name}}</a></flux:cell>
+                                            </flux:row>
+                                        @endforeach
+                                    </flux:rows>
+                                </flux:table>
+                        </flux:accordion.content>
+                    </flux:accordion.item>
+                </flux:accordion>
+            </flux:card>
+        @endforeach
+    </div>
 </div>

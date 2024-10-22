@@ -25,7 +25,6 @@ class EstimateLineItemCreate extends Component
     public $estimate_line_item = [];
     public $section_item_count = NULL;
 
-    public $modal_show = FALSE;
 
     public $view_text = [
         'card_title' => 'Add Line Item',
@@ -90,11 +89,10 @@ class EstimateLineItemCreate extends Component
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');
     }
 
-    public function editOnEstimate($estimate_line_item_id, $section_id)
+    public function editOnEstimate($estimate_line_item_id)
     {
         $this->form->reset();
-        $this->estimate_line_item = $this->estimate->estimate_line_items()->where('id', $estimate_line_item_id)->first();
-        // dd($this->estimate_line_item);
+        $this->estimate_line_item = $this->estimate->estimate_line_items()->findOrFail($estimate_line_item_id);
 
         $this->form->setEstimateLineItem($this->estimate_line_item);
         $this->form->total = $this->getTotalLineItemProperty();
@@ -107,15 +105,16 @@ class EstimateLineItemCreate extends Component
             'form_submit' => 'edit',
         ];
 
-        $this->section_id = $section_id;
+        $this->section_id = $this->estimate_line_item->section->id;
         $this->edit_line_item = TRUE;
         $this->search = $this->estimate_line_item->name;
-        $this->modal_show = TRUE;
+        $this->modal('estimate_line_item_form_modal')->show();
     }
 
-    public function addToEstimate($section_id, $section_item_count)
+    public function addToEstimate($section_id)
     {
-        $this->section_item_count = $section_item_count;
+        $section = $this->estimate->estimate_sections()->findOrFail($section_id);
+        $this->section_item_count = $section->estimate_line_items->count();
         $this->edit_line_item = FALSE;
         $this->search = '';
         $this->estimate_line_item = NULL;
@@ -128,15 +127,16 @@ class EstimateLineItemCreate extends Component
             'form_submit' => 'save',
         ];
 
-        $this->section_id = $section_id;
-        $this->modal_show = TRUE;
+        $this->section_id = $section->id;
+
+        $this->modal('estimate_line_item_form_modal')->show();
     }
 
     public function edit()
     {
         $this->form->update();
 
-        $this->modal_show = FALSE;
+        $this->modal('estimate_line_item_form_modal')->close();
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');
     }
 
@@ -144,7 +144,7 @@ class EstimateLineItemCreate extends Component
     {
         $this->form->store();
 
-        $this->modal_show = FALSE;
+        $this->modal('estimate_line_item_form_modal')->close();
         $this->search = '';
         $this->section_item_count = NULL;
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');

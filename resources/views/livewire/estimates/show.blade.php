@@ -4,33 +4,31 @@
         <x-lists.details_card>
             {{-- HEADING --}}
             <x-slot:heading>
+                <flux:heading size="lg" class="mb-0">Estimate Details</flux:heading>
+                <flux:dropdown>
+                    <flux:button size="sm" icon-trailing="chevron-down">Options</flux:button>
 
-                    <flux:heading size="lg" class="mb-0">Estimate Details</flux:heading>
-                    <flux:dropdown>
-                        <flux:button size="sm" icon-trailing="chevron-down">Options</flux:button>
+                    <flux:menu>
+                        <flux:menu.item wire:click="$dispatchTo('estimates.estimate-accept', 'accept')">Finalize Estimate</flux:menu.item>
+                        <flux:menu.item wire:click="$dispatchTo('estimates.estimate-duplicate', 'duplicateModal', { estimate: {{$estimate->id}} })">Duplicate Estimate</flux:menu.item>
+                        <flux:menu.item wire:click="$dispatchTo('estimates.estimate-combine', 'combineModal', { existing_estimate_id: {{$estimate->id}} })">Combine Estimate</flux:menu.item>
 
-                        <flux:menu>
-                            <flux:menu.item wire:click="$dispatchTo('estimates.estimate-accept', 'accept')">Finalize Estimate</flux:menu.item>
-                            <flux:menu.item wire:click="$dispatchTo('estimates.estimate-duplicate', 'duplicateModal', { estimate: {{$estimate->id}} })">Duplicate Estimate</flux:menu.item>
-                            <flux:menu.item wire:click="$dispatchTo('estimates.estimate-combine', 'combineModal', { existing_estimate_id: {{$estimate->id}} })">Combine Estimate</flux:menu.item>
+                        <flux:menu.separator />
 
-                            <flux:menu.separator />
+                        <flux:menu.item wire:click="print('estimate')">Export Estimate</flux:menu.item>
+                        <flux:menu.item wire:click="print('invoice')">Export Invoice</flux:menu.item>
+                        <flux:menu.item wire:click="print('work order')">Export Work Order</flux:menu.item>
 
-                            <flux:menu.item wire:click="print('estimate')">Export Estimate</flux:menu.item>
-                            <flux:menu.item wire:click="print('invoice')">Export Invoice</flux:menu.item>
-                            <flux:menu.item wire:click="print('work order')">Export Work Order</flux:menu.item>
+                        <flux:menu.separator />
 
-                            <flux:menu.separator />
-
-                            <flux:menu.item wire:click="delete" variant="danger">Delete</flux:menu.item>
-                        </flux:menu>
-                    </flux:dropdown>
-
+                        <flux:menu.item wire:click="delete" variant="danger">Delete</flux:menu.item>
+                    </flux:menu>
+                </flux:dropdown>
             </x-slot>
 
-            <livewire:estimates.estimate-accept :estimate="$estimate"/>
+            {{-- <livewire:estimates.estimate-accept :estimate="$estimate"/>
             <livewire:estimates.estimate-duplicate />
-            <livewire:estimates.estimate-combine :client="$estimate->client"/>
+            <livewire:estimates.estimate-combine :client="$estimate->client"/> --}}
 
             {{-- DETAILS --}}
             <x-lists.details_list>
@@ -97,7 +95,12 @@
                                             <flux:row :key="$line_item->id">
                                                 <flux:cell>{{$index + 1}}.{{$line_item->section_index}}</flux:cell>
                                                 <flux:cell variant="strong">
-                                                    <b>{{$line_item->name}} </b>
+                                                    <a
+                                                        class="cursor-pointer"
+                                                        wire:click="$dispatchTo('line-items.estimate-line-item-create', 'editOnEstimate', { estimate_line_item_id: {{$line_item->id}} })"
+                                                        >
+                                                        <b>{{$line_item->name}}</b>
+                                                    </a>
                                                     <br>
                                                     <i>{{$line_item->category}}/{{$line_item->sub_category}}</i>
                                                 </flux:cell>
@@ -126,7 +129,7 @@
                 <flux:separator variant="subtle"/>
                 <div class="flex justify-between">
                     <flux:button
-                        wire:click="$dispatchTo('line-items.estimate-line-item-create', 'addToEstimate', { section_id: {{$section->id}}, section_item_count: {{$estimate->estimate_line_items()->where('section_id', $section->id)->count()}} })"
+                        wire:click="$dispatchTo('line-items.estimate-line-item-create', 'addToEstimate', { section_id: {{$section->id}} })"
                         variant="primary"
                         icon="plus"
                         >
@@ -136,8 +139,8 @@
                         {{money($section->total)}}
                     </flux:button>
                 </div>
-                {{-- <livewire:line-items.estimate-line-item-create :estimate="$estimate"/> --}}
             </flux:card>
         @endforeach
+        <livewire:line-items.estimate-line-item-create :estimate="$estimate"/>
     </div>
 </div>

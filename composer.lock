@@ -3712,7 +3712,7 @@
         },
         {
             "name": "livewire/flux",
-            "version": "v1.0.16",
+            "version": "v1.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/flux.git",
@@ -3769,25 +3769,25 @@
             ],
             "support": {
                 "issues": "https://github.com/livewire/flux/issues",
-                "source": "https://github.com/livewire/flux/tree/v1.0.16"
+                "source": "https://github.com/livewire/flux/tree/v1.0.17"
             },
             "time": "2024-10-20T23:40:17+00:00"
         },
         {
             "name": "livewire/flux-pro",
-            "version": "1.0.16",
+            "version": "1.0.17",
             "dist": {
                 "type": "zip",
-                "url": "https://composer.fluxui.dev/download/9d4cde7f-20df-4e7e-9c1d-44fdc3a91080/flux-pro-1.0.16.zip",
-                "reference": "1ffe4d13001f72ce7fb3d8b9f43529ac534ca8f9",
-                "shasum": "bde57993c38620fbeed89caa0ab9e685fafa438a"
+                "url": "https://composer.fluxui.dev/download/9d4e8820-1da8-42fa-b936-a89035f8660b/flux-pro-1.0.17.zip",
+                "reference": "7508ff3fd306e5764f6f66f7cd5ebe6f4877f0b9",
+                "shasum": "8b7979b8218902810bcd72f3b173724502773aba"
             },
             "require": {
                 "illuminate/console": "^10.0|^11.0",
                 "illuminate/support": "^10.0|^11.0",
                 "illuminate/view": "^10.0|^11.0",
                 "laravel/prompts": "^0.1.24|^0.2|^0.3",
-                "livewire/flux": "1.0.16",
+                "livewire/flux": "1.0.17",
                 "livewire/livewire": "^3.5.12",
                 "php": "^8.1",
                 "symfony/console": "^6.0|^7.0"
@@ -3828,7 +3828,7 @@
                 "livewire",
                 "ui"
             ],
-            "time": "2024-10-21T18:19:21+00:00"
+            "time": "2024-10-22T14:09:29+00:00"
         },
         {
             "name": "livewire/livewire",

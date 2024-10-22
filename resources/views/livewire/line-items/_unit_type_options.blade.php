@@ -1,6 +1,6 @@
-<option value="" readonly>Select Unit</option>
-<option value="no_unit">No Unit</option>
-<option value="pieces">Pieces</option>
-<option value="sq.ft.">Sq Feet</option>
-<option value="li.ft.">Lin Feet</option>
-<option value="hours">Hours</option>
+<flux:option value="">Select Unit</flux:option>
+<flux:option value="no_unit">No Unit</flux:option>
+<flux:option value="pieces">Pieces</flux:option>
+<flux:option value="sq.ft.">Sq Feet</flux:option>
+<flux:option value="li.ft.">Lin Feet</flux:option>
+<flux:option value="hours">Hours</flux:option>

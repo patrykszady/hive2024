@@ -355,7 +355,6 @@ class ExpenseForm extends Form
     {
         $this->authorize('create', Expense::class);
         $this->validate();
-        dd('here');
 
         $expense_details = $this->expenseDetails();
 

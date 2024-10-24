@@ -29,9 +29,9 @@
 
             <flux:separator variant="subtle" />
 
-            {{-- <livewire:estimates.estimate-accept :estimate="$estimate"/>
-            <livewire:estimates.estimate-duplicate />
-            <livewire:estimates.estimate-combine :client="$estimate->client"/> --}}
+            <livewire:estimates.estimate-accept :estimate="$estimate"/>
+            {{-- <livewire:estimates.estimate-duplicate /> --}}
+            {{-- <livewire:estimates.estimate-combine :client="$estimate->client"/> --}}
 
             {{-- DETAILS --}}
             <x-lists.details_list>

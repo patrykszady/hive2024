@@ -8,8 +8,13 @@ module.exports = {
     "./vendor/livewire/flux/stubs/**/*.blade.php",
   ],
   theme: {
-    extend: {},
+    extend: {
+        // colors: {
+        //     zinc: {
+        //         ...require('tailwindcss/colors').indigo,
+        //     },
+        // },
+    },
   },
   plugins: [],
 }
-

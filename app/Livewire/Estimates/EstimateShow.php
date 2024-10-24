@@ -87,14 +87,8 @@ class EstimateShow extends Component
         }
 
         $section->delete();
-
         $this->estimate_refresh();
 
-        // $duplicate_section_lines = $this->estimate->estimate_line_items->where('section_id', $section_id);
-
-        // foreach($duplicate_section_lines as $duplicate_section_line){
-        //     $duplicate_section_line->delete();
-        // }
         $this->dispatch('notify',
             type: 'success',
             content: 'Section Removed'
@@ -128,12 +122,12 @@ class EstimateShow extends Component
         }
     }
 
-    public function itemsRearrangeOrder($list)
-    {
-        foreach($list as $item){
-            EstimateLineItem::find($item['value'])->update(['section_index' => $item['order']]);
-        }
-    }
+    // public function itemsRearrangeOrder($list)
+    // {
+    //     foreach($list as $item){
+    //         EstimateLineItem::find($item['value'])->update(['section_index' => $item['order']]);
+    //     }
+    // }
 
     public function sectionDuplicate($section_id)
     {
@@ -148,7 +142,7 @@ class EstimateShow extends Component
                 'estimate_id' => $this->estimate->id,
                 'line_item_id' => $duplicate_section_line->line_item_id,
                 'section_id' => $section->id,
-                'section_index' => $duplicate_section_line->section_index,
+                'order' => $duplicate_section_line->order,
                 'name' => $duplicate_section_line->name,
                 'category' => $duplicate_section_line->category,
                 'sub_category' => $duplicate_section_line->sub_category,
@@ -213,11 +207,7 @@ class EstimateShow extends Component
             ->newHeadless()
             ->scale(0.8)
             ->showBrowserHeaderAndFooter()
-            // ->hideFooter()
-            // ->headerHtml('<span class="pageNumber"></span>')
-            //->margins($top, $right, $bottom, $left)
             ->margins(10, 5, 10, 5)
-            // ->transparentBackground()
             ->save($location);
 
         return [$location, $title_file];
@@ -228,15 +218,21 @@ class EstimateShow extends Component
         $estimate = $this->estimate;
         $estimate->delete();
 
-        //con notification ?
+        //con notification?
         $this->redirectRoute('projects.show', ['project' => $estimate->project->id]);
+    }
+
+    public function sort($key, $position)
+    {
+        $line_item = EstimateLineItem::findOrFail($key);
+        $line_item->move($position);
+        $this->estimate_refresh();
     }
 
     #[Title('Estimate')]
     public function render()
     {
         $this->authorize('view', $this->estimate);
-
         return view('livewire.estimates.show');
     }
 }

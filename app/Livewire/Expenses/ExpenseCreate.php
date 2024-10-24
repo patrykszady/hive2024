@@ -253,7 +253,7 @@ class ExpenseCreate extends Component
         }
 
         $expense = $this->form->update();
-
+        dd($expense);
         $this->modal('expenses_form_modal')->close();
         // $this->resetModal();
 

@@ -12,7 +12,6 @@ class EstimateSection extends Model
 
     protected $fillable = ['estimate_id', 'index', 'name', 'total', 'bid_id', 'created_at', 'updated_at', 'deleted_at'];
 
-
     public function estimate()
     {
         return $this->belongsTo(Estimate::class);

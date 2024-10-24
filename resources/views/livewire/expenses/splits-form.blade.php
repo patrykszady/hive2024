@@ -104,7 +104,7 @@
         @endforeach
 
         {{-- FOOTER --}}
-        <div class="flex justify-between">
+        <div class="flex justify-between sticky bottom-0">
             <flux:button disabled variant="primary" icon="currency-dollar">
                 {{money($this->splits_sum)}}
             </flux:button>

@@ -150,7 +150,15 @@
                                 @foreach($expense->splits as $split)
                                     <flux:row>
                                         <flux:cell variant="strong">{{money($split->amount)}}</flux:cell>
-                                        <flux:cell>{{$split->distribution ? $split->distribution->name : $split->project->name}}</flux:cell>
+
+                                        <flux:cell>
+                                            @if($split->distribution)
+                                                {{$split->distribution->name }}
+                                            @else
+                                                <a wire:navigate.hover href="{{route('projects.show', $split->project->id)}}">{{ $split->project->name }}</a>
+                                            @endif
+                                        </flux:cell>
+
                                         <flux:cell>{{$split->reimbursment}}</flux:cell>
                                     </flux:row>
                                 @endforeach

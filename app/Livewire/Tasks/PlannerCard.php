@@ -65,8 +65,6 @@ class PlannerCard extends Component
         }
 
         $task->start_date = $this->task_date;
-
-
         $task_days_count = $task->duration;
 
         if(in_array($task_days_count, [0, 1])){
@@ -77,7 +75,6 @@ class PlannerCard extends Component
         }
 
         $task->save();
-
         //finish moving task to another project
         $task->move($position);
 

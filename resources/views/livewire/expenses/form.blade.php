@@ -114,6 +114,7 @@
                     >
                 </flux:button>
             </div>
+            <flux:error name="no_splits" />
         </div>
 
         {{-- PAID BY --}}
@@ -217,6 +218,7 @@
             />
         </div>
 
+        {{-- FOOTER --}}
         <div class="flex space-x-2 sticky bottom-0">
             <flux:spacer />
 

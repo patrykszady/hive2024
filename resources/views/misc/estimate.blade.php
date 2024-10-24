@@ -181,11 +181,9 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($estimate->estimate_line_items()->where('section_id', $section->id)->orderBy('section_index', 'ASC')->get() as $key => $estimate_line_item)
-                                                {{-- @dd($estimate_line_item) --}}
-
+                                            @foreach($estimate->estimate_line_items()->where('section_id', $section->id)->orderBy('order', 'ASC')->get() as $key => $estimate_line_item)
                                                 <tr class="sm:border-b sm:border-gray-400">
-                                                    <td class="hidden px-3 py-5 text-right text-gray-500 align-text-top text-md sm:table-cell bg-gray-50">{{$index + 1}}.{{$estimate_line_item->section_index}}</td>
+                                                    <td class="hidden px-3 py-5 text-right text-gray-500 align-text-top text-md sm:table-cell bg-gray-50">{{$index + 1}}.{{$estimate_line_item->order}}</td>
                                                     {{-- first td --}}
 
                                                     <td class="pl-4 pr-3 text-md max-w-0 sm:pl-6 bg-gray-50">

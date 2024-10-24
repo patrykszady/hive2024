@@ -88,7 +88,7 @@ class EstimateLineItemForm extends Form
             'total' => $this->total,
             'desc' => $this->desc,
             'notes' => $this->notes,
-            'section_index' => $this->component->section_item_count + 1,
+            'order' => $this->component->section_item_count + 1,
         ]);
 
         $this->reset();

@@ -47,38 +47,30 @@
         @can('update', $project)
             <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 {{-- PROJECT ESTIMATES --}}
-                <x-cards>
-                    <x-cards.heading>
-                        <x-slot name="left">
-                            <h1>Project Estimates</b></h1>
-                        </x-slot>
+                <x-lists.details_card>
+                    {{-- HEADING --}}
+                    <x-slot:heading>
+                        <div>
+                            <flux:heading size="lg" class="mb-0">Project Estimates</flux:heading>
+                        </div>
 
                         @can('create', [App\Models\Estimate::class, $project])
-                            <x-slot name="right">
-                                <x-cards.button
-                                    href="{{route('estimates.create', $project->id)}}"
-                                    {{-- wire:click="$dispatch('estimate.create')" --}}
-                                    >
-                                    Create Estimate
-                                </x-cards.button>
-                            </x-slot>
-                            {{-- <livewire:estimates.estimate-create :project="$project" /> --}}
+                            <flux:button
+                                href="{{route('estimates.create', $project->id)}}"
+                                size="sm"
+                                >
+                                Create Estimate
+                            </flux:button>
                         @endcan
-                    </x-cards.heading>
-                    <x-cards.body>
-                        <x-lists.ul>
-                            @foreach($project->estimates as $estimate)
-                                <x-lists.search_li
-                                    :basic=true
-                                    :line_title="'Estimate ' . $estimate->id"
-                                    href="{{route('estimates.show', $estimate->id)}}"
-                                    :line_data="money($estimate->estimate_sections->sum('total'))"
-                                    >
-                                </x-lists.search_li>
-                            @endforeach
-                        </x-lists.ul>
-                    </x-cards.body>
-                </x-cards>
+                    </x-slot>
+
+                    {{-- DETAILS --}}
+                    <x-lists.details_list>
+                        @foreach($project->estimates as $estimate)
+                            <x-lists.details_item title="Estimate {{$estimate->id}}" detail="{{money($estimate->estimate_sections->sum('total'))}}" href="{{route('estimates.show', $estimate->id)}}" />
+                        @endforeach
+                    </x-lists.details_list>
+                </x-lists.details_card>
 
                 <livewire:project-status.status-create :project="$project" lazy />
             </div>

@@ -96,32 +96,34 @@
 
                                     <flux:rows x-sort="$wire.sort($key, $position)">
                                         @foreach($section->estimate_line_items as $line_item)
-                                            <flux:row x-sort:item="{{$line_item->id}}" :key="$line_item->id" >
-                                                <flux:cell>{{$index + 1}}.{{$line_item->order + 1}}</flux:cell>
-                                                <flux:cell variant="strong">
-                                                    <a
-                                                        class="cursor-pointer"
-                                                        wire:click="$dispatchTo('line-items.estimate-line-item-create', 'editOnEstimate', { estimate_line_item_id: {{$line_item->id}} })"
-                                                        >
-                                                        <b>{{$line_item->name}}</b>
-                                                    </a>
-                                                    <br>
-                                                    <i>{{$line_item->category}}@if($line_item->sub_category)/@endif{{$line_item->sub_category}}</i>
-                                                </flux:cell>
-                                                <flux:cell>{{$line_item->unit_type !== 'no_unit' ? $line_item->quantity : ''}}</flux:cell>
-                                                <flux:cell>{{$line_item->unit_type !== 'no_unit' ? $line_item->unit_type : ''}}</flux:cell>
-                                                <flux:cell>{{$line_item->unit_type !== 'no_unit' ? money($line_item->cost) : ''}}</flux:cell>
-                                                <flux:cell variant="strong">{{money($line_item->total)}}</flux:cell>
-                                            </flux:row>
-                                            <flux:row class="w-full">
-                                                <flux:cell></flux:cell>
-                                                <flux:cell>
-                                                    <div class="w-48">
-                                                        <p>{!! $line_item->desc !!}</p>
-                                                        <p><i>{!! $line_item->notes !!}</i></p>
-                                                    </div>
-                                                </flux:cell>
-                                            </flux:row>
+                                            <div>
+                                                <flux:row x-sort:item="{{$line_item->id}}" :key="$line_item->id">
+                                                    <flux:cell>{{$index + 1}}.{{$line_item->order + 1}}</flux:cell>
+                                                    <flux:cell variant="strong">
+                                                        <a
+                                                            class="cursor-pointer"
+                                                            wire:click="$dispatchTo('line-items.estimate-line-item-create', 'editOnEstimate', { estimate_line_item_id: {{$line_item->id}} })"
+                                                            >
+                                                            <b>{{$line_item->name}}</b>
+                                                        </a>
+                                                        <br>
+                                                        <i>{{$line_item->category}}@if($line_item->sub_category)/@endif{{$line_item->sub_category}}</i>
+                                                    </flux:cell>
+                                                    <flux:cell>{{$line_item->unit_type !== 'no_unit' ? $line_item->quantity : ''}}</flux:cell>
+                                                    <flux:cell>{{$line_item->unit_type !== 'no_unit' ? $line_item->unit_type : ''}}</flux:cell>
+                                                    <flux:cell>{{$line_item->unit_type !== 'no_unit' ? money($line_item->cost) : ''}}</flux:cell>
+                                                    <flux:cell variant="strong">{{money($line_item->total)}}</flux:cell>
+                                                </flux:row>
+                                                {{-- <flux:row class="w-full">
+                                                    <flux:cell></flux:cell>
+                                                    <flux:cell>
+                                                        <div class="w-48">
+                                                            <p>{!! $line_item->desc !!}</p>
+                                                            <p><i>{!! $line_item->notes !!}</i></p>
+                                                        </div>
+                                                    </flux:cell>
+                                                </flux:row> --}}
+                                            </div>
                                         @endforeach
                                     </flux:rows>
                                 </flux:table>

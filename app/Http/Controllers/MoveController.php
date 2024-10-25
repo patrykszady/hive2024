@@ -48,13 +48,26 @@ class MoveController extends Controller
         // {
         //     $split->forceDelete();
         // }
+        $sections = EstimateLineItem::whereHas('section')->get()->groupBy('section_id');
 
+        foreach($sections as $section_items){
+            if(!is_null($section_items)){
+                $iteration = 0;
+                foreach($section_items as $item){
+                    $item->order = $iteration++;
+                    $item->timestamps = false;
+                    $item->save();
+                }
+            }
+        }
+
+        dd('done');
         //->first()->sum('amount')
-        $timesheet_totals = Timesheet::where('user_id', 1)->get()->groupBy('date')->each(function($timesheet, $key) {
-            $timesheet->sum = $timesheet->sum('amount');
-        });
+        // $timesheet_totals = Timesheet::where('user_id', 1)->get()->groupBy('date')->each(function($timesheet, $key) {
+        //     $timesheet->sum = $timesheet->sum('amount');
+        // });
 
-        dd($timesheet_totals);
+        // dd($timesheet_totals);
 
 
         // Mail::to('szady81@gmail.com')->send(new TestMail());

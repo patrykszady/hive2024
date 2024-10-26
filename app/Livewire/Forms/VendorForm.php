@@ -86,26 +86,6 @@ class VendorForm extends Form
     {
         dd('form store');
     }
-    // protected function rules()
-    // {
-    //     return [
-    //         'vendor.id' => 'nullable',
-    //         'business_name_text' => 'required_without:user.id|nullable|min:3',
-    //         'vendor.business_type' => 'required',
-    //         'vendor.business_name' => 'required|min:3',
-    //         'vendor.address' => 'required_unless:vendor.business_type,Retail|nullable|min:4',
-    //         'vendor.address_2' => 'nullable',
-    //         'vendor.city' => 'required_unless:vendor.business_type,Retail|nullable|min:4',
-    //         'vendor.state' => 'required_unless:vendor.business_type,Retail|nullable|min:2|max:2',
-    //         'vendor.zip_code' => 'required_unless:vendor.business_type,Retail|nullable|digits:5',
-    //         'address' => 'nullable',
-    //         'user' => 'nullable',
-    //         'existing_vendors' => 'nullable',
-    //         'add_vendors_vendor' => 'nullable',
-    //         'vendor_id' => 'nullable',
-    //         'user_vendor_id' => 'nullable',
-    //     ];
-    // }
 
     // protected $messages =
     // [

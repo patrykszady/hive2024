@@ -38,8 +38,7 @@ class VendorCreate extends Component
     public $business_name_text = NULL;
     public $existing_vendors = NULL;
     public $add_vendors_vendor = NULL;
-
-    public $modal_show = FALSE;
+    public $open_vendor_form = FALSE;
 
     protected $listeners =
         [
@@ -76,12 +75,13 @@ class VendorCreate extends Component
 
     public function vendorModal($team_member = NULL)
     {
+        // dd($this);
         // $this->form->reset();
         // $this->business_name_text = NULL;
         // $this->vendor = Vendor::make();
         // $this->vendor->business_name = NULL;
         // $this->business_name_text = NULL;
-        // $this->modal_show = FALSE;
+        // $this->modal('vendors_form_modal')->close();
         // $this->resetModal();
         // dd($this);
         //5-18-2023 to reset modal if was clicked away and not CANCEL was clicked...whyyyyy
@@ -109,7 +109,7 @@ class VendorCreate extends Component
 
         // dd($this->user);
         $this->team_member = 'index';
-        $this->modal_show = TRUE;
+        $this->modal('vendors_form_modal')->show();
     }
 
     public function viaVendor(User $user, $business_name)
@@ -128,7 +128,7 @@ class VendorCreate extends Component
 
         $this->via_vendor = TRUE;
 
-        $this->modal_show = TRUE;
+        $this->modal('vendors_form_modal')->show();
     }
 
     public function editVendor(Vendor $vendor)
@@ -151,7 +151,7 @@ class VendorCreate extends Component
             'form_submit' => 'edit',
         ];
 
-        $this->modal_show = TRUE;
+        $this->modal('vendors_form_modal')->show();
     }
 
     public function UpdatedBusinessNameText($value)
@@ -160,19 +160,21 @@ class VendorCreate extends Component
 
         $this->existing_vendors =
             Vendor::withoutGlobalScopes()
-                ->orderBy('business_name', 'DESC')
+                ->orderBy('business_name', 'ASC')
                 ->where('business_name', 'like', "%{$this->business_name_text}%")
                 ->whereIn('id', $existing_vendor_ids)
                 ->get();
 
         $this->add_vendors_vendor =
             Vendor::withoutGlobalScopes()
-                ->orderBy('business_name', 'DESC')
+                ->orderBy('business_name', 'ASC')
                 ->where('business_name', 'like', "%{$this->business_name_text}%")
                 ->whereNotIn('id', $existing_vendor_ids)
                 ->get();
 
+        $this->form->reset();
         $this->form->business_name = $value;
+        $this->open_vendor_form = FALSE;
     }
 
     public function updated($field)
@@ -204,7 +206,7 @@ class VendorCreate extends Component
         $this->vendor = Vendor::make();
         // $this->vendor->business_name = NULL;
         $this->business_name_text = NULL;
-        $this->modal_show = FALSE;
+        $this->modal('vendors_form_modal')->show();
         $this->user = NULL;
         $this->address = NULL;
         $this->user_vendors = NULL;
@@ -233,7 +235,7 @@ class VendorCreate extends Component
         // $this->vendor_id = $vendor_id;
         // $this->mount();
         // $this->render();
-        $this->modal_show = FALSE;
+        $this->modal('vendors_form_modal')->close();
         // $this->vendor = Vendor::make();
         // $this->resetModal();
         $this->dispatch('refreshComponent')->to('vendors.vendors-index');
@@ -259,9 +261,10 @@ class VendorCreate extends Component
 
     public function edit()
     {
+        dd($this);
         $vendor = $this->form->update();
 
-        $this->modal_show = FALSE;
+        $this->modal('vendors_form_modal')->close();
 
         $this->dispatch('refreshComponent')->to('vendors.vendor-details');
 
@@ -274,7 +277,7 @@ class VendorCreate extends Component
 
     public function store()
     {
-        // $this->validate();
+        $this->validate();
 
         if(isset($this->vendor->id)){
             dd('if $this->vendor->id');
@@ -291,8 +294,8 @@ class VendorCreate extends Component
                 'city' => $this->form->city,
                 'state' => $this->form->state,
                 'zip_code' => $this->form->zip_code,
-                // 'business_phone' => $this->form->business_phone,
-                // 'business_email' => $this->form->business_email,
+                'business_phone' => $this->form->business_phone,
+                'business_email' => $this->form->business_email,
             ]);
 
             //Add existing Vendor to the logged-in-vendor || add $vendor to currently logged in vendor
@@ -318,7 +321,7 @@ class VendorCreate extends Component
         }
 
         //reset component
-        $this->modal_show = FALSE;
+        $this->modal('vendors_form_modal')->close();
         $this->dispatch('refreshComponent')->self();
         // $this->resetModal();
         $this->form->reset();

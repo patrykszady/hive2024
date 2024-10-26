@@ -16,6 +16,7 @@
             minlength="10"
             inputmode="numeric"
             placeholder="8474304439"
+            autofocus
         />
 
         {{-- 1/12/2023 if no user_cell or if updated ONLY --}}
@@ -76,16 +77,16 @@
             </div>
             {{-- CREATE/ATTACH 1099 / SUB Vendor / PAYROLL --}}
             {{--10-5-2024  CODE IN form_copy.blade.php --}}
-            <div
-                x-data="{ via_vendor: @entangle('via_vendor'), model: @entangle('model.id') }"
-                x-show="via_vendor && model != 'NEW'"
+            {{-- <div
+                x-data="{ via_vendor: @entangle('form.via_vendor'), model: @entangle('model.id') }"
+                x-show="via_vendor && model == 'NEW'"
                 x-transition
                 class="my-4 space-y-4"
-                >
+                > --}}
 
                 {{-- USER / VENDOR ROLE --}}
-                <flux:select label="User Role" wire:model.live="form.role" placeholder="Choose User Role...">
-                    {{-- <flux:option value="" readonly>Select Role</flux:option> --}}
+                <flux:select label="User Role" wire:model.live="form.role">
+                    <flux:option value="" readonly>Select Role</flux:option>
                     <flux:option value="1">Admin</flux:option>
                     <flux:option value="2">Team Member</flux:option>
                 </flux:select>
@@ -143,7 +144,7 @@
                         placeholder="10"
                     />
                 </div>
-            </div>
+            {{-- </div> --}}
         </div>
 
         <div class="flex space-x-2 sticky bottom-0">

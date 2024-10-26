@@ -144,6 +144,7 @@ class UserCreate extends Component
     //new Vendor or Client member
     public function newMember($model, $model_id = NULL)
     {
+        // dd($model, $model_id);
         $this->user_cell = FALSE;
         $this->user_form = NULL;
 
@@ -239,7 +240,7 @@ class UserCreate extends Component
 
     public function update()
     {
-        dd('in update');
+        dd('in update UserCreate');
     }
 
     public function save()
@@ -255,8 +256,8 @@ class UserCreate extends Component
         if($this->model['type'] == 'vendor'){
             // when creating new Vendor
             if($this->model['id'] == 'NEW'){
-                $user->hourly_rate = 0;
-                $user->role = 1;
+                $user->hourly_rate = $this->form->hourly_rate;
+                $user->role = $this->form->role;
 
                 $this->modal('user_form_modal')->close();
                 $this->dispatch('userVendor', $user->toArray());

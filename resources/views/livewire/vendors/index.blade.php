@@ -46,7 +46,7 @@
             </flux:table>
 
             {{-- VENDOR FORM MODAL --}}
-            {{-- <livewire:vendors.vendor-create /> --}}
+            <livewire:vendors.vendor-create />
         </div>
     </flux:card>
 </div>

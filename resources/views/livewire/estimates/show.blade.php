@@ -30,7 +30,7 @@
             <flux:separator variant="subtle" />
 
             <livewire:estimates.estimate-accept :estimate="$estimate"/>
-            {{-- <livewire:estimates.estimate-duplicate /> --}}
+            <livewire:estimates.estimate-duplicate />
             {{-- <livewire:estimates.estimate-combine :client="$estimate->client"/> --}}
 
             {{-- DETAILS --}}
@@ -147,6 +147,14 @@
                 </div>
             </flux:card>
         @endforeach
+
+        <flux:button
+            wire:click="sectionAdd"
+            variant="primary"
+            icon="plus"
+            >
+            Section
+        </flux:button>
         <livewire:line-items.estimate-line-item-create :estimate="$estimate"/>
     </div>
 </div>

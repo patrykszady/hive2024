@@ -76,10 +76,28 @@
         {{-- SECTIONS --}}
         @foreach($sections as $index => $section)
             <flux:card class="space-y-2">
+                {{-- HEADING --}}
+                <flux:heading>
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input.group>
+                            <flux:input
+                                wire:model.blur="sections.{{$index}}.name"
+                                name="sections.{{$index}}.name"
+                                type="text"
+                                required
+                                placeholder="Section Name"
+                                value="{{$section->name}}"
+                                />
+
+                            <flux:button wire:click="sectionUpdate({{$index}})">Save Name</flux:button>
+                        </flux:input.group>
+                    </div>
+                </flux:heading>
+
                 <flux:accordion transition>
                     <flux:accordion.item>
                         <flux:accordion.heading>
-                            <flux:heading size="lg" class="mb-0">{{$section->name}}</flux:heading>
+                            Show Line Items
                         </flux:accordion.heading>
 
                         <flux:accordion.content>

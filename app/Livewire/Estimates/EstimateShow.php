@@ -102,8 +102,7 @@ class EstimateShow extends Component
             //OR put    // public $items_rearrange; on Model
         $section->offsetUnset('items_rearrange');
         $section->save();
-
-        // $this->estimate_refresh();
+        $this->estimate_refresh();
 
         $this->dispatch('notify',
             type: 'success',

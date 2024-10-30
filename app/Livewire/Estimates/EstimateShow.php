@@ -12,6 +12,8 @@ use Spatie\Browsershot\Browsershot;
 use Rmunate\Utilities\SpellNumber;
 use Illuminate\Support\Facades\Response;
 
+use Flux;
+
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
@@ -78,10 +80,11 @@ class EstimateShow extends Component
         );
     }
 
-    public function sectionRemove($section_id)
+    public function sectionRemove($section_index)
     {
-        $section = $this->sections->where('id', $section_id)->first();
+        $section = $this->sections[$section_index];
         $estimate_line_items = $this->estimate->estimate_line_items()->where('section_id', $section->id)->get();
+
         foreach($estimate_line_items as $estimate_line_item){
             $estimate_line_item->delete();
         }
@@ -89,9 +92,13 @@ class EstimateShow extends Component
         $section->delete();
         $this->estimate_refresh();
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Section Removed'
+        Flux::toast(
+            duration: 10000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Section Removed',
+            // route / href / wire:click
+            text: 'Section ' . $section->name,
         );
     }
 
@@ -104,9 +111,13 @@ class EstimateShow extends Component
         $section->save();
         $this->estimate_refresh();
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Section Name Updated'
+        Flux::toast(
+            duration: 10000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Section Name Updated',
+            // route / href / wire:click
+            text: 'Section ' . $section->name,
         );
     }
 
@@ -156,10 +167,10 @@ class EstimateShow extends Component
 
         $this->estimate_refresh();
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Section Duplicated'
-        );
+        // $this->dispatch('notify',
+        //     type: 'success',
+        //     content: 'Section Duplicated'
+        // );
     }
 
     public function getEstimateTotalProperty()

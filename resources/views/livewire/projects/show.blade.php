@@ -25,6 +25,7 @@
                     <x-lists.details_item title="Project Client" detail="{{$project->client->name}}" href="{{route('clients.show', $project->client)}}" />
                     <x-lists.details_item title="Project Name" detail="{!! $project->project_name !!}" />
                     <x-lists.details_item title="Jobsite Address" detail="{!!$project->full_address!!}" href="{{$project->getAddressMapURI()}}" target="_blank" />
+
                     @can('update', $project)
                         <x-lists.details_item title="Billing Address" detail="{!!$project->client->full_address!!}" />
                         {{-- @if($project->belongs_to_vendor_id == auth()->user()->vendor->id)

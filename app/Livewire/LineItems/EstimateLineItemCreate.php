@@ -86,6 +86,7 @@ class EstimateLineItemCreate extends Component
     public function removeFromEstimate()
     {
         $this->estimate_line_item->delete();
+        $this->modal('estimate_line_item_form_modal')->close();
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');
     }
 

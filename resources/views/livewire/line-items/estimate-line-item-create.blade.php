@@ -128,6 +128,7 @@
         <div class="flex space-x-2 sticky bottom-0">
             <flux:spacer />
 
+            <flux:button wire:click="removeFromEstimate" variant="danger">Remove</flux:button>
             <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
         </div>
     </form>

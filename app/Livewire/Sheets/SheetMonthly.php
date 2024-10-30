@@ -20,7 +20,7 @@ class SheetMonthly extends Component
     public function mount()
     {
         $end_date = Carbon::today()->endOfMonth();
-        $start_date = Carbon::today()->endOfMonth()->subMonths(11);
+        $start_date = Carbon::today()->startOfMonth()->subMonths(12);
 
         // Create a period between the start and end dates
         $period = CarbonPeriod::create($start_date, '1 month', $end_date);

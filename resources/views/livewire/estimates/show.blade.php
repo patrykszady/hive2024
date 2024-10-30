@@ -87,9 +87,19 @@
                                 required
                                 placeholder="Section Name"
                                 value="{{$section->name}}"
-                                />
+                            />
 
-                            <flux:button wire:click="sectionUpdate({{$index}})">Save Name</flux:button>
+                            <flux:dropdown>
+                                <flux:button icon-trailing="chevron-down"></flux:button>
+
+                                <flux:menu>
+                                    <flux:menu.item wire:click="sectionUpdate({{$index}})">Update Section Name</flux:menu.item>
+                                    <flux:menu.separator />
+                                    <flux:menu.item wire:click="sectionDuplicate({{$index}})">Duplicate Section</flux:menu.item>
+                                    <flux:menu.separator />
+                                    <flux:menu.item wire:click="sectionRemove({{$index}})" variant="danger">Delete Section</flux:menu.item>
+                                </flux:menu>
+                            </flux:dropdown>
                         </flux:input.group>
                     </div>
                 </flux:heading>
@@ -97,7 +107,7 @@
                 <flux:accordion transition>
                     <flux:accordion.item>
                         <flux:accordion.heading>
-                            Show Line Items
+                            {{-- Show Line Items --}}
                         </flux:accordion.heading>
 
                         <flux:accordion.content>

@@ -30,20 +30,15 @@
                 >
                 @if(!is_null($existing_vendors))
                     @if(!$existing_vendors->isEmpty())
-                        <flux:label>Existing Vendors</flux:label>
-                        @foreach($existing_vendors as $vendor_found)
-                            <flux:command.items>
-                                <flux:command.item
-                                    {{-- wire:click="..." --}}
-                                    >
-                                    <div>
-                                        {{$vendor_found->business_name}}
-                                        <br>
-                                        <i>{{$vendor_found->business_type}}</i>
-                                    </div>
-                                </flux:command.item>
-                            </flux:command.items>
-                        @endforeach
+                        <flux:radio.group label="Existing Vendors" variant="cards" class="flex-col" :indicator="false">
+                            @foreach($existing_vendors as $vendor_found)
+                                <flux:radio
+                                    value="{{$vendor_found->id}}"
+                                    label="{!!$vendor_found->business_name!!}"
+                                    description="{{$vendor_found->business_type}}"
+                                />
+                            @endforeach
+                        </flux:radio.group>
                     @endif
                 @endif
 
@@ -66,7 +61,11 @@
                     @endif
                 @endif
 
-                <div x-data="{open_vendor_form: false}">
+                <div
+                    x-data="{open_vendor_form: @entangle('open_vendor_form'), business_name_text: @entangle('business_name_text')}"
+                    x-show="business_name_text && open_vendor_form == false"
+                    class="mt-4"
+                    >
                     @if($view_text['card_title'] != 'Update Vendor')
                         <flux:button
                             class="w-full"
@@ -77,6 +76,12 @@
                             <b>Create New Vendor</b>
                         </flux:button>
                     @endif
+                </div>
+
+                <div
+                    x-data="{business_name_text: @entangle('business_name_text')}"
+                    x-show="business_name_text"
+                    >
 
                     {{-- BUSINESS NAME & TYPE --}}
                     <div
@@ -144,21 +149,15 @@
 
                         @if(!is_null($user_vendors))
                             @if(!$user_vendors->isEmpty())
-                            <flux:label>{{$user->first_name}}'s Existing Vendors</flux:label>
-                                @foreach($user_vendors as $user_vendor_found)
-                                    <flux:command.items>
-                                        <flux:command.item
-                                            {{-- wire:click="..." --}}
-                                            >
-                                            <div>
-                                                {{$user_vendor_found->business_name}}
-                                                <br>
-                                                <i>{{$user_vendor_found->business_type}} / </i>
-                                                {{-- <i>{{$user_vendor_found->pivot->role_id == 1 ? 'Admin' : 'Member'}}</i> --}}
-                                            </div>
-                                        </flux:command.item>
-                                    </flux:command.items>
-                                @endforeach
+                                <flux:radio.group label="{{$user->first_name}}'s Existing Vendors" variant="cards" class="flex-col" :indicator="false">
+                                    @foreach($user_vendors as $user_vendor_found)
+                                        <flux:radio
+                                            value="{{$user_vendor_found->id}}"
+                                            label="{!!$user_vendor_found->business_name!!}"
+                                            description="{{$user_vendor_found->business_type}}"
+                                        />
+                                    @endforeach
+                                </flux:radio.group>
                             @endif
                         @endif
                     </div>
@@ -192,13 +191,21 @@
 
         {{-- FOOTER --}}
         <div
-            x-data="{business_name_text: @entangle('business_name_text')}"
-            x-show="business_name_text"
+            x-data="{business_name_text: @entangle('business_name_text'), business_type: @entangle('form.business_type'), zip_code: @entangle('form.zip_code')}"
+            x-show="business_name_text && business_type"
             x-transition
             >
             <div class="flex space-x-2 sticky bottom-0">
                 <flux:spacer />
-                <flux:button type="submit" variant="primary" wire:click="{{$view_text['form_submit']}}">{{$view_text['button_text']}}</flux:button>
+                <flux:button
+                    wire:click="{{$view_text['form_submit']}}"
+                    x-bind:disabled="!zip_code && business_type != 'Retail'"
+                    :loading="false"
+                    type="submit"
+                    variant="primary"
+                    >
+                    {{$view_text['button_text']}}
+                </flux:button>
             </div>
         </div>
     </form>

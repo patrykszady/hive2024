@@ -11,6 +11,8 @@ use App\Livewire\Clients\ClientCreate;
 // use App\Livewire\Users\TeamMembers;
 use App\Livewire\Vendors\VendorCreate;
 
+use Flux;
+
 use Livewire\Component;
 use App\Livewire\Dashboard\DashboardShow;
 
@@ -277,10 +279,13 @@ class UserCreate extends Component
 
                     $this->dispatch('confirmProcessStep', 'team_members')->to('entry.vendor-registration');
                     // $this->dispatch('fakeRefresh', vendor: $vendor->id)->to(TeamMembers::class);
-
-                    $this->dispatch('notify',
-                        type: 'success',
-                        content: 'User Added to Vendor'
+                    Flux::toast(
+                        duration: 5000,
+                        position: 'top right',
+                        variant: 'success',
+                        heading: 'User Added to Vendor.',
+                        // route / href / wire:click
+                        text: '',
                     );
                 }else{
                     $this->addError('user_exists_on_model', 'User already belongs to Vendor.');

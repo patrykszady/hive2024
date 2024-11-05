@@ -31,26 +31,22 @@
             x-show="!open && !address"
             x-transition
             >
-            <flux:radio.group wire:model.live="user_client_id" label="Existing Clients" class="space-y-4">
+            <flux:radio.group wire:model.live="user_client_id" label="Existing Clients" variant="cards" class="flex-col" :indicator="false">
                 @if($user_clients)
                     @foreach ($user_clients as $client)
-                        <flux:card class="space-y-6">
-                            <flux:radio
-                                name="clients"
-                                value="{{$client->id}}"
-                                label="{{$client->address}}"
-                                description="{!!$client->name!!}"
-                                {{-- @if($loop->first)
-                                    checked
-                                @endif --}}
-                            />
-                        </flux:card>
+                        <flux:radio
+                            name="clients"
+                            value="{{$client->id}}"
+                            label="{{$client->address}}"
+                            description="{!!$client->name!!}"
+                            {{-- @if($loop->first)
+                                checked
+                            @endif --}}
+                        />
                     @endforeach
                 @endif
 
-                <flux:card class="space-y-6">
-                    <flux:radio name="clients" value="NEW" label="New Client" />
-                </flux:card>
+                <flux:radio name="clients" value="NEW" label="New Client" />
             </flux:radio.group>
 
             <flux:separator variant="subtle" />

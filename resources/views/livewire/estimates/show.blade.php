@@ -22,6 +22,10 @@
 
                         <flux:menu.separator />
 
+                        <flux:menu.item wire:click="export_csv">Export Excel Estimate</flux:menu.item>
+
+                        <flux:menu.separator />
+
                         <flux:menu.item wire:click="delete" variant="danger">Delete</flux:menu.item>
                     </flux:menu>
                 </flux:dropdown>

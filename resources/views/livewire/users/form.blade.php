@@ -77,19 +77,19 @@
             </div>
             {{-- CREATE/ATTACH 1099 / SUB Vendor / PAYROLL --}}
             {{--10-5-2024  CODE IN form_copy.blade.php --}}
-            {{-- <div
-                x-data="{ via_vendor: @entangle('form.via_vendor'), model: @entangle('model.id') }"
-                x-show="via_vendor && model == 'NEW'"
+            <div
+                x-data="{ model_type: @entangle('model.type'), model_id: @entangle('model.id') }"
+                {{--  && model_id == 'NEW' --}}
+                x-show="model_type == 'vendor'"
                 x-transition
                 class="my-4 space-y-4"
-                > --}}
+                >
 
                 {{-- USER / VENDOR ROLE --}}
-                <flux:select label="User Role" wire:model.live="form.role">
-                    <flux:option value="" readonly>Select Role</flux:option>
-                    <flux:option value="1">Admin</flux:option>
-                    <flux:option value="2">Team Member</flux:option>
-                </flux:select>
+                <flux:radio.group wire:model.live="form.role" label="User Role" variant="segmented">
+                    <flux:radio value="1" label="Admin" />
+                    <flux:radio value="2" label="Team Member" />
+                </flux:radio.group>
 
                 <div
                     x-data="{ role: @entangle('form.role')}"
@@ -144,7 +144,7 @@
                         placeholder="10"
                     />
                 </div>
-            {{-- </div> --}}
+            </div>
         </div>
 
         <div class="flex space-x-2 sticky bottom-0">
@@ -156,6 +156,7 @@
                 x-transition
                 >
                 <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
+                <flux:error name="user_exists_on_model" />
             </div>
         </div>
     </form>

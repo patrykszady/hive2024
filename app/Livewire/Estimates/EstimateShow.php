@@ -17,6 +17,13 @@ use Flux;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
+use Spatie\SimpleExcel\SimpleExcelWriter;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\CellAlignment;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Common\Entity\Style\Border;
+use OpenSpout\Common\Entity\Style\BorderPart;
+
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EstimateShow extends Component
@@ -237,6 +244,61 @@ class EstimateShow extends Component
         $line_item = EstimateLineItem::findOrFail($key);
         $line_item->move($position);
         $this->estimate_refresh();
+    }
+
+    public function export_csv()
+    {
+        $border = new Border(
+            new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THICK, Border::STYLE_SOLID)
+        );
+        $border_thin = new Border(
+            new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
+        );
+
+        $writer =
+            SimpleExcelWriter::create('estimate-' . $this->estimate->number . '.xlsx')
+                ->addHeader([
+                    '',
+                    'title',
+                    'category',
+                    'sub_category',
+                    'quantity',
+                    'unit',
+                    'cost',
+                    'total'
+                ]);
+
+        $writer->addRow([]);
+
+        foreach($this->estimate->estimate_sections as $index => $section){
+            $writer->addRow([
+                'title' => $section->name,
+                '',
+                'category' => NULL,
+                'sub_category' => NULL,
+                'quantity' => NULL,
+                'unit' => NULL,
+                'cost' => NULL,
+                'total' => $section->total,
+            ], (new Style())->setFontBold()->setBorder($border));
+
+            foreach($section->estimate_line_items as $line_item){
+                $writer->addRow([
+                    '' => $index + 1 . '.' . $line_item->order + 1,
+                    'title' => $line_item->name,
+                    'category' => $line_item->category,
+                    'sub_category' => $line_item->sub_category,
+                    'quantity' => $line_item->quantity,
+                    'unit' => $line_item->unit_type,
+                    'cost' => $line_item->cost,
+                    'total' => $line_item->total,
+                ]);
+            }
+
+            $writer->addRow([]);
+        }
+
+        $writer->close();
     }
 
     #[Title('Estimate')]

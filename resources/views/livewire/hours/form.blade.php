@@ -24,8 +24,8 @@
                 <flux:separator variant="subtle" />
 
                 <div class="space-y-2 mt-2">
-                    <flux:button class="w-full"><b>{{$this->selected_date->format('D M jS, Y')}}</b></flux:button>
-                    <flux:button class="w-full">Hours | <b>{{$this->hours_count}}</b></flux:button>
+                    <flux:button class="w-full cursor-default"><b>{{$this->selected_date->format('D M jS, Y')}}</b></flux:button>
+                    <flux:button class="w-full cursor-default">Hours | <b>{{$this->hours_count}}</b></flux:button>
                     <flux:button type="submit" variant="primary" class="w-full">{{$view_text['button_text']}}</flux:button>
                 </div>
 

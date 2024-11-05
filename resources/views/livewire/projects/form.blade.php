@@ -32,7 +32,7 @@
             <flux:fieldset>
                 <flux:legend>Address</flux:legend>
 
-                <flux:radio.group wire:model.live="form.project_existing_address">
+                <flux:radio.group wire:model.live="form.project_existing_address" variant="cards" class="flex-col" :indicator="false">
                     @foreach($client_addresses as $project_address)
                         @if(isset($project_address->id))
                             <flux:radio

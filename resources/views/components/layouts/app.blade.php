@@ -46,61 +46,63 @@
                 </li>
             @endif --}}
 
-            <flux:navlist variant="outline">
-                {{-- RECEIPT ACCOUNTS ERRORS --}}
-                @if(auth()->user()->vendor->receipt_accounts()->get()->whereNotNull('options.errors')->isNotEmpty())
-                    <flux:badge variant="solid" color="red" icon="exclamation-triangle" class="mb-4">
-                        <a wire:navigate.hover href="/company_emails">
-                            Account Error
-                        </a>
-                    </flux:badge>
-                @endif
+            @if(!Route::is('vendor_selection'))
+                <flux:navlist variant="outline">
+                    {{-- RECEIPT ACCOUNTS ERRORS --}}
+                    @if(auth()->user()->vendor->receipt_accounts()->get()->whereNotNull('options.errors')->isNotEmpty())
+                        <flux:badge variant="solid" color="red" icon="exclamation-triangle" class="mb-4">
+                            <a wire:navigate.hover href="/company_emails">
+                                Account Error
+                            </a>
+                        </flux:badge>
+                    @endif
 
-                <flux:navlist.item wire:navigate.hover icon="home" href="/dashboard">Home</flux:navlist.item>
-                <flux:navlist.item wire:navigate.hover icon="folder" href="/projects">Projects</flux:navlist.item>
-                <flux:navlist.item wire:navigate.hover icon="calendar" href="/planner_schedule">Planner</flux:navlist.item>
+                    <flux:navlist.item wire:navigate.hover icon="home" href="/dashboard">Home</flux:navlist.item>
+                    <flux:navlist.item wire:navigate.hover icon="folder" href="/projects">Projects</flux:navlist.item>
+                    <flux:navlist.item wire:navigate.hover icon="calendar" href="/planner_schedule">Planner</flux:navlist.item>
 
-                @canany(['viewAny', 'create'], App\Models\Expense::class)
-                    <flux:navlist.group expandable heading="Finances">
-                        <flux:navlist.item wire:navigate.hover href="/expenses" icon="credit-card">Expenses</flux:navlist.item>
-                        @can('viewAny', App\Models\Bank::class)
-                            <flux:navlist.item wire:navigate.hover href="/payments" icon="banknotes">Payments</flux:navlist.item>
+                    @canany(['viewAny', 'create'], App\Models\Expense::class)
+                        <flux:navlist.group expandable heading="Finances">
+                            <flux:navlist.item wire:navigate.hover href="/expenses" icon="credit-card">Expenses</flux:navlist.item>
+                            @can('viewAny', App\Models\Bank::class)
+                                <flux:navlist.item wire:navigate.hover href="/payments" icon="banknotes">Payments</flux:navlist.item>
+                            @endcan
+                            <flux:navlist.item wire:navigate.hover href="/checks" icon="pencil-square">Checks</flux:navlist.item>
+                        </flux:navlist.group>
+                    @endcanany
+
+                    <flux:navlist.item wire:navigate.hover icon="user-group" href="/vendors">Vendors</flux:navlist.item>
+                    <flux:navlist.item wire:navigate.hover icon="users" href="/clients">Clients</flux:navlist.item>
+
+                    <flux:navlist.group expandable heading="Timesheets">
+                        <flux:navlist.item wire:navigate.hover href="/hours/create" icon="clock">Hours</flux:navlist.item>
+                        <flux:navlist.item wire:navigate.hover href="/timesheets" icon="document-currency-dollar">Timesheets</flux:navlist.item>
+                        @can('viewPayment', App\Models\Timesheet::class)
+                            <flux:navlist.item wire:navigate.hover href="/timesheets/payments" icon="currency-dollar">Payments</flux:navlist.item>
                         @endcan
-                        <flux:navlist.item wire:navigate.hover href="/checks" icon="pencil-square">Checks</flux:navlist.item>
                     </flux:navlist.group>
-                @endcanany
 
-                <flux:navlist.item wire:navigate.hover icon="user-group" href="/vendors">Vendors</flux:navlist.item>
-                <flux:navlist.item wire:navigate.hover icon="users" href="/clients">Clients</flux:navlist.item>
+                    @can('viewAny', App\Models\Bank::class)
+                        <flux:navlist.group expandable heading="Accounting">
+                            <flux:navlist.item wire:navigate.hover href="/banks" icon="building-library">Banks</flux:navlist.item>
+                            <flux:navlist.item wire:navigate.hover href="/distributions" icon="receipt-percent">Distributions</flux:navlist.item>
+                            <flux:navlist.item wire:navigate.hover href="/sheets" icon="document-currency-dollar">Sheets</flux:navlist.item>
+                            <flux:navlist.item wire:navigate.hover href="/company_emails" icon="inbox-stack">Company Emails</flux:navlist.item>
 
-                <flux:navlist.group expandable heading="Timesheets">
-                    <flux:navlist.item wire:navigate.hover href="/hours/create" icon="clock">Hours</flux:navlist.item>
-                    <flux:navlist.item wire:navigate.hover href="/timesheets" icon="document-currency-dollar">Timesheets</flux:navlist.item>
-                    @can('viewPayment', App\Models\Timesheet::class)
-                        <flux:navlist.item wire:navigate.hover href="/timesheets/payments" icon="currency-dollar">Payments</flux:navlist.item>
+                            @if(auth()->user()->primary_vendor->pivot->role_id === 1)
+                                <flux:navlist.item wire:navigate.hover href="/vendor_docs" icon="eye-slash">Vendor Docs</flux:navlist.item>
+                            @endif
+                        </flux:navlist.group>
                     @endcan
-                </flux:navlist.group>
 
-                @can('viewAny', App\Models\Bank::class)
-                    <flux:navlist.group expandable heading="Accounting">
-                        <flux:navlist.item wire:navigate.hover href="/banks" icon="building-library">Banks</flux:navlist.item>
-                        <flux:navlist.item wire:navigate.hover href="/distributions" icon="receipt-percent">Distributions</flux:navlist.item>
-                        <flux:navlist.item wire:navigate.hover href="/sheets" icon="document-currency-dollar">Sheets</flux:navlist.item>
-                        <flux:navlist.item wire:navigate.hover href="/company_emails" icon="inbox-stack">Company Emails</flux:navlist.item>
-
-                        @if(auth()->user()->primary_vendor->pivot->role_id === 1)
-                            <flux:navlist.item wire:navigate.hover href="/vendor_docs" icon="eye-slash">Vendor Docs</flux:navlist.item>
-                        @endif
-                    </flux:navlist.group>
-                @endcan
-
-                @if(auth()->user()->id === 1)
-                    <flux:navlist.group expandable heading="Global Actions">
-                        <flux:navlist.item wire:navigate.hover href="/transactions/match_vendor" icon="eye-slash">Match Vendor</flux:navlist.item>
-                        <flux:navlist.item wire:navigate.hover href="/transactions/bulk_match" icon="eye-slash">Match Transactions</flux:navlist.item>
-                    </flux:navlist.group>
-                @endif
-            </flux:navlist>
+                    @if(auth()->user()->id === 1)
+                        <flux:navlist.group expandable heading="Global Actions">
+                            <flux:navlist.item wire:navigate.hover href="/transactions/match_vendor" icon="eye-slash">Match Vendor</flux:navlist.item>
+                            <flux:navlist.item wire:navigate.hover href="/transactions/bulk_match" icon="eye-slash">Match Transactions</flux:navlist.item>
+                        </flux:navlist.group>
+                    @endif
+                </flux:navlist>
+            @endif
 
             <flux:spacer />
 

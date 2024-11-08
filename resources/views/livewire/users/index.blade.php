@@ -2,9 +2,15 @@
 <flux:card class="space-y-2 mb-4">
     <div class="flex justify-between">
         <flux:heading size="lg">{{$view_text['card_title']}}</flux:heading>
-        {{-- @can('create_client_member', [App\Models\User::class, $client]) --}}
-            <flux:button wire:navigate.hover wire:click="add_user" icon="plus" size="sm">{{$view_text['card_title']}}</flux:button>
-        {{-- @endcan --}}
+        @if($view === 'vendors.show')
+            @can('create_team_member', [App\Models\User::class, $vendor->id])
+                <flux:button wire:navigate.hover wire:click="add_user" icon="plus" size="sm">{{$view_text['card_title']}}</flux:button>
+            @endcan
+        @else
+            @can('create_client_member', [App\Models\User::class, $client])
+                <flux:button wire:navigate.hover wire:click="add_user" icon="plus" size="sm">{{$view_text['card_title']}}</flux:button>
+            @endcan
+        @endif
     </div>
 
     <flux:separator variant="subtle" />
@@ -14,13 +20,13 @@
             <flux:column>Name</flux:column>
             <flux:column>Phone</flux:column>
             <flux:column>Email</flux:column>
-            @if ($view === 'vendors.show')
+            @if($view === 'vendors.show')
                 <flux:column>Role</flux:column>
             @endif
         </flux:columns>
 
         <flux:rows>
-            @foreach ($users as $user)
+            @foreach($users as $user)
                 <flux:row :key="$user->id">
                     <flux:cell
                         wire:navigate.hover
@@ -32,7 +38,7 @@
                     </flux:cell>
                     <flux:cell>{{ $user->cell_phone }}</flux:cell>
                     <flux:cell>{{ Str::limit($user->email, 8) }}</flux:cell>
-                    @if ($view === 'vendors.show')
+                    @if($view === 'vendors.show')
                         <flux:cell>
                             {{ $user->getVendorRole($vendor->id) }}
                             {{-- <flux:badge inset="top bottom" color="{{$user->getVendorRole($vendor->id) === 'Admin' ? 'cyan' : 'purple'}}">

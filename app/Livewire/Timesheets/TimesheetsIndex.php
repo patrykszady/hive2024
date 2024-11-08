@@ -60,8 +60,6 @@ class TimesheetsIndex extends Component
                     });
                 });
 
-        // dd($weekly_hours_to_confirm);
-
         $timesheets =
             Timesheet::
                 orderBy('date', 'DESC')
@@ -81,7 +79,7 @@ class TimesheetsIndex extends Component
                         $group->sum_amount = $group->sum('amount');
                         $group->sum_hours = $group->sum('hours');
                     });
-                })->paginate(4);
+                })->paginate(8);
 
         return view('livewire.timesheets.index', [
             'weekly_hours_to_confirm' => $weekly_hours_to_confirm,

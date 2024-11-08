@@ -67,20 +67,17 @@
             <flux:field>
                 <flux:label>Project</flux:label>
                 <flux:input.group>
-                    <flux:select wire:model.live="form.project_id" variant="listbox" searchable x-bind:disabled="split" placeholder="Choose project...">
-                        <x-slot name="search">
-                            <flux:select.search placeholder="Search..." />
-                        </x-slot>
+                    <flux:select wire:model.live="form.project_id" variant="listbox" searchable x-bind:disabled="split" placeholder="Choose project..." >
                         {{-- <flux:option value="" readonly x-text="split ? 'Expense is Split' : 'Select Project'"></flux:option> --}}
 
                         @foreach($projects as $project)
-                            <flux:option value="{{$project->id}}"><div>{{$project->address}} <br> <i>{{$project->project_name}}</i></div></flux:option>
+                            <flux:option wire:key="{{$project->id}}" value="{{$project->id}}"><div>{{$project->address}} <br> <i>{{$project->project_name}}</i></div></flux:option>
                         @endforeach
 
                         <flux:option disabled>--------------</flux:option>
 
                         @foreach($distributions as $distribution)
-                            <flux:option value="D:{{$distribution->id}}">{{$distribution->name}}</flux:option>
+                            <flux:option wire:key="D:{{$distribution->id}}" value="D:{{$distribution->id}}">{{$distribution->name}}</flux:option>
                         @endforeach
                     </flux:select>
 

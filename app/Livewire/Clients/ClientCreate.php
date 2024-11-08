@@ -7,7 +7,10 @@ use App\Models\User;
 
 use App\Livewire\Forms\ClientForm;
 
+use Flux;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use Livewire\Attributes\Computed;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -125,25 +128,28 @@ class ClientCreate extends Component
     //     // $this->address = NULL;
     // }
 
-    public function add_user_to_client()
-    {
-        //ADD USER TO CLIENT
-        $this->form->user->clients()->attach($this->client->id);
+    // public function add_user_to_client()
+    // {
+    //     //ADD USER TO CLIENT
+    //     $this->form->user->clients()->attach($this->client->id);
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'User Added to Client',
-            route: 'clients/' . $this->client->id
-        );
+    //     Flux::toast(
+    //         duration: 5000,
+    //         position: 'top right',
+    //         variant: 'success',
+    //         heading: 'User Added to Client.',
+    //         // route / href / wire:click
+    //         text: '',
+    //     );
 
-        $this->modal('client_form_modal')->close();
+    //     $this->modal('client_form_modal')->close();
 
-        $this->dispatch('refreshComponent')->to('clients.clients-show');
-    }
+    //     $this->dispatch('refreshComponent')->to('clients.clients-show');
+    //     $this->dispatch('refreshComponent')->to('users.users-index');
+    // }
 
     public function editClient(Client $client)
     {
-
         // dd('in editClient');
         // $this->resetModal();
 
@@ -188,6 +194,7 @@ class ClientCreate extends Component
 
     public function save()
     {
+        // dd($this);
         //if existing Client ... redirect to that with Livewire.navigate
         if(is_numeric($this->user_client_id)){
             $this->modal('client_form_modal')->close();
@@ -198,11 +205,11 @@ class ClientCreate extends Component
         if(!is_numeric($this->user_client_id)){
             $client = $this->form->store();
 
-            $this->dispatch('notify',
-                type: 'success',
-                content: 'Client Created',
-                route: 'clients/' . $client->id
-            );
+            // $this->dispatch('notify',
+            //     type: 'success',
+            //     content: 'Client Created',
+            //     route: 'clients/' . $client->id
+            // );
         }else{
             $auth_user_vendor = auth()->user()->vendor;
             $client = $this->user_clients[$this->user_client_id];
@@ -218,11 +225,11 @@ class ClientCreate extends Component
                 );
             }else{
                 $auth_user_vendor->clients()->attach($client->id);
-                $this->dispatch('notify',
-                    type: 'success',
-                    content: 'Client Added',
-                    route: 'clients/' . $client->id
-                );
+                // $this->dispatch('notify',
+                //     type: 'success',
+                //     content: 'Client Added',
+                //     route: 'clients/' . $client->id
+                // );
             }
         }
 

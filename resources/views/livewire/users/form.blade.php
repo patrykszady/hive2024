@@ -31,13 +31,14 @@
                 >
                 Search User
             </flux:button>
+            <flux:error name="user_exists_on_model" />
         </div>
 
         {{-- USER DETAILS --}}
         <div
             x-data="{ open: @entangle('user_form'), user: @entangle('form.user') }"
             x-show="open"
-            class="my-4 space-y-4"
+            class="space-y-4"
             >
             <flux:input
                 wire:model.live.debounce.500ms="form.first_name"
@@ -78,10 +79,10 @@
             {{-- CREATE/ATTACH 1099 / SUB Vendor / PAYROLL --}}
             {{--10-5-2024  CODE IN form_copy.blade.php --}}
             <div
-                x-data="{ model_type: @entangle('model.type'), model_id: @entangle('model.id') }"
+            {{-- model_id: @entangle('model.id') --}}
+                x-data="{ model_type: @entangle('model.type'), user_form: @entangle('form.user') }"
                 {{--  && model_id == 'NEW' --}}
-                x-show="model_type == 'vendor'"
-                x-transition
+                x-show="model_type == 'vendor' && user_form"
                 class="my-4 space-y-4"
                 >
 
@@ -99,14 +100,14 @@
                     >
 
                     {{-- VIA VENDOR --}}
-                    <flux:select label="Via Vendor" wire:model.live="form.via_vendor" placeholder="Choose Via Vendor...">
-                        {{-- <flux:option value="" readonly>Select Role</flux:option> --}}
+                    <flux:radio.group wire:model.live="form.via_vendor" class="flex-col" label="Via Vendor" variant="cards" :indicator="false">
+                        {{-- @dd($via_vendors) --}}
                         @foreach($via_vendors as $via_vendor)
-                            <flux:option value="{{$via_vendor->id}}">{{$via_vendor->business_name}}, {{$via_vendor->business_type}}</flux:option>
+                            <flux:radio value="{{$via_vendor->id}}" label="{!!$via_vendor->business_name!!} {{$via_vendor->business_type}}" description="{{$via_vendor->address}} {{$via_vendor->city . ', ' . $via_vendor->state . ' ' . $via_vendor->zip_code}}" />
                         @endforeach
-                        {{-- disabled if !$via_vendors->isEmpty --}}
-                        <flux:option value="NEW_VIA" readonly>New Vendor</flux:option>
-                    </flux:select>
+
+                        <flux:radio value="NEW_VIA" label="New Vendor" />
+                    </flux:radio.group>
 
                     <div
                         x-data="{ via_vendor: @entangle('form.via_vendor')}"
@@ -114,7 +115,7 @@
                         x-transition
                         class="my-4 space-y-4"
                         >
-                        {{-- create new vendor for user being added ... --}}
+                        {{-- create new 1099 / DBA / Sub Vendor for user (team member) being added to Vendor ... --}}
                         <flux:button
                             wire:click="create_via_vendor"
                             variant="primary"
@@ -131,7 +132,6 @@
                 <div
                     x-data="{ via_vendor: @entangle('form.via_vendor'), role: @entangle('form.role') }"
                     x-show="(via_vendor && via_vendor != 'NEW_VIA') || role == 1"
-                    x-transition
                     class="my-4 space-y-4"
                     >
                     {{-- USER / VENDOR HOURLY PAY --}}
@@ -156,7 +156,6 @@
                 x-transition
                 >
                 <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
-                <flux:error name="user_exists_on_model" />
             </div>
         </div>
     </form>

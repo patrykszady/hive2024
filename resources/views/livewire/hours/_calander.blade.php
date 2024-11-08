@@ -38,7 +38,7 @@
 
                 class="py-1.5 focus:z-10
                     @if(today()->format('Y-m-d') < $day['format'] || $day['confirmed_date'] == TRUE)
-                        ' cursor-not-allowed text-gray-200 bg-gray-50 '
+                        ' cursor-not-allowed text-gray-200 bg-gray-900 '
                     @else
                         ' hover:bg-indigo-400 hover:text-white hover:font-semibold '
                     @endif
@@ -56,7 +56,7 @@
                     @elseif($day['has_hours'] == TRUE)
                         ' bg-green-100 '
                     @else
-                        ' bg-white text-gray-400 '
+                        ' bg-gray-900 text-gray-400 '
                     @endif
 
                     @if($this->selected_date)
@@ -68,9 +68,9 @@
                         ' rounded-tl-lg'
                     @elseif($loop->iteration == 7)
                         ' rounded-tr-lg'
-                    @elseif($loop->iteration == 15)
+                    @elseif($loop->iteration == 29)
                         ' rounded-bl-lg'
-                    @elseif($loop->iteration == 21)
+                    @elseif($loop->iteration == 35)
                         ' rounded-br-lg'
                     @endif
                     ">

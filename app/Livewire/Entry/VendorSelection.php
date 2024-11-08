@@ -25,7 +25,9 @@ class VendorSelection extends Component
     public function mount()
     {
         $this->user = auth()->user();
-        //if env = production vs dev
+        $this->user->primary_vendor_id = NULL;
+        $this->user->save();
+
         //where not user removed / where end_date is null
         $this->vendors = $this->user->vendors()
             // , '1099'
@@ -42,6 +44,7 @@ class VendorSelection extends Component
     {
         // $this->vendor = Vendor::withoutGlobalScopes()->findOrFail($vendor_id);
         $this->vendor = $this->vendors->where('id', $vendor_id)->first();
+        $this->vendor_id = $this->vendor->id;
 
         if($this->vendor->registration['registered']){
             $button_text = 'Login to ';
@@ -50,7 +53,6 @@ class VendorSelection extends Component
         }
 
         $this->vendor_name = $button_text . $this->vendor->business_name;
-        $this->vendor_id = $this->vendor->id;
     }
 
     //change primary_vendor_id on User::id

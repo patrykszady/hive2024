@@ -75,7 +75,6 @@ class VendorCreate extends Component
 
     public function vendorModal($team_member = NULL)
     {
-        // dd($this);
         // $this->form->reset();
         // $this->business_name_text = NULL;
         // $this->vendor = Vendor::make();
@@ -83,10 +82,8 @@ class VendorCreate extends Component
         // $this->business_name_text = NULL;
         // $this->modal('vendors_form_modal')->close();
         // $this->resetModal();
-        // dd($this);
-        //5-18-2023 to reset modal if was clicked away and not CANCEL was clicked...whyyyyy
-        // $this->resetModal();
 
+        //5-18-2023 to reset modal if was clicked away and not CANCEL was clicked...whyyyyy
         // if(is_numeric($team_member)){
         //     $this->team_member = $team_member;
 
@@ -107,7 +104,6 @@ class VendorCreate extends Component
         //     // $this->user = User::make();
         // }
 
-        // dd($this->user);
         $this->team_member = 'index';
         $this->modal('vendors_form_modal')->show();
     }
@@ -123,7 +119,7 @@ class VendorCreate extends Component
         $this->form->user_hourly_rate = 0;
         $this->form->user_role = 1;
 
-        $this->user_vendors = $this->user->vendors;
+        $this->user_vendors = $this->user->vendors()->unique()->get();
         $this->address = TRUE;
 
         $this->via_vendor = TRUE;
@@ -163,6 +159,7 @@ class VendorCreate extends Component
                 ->orderBy('business_name', 'ASC')
                 ->where('business_name', 'like', "%{$this->business_name_text}%")
                 ->whereIn('id', $existing_vendor_ids)
+                ->distinct()
                 ->get();
 
         $this->add_vendors_vendor =
@@ -170,6 +167,7 @@ class VendorCreate extends Component
                 ->orderBy('business_name', 'ASC')
                 ->where('business_name', 'like', "%{$this->business_name_text}%")
                 ->whereNotIn('id', $existing_vendor_ids)
+                ->distinct()
                 ->get();
 
         $this->form->reset();
@@ -255,7 +253,7 @@ class VendorCreate extends Component
         $this->form->user_hourly_rate = $user_info['hourly_rate'];
         $this->form->user_role = $user_info['role'];
 
-        $this->user_vendors = $this->user->vendors;
+        $this->user_vendors = $this->user->vendors()->get()->unique('id');
         $this->address = TRUE;
     }
 
@@ -280,7 +278,6 @@ class VendorCreate extends Component
         $this->validate();
 
         if(isset($this->vendor->id)){
-            dd('if $this->vendor->id');
             //attach vendor to auth->user->vendor (logged in/working vendor)
             $vendor = $this->vendor;
             auth()->user()->vendor->vendors()->attach($vendor);
@@ -328,10 +325,14 @@ class VendorCreate extends Component
         // $this->dispatch('via', 'vendor')->to('users.users-form');
         $this->dispatch('refreshComponent')->to('vendors.vendors-index');
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Vendor Added',
-            route: 'vendors/' . $vendor->id
+        // route: 'vendors/' . $vendor->id
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Vendor Added.',
+            // route / href / wire:click
+            text: '',
         );
     }
 

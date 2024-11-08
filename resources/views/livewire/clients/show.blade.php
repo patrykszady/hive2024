@@ -31,7 +31,8 @@
 
         <div class="col-span-4 lg:col-span-2">
 			{{-- CLIENT USERS --}}
-            <livewire:users.users-index :client="$client" :users="$this->users" :view="'clients.show'"/>
+            {{--  :users="$this->users" --}}
+            <livewire:users.users-index :client="$client" :view="'clients.show'"/>
 		</div>
 
         {{-- CLIENT PROJECT --}}

@@ -8,6 +8,8 @@ use App\Models\Client;
 
 use App\Livewire\Forms\UserForm;
 use App\Livewire\Clients\ClientCreate;
+use App\Livewire\Users\UsersIndex;
+use App\Livewire\Clients\ClientsShow;
 // use App\Livewire\Users\TeamMembers;
 use App\Livewire\Vendors\VendorCreate;
 
@@ -55,6 +57,15 @@ class UserCreate extends Component
         ];
     }
 
+    public function mount()
+    {
+        // dd($this);
+        // if($this->form->user->id){
+        //     $this->via_vendors = $this->form->user->vendors()->where('business_type', '!=', 'Sub')->get();
+        //     dd($this->via_vendors);
+        // }
+    }
+
     public function updated($field, $value)
     {
         if($field == 'user_cell'){
@@ -64,14 +75,15 @@ class UserCreate extends Component
         $this->validateOnly($field);
     }
 
-    public function ViaVendorId($via_vendor_id)
-    {
-        $this->via_vendor = TRUE;
-        $this->form->via_vendor = $via_vendor_id;
-        //UPDATE $via_vendors in view here
-        $this->via_vendors = $this->form->user->vendors()->where('business_type', '!=', 'Sub')->get();
-        $this->render();
-    }
+    // public function ViaVendorId($via_vendor_id)
+    // {
+    //     $this->via_vendor = TRUE;
+    //     $this->form->via_vendor = $via_vendor_id;
+    //     //UPDATE $via_vendors in view here
+    //     $this->via_vendors = $this->form->user->vendors()->where('business_type', '!=', 'Sub')->get();
+    //     dd($this->via_vendors);
+    //     // $this->render();
+    // }
 
     public function create_via_vendor()
     {
@@ -81,53 +93,77 @@ class UserCreate extends Component
 
     public function user_cell_find()
     {
-        $this->form->reset();
+        // $this->form->reset();
         $this->via_vendor = FALSE;
         $this->validateOnly('user_cell');
 
         $user = User::where('cell_phone', $this->user_cell)->first();
-
         if($user){
             $this->form->setUser($user);
+
+            //vendor team member error
+            if($this->model['type'] === 'vendor'){
+                $this->via_vendors = $user->vendors()->where('business_type', '!=', 'Sub')->get();
+
+                if($this->model['id'] == 'NEW'){
+
+                }else{
+                    $vendor = Vendor::findOrFail($this->model['id']);
+
+                    if($vendor->users()->where('user_id', $user->id)->employed()->exists()){
+                        return $this->addError('user_exists_on_model', $user->first_name . ' already belongs to Vendor.');
+                    }
+                }
+
+            //client user error
+            }elseif($this->model['type'] === 'client'){
+                $client = Client::findOrFail($this->model['id']);
+
+                if($client->users()->where('user_id', $user->id)->exists()){
+                    return $this->addError('user_exists_on_model', $user->first_name . ' already belongs to Client.');
+                }
+            }else{
+                abort(404);
+            }
         }
 
         // $this->resetErrorBag();
         $this->user_form = TRUE;
 
-        if($this->model['type'] == 'vendor'){
-            if($this->model['id'] == 'NEW'){
-                // $this->form->role = 1; //Admin
-                // $this->form->hourly_rate = 0;
-            }else{
-                if(auth()->user()->vendor->id != $this->model['id']){
-                    $this->form->role = 2; //Team Member //Admin
-                    $this->form->hourly_rate = 0;
-                }else{
-                    if($user){
-                        $this->via_vendor = TRUE;
-                        $this->via_vendors = $this->form->user->vendors()->where('business_type', '!=', 'Sub')->get();
-                        $this->form->business_name = $this->form->user->full_name;
-                    }
-                }
-            }
-            // $this->form->business_name = $this->form->user->full_name;
-        }elseif($this->model['type'] == 'client'){
-            if($this->model['id'] == 'NEW'){
-                $this->via_client = TRUE;
-                // $this->user->role = 1; //Admin
-                // $this->user->hourly_rate = 0; //Admin
-            }else{
-                $this->via_client = FALSE;
-            }
+        // if($this->model['type'] == 'vendor'){
+        //     if($this->model['id'] == 'NEW'){
+        //         // $this->form->role = 1; //Admin
+        //         // $this->form->hourly_rate = 0;
+        //     }else{
+        //         if(auth()->user()->vendor->id != $this->model['id']){
+        //             $this->form->role = 2; //Team Member //Admin
+        //             $this->form->hourly_rate = 0;
+        //         }else{
+        //             if($user){
+        //                 $this->via_vendor = TRUE;
+        //                 $this->via_vendors = $this->form->user->vendors()->where('business_type', '!=', 'Sub')->get();
+        //                 $this->form->business_name = $this->form->user->full_name;
+        //             }
+        //         }
+        //     }
+        //     // $this->form->business_name = $this->form->user->full_name;
+        // }elseif($this->model['type'] == 'client'){
+        //     if($this->model['id'] == 'NEW'){
+        //         $this->via_client = TRUE;
+        //         // $this->user->role = 1; //Admin
+        //         // $this->user->hourly_rate = 0; //Admin
+        //     }else{
+        //         $this->via_client = FALSE;
+        //     }
 
-            // $this->user_clients = $user->clients()->withoutGlobalScopes()->get();
+        //     // $this->user_clients = $user->clients()->withoutGlobalScopes()->get();
 
-            // dd($this->user_clients);
-            // $this->client_user_form = TRUE;
-        }else{
-            dd('in user_cell else');
-            abort(404);
-        }
+        //     // dd($this->user_clients);
+        //     // $this->client_user_form = TRUE;
+        // }else{
+        //     dd('in user_cell else');
+        //     abort(404);
+        // }
 
         // $this->form->reset();
         $this->resetErrorBag();
@@ -146,9 +182,8 @@ class UserCreate extends Component
     //new Vendor or Client member
     public function newMember($model, $model_id = NULL)
     {
-        // dd($model, $model_id);
         $this->user_cell = FALSE;
-        $this->user_form = NULL;
+        $this->user_form = FALSE;
 
         //creating new Vendor or Client or adding Team Member/Client User to existing Vendor or Client
         $this->model['type'] = $model;
@@ -199,16 +234,15 @@ class UserCreate extends Component
     }
 
     // Everthing in top pulbic should be reset here
+    // function validateMultiple($fields) {
+    //     $validated = [];
+    //     foreach ($fields as $field) {
+    //         $validatedData = $this->validateOnly($field);
+    //         $validated[key($validatedData)] = current($validatedData);
+    //     }
 
-    function validateMultiple($fields) {
-        $validated = [];
-        foreach ($fields as $field) {
-            $validatedData = $this->validateOnly($field);
-            $validated[key($validatedData)] = current($validatedData);
-        }
-
-        return $validated;
-    }
+    //     return $validated;
+    // }
 
     // public function storeUserSolo()
     // {
@@ -233,17 +267,19 @@ class UserCreate extends Component
         $user = $this->form->store();
         $this->form->setUser($user);
 
+        // $this->user_form = FALSE;
+
         //if model is Vendor only
-        if($this->model['type'] == 'vendor'){
-            $this->form->business_name = $user->full_name;
-            $this->via_vendor = TRUE;
-        }
+        // if($this->model['type'] == 'vendor'){
+        //     $this->form->business_name = $user->full_name;
+        //     $this->via_vendor = TRUE;
+        // }
     }
 
-    public function update()
-    {
-        dd('in update UserCreate');
-    }
+    // public function update()
+    // {
+    //     dd('in update UserCreate');
+    // }
 
     public function save()
     {
@@ -264,38 +300,54 @@ class UserCreate extends Component
                 $this->modal('user_form_modal')->close();
                 $this->dispatch('userVendor', $user->toArray());
             }else{
-                $vendor = Vendor::findOrFail($this->model['id']);
-                if($vendor->users()->where('user_id', $user->id)->employed()->doesntExist()){
-                    $user->vendors()->attach(
-                        $this->model['id'], [
-                            'role_id' => $this->form->role,
-                            'hourly_rate' => $this->form->hourly_rate,
-                            'start_date' => today()->format('Y-m-d'),
-                            'via_vendor_id' => $this->form->via_vendor ?? NULL
-                        ]
-                    );
+                $user->vendors()->attach(
+                    $this->model['id'], [
+                        'role_id' => $this->form->role,
+                        'hourly_rate' => $this->form->hourly_rate,
+                        'start_date' => today()->format('Y-m-d'),
+                        'via_vendor_id' => $this->form->via_vendor ?? NULL
+                    ]
+                );
 
-                    $this->modal('user_form_modal')->close();
+                $this->modal('user_form_modal')->close();
 
-                    $this->dispatch('confirmProcessStep', 'team_members')->to('entry.vendor-registration');
-                    // $this->dispatch('fakeRefresh', vendor: $vendor->id)->to(TeamMembers::class);
-                    Flux::toast(
-                        duration: 5000,
-                        position: 'top right',
-                        variant: 'success',
-                        heading: 'User Added to Vendor.',
-                        // route / href / wire:click
-                        text: '',
-                    );
-                }else{
-                    $this->addError('user_exists_on_model', 'User already belongs to Vendor.');
-                }
+                $this->dispatch('confirmProcessStep', 'team_members')->to('entry.vendor-registration');
+                $this->dispatch('testUsers', vendor: $this->model['id'])->to(UsersIndex::class);
+
+                Flux::toast(
+                    duration: 5000,
+                    position: 'top right',
+                    variant: 'success',
+                    heading: 'User Added to Vendor.',
+                    // route / href / wire:click
+                    text: '',
+                );
             }
         //Client User
         //if existing User .. dispatchTo ClientCreate with user (show existing users the User is part of) and close $this->modal.
         }elseif($this->model['type'] == 'client'){
-            $this->dispatch('addUser', user: $user->id, client_id: $this->model['id'])->to(ClientCreate::class);
-            $this->modal('user_form_modal')->close();
+            // when creating new Client
+            if($this->model['id'] == 'NEW'){
+
+                $this->modal('user_form_modal')->close();
+            }else{
+                //add User to this Client
+                $user->clients()->attach($this->model['id']);
+                $this->client = Client::with('users')->findOrFail($this->model['id']);
+                $this->modal('user_form_modal')->close();
+
+                $this->dispatch('testUsers', client: $this->client->id)->to(UsersIndex::class);
+                $this->dispatch('refreshComponent')->to(ClientsShow::class);
+
+                Flux::toast(
+                    duration: 5000,
+                    position: 'top right',
+                    variant: 'success',
+                    heading: 'User Added to Client.',
+                    // route / href / wire:click
+                    text: '',
+                );
+            }
         }
     }
 

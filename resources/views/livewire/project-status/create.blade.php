@@ -7,8 +7,6 @@
             </flux:accordion.heading>
 
             <flux:accordion.content>
-                <flux:separator variant="subtle"/>
-
                 <ul role="list" class="space-y-6 mt-6">
                     {{-- 2nd to last gets CHECKMARK (Could be first (estimate) ) --}}
                     @foreach($statuses as $status)
@@ -68,6 +66,8 @@
                         <time datetime="2023-01-24T09:20" class="flex-none py-0.5 text-xs leading-5 text-gray-500">1d ago</time>
                     </li> --}}
 
+                    {{-- <flux:separator variant="subtle"/> --}}
+
                     <li class="relative flex gap-x-4">
                         <div class="absolute left-0 flex justify-center w-6 bottom-5 -top-5">
                             <div class="w-px bg-gray-200"></div>
@@ -81,34 +81,22 @@
                         </p> --}}
 
                         <div class="flex max-w-lg -mt-1 rounded-md shadow-sm">
-                            <input
-                                name="project_status_date"
-                                wire:model.live="project_status_date"
-                                name="project_status_date"
-                                id="project_status_date"
-                                type="date"
-                                class="block w-full min-w-0 text-sm placeholder-gray-200 border-gray-300 rounded-none hover:bg-gray-50 rounded-l-md focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                            </input>
-                            <select
-                                name="project_status"
-                                wire:model.live="project_status"
-                                name="project_status"
-                                id="new_project_id"
-                                class="block w-full min-w-0 text-sm placeholder-gray-200 border-gray-300 rounded-none border-l-none hover:bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500"
-                                >
-                                @include('livewire.projects._status_options')
-                            </select>
+                            <flux:input.group>
+                                <flux:input wire:model.live="project_status_date" type="date" max="2999-12-31" placeholder="2023-12-31"/>
 
-                            <button
-                                type="button"
-                                wire:click="update_project"
-                                wire:loading.attr="disabled"
-                                wire:loading.class="opacity-50"
-                                class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 focus:ring-offset-0 focus:ring-2 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 focus:ring-indigo-500"
-                                >
-                                Change
-                            </button>
+                                <flux:select wire:model.live="project_status" id="new_project_id" variant="listbox" class="max-w-fit" placeholder="Choose Status...">
+                                    @include('livewire.projects._status_options')>
+                                </flux:select>
+
+                                <flux:button
+                                    wire:click="update_project"
+                                    wire:loading.attr="disabled"
+                                    wire:loading.class="opacity-50"
+                                    icon="arrow-uturn-right"
+                                    >
+                                    Change
+                                </flux:button>
+                            </flux:input.group>
                         </div>
                     </li>
                     <x-forms.error errorName="project_status"/>

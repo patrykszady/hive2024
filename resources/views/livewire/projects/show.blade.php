@@ -73,6 +73,7 @@
                     </x-lists.details_list>
                 </x-lists.details_card>
 
+                {{-- PROEJCT LIFESPAN --}}
                 <livewire:project-status.status-create :project="$project" lazy />
             </div>
         @endcan

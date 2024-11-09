@@ -1,4 +1,3 @@
-<option value="" readonly>All Statuses</option>
 <flux:option value="Invited">Invited</flux:option>
 <flux:option value="Estimate">Estimate</flux:option>
 <flux:option value="Awaiting Response">Response</flux:option>

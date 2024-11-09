@@ -1072,7 +1072,7 @@ class ReceiptController extends Controller
                         //09/22/2023 EACH FILE SHOULD BE UPLOADED TO ONEDRIVE AND NOT VIA EMAIL!
 
                         //if is for testing only...
-                        // if($loop == 2 - 1){
+                        // if($loop == 1){
                             $attachment = $attachment_found;
 
                             $doc_type = 'pdf';
@@ -1084,12 +1084,10 @@ class ReceiptController extends Controller
                             $ocr_path = 'files/_temp_ocr/' . $ocr_filename;
 
                             $document_model = $this->azure_document_model($doc_type, $ocr_path);
-
                             $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
-                            // dd($ocr_receipt_extracted['document']['Items']);
                             //pass receipt info from ocr_receipt_extracted to ocr_extract method
                             $ocr_receipt_data = $this->ocr_extract($ocr_receipt_extracted);
-                            // dd($ocr_receipt_data);
+
                             if(isset($ocr_receipt_data['error']) && $ocr_receipt_data['error'] == TRUE){
                                 //if error move this single $attachment to a folder for debug...
                                 Storage::disk('files')->move('/_temp_ocr/' . $ocr_filename, '/auto_receipts_failed/' . $ocr_filename);
@@ -1471,7 +1469,7 @@ class ReceiptController extends Controller
             $pdf->setSourceFile(storage_path($ocr_path));
             $pageId = $pdf->importPage(1);
 
-            $width = $pdf->getTemplateSize($pageId);
+            $width = $pdf->getTemplateSize($pageId)['width'];
 
             //$document_model = based on file dimensions. receipt vs invoice
             if($width < 180 ){

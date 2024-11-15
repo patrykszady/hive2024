@@ -15,14 +15,6 @@
         @endif
     </x-cards.heading>
 
-    {{-- SUB-HEADING --}}
-    {{-- <x-cards.heading>
-        <x-slot name="left">
-
-        </x-slot>
-    </x-cards.heading> --}}
-
-    {{-- LIST / using List as a table because of mobile layouts vs a table mobile layout --}}
     <x-lists.ul>
         @foreach($bank->accounts as $account)
             @php
@@ -82,7 +74,9 @@
                         // user selected and the account ID or IDs, if the
                         // Select Account view is enabled.
 
-                        // Livewire.emit('plaidLinkItemUpdate', metadata);
+                        // OLD Livewire.emit('plaidLinkItemUpdate', metadata);
+                        //plaidLinkItemUpdate = plaid_link_item on BankIndex
+                        @this.dispatch('plaidLinkItemUpdate', { item_data: metadata })
                     },
 
                     onExit: function(err, metadata) {

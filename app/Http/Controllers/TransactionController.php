@@ -67,7 +67,7 @@ class TransactionController extends Controller
             );
 
             $new_data = json_encode($new_data);
-            // dd($new_data);
+
             //initialize session
             $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/get");
             //set options
@@ -108,48 +108,17 @@ class TransactionController extends Controller
 
             $result = array_merge(json_decode($exchangeToken, true), $balances);
             // dd($result);
-            //get bank_account balnace here.
-            // dd($bank->plaid_options->next_cursor);
-            //save json status/errors
-            // if(isset($result['item']['error'])){
-            //     //$result['item']['error']
-            //     $error = 'true';
-            // }else{
-            //     $error = 'false';
-            // }
-            // //$bank->plaid_options->error
-            // // $options = $bank->plaid_options;
-            // // $options->error = $error;
-            // $bank->plaid_options['error'] = $error;
-            // // dd($bank->plaid_options);
-            // $bank->save();
-            // dd($bank);
 
             if(isset($result['item']['error'])){
                 $error = array("error" => $result['item']['error'],);
+            }elseif(empty($result['accounts'])){
+                $error = array("error" => array("error_code" => 'Account Numbers Changed. Update Bank Account'),);
             }else{
                 $error = array("error" => false,);
             }
 
-            // $add_to_json =
-            //     array(
-            //         "balances" => $balances,
-            //         "error" => $error,
-            //     );
-            //1/9/2023 previous_cursor
             $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $error, $result));
-            // $bank->plaid_options = json_encode(array_merge(collect($result)->toArray(), $error));
             $bank->save();
-
-            // // dd($balances['accounts'][0]['balances']);
-            // if(isset($balances) AND !isset($balances['error_code'])){
-            //     $plaid_options3 = array("balances" => $balances['accounts'][0]['balances'],);
-            // }else{
-            //     $plaid_options3 = array("balances" => false,);
-            // }
-
-            // $bank->plaid_options = json_encode(array_merge($plaid_options, $plaid_options1, $plaid_options2, $plaid_options3));
-            // $bank->save();
         }
     }
 
@@ -270,8 +239,7 @@ class TransactionController extends Controller
 
     public function plaid_transactions_sync()
     {
-        //->where('id', 21)
-        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
+        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->where('id', 23)->get();
         $bank_accounts = BankAccount::all();
         $transactions = Transaction::whereDate('transaction_date', '>=', '2022-01-01')->get();
 
@@ -285,7 +253,7 @@ class TransactionController extends Controller
     {
         ini_set('max_execution_time', '48000');
 
-        // dd($bank->plaid_options);
+        //11/14/2024 Check cursor items for repeats...
         $new_data = array(
             "client_id" => env('PLAID_CLIENT_ID'),
             "secret" => env('PLAID_SECRET'),
@@ -310,7 +278,14 @@ class TransactionController extends Controller
         curl_close($ch);
 
         $result = json_decode($result, true);
-        // dd($result);
+        $bank_account_ids = $bank_accounts->where('bank_id', $bank->id)->pluck('id')->toArray();
+
+        if($result['transactions_update_status'] == "HISTORICAL_UPDATE_COMPLETE"){
+            $transactions_last_date = $transactions->whereIn('bank_account_id', $bank_account_ids)->last()->transaction_date->subWeeks(4)->format('Y-m-d');
+        }else{
+            $transactions_last_date = "2022-01-01";
+        }
+
         if(!empty($result['added']) OR !empty($result['modified']) OR !empty($result['removed']) OR isset($result['error_code'])){
             Log::channel('plaid_adds')->info([[$bank->getAttributes(), $bank->plaid_options], $result]);
         }
@@ -326,70 +301,87 @@ class TransactionController extends Controller
             $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
             $bank->save();
 
-            if($result['has_more'] == true){
-                $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
-            }else{
+            // if($result['has_more'] == true){
+            //     $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
+            // }else{
                 //added
                 foreach($result['added'] as $index => $new_transaction){
-                    // dump($new_transaction);
-                    // dd();
-                // if($index == 4){
-                    // //make sure transaction_id does not exist yet.. if it does..update..
-                    if($transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first()){
-                        $transaction = $transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
-                        // if($transaction->plaid_merchant_name == $new_transaction['name']){
-
-                        // }else{
-                        //     $transaction = new Transaction;
-                        // }
-                    }elseif($transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first()){
-                        $transaction = $transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                    dd($new_transaction);
+                    if($new_transaction['date'] <= $transactions_last_date){
+                        continue;
                     }else{
-                        $transaction = new Transaction;
-                    }
+                    // if($index == 4){
+                        // //make sure transaction_id does not exist yet.. if it does..update..
+                        if($transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first()){
+                            $transaction = $transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
+                            // if($transaction->plaid_merchant_name == $new_transaction['name']){
 
-                    //dates
-                    if($new_transaction['pending'] == TRUE){
-                        $transaction->posted_date = NULL;
-                    }else{
-                        $transaction->posted_date = $new_transaction['date'];
-                    }
+                            // }else{
+                            //     $transaction = new Transaction;
+                            // }
+                        }elseif($transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first()){
+                            $transaction = $transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                        }elseif($transactions->where('amount', $new_transaction['amount'])){
+                            //11/14/2024 ...used in multiple places on this Controller
+                            if($new_transaction['authorized_date'] == NULL){
+                                $transaction->transaction_date = $new_transaction['date'];
+                            }else{
+                                if(isset($transaction->transaction_date)){
 
-                    if($new_transaction['authorized_date'] == NULL){
-                        $transaction->transaction_date = $new_transaction['date'];
-                    }else{
-                        if(isset($transaction->transaction_date)){
-
+                                }else{
+                                    $transaction->transaction_date = $new_transaction['authorized_date'];
+                                }
+                            }
                         }else{
-                            $transaction->transaction_date = $new_transaction['authorized_date'];
+                            $transaction = new Transaction;
                         }
+
+                        dd($transaction);
+
+                        //dates
+                        if($new_transaction['pending'] == TRUE){
+                            $transaction->posted_date = NULL;
+                        }else{
+                            $transaction->posted_date = $new_transaction['date'];
+                        }
+
+                        //11/14/2024 ...used in multiple places on this Controller
+                        if($new_transaction['authorized_date'] == NULL){
+                            $transaction->transaction_date = $new_transaction['date'];
+                        }else{
+                            if(isset($transaction->transaction_date)){
+
+                            }else{
+                                $transaction->transaction_date = $new_transaction['authorized_date'];
+                            }
+                        }
+
+                        //if $transaction['merchant_name'] empty, use $new_transaction['name']
+                        if(isset($new_transaction['merchant_name'])){
+                            $transaction->plaid_merchant_name = $new_transaction['merchant_name'];
+                        }else{
+                            // $transaction->plaid_merchant_name = $new_transaction['name'];
+                            // $transaction->plaid_merchant_name = NULL;
+                        }
+
+                        $transaction->amount = $new_transaction['amount'];
+                        $transaction->plaid_merchant_description = $new_transaction['name'];
+                        $transaction->plaid_transaction_id = $new_transaction['transaction_id'];
+
+                        // if(!$bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id){
+                        //     dd($bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first());
+                        // }
+                        $transaction->bank_account_id = $bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id;
+                        if($new_transaction['check_number'] != NULL){
+                            $transaction->check_number = $new_transaction['check_number'];
+                        }else{
+                            // $transaction->check_number = NULL;
+                        }
+
+                        $transaction->owner = $new_transaction['account_owner'];
+                        $transaction->details = $new_transaction;
+                        $transaction->save();
                     }
-
-                    //if $transaction['merchant_name'] empty, use $new_transaction['name']
-                    if(isset($new_transaction['merchant_name'])){
-                        $transaction->plaid_merchant_name = $new_transaction['merchant_name'];
-                    }else{
-                        // $transaction->plaid_merchant_name = $new_transaction['name'];
-                        // $transaction->plaid_merchant_name = NULL;
-                    }
-
-                    $transaction->amount = $new_transaction['amount'];
-                    $transaction->plaid_merchant_description = $new_transaction['name'];
-                    $transaction->plaid_transaction_id = $new_transaction['transaction_id'];
-
-                    // if(!$bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id){
-                    //     dd($bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first());
-                    // }
-                    $transaction->bank_account_id = $bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id;
-                    if($new_transaction['check_number'] != NULL){
-                        $transaction->check_number = $new_transaction['check_number'];
-                    }else{
-                        // $transaction->check_number = NULL;
-                    }
-
-                    $transaction->owner = $new_transaction['account_owner'];
-                    $transaction->details = $new_transaction;
-                    $transaction->save();
                 // }//if $index
                 }
 
@@ -472,7 +464,7 @@ class TransactionController extends Controller
                         $transaction->save();
                     }
                 }
-            }
+            // }
         }else{
             return;
         }

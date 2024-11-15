@@ -98,6 +98,7 @@ class UserCreate extends Component
         $this->validateOnly('user_cell');
 
         $user = User::where('cell_phone', $this->user_cell)->first();
+
         if($user){
             $this->form->setUser($user);
 
@@ -117,10 +118,14 @@ class UserCreate extends Component
 
             //client user error
             }elseif($this->model['type'] === 'client'){
-                $client = Client::findOrFail($this->model['id']);
+                if($this->model['id'] == 'NEW'){
 
-                if($client->users()->where('user_id', $user->id)->exists()){
-                    return $this->addError('user_exists_on_model', $user->first_name . ' already belongs to Client.');
+                }else{
+                    $client = Client::findOrFail($this->model['id']);
+
+                    if($client->users()->where('user_id', $user->id)->exists()){
+                        return $this->addError('user_exists_on_model', $user->first_name . ' already belongs to Client.');
+                    }
                 }
             }else{
                 abort(404);
@@ -328,8 +333,8 @@ class UserCreate extends Component
         }elseif($this->model['type'] == 'client'){
             // when creating new Client
             if($this->model['id'] == 'NEW'){
-
                 $this->modal('user_form_modal')->close();
+                $this->dispatch('addUser', user: $user->id, client_id: $this->model['id'])->to(ClientCreate::class);
             }else{
                 //add User to this Client
                 $user->clients()->attach($this->model['id']);

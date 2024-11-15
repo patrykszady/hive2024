@@ -83,10 +83,7 @@ class ClientCreate extends Component
             ];
         }else{
             $this->user_clients = $user->clients()->withoutGlobalScopes()->with('vendors')->get()->keyBy('id');
-
-            if($this->user_clients->isEmpty()){
-                $this->user_clients = NULL;
-            }
+            $this->user_client_id = 'NEW';
         }
 
         $this->form->setUser($user);

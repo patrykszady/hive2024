@@ -89,13 +89,14 @@ class BankShow extends Component
                         // consumer
                 $bank_account->plaid_account_id = $account['id'];
                 $bank_account->save();
+            }else{
+                // dd($account, $bank_account);
             }
         }
 
-        //12/30/2022 if successful send to bank.show route, otherwise send back with error (plaid link or laravel php?)
-        // $this->mount();
-        //run / execute plaid_status
-        //plaid_item_status
+        //run / execute plaid_item_status
+        app('App\Http\Controllers\TransactionController')->plaid_item_status();
+        sleep(5);
         $this->render();
         $this->dispatch('confirmProcessStep', 'banks_registered')->to('entry.vendor-registration');
     }

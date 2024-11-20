@@ -22,13 +22,19 @@ class PaymentsIndex extends Component
     public $sortBy = 'date';
     public $sortDirection = 'desc';
 
+    // public function mount(){
+    //     dd($this->project);
+    // }
+
     #[Computed]
     public function payments()
     {
         if(isset($this->project)){
-            $payments =
-                Payment::where('project_id', $this->project->id)->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-                ->paginate(10);
+            $payments = $this->project->payments()->paginate(10);
+                // Payment::where('project_id', $this->project->id)->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+                // ->paginate(10);
+
+            // dd($payments);
         }else{
             $payments =
                 Payment::tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
@@ -50,6 +56,7 @@ class PaymentsIndex extends Component
     #[Title('Payments')]
     public function render()
     {
+        // dd($this);
         return view('livewire.payments.index');
     }
 }

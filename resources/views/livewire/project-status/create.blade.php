@@ -85,7 +85,7 @@
                                 <flux:input wire:model.live="project_status_date" type="date" max="2999-12-31" placeholder="2023-12-31"/>
 
                                 <flux:select wire:model.live="project_status" id="new_project_id" variant="listbox" class="max-w-fit" placeholder="Choose Status...">
-                                    @include('livewire.projects._status_options')>
+                                    @include('livewire.projects._status_options')
                                 </flux:select>
 
                                 <flux:button

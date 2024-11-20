@@ -5,16 +5,6 @@
         <meta charset="utf-8">
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
-
-        <!-- Styles -->
-        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-        {{-- <style type="text/css">
-            table { page-break-inside:auto }
-            tr    { page-break-inside:avoid; page-break-after:auto }
-         </style> --}}
-
-        <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
 
     <body>

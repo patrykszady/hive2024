@@ -29,7 +29,7 @@
             Is selected or is today, include: "font-semibold"
             Is selected, include: "text-white"
         -->
-        @foreach ($days as $day_index =>  $day)
+        @foreach($days as $day_index =>  $day)
             <button
                 type="button"
                 wire:click="$dispatch('selectedDate', { date: '{{$day['format']}}', day_index: '{{$day_index}}' })"
@@ -38,7 +38,7 @@
 
                 class="py-1.5 focus:z-10
                     @if(today()->format('Y-m-d') < $day['format'] || $day['confirmed_date'] == TRUE)
-                        ' cursor-not-allowed text-gray-200 bg-gray-900 '
+                        ' cursor-not-allowed text-gray-200 bg-gray-600 '
                     @else
                         ' hover:bg-indigo-400 hover:text-white hover:font-semibold '
                     @endif
@@ -56,15 +56,15 @@
                     @elseif($day['has_hours'] == TRUE)
                         ' bg-green-100 '
                     @else
-                        ' bg-gray-900 text-gray-400 '
+                        ' bg-gray-600 text-gray-400 '
                     @endif
 
                     @if($this->selected_date)
                         @if($this->selected_date->format('Y-m-d') == $day['format'])
-                            ' font-semibold text-white bg-indigo-800 '
+                            ' font-bold text-white bg-indigo-800 '
                         @endif
                     @endif
-                    @if($loop->iteration == 1)
+                    {{-- @if($loop->iteration == 1)
                         ' rounded-tl-lg'
                     @elseif($loop->iteration == 7)
                         ' rounded-tr-lg'
@@ -72,7 +72,7 @@
                         ' rounded-bl-lg'
                     @elseif($loop->iteration == 35)
                         ' rounded-br-lg'
-                    @endif
+                    @endif --}}
                     ">
                 <time datetime="{{$day['format']}}" class="flex items-center justify-center mx-auto rounded-full h-7 w-7">{{$day['day']}}</time>
             </button>

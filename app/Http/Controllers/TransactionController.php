@@ -54,7 +54,7 @@ class TransactionController extends Controller
     public function plaid_item_status()
     {
         //->where('id', 23)
-        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
+        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->where('id', 22)->get();
 
         foreach($banks as $bank){
             $today = Carbon::now()->toDateString();
@@ -115,7 +115,17 @@ class TransactionController extends Controller
             }elseif(empty($result['accounts'])){
                 $error = array("error" => array("error_code" => 'Account Numbers Changed. Update Bank Account'),);
             }else{
-                $error = array("error" => false,);
+                $last_failed_update = Carbon::parse($result['status']['transactions']['last_failed_update']);
+                $last_successful_update = Carbon::parse($result['status']['transactions']['last_successful_update']);
+
+                $difference = $last_failed_update->diff($last_successful_update);
+                $difference = ['before' => $difference->invert, 'diff_in_days' => $difference->days];
+
+                if($difference['before'] === 1 && $difference['diff_in_days'] > 3){
+                    $error = array("error" => array("error_code" => 'No New Transactions in over 3 days. Please UPDATE BANK.'),);
+                }else{
+                    $error = array("error" => false,);
+                }
             }
 
             $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $error, $result));
@@ -389,7 +399,8 @@ class TransactionController extends Controller
                 }elseif(Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['transaction_id'])->get()->isNotEmpty()){
                     $transaction = Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
                 }else{
-                    dd($new_transaction, $result);
+                    Log::channel('plaid_adds')->info(['else in line 392ish in TransactionController' => [$new_transaction, $existing_transactions], $result]);
+                    // dd($new_transaction, $result);
                     continue;
                 }
 
@@ -465,7 +476,6 @@ class TransactionController extends Controller
                     $transaction->save();
                 }
             }
-            // }
         }else{
             return;
         }

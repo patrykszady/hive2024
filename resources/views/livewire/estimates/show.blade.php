@@ -70,6 +70,9 @@
             </flux:card>
         @endif
 
+        {{-- PROJECT PAYMENTS --}}
+        {{-- <livewire:payments.payments-index :project="$estimate->project" :view="'estimate.show'" /> --}}
+
         {{-- PROJECT FIANCES --}}
         @if($estimate->options)
             <livewire:projects.project-finances :project="$estimate->project" lazy />

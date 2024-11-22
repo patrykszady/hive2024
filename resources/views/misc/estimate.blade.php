@@ -5,6 +5,8 @@
         <meta charset="utf-8">
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     </head>
 
     <body>

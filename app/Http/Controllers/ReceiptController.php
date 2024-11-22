@@ -857,6 +857,8 @@ class ReceiptController extends Controller
                         ->where('vendor_id', $receipt->vendor_id)
                         ->first();
 
+                // dd($receipt_account);
+
                 //missing receipt_account..receipt and companyemail exist but receipt/companyemail combo does not
                 //1-17-2023 6-27-2023 YES!~ should still process without #receipt_account? right?
                 if(is_null($receipt_account)){
@@ -913,6 +915,7 @@ class ReceiptController extends Controller
                         }
                     }else{
                         $receipt_start = strpos($string, $receipt->options['receipt_start']);
+                        $receipt_start_text = $receipt->options['receipt_start'];
                     }
 
                     //include the "receipt_start" text or start receipt_html after the text

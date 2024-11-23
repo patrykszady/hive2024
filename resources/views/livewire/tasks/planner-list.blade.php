@@ -6,45 +6,25 @@
             <div class="col-end-1 w-14 sticky left-0 bg-white ring-1 ring-gray-100 shadow"></div>
 
             @foreach($this->projects as $project_index => $project)
-                {{-- items-center justify-center  --}}
-                <div class="w-64 p-4 bg-white">
-                    <flux:card class="py-2 pl-2 pr-0">
-                        {{-- <div>
-                            <flux:heading size="lg">Log in to your account</flux:heading>
-                            <flux:subheading>Welcome back!</flux:subheading>
-                        </div> --}}
+                <div class="w-64 p-4 bg-gray-100">
+                    <flux:card class="py-2 pl-2 pr-2 flex justify-between">
                         <div class="space-y-6">
                             <span class="font-semibold text-gray-800">
-                                <a href="{{route('projects.show', $project->id)}}" target="_blank">{{ Str::limit($project->address, 24) }}</a>
+                                <a href="{{route('projects.show', $project->id)}}" target="_blank">{{ Str::limit($project->address, 18) }}</a>
                             </span>
                             <br>
                             <span class="font-normal italic text-gray-600">
-                                {{ Str::limit($project->project_name, 24) }}
+                                {{ Str::limit($project->project_name, 18) }}
                             </span>
                         </div>
 
-                        {{-- <div class="space-y-2">
-
-                        </div> --}}
-                    </flux:card>
-                    <div class="float-right p-0 m-0">
-                        {{-- wire:click="$dispatchTo('tasks.planner-card', 'addnew', { project: {{$project->id}} })" --}}
-                        {{-- <x-cards.button
-                            type="button"
+                        <flux:button
                             wire:click="$dispatchTo('tasks.task-create', 'addTask', { project_id: {{$project->id}} })"
-                            button_color="white"
-                            >
-                            +
-                        </x-cards.button> --}}
-                    </div>
+                            icon="plus"
+                        />
+                    </flux:card>
 
-                    <br>
-                    {{-- Selected Project (why ... makes sense for the tailwind calendar template we're using .. might want to implenent this on the hirizontal Days /dates div) --}}
-                    {{-- <div class="flex items-center justify-center py-3">
-                        <span class="flex items-baseline">Wed <span
-                                class="ml-1.5 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 font-semibold text-white">12</span></span>
-                    </div> --}}
-
+                    {{-- ACCORDIAN HERE --}}
                     {{-- NO DATE/ NOT SCHEDULE --}}
                     <div class="mt-2">
                         <livewire:tasks.planner-card :$project :task_date="NULL" :key="$project->id" />
@@ -58,18 +38,27 @@
     <div class="flex flex-auto overflow-x-auto" x-bind="scrollSync">
         <div class="sticky left-0 w-14 flex-none ring-1 ring-gray-100 shadow bg-white"></div>
 
-        <div class="divide-y divide-gray-200 -mt-1 pb-4">
+        <div class="divide-x divide-gray-200">
             @foreach($this->days as $day_index => $day)
-                <div class="sticky left-0 -ml-14 w-14 pr-2 text-right text-xs text-gray-800 mt-2">
+                <div class="sticky left-0 -ml-14 w-14 pr-2 text-right text-xs text-gray-800">
                     <span class="font-semibold text-gray-700">{{strtok($day['formatted_date'], ',')}}</span>
                     <br>
                     <span class="italic">{{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}</span>
                 </div>
-                <div class="divide-x divide-gray-200 text-sm text-gray-500 grid grid-flow-col auto-cols-max -mt-8 -mt-2">
+                {{-- divide-x divide-gray-200  --}}
+                {{-- auto-cols-max --}}
+                <div class="text-sm text-gray-500 grid grid-flow-col -mt-8">
                     @foreach($this->projects as $project)
-                        <flux:card class="w-64 p-3 @if($day['is_today']) bg-white @elseif($day['is_weekend']) bg-gray-200 @endif">
-                            <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" />
-                        </flux:card>
+                        <div class="w-64 p-2">
+                            <flux:card
+                                @class([
+                                    'px-2 py-2',
+                                    'bg-zinc-200' => $day['is_weekend'] ? true : false
+                                ])
+                                >
+                                <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" />
+                            </flux:card>
+                        </div>
                     @endforeach
                 </div>
             @endforeach
@@ -92,5 +81,5 @@
         })
     </script>
 
-    {{-- <livewire:tasks.task-create :projects="$this->projects" /> --}}
-</div>-
+    <livewire:tasks.task-create :projects="$this->projects" />
+</div>

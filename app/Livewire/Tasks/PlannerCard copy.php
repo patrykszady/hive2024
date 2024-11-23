@@ -10,14 +10,12 @@ use Livewire\Attributes\Computed;
 
 use Carbon\Carbon;
 
-use Flux;
-
 class PlannerCard extends Component
 {
     public Project $project;
     public $task_date = NULL;
 
-    protected $listeners = ['refreshComponent' => '$refresh', 'render'];
+    protected $listeners = ['refreshComponent' => '$refresh'];
     // public $draft = '';
 
     // public function add()
@@ -63,17 +61,8 @@ class PlannerCard extends Component
         $task->save();
         //finish moving task to another project
         $task->move($position);
-        // $this->project->refresh();
-        $this->render();
 
-        Flux::toast(
-            duration: 5000,
-            position: 'top right',
-            variant: 'success',
-            heading: 'Task Updated',
-            // route / href / wire:click
-            text: '',
-        );
+        $this->render();
     }
 
     #[Computed]
@@ -88,25 +77,24 @@ class PlannerCard extends Component
             }elseif($task_date->between($item->start_date, $item->end_date) && $this->task_date != NULL) {
                 // dd(is_null($item->options->));
                 // dd($item->start_date->isSaturday());
-                // if(isset($item->options['include_weekend_days'])){
-                //     if($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == true){
-                //         return $item;
-                //     }elseif($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == false){
+                if(isset($item->options['include_weekend_days'])){
+                    if($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == true){
+                        return $item;
+                    }elseif($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == false){
 
-                //     }else{
-                //         if($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == true){
-                //             return $item;
-                //         }elseif($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == false){
+                    }else{
+                        if($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == true){
+                            return $item;
+                        }elseif($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == false){
 
-                //         }else{
-                //             return $item;
-                //         }
-                //     }
-                //     // dd($item->options['include_weekend_days']);
-                // }else{
-                //     return $item;
-                // }
-                return $item;
+                        }else{
+                            return $item;
+                        }
+                    }
+                    // dd($item->options['include_weekend_days']);
+                }else{
+                    return $item;
+                }
             }
         });
     }

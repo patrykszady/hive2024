@@ -33,6 +33,7 @@
             type="date"
         />
 
+        {{-- VENDOR --}}
         <flux:field>
             <flux:select label="Vendor" wire:model.live="form.vendor_id" variant="listbox" searchable placeholder="Choose vendor...">
                 <x-slot name="search">

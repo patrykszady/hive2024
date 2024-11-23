@@ -18,8 +18,13 @@ class TaskForm extends Form
     #[Validate('required')]
     public $title = NULL;
 
-    #[Validate('array')]
-    public $dates = NULL;
+    // #[Validate('array')]
+    // public $dates = NULL;
+    #[Validate('nullable|date_format:Y-m-d|before_or_equal:end_date')]
+    public $start_date = NULL;
+
+    #[Validate('nullable|date_format:Y-m-d|after_or_equal:start_date')]
+    public $end_date = NULL;
 
     #[Validate('required')]
     public $project_id = NULL;
@@ -63,14 +68,15 @@ class TaskForm extends Form
         // }else{
         //     $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
         // }
-        if(!isset($task->start_date)){
-            $new_dates = [];
-        }else{
-            $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
-        }
-
+        // if(!isset($task->start_date)){
+        //     $new_dates = [];
+        // }else{
+        //     $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
+        // }
+        $this->start_date = $task->start_date ? $task->start_date->format('Y-m-d') : NULL;
+        $this->end_date = $task->end_date ? $task->end_date->format('Y-m-d') : NULL;
         $this->include_weekend_days = isset($task->options['include_weekend_days']) ? $task->options['include_weekend_days'] : ['saturday' => false, 'sunday' => false];
-        $this->dates = $new_dates;
+        // $this->dates = $new_dates;
         $this->project_id = $task->project_id;
         $this->order = $task->order;
         $this->duration = $task->duration;
@@ -89,9 +95,11 @@ class TaskForm extends Form
 
         $task = $this->task->update([
             // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            // 'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
+            // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            // // 'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            // 'end_date' => isset($this->dates[1]) ? $this->dates[1] : (isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL),
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,
@@ -102,6 +110,8 @@ class TaskForm extends Form
             'duration' => $this->duration,
             'order' => $this->order
         ]);
+
+        return $this->task;
     }
 
     public function store()
@@ -109,8 +119,10 @@ class TaskForm extends Form
         // $this->authorize('create', Expense::class);
         $this->validate();
         $task = Task::create([
-            'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
-            'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
+            // 'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
             'project_id' => $this->project_id,
             'vendor_id' => $this->vendor_id,
             'type' => $this->type,

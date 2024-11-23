@@ -11,6 +11,7 @@ use App\Livewire\Forms\TaskForm;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+use Flux;
 use Carbon\Carbon;
 
 class TaskCreate extends Component
@@ -23,28 +24,42 @@ class TaskCreate extends Component
     public $vendors = [];
     public $employees = [];
 
-
     public $view_text = [
         'card_title' => 'Create Task',
         'button_text' => 'Create',
         'form_submit' => 'save',
     ];
 
-    public $showModal = FALSE;
-
     protected $listeners = ['editTask', 'addTask'];
-
-
 
     public function mount()
     {
+        // $this->form->dates[0] = today()->format('m/d/Y');
         $this->vendors = Vendor::whereNot('business_type', 'Retail')->get();
         $this->employees = auth()->user()->vendor->users()->employed()->get();
+    }
+
+    public function updated($field, $value)
+    {
+        if($field === 'form.start_date' && is_null($this->form->end_date)){
+            $this->form->end_date = $value;
+            $this->form->duration = 1;
+        }
+
+        if($field === 'form.start_date' || 'form.end_date'){
+            $start = Carbon::parse($this->form->start_date);
+            $end = Carbon::parse($this->form->end_date);
+
+            $duration = $end->diff($start)->days + 1;
+
+            $this->form->duration = $duration;
+        }
     }
 
     public function addTask($project_id, $date = NULL)
     {
         $this->form->reset();
+        $this->resetErrorBag();
 
         $this->view_text = [
             'card_title' => 'Create Task',
@@ -59,35 +74,40 @@ class TaskCreate extends Component
         }
 
         $this->form->project_id = $project_id;
-        $this->showModal = TRUE;
+        $this->modal('task_create_form_modal')->show();
     }
 
     public function editTask(Task $task)
     {
+        $this->resetErrorBag();
+
         $this->view_text = [
-            'card_title' => 'Update Task',
+            'card_title' => 'Edit Task',
             'button_text' => 'Update',
             'form_submit' => 'edit',
         ];
 
         $this->form->setTask($task);
-        $this->showModal = TRUE;
+        $this->modal('task_create_form_modal')->show();
     }
 
     public function removeTask()
     {
         $task = $this->form->task;
-
         $task->delete();
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Task Removed'
-        );
-
-        $this->dispatch('refreshComponent')->to(PlannerCard::class);
+        $this->dispatch('render')->to(PlannerCard::class);
         // $this->dispatch('refresh_planner')->to(PlannerList::class);
-        $this->showModal = FALSE;
+        $this->modal('task_create_form_modal')->close();
+
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Task Removed',
+            // route / href / wire:click
+            text: '',
+        );
     }
 
     // 5-7-2024 for flatpickr only... anyway to optimize?
@@ -113,31 +133,40 @@ class TaskCreate extends Component
     {
         $this->form->store();
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Task Created'
-        );
-
-        $this->dispatch('refreshComponent')->to(PlannerCard::class);
+        $this->dispatch('render')->to(PlannerCard::class);
         // $this->dispatch('refresh_planner')->to(PlannerList::class);
-        $this->showModal = FALSE;
+        $this->modal('task_create_form_modal')->close();
+
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Task Created',
+            // route / href / wire:click
+            text: '',
+        );
     }
 
     public function edit()
     {
         $this->authorize('update', $this->form->task);
-        $this->form->update();
-
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Task Updated'
-        );
+        $task = $this->form->update();
 
         // return redirect(route('planner_list.index'));
-        $this->dispatch('refreshComponent')->to(PlannerCard::class);
+        $this->dispatch('render')->to(PlannerCard::class);
+        // $this->dispatch('sort', key: $task->id, position: $task->order)->to(PlannerCard::class);
         // $this->dispatch('refresh_planner', task: $this->form->task, project: $this->form->task->project, task_date: $this->form->task->start_date->format('Y-m-d'))->to(PlannerCard::class);
 
-        $this->showModal = FALSE;
+        $this->modal('task_create_form_modal')->close();
+
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Task Updated',
+            // route / href / wire:click
+            text: '',
+        );
     }
 
     public function render()

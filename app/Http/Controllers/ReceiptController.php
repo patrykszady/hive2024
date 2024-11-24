@@ -394,7 +394,7 @@ class ReceiptController extends Controller
                     $receipt_account->save();
 
                     //add to $company_email json ('api') errors
-                    Log::channel('company_emails_log_in_error')->error($error);
+                    Log::channel('company_emails_login_error')->error($error);
 
                     continue;
                 }
@@ -759,7 +759,7 @@ class ReceiptController extends Controller
                 $company_email->save();
 
                 //add to $company_email json ('api') errors
-                Log::channel('company_emails_log_in_error')->error($error);
+                Log::channel('company_emails_login_error')->error($error);
                 continue;
             }
 
@@ -1016,6 +1016,7 @@ class ReceiptController extends Controller
 
     public function auto_receipt()
     {
+        dd(env('MS_GRAPH_CLIENT_ID'));
         //09/22/2023 EACH FILE SHOULD BE UPLOADED TO ONEDRIVE AND NOT VIA EMAIL!
         //get receipt from email/onedrive
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->where('id', 17)->get();
@@ -1025,7 +1026,9 @@ class ReceiptController extends Controller
 
             //check if access_token is expired, if so get new access_token and refresh_token
             $guzzle = new Client();
-            $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
+            //env('MS_GRAPH_TENANT_ID')
+            $url = 'https://login.microsoftonline.com/' . 'common' . '/oauth2/v2.0/token';
+            // dd($url);
             $email_account_tokens = json_decode($guzzle->post($url, [
                 'form_params' => [
                     'client_id' => env('MS_GRAPH_CLIENT_ID'),

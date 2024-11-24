@@ -1800,7 +1800,7 @@ class TransactionController extends Controller
             BankAccount::
                 withoutGlobalScopes()
                 ->whereNull('deleted_at')
-                ->where('type', 'Credit')
+                ->whereIn('type', ['Credit', 'Credit Card'])
                 ->get()
                 ->groupBy('vendor_id');
 

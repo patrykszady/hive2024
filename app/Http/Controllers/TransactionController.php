@@ -1242,6 +1242,7 @@ class TransactionController extends Controller
 
     public function add_transaction_to_multi_expenses()
     {
+        dd('in add_transaction_to_multi_expenses');
         $hive_vendors = Vendor::hiveVendors()->get();
         foreach($hive_vendors as $hive_vendor){
             $hive_vendor_bank_account_ids = $hive_vendor->bank_accounts->pluck('id');
@@ -1348,7 +1349,7 @@ class TransactionController extends Controller
                 ->whereNull('check_id')
                 ->whereNull('expense_id')
                 ->where('check_number', $check_number)
-                //per hive vendor... checks table foreach bank_account_id
+                //11/23/2024 per hive vendor... checks table foreach bank_account_id
                 ->where('bank_account_id', $check->bank_account_id)
                 ->whereBetween('transaction_date', [
                         $check->date->subDays(7)->format('Y-m-d'),

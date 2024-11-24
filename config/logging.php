@@ -156,9 +156,23 @@ return [
             'days' => 30,
         ],
 
+        'plaid_transaction_removal' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/plaid_transaction_removal.log'),
+            'level' => 'debug',
+            'days' => 30,
+        ],
+
         'nylas_connection_errors' => [
             'driver' => 'daily',
             'path' => storage_path('logs/nylas_connection_errors.log'),
+            'level' => 'debug',
+            'days' => 30,
+        ],
+
+        'nylas_connection_errors' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/schedule.log'),
             'level' => 'debug',
             'days' => 30,
         ],

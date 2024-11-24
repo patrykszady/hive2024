@@ -53,8 +53,7 @@ class TransactionController extends Controller
     // }
     public function plaid_item_status()
     {
-        //->where('id', 23)
-        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->where('id', 22)->get();
+        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
 
         foreach($banks as $bank){
             $today = Carbon::now()->toDateString();
@@ -460,9 +459,9 @@ class TransactionController extends Controller
             }
 
             //REMOVED
-            foreach($result['removed'] as $new_transaction){
+            foreach($result['removed'] as $old_transaction){
                 //make sure transaction_id does not exist yet.. if it does..update..
-                $transaction = Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                $transaction = Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $old_transaction['transaction_id'])->first();
 
                 //11-16-2024
                 if(!is_null($transaction)){
@@ -472,8 +471,11 @@ class TransactionController extends Controller
                         $payment->save();
                     });
 
+
                     $transaction->deleted_at = now();
                     $transaction->save();
+
+                    Log::channel('plaid_transaction_removal')->info([$transaction->id, $transaction->plaid_transaction_id]);
                 }
             }
         }else{

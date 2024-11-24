@@ -1026,7 +1026,6 @@ class ReceiptController extends Controller
             //check if access_token is expired, if so get new access_token and refresh_token
             $guzzle = new Client();
             $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
-
             $email_account_tokens = json_decode($guzzle->post($url, [
                 'form_params' => [
                     'client_id' => env('MS_GRAPH_CLIENT_ID'),

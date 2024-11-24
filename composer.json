@@ -42,7 +42,6 @@
         "setasign/fpdi": "^2.0",
         "spatie/browsershot": "^3.61",
         "spatie/image": "^2.2",
-        "spatie/laravel-webhook-client": "^3.4",
         "spatie/simple-excel": "^3.6",
         "symfony/http-client": "*",
         "symfony/mailgun-mailer": "^6.2",

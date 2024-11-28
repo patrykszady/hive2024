@@ -1,13 +1,13 @@
 <flux:modal name="receipt_account_vendor_form_modal" class="space-y-2">
-    <div class="flex justify-between">
+    <div>
         <flux:heading size="lg">{{$vendor ? $vendor->name : 'NO VENDOR'}}</flux:heading>
+        <flux:subheading>Choose which Distribution a receipt from this vendor should be automatically attached to. Select NO PROJECT if you do not want to assign a distribution. </flux:subheading>
     </div>
 
     <flux:separator variant="subtle" />
 
     <form wire:submit="store" class="grid gap-6">
-        <flux:select label="Connection" wire:model.live="distribution_id" placeholder="Connect Vendor">
-            <flux:option readonly value="">CONNECT</flux:option>
+        <flux:select label="Distribution" wire:model.live="distribution_id" variant="listbox" placeholder="Connect Vendor...">
             <flux:option value="NO_PROJECT">NO PROJECT</flux:option>
             @foreach($distributions as $distribution)
                 <flux:option value="{{$distribution->id}}">{{$distribution->name}}</flux:option>

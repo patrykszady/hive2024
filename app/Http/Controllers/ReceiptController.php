@@ -367,7 +367,6 @@ class ReceiptController extends Controller
             //if NOW  is greater than > expires_in ... get new access_token
             //get new access_token valid for 1 hour and change 'expires_in' to 55 minutes from when submitted
             //ONLY if access token is expired....
-
             if(Carbon::now() > Carbon::parse($receipt_account->options['expires_in'])){
                 try{
                     $guzzle = new Client();
@@ -395,11 +394,8 @@ class ReceiptController extends Controller
 
                     //add to $company_email json ('api') errors
                     Log::channel('company_emails_login_error')->error($error);
-
                     continue;
                 }
-
-                // dd($amazon_account_tokens);
 
                 $receipt_account->update([
                     'options->expires_in' => Carbon::now()->addMinutes(55)->toIso8601String(),

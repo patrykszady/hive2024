@@ -15,6 +15,7 @@ class UsersIndex extends Component
     public Vendor $vendor;
     public $users = [];
     public $view = NULL;
+    public $registration = NULL;
 
     protected $listeners = ['refreshComponent' => '$refresh', 'testUsers'];
 

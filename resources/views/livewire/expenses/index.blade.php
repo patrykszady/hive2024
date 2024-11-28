@@ -59,14 +59,14 @@
                 <flux:columns>
                     <flux:column>Amount</flux:column>
                     <flux:column sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
-                    @if(!in_array($view, ['checks.show', 'vendors.show']))
+                    {{-- @if(!in_array($view, ['checks.show', 'vendors.show']))
                         <flux:column >Vendor</flux:column>
                     @endif
 
                     @if($view != 'projects.show')
                         <flux:column>Project</flux:column>
-                    @endif
-                    <flux:column>Status</flux:column>
+                    @endif --}}
+                    {{-- <flux:column>Status</flux:column> --}}
                 </flux:columns>
 
                 <flux:rows>
@@ -80,7 +80,7 @@
                                 {{ money($expense->amount) }}
                             </flux:cell>
                             <flux:cell>{{ $expense->date->format('m/d/Y') }}</flux:cell>
-                            @if(!in_array($view, ['checks.show', 'vendors.show']))
+                            {{-- @if(!in_array($view, ['checks.show', 'vendors.show']))
                                 <flux:cell><a wire:navigate.hover href="{{isset($expense->vendor->id) ? route('vendors.show', $expense->vendor->id) : ''}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
                             @endif
 
@@ -92,10 +92,10 @@
                                         {{ Str::limit($expense->project->name, 25) }}
                                     @endif
                                 </flux:cell>
-                            @endif
-                            <flux:cell>
+                            @endif --}}
+                            {{-- <flux:cell>
                                 <flux:badge size="sm" :color="$expense->status == 'Complete' ? 'green' : ($expense->status == 'No Transaction' ? 'yellow' : 'red')" inset="top bottom">{{ $expense->status }}</flux:badge>
-                            </flux:cell>
+                            </flux:cell> --}}
                         </flux:row>
                     @endforeach
                 </flux:rows>

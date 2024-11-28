@@ -86,7 +86,7 @@
                     {{-- BUSINESS NAME & TYPE --}}
                     <div
                         {{-- business_name = business_name_text --}}
-                        x-data="{open_vendor_form: @entangle('open_vendor_form'), user: @entangle('user'), business_type: @entangle('form.business_type'), business_name: @entangle('form.business_name'), via_vendor: @entangle('via_vendor')}"
+                        x-data="{open_vendor_form: @entangle('open_vendor_form'), vendor: @entangle('vendor'), user: @entangle('user'), business_type: @entangle('form.business_type'), business_name: @entangle('form.business_name'), via_vendor: @entangle('via_vendor')}"
                         x-show="open_vendor_form"
                         class="my-4 space-y-4"
                         x-transition
@@ -108,12 +108,12 @@
                             wire:model.live="form.business_type"
                             label="Business Type"
                             {{-- disabled only on editVendor, not on new vendor --}}
-                            x-bind:disabled="via_vendor || user"
+                            x-bind:disabled="via_vendor || user || vendor"
                             >
-                            <flux:radio value="Sub" label="Sub" />
-                            <flux:radio value="DBA" label="DBA" />
-                            <flux:radio value="Retail" label="Retail" />
-                            <flux:radio value="1099" label="1099" />
+                            <flux:radio x-bind:disabled="via_vendor || user || vendor" value="Sub" label="Sub" />
+                            <flux:radio x-bind:disabled="via_vendor || user || vendor" value="DBA" label="DBA" />
+                            <flux:radio x-bind:disabled="via_vendor || user || vendor" value="Retail" label="Retail" />
+                            <flux:radio x-bind:disabled="via_vendor || user || vendor" value="1099" label="1099" />
                         </flux:radio.group>
                     </div>
 

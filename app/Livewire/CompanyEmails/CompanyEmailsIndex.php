@@ -16,14 +16,25 @@ class CompanyEmailsIndex extends Component
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     public $view = NULL;
+    public $email_accounts = [];
+
+    public function mount()
+    {
+        $this->email_accounts =
+            CompanyEmail::all()->each(function ($email, $key){
+                if(is_null($email->api_json['errors'])){
+                    $email->status = 'Connected';
+                }else{
+                    $email->status = 'Error';
+                }
+            });
+    }
 
     #[Title('Email Accounts')]
     public function render()
     {
         $this->authorize('viewAny', CompanyEmail::class);
 
-        return view('livewire.company-emails.index', [
-            'emails' => CompanyEmail::all(),
-        ]);
+        return view('livewire.company-emails.index');
     }
 }

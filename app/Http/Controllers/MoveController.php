@@ -48,6 +48,20 @@ class MoveController extends Controller
         // {
         //     $split->forceDelete();
         // }
+
+        //expenses for past year where expense has transactions but transactions->amount is no equal to $expense->amount
+        // $YTD = Carbon::now()->subYear();
+        // $expenses = Expense::where('vendor_id', '!=', 8)->where('date', '>=', $YTD)->withWhereHas('transactions')->get();
+
+        // $wrong_expenses = [];
+        // foreach($expenses as $expense){
+        //     if($expense->amount > $expense->transactions->sum('amount')){
+        //         $wrong_expenses[] = $expense;
+        //     }
+        // }
+
+        // dd($wrong_expenses);
+
         $sections = EstimateLineItem::whereHas('section')->get()->groupBy('section_id');
 
         foreach($sections as $section_items){

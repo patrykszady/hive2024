@@ -136,7 +136,7 @@ class VendorCreate extends Component
         $this->form->setVendor($this->vendor);
         $this->user = $this->vendor->users()->first();
         $this->business_name_text = $vendor->business_name;
-
+        $this->open_vendor_form = TRUE;
         if($this->vendor->business_type != 'Retail'){
            $this->address = TRUE;
         }

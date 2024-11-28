@@ -3,7 +3,6 @@
         <div class="flex">
             <div class="flex-1">
                 <flux:heading size="lg">Select Account</flux:heading>
-
                 <flux:subheading>
                     <p>{{$user->first_name}}, select one of your accounts to access your dashboard.</p>
                 </flux:subheading>
@@ -11,7 +10,7 @@
         </div>
         <flux:radio.group wire:model.live="vendor_id" label="{{$user->first_name}}'s Accounts" variant="cards" class="flex-col" :indicator="false">
             @foreach($vendors as $vendor)
-                <flux:radio value="{{$vendor->id}}" label="{!!$vendor->business_name!!} {{$vendor->business_type}}" description="{{$vendor->address}} {{$vendor->city . ', ' . $vendor->state . ' ' . $vendor->zip_code}}" />
+                <flux:radio value="{{$vendor->id}}" label="{!!$vendor->business_name!!} | {{$vendor->business_type}}" description="{{$vendor->address}} {{$vendor->city . ', ' . $vendor->state . ' ' . $vendor->zip_code}}" />
             @endforeach
         </flux:radio.group>
 

@@ -6,7 +6,7 @@
                 @if($view === 'projects.show')
                     <flux:button wire:click="$dispatchTo('payments.payment-create', 'addProject', { client: {{$project->client->id}}})">Create Payment</flux:button>
                 @else
-                    <flux:button wire:click="$dispatchTo('payments.payment-create', 'addProject')">Create Payment</flux:button>
+                    <flux:button wire:click="$dispatchTo('payments.payment-create', 'addProject')">Add Payment</flux:button>
                 @endif
             @endcan
         </div>

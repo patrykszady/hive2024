@@ -50,21 +50,17 @@
             @endforeach
         </flux:rows>
     </flux:table>
-</flux:card>
+    <div class="flex space-x-2">
+        <flux:spacer />
 
-{{--
-    <div
-    x-data="{ vendor_info: @entangle('registration') }"
-    x-show="vendor_info"
-    x-transition.duration.250ms
-    >
-    <x-cards.footer>
-        <button></button>
-        <x-cards.button
-            wire:click="$dispatchTo('entry.vendor-registration', 'confirmProcessStep', { process_step: 'team_members' })"
-            button_color=white
+        <div
+            x-data="{ vendor_info: @entangle('registration') }"
+            x-show="vendor_info"
+            x-transition
             >
-            No Employees
-        </x-cards.button>
-    </x-cards.footer>
-</div> --}}
+            <flux:button type="submit" variant="primary" wire:click="$dispatchTo('entry.vendor-registration', 'confirmProcessStep', { process_step: 'team_members' })">
+                No Employees
+            </flux:button>
+        </div>
+    </div>
+</flux:card>

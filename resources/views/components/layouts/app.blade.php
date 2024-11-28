@@ -10,9 +10,9 @@
 
             <flux:brand href="{{route('dashboard')}}" logo="{{ asset('favicon.png') }}" name="{{ env('APP_NAME') }}" />
 
-            <flux:input as="button" variant="filled" placeholder="Search..." icon="magnifying-glass" />
+            @if(!Route::is(['vendor_selection', 'vendor_registration']))
+                <flux:input as="button" variant="filled" placeholder="Search..." icon="magnifying-glass" />
 
-            @if(!Route::is('vendor_selection'))
                 <flux:navlist variant="outline">
                     {{-- BANK ERRORS --}}
                     @can('viewAny', App\Models\Bank::class)

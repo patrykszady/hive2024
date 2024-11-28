@@ -1,34 +1,4 @@
 <div>
-	<div
-		class="max-w-3xl px-4 mx-auto sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
-		<div class="flex items-center space-x-5">
-			{{-- <div class="flex-shrink-0">
-				<div class="relative">
-					<img class="w-16 h-16 rounded-full"
-						src="https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80"
-						alt="">
-					<span class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></span>
-				</div>
-			</div> --}}
-			<div>
-				<h1 class="text-2xl font-bold text-gray-900">Hive Registration for {{$user->vendor->business_name}}</h1>
-				<p class="text-sm font-medium text-gray-500">
-					Registration for <b>{{$user->vendor->name}} | {{$user->vendor->business_type}}</b> Vendor.
-				</p>
-			</div>
-		</div>
-		<div
-			class="flex flex-col-reverse mt-6 space-y-4 space-y-reverse justify-stretch sm:flex-row-reverse sm:justify-end sm:space-x-reverse sm:space-y-0 sm:space-x-3 md:mt-0 md:flex-row md:space-x-3">
-
-			{{-- <x-cards.button href="{{route('expenses.edit', $user->id)}}">
-				Edit User
-			</x-cards.button> --}}
-			{{-- <button type="button"
-				class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500">Advance
-				to offer</button> --}}
-		</div>
-	</div>
-
     <div class="grid max-w-3xl grid-cols-1 gap-6 mx-auto mt-8 sm:px-6 lg:max-w-7xl lg:grid-cols-5">
         {{-- PROGRESS --}}
         <div class="space-y-4 lg:col-start-1 lg:col-span-2">
@@ -38,7 +8,7 @@
                         id="applicant-information-title"
                         class="text-lg font-medium leading-6 text-gray-900"
                         >
-                        Progress
+                        Hive Registration for {{$user->vendor->business_name}}
                     </h2>
                     <p
                         class="max-w-2xl mt-1 text-sm text-gray-500"
@@ -56,11 +26,7 @@
                             <div class="relative flex space-x-3">
                                 <div>
                                     <span class="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full ring-8 ring-white">
-                                        {{-- <x-heroicon-s-user-plus /> --}}
-                                        {{-- <x-markdown-editor name="about" /> --}}
-                                        <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                            <path d="{{$icons['user']}}"/>
-                                        </svg>
+                                        <flux:icon.user variant="solid" class="text-white dark:text-white" />
                                     </span>
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -81,9 +47,7 @@
                                 <div class="relative flex space-x-3">
                                 <div>
                                     <span class="flex items-center justify-center w-8 h-8 {{$this->registration['vendor_info'] === false && $this->registration['team_members'] === false ? 'bg-indigo-500' : ($this->registration['vendor_info'] === true ? 'bg-green-500' : 'bg-gray-500')}} rounded-full ring-8 ring-white">
-                                    <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path d="{{$icons['vendor']}}"/>
-                                    </svg>
+                                        <flux:icon.briefcase variant="solid" class="text-white dark:text-white" />
                                     </span>
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -102,9 +66,7 @@
                                 <div>
                                     {{-- $this->registration['team_members'] === false &&  --}}
                                     <span class="flex items-center justify-center w-8 h-8 {{$this->registration['vendor_info'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
-                                    <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="{{$icons['user_add']}}" clip-rule="evenodd" />
-                                    </svg>
+                                        <flux:icon.user-plus variant="solid" class="text-white dark:text-white" />
                                     </span>
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -123,9 +85,7 @@
                                 <div class="relative flex space-x-3">
                                 <div>
                                     <span class="flex items-center justify-center w-8 h-8 {{$this->registration['team_members'] === false ? 'bg-gray-500' : ($this->registration['vendor_info'] === true && $this->registration['team_members'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
-                                    <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="{{$icons['distributions']}}" clip-rule="evenodd" />
-                                    </svg>
+                                        <flux:icon.receipt-percent variant="solid" class="text-white dark:text-white" />
                                     </span>
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -143,9 +103,7 @@
                                 <div class="relative flex space-x-3">
                                 <div>
                                     <span class="flex items-center justify-center w-8 h-8 {{$this->registration['emails_registered'] === false && $this->registration['team_members'] === false ? 'bg-gray-500' : ($this->registration['team_members'] === true && $this->registration['emails_registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
-                                    <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path d="{{$icons['email']}}" />
-                                    </svg>
+                                        <flux:icon.envelope variant="solid" class="text-white dark:text-white" />
                                     </span>
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -163,9 +121,7 @@
                             <div class="relative flex space-x-3">
                             <div>
                                 <span class="flex items-center justify-center w-8 h-8 {{$this->registration['banks_registered'] === false && $this->registration['emails_registered'] === false ? 'bg-gray-500' : ($this->registration['emails_registered'] === true && $this->registration['banks_registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
-                                <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path d="{{$icons['credit_card']}}" />
-                                </svg>
+                                    <flux:icon.credit-card variant="solid" class="text-white dark:text-white" />
                                 </span>
                             </div>
                             <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -183,9 +139,7 @@
                             <div class="relative flex space-x-3">
                                 <div>
                                     <span class="flex items-center justify-center w-8 h-8 {{$this->registration['registered'] === false && ($this->registration['banks_registered'] === false || $this->registration['vendor_info'] === false) ? 'bg-gray-500' : ($this->registration['banks_registered'] === true && $this->registration['registered'] === true ? 'bg-green-500' : 'bg-indigo-500')}} rounded-full ring-8 ring-white">
-                                    <svg class="w-5 h-5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path d="{{$icons['checkmark']}}" />
-                                    </svg>
+                                        <flux:icon.check-circle variant="solid" class="text-white dark:text-white" />
                                     </span>
                                 </div>
                             <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
@@ -203,7 +157,7 @@
         {{-- REGISTRATION ITEMS --}}
         <div class="space-y-4 lg:col-start-3 lg:col-span-3 xl:col-span-2">
             {{-- VENDOR DETAILS --}}
-            <livewire:vendors.vendor-details :accordian="'OPENED'" :vendor="$vendor" :registration="!$registration['vendor_info']">
+            <livewire:vendors.vendor-details :vendor="$vendor" :registration="!$registration['vendor_info']">
 
             <div
                 x-data="{ showMembers: @entangle('registration.vendor_info') }"
@@ -213,11 +167,9 @@
                 >
 
                 {{-- VENDOR TEAM MEMBERS --}}
-                <x-cards>
-                    <x-cards.body>
-                        <livewire:users.team-members :accordian="'OPENED'" :vendor="$vendor" :registration="!$registration['team_members']">
-                    </x-cards.body>
-                </x-cards>
+                <livewire:users.users-index :vendor="$vendor" :view="'vendors.show'" :registration="!$registration['team_members']"/>
+                <livewire:users.user-create />
+                <livewire:clients.client-create />
 
                 {{-- VENDOR COMPANY EMAILS --}}
                 {{-- DISTRIBUTION LIST --}}
@@ -228,11 +180,10 @@
                         x-transition.duration.150ms
                         >
 
-                        <div>
+                        <div class="space-y-4">
                             <livewire:distributions.distributions-list :registration="TRUE">
+                            <livewire:company-emails.company-emails-index :view="'vendor-registration'">
                         </div>
-
-                        <livewire:company-emails.company-emails-index :view="'vendor-registration'">
                     </div>
 
                     {{-- VENDOR BANKS --}}

@@ -31,7 +31,7 @@ class VendorSelection extends Component
         //where not user removed / where end_date is null
         $this->vendors = $this->user->vendors()
             // , '1099'
-            ->whereIn('vendors.business_type', ['Sub'])
+            ->whereIn('vendors.business_type', ['Sub', '1099'])
             ->wherePivot('is_employed', 1)
             ->withoutGlobalScopes()
             ->orderBy('vendors.business_type')

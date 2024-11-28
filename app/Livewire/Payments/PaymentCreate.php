@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Payments;
 
+use App\Models\Project;
 use App\Models\Client;
 use App\Models\Payment;
 
@@ -51,13 +52,69 @@ class PaymentCreate extends Component
     public function updatedClientId(Client $client)
     {
         $this->client = $client;
-        $this->projects = $client->projects;
+        $this->projects = $client->projects()->orderBy('created_at', 'DESC')->get();
     }
 
     #[Computed]
     public function clients()
     {
-        return Client::orderBy('created_at', 'DESC')->get();
+        $YTD = Carbon::now()->subYear();
+        //where has at least one project in the past year
+        // 11/24/2024
+
+        // $projects = Project::with('client')->with(['last_status' => function ($query) {
+        //     $query->where('title', 'Active');
+        // }])->where('created_at', '>=', $YTD)
+        // ->orderBy('created_at', 'DESC')
+        // ->get();
+
+        // $projects = Project::with('client')
+        // ->when(1 == 1, function($query) {
+        //     return $query->status('Active')->sortByDesc('last_status.start_date');
+        // })
+        // ->get();
+
+        // dd($projects);
+        // return Client::whereHas('projects', function ($query) use ($YTD) {
+        //     $query->where('projects.created_at', '>=', $YTD);
+        // })
+        // ->orderBy('created_at', 'DESC')
+        // ->get();
+
+        //->where('projects.created_at', '>=', $YTD);
+        // $clients = Client::whereHas('projects', function ($query) use ($YTD) {
+        //     $query->with(['status' => function ($query) {
+        //             $query->where('title', 'Active');
+        //         }]);
+        // })->get();
+
+        // $clients = Client::withWhereHas('projects', function ($query) use ($YTD) {
+        //     $query->withWhereHas('last_status', function ($query) {
+        //         return $query->where('title', '=', 'Active');
+        //     })->orderBy('projects.created_at', 'DESC');
+        // })
+        // // ->orderBy('created_at', 'DESC')
+        // ->get();
+
+        // $projects = Project::with(['statuses' => function ($query){
+        //     $query->where('title', 'Active')
+        //           ->orderBy('created_at', 'desc')
+        //           ->take(1);
+        // }])->first();
+        // //status(['Active', 'Service Call'])
+        // // $projects = Project::with('client')->where('created_at', '>=', $YTD)->status(['Active', 'Service Call', 'Complete']);
+        // //     ->withWhereHas('last_status', function ($query) {
+        // //         return $query->where('title', '=', 'Active');
+        // //     })->orderBy('created_at', 'DESC')->first();
+
+        // dd($projects);
+
+        // return $clients;
+        return Client::withWhereHas('projects', function ($query) use ($YTD) {
+            $query->where('projects.created_at', '>=', $YTD);
+        })
+        ->orderBy('created_at', 'DESC')
+        ->get();
     }
 
     public function getClientPaymentSumProperty()

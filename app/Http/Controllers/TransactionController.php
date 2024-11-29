@@ -82,7 +82,21 @@ class TransactionController extends Controller
             //close session
             curl_close($ch);
 
+            // dd($bank->plaid_options->accounts['0']->balances->available);
             $balances = json_decode($balance_result, true);
+
+            // if($balances['accounts'][0]['balances']['available'] === $bank->plaid_options->accounts['0']->balances->available){
+            //     $bank->plaid_options->accounts['0']->balances->updated = 'TEST';
+            //     dd($bank);
+            //     $bank->save();
+            // }else{
+            //     $result = array_merge(json_decode(now()->format('Y-m-d'), true), $balances);
+            //     dd($result);
+            //     //add timestamp of when the balance was last changed(now) and update balance avaliable....
+            //     $bank->plaid_options->accounts['0']->available = $balances['accounts'][0]['balances']['available'];
+            //     $bank->plaid_options->accounts['0']->balances->updated = now()->format('Y-m-d');
+            //     $bank->save();
+            // }
 
             $data = array(
                 "client_id" => env('PLAID_CLIENT_ID'),
@@ -107,7 +121,6 @@ class TransactionController extends Controller
             curl_close($ch);
 
             $result = array_merge(json_decode($exchangeToken, true), $balances);
-            // dd($result);
 
             if(isset($result['item']['error'])){
                 $error = array("error" => $result['item']['error'],);

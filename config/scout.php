@@ -236,7 +236,7 @@ return [
                             'optional' => true,
                         ],
                     ],
-                    'default_sorting_field' => 'created_at',
+                    'default_sorting_field' => 'date',
                 ],
                 'search-parameters' => [
                     'query_by' => 'amount',
@@ -260,12 +260,11 @@ return [
                         ],
                         [
                             'name' => 'vendor_id',
-                            'type' => 'int32',
-                            'facet' => true,
+                            'type' => 'string',
                         ],
                         [
                             'name' => 'expense_id',
-                            'type' => 'int32',
+                            'type' => 'string',
                         ],
                         [
                             'name' => 'is_expense_id_null',
@@ -273,7 +272,7 @@ return [
                         ],
                         [
                             'name' => 'check_id',
-                            'type' => 'int32',
+                            'type' => 'string',
                         ],
                         [
                             'name' => 'is_check_id_null',
@@ -281,7 +280,7 @@ return [
                         ],
                         [
                             'name' => 'bank_account_id',
-                            'type' => 'int32',
+                            'type' => 'string',
                             'sort' => true,
                         ],
                         [

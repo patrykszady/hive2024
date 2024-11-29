@@ -10,44 +10,7 @@
     </flux:card>
 
     @foreach($banks as $bank)
-        <flux:card class="space-y-2">
-            <div class="flex justify-between">
-                <flux:heading size="lg">{{$bank->name}}</flux:heading>
-
-                <flux:badge color="{{$bank->error == FALSE ? 'green' : 'red'}}">{{$bank->error == FALSE ? 'Connected' : 'Error'}}</flux:badge>
-            </div>
-
-            @foreach($bank->accounts as $account)
-                <flux:card class="space-y-2">
-                    <div class="flex justify-between">
-                        <flux:heading size="lg">{{$account->account_number . ' | ' . $account->type}}</flux:heading>
-                        <flux:button variant="primary" disabled>
-                            @php
-                                $balances = collect($bank->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
-                            @endphp
-
-                            @if(isset($balances))
-                                {{money(isset($balances->balances->available) ? $balances->balances->available : $balances->balances->current)}}
-                            @else
-                                "N/A"
-                            @endif
-                        </flux:button>
-                    </div>
-
-                    @foreach($account->checks()->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions')->get() as $check)
-                        <flux:card>
-                            <div class="flex justify-between">
-                                <a href="{{route('checks.show', $check->id)}}">
-                                    <flux:heading>{{$check->owner}}</flux:heading>
-                                    <flux:subheading>{{$check->check_type . ' ' . $check->check_number . ' ' . $check->date->format('m/d/Y')}}</flux:subheading>
-                                </a>
-                                <a href="{{route('checks.show', $check->id)}}" class="text-red-800"><b>{{money($check->amount)}}</b></a>
-                            </div>
-                        </flux:card>
-                    @endforeach
-                </flux:card>
-            @endforeach
-        </flux:card>
+        @include('livewire.banks._bank_card')
     @endforeach
 
     {{-- PLAID LINK --}}

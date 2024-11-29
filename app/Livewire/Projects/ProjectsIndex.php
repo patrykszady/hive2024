@@ -83,9 +83,9 @@ class ProjectsIndex extends Component
             ->when($this->client != NULL, function ($query) use ($client_ids) {
                 return $query->whereIn('client_id', $client_ids);
             })
-            ->when($this->client_id != NULL, function ($query) {
-                return $query->where('client_id', $this->client_id);
-            })
+            // ->when($this->client_id != NULL, function ($query) {
+            //     return $query->where('client_id', $this->client_id);
+            // })
             ->paginate(10);
     }
 

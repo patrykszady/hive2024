@@ -2,13 +2,16 @@
     <flux:card class="space-y-2">
         <div class="flex justify-between">
             <flux:heading size="lg">Payments</flux:heading>
-            @can('create', App\Models\Payment::class)
-                @if($view === 'projects.show')
-                    <flux:button wire:click="$dispatchTo('payments.payment-create', 'addProject', { client: {{$project->client->id}}})">Create Payment</flux:button>
-                @else
-                    <flux:button wire:click="$dispatchTo('payments.payment-create', 'addProject')">Add Payment</flux:button>
-                @endif
-            @endcan
+            <div>
+                @can('create', App\Models\Payment::class)
+                    @if($view === 'projects.show')
+                        <flux:button wire:click="$dispatchTo('payments.payment-create', 'addProject', { client: {{$project->client->id}}})">Create Payment</flux:button>
+                    @else
+                        <flux:button wire:click="$dispatchTo('payments.payment-create', 'addProject')">Add Payment</flux:button>
+                    @endif
+                    <livewire:payments.payment-create />
+                @endcan
+            </div>
         </div>
 
         <div class="space-y-2">
@@ -51,6 +54,4 @@
             </flux:table>
         </div>
     </flux:card>
-
-    <livewire:payments.payment-create />
 </div>

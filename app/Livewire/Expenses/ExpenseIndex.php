@@ -123,6 +123,7 @@ class ExpenseIndex extends Component
     public function expenses()
     {
         $expenses = Expense::search($this->amount)
+            ->where('belongs_to_vendor_id', auth()->user()->primary_vendor_id)
             ->when(!empty($this->expense_vendor) && $this->expense_vendor != '0', function ($query, $item) {
                 return $query->where('vendor_id', $this->expense_vendor);
             })

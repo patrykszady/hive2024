@@ -35,7 +35,7 @@
                 <div
                     x-data="{ validate_number: @entangle('validate_number'), show_email: @entangle('show_email') }"
                     x-show="!validate_number && !show_email"
-                    x-transition.duration.150ms
+                    x-transition
                     class="my-4 space-y-4"
                     >
                     <div>
@@ -54,7 +54,7 @@
                 <div
                     x-data="{ validate_number: @entangle('validate_number'), show_email: @entangle('show_email') }"
                     x-show="validate_number && !show_email"
-                    x-transition.duration.150ms
+                    x-transition
                     class="my-4 space-y-4"
                     >
 
@@ -92,7 +92,7 @@
                 <div
                     x-data="{ validate_email: @entangle('validate_email'), validate_number: @entangle('validate_number'), show_email: @entangle('show_email'), show_name: @entangle('show_name') }"
                     x-show="!validate_number && show_email"
-                    x-transition.duration.150ms
+                    x-transition
                     class="my-4 space-y-4"
                     >
                     <div>
@@ -115,7 +115,7 @@
                     <div
                         x-data="{ validate_email: @entangle('validate_email'), show_name: @entangle('show_name') }"
                         x-show="!validate_email && !show_name"
-                        x-transition.duration.150ms
+                        x-transition
                         class="my-4 space-y-4"
                         >
                         <div>
@@ -135,7 +135,7 @@
                 <div
                     x-data="{ validate_email: @entangle('validate_email') }"
                     x-show="validate_email"
-                    x-transition.duration.150ms
+                    x-transition
                     class="my-4 space-y-4"
                     >
 
@@ -159,7 +159,7 @@
                     <div
                         x-data="{ validate_email: @entangle('validate_email'), show_name: @entangle('show_name') }"
                         x-show="validate_email && !show_name"
-                        x-transition.duration.150ms
+                        x-transition
                         class="my-4 space-y-4"
                         >
                         <div>
@@ -180,7 +180,7 @@
                 <div
                     x-data="{ show_name: @entangle('show_name') }"
                     x-show="show_name"
-                    x-transition.duration.150ms
+                    x-transition
                     class="my-4 space-y-4"
                     >
                     <div>

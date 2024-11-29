@@ -7,12 +7,12 @@
     <body class="min-h-screen bg-gray-100 dark:bg-zinc-800">
         <flux:sidebar sticky stashable class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
-
             <flux:brand href="{{route('dashboard')}}" logo="{{ asset('favicon.png') }}" name="{{ env('APP_NAME') }}" />
 
             @if(!Route::is(['vendor_selection', 'vendor_registration']))
-                <flux:input as="button" variant="filled" placeholder="Search..." icon="magnifying-glass" />
-
+                {{-- <flux:input as="button" variant="filled" placeholder="Search..." icon="magnifying-glass" /> --}}
+                <flux:heading href="{{route('dashboard')}}" class="mt-0 pt-0 mb-0 pb-0">{!! auth()->user()->vendor->name !!}</flux:heading>
+                {{-- <flux:brand href="{{route('dashboard')}}" name="{!! auth()->user()->vendor->name !!}" /> --}}
                 <flux:navlist variant="outline">
                     {{-- BANK ERRORS --}}
                     @can('viewAny', App\Models\Bank::class)

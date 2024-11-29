@@ -90,7 +90,7 @@
                                 <flux:cell>{{ Str::limit($expense->project->name, 25) }}</flux:cell>
                             @endif --}}
                             <flux:cell>
-                                <flux:badge size="sm" :color="$project->last_status->title == 'Complete' ? 'green' : ($project->last_status->title == 'Active' ? 'blue' : 'yellow')" inset="top bottom">{{ $project->last_status->title }}</flux:badge>
+                                <flux:badge size="sm" :color="$project->last_status->title == 'Complete' ? 'green' : ($project->last_status->title == 'Active' ? 'blue' : ($project->last_status->title == 'Cancelled' ? 'red' : 'yellow'))" inset="top bottom">{{ $project->last_status->title }}</flux:badge>
                             </flux:cell>
                         </flux:row>
                     @endforeach

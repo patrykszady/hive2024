@@ -59,6 +59,7 @@ class Expense extends Model
         return array_merge($this->toArray(),[
             'id' => (string) $this->id,
             'vendor_id' => (string) $this->vendor_id,
+            'belongs_to_vendor_id' => (string) $this->belongs_to_vendor_id,
             'project_id' => (string) $this->project_id,
             'check_id' => (string) $this->check_id,
             'is_project_id_null' => $this->project_id ? false : true,

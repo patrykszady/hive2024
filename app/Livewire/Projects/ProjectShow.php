@@ -25,7 +25,7 @@ class ProjectShow extends Component
     #[Title('Project')]
     public function render()
     {
-        $this->authorize('view', $this->project);
+        // $this->authorize('view', $this->project);
 
         return view('livewire.projects.show');
     }

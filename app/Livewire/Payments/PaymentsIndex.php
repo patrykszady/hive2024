@@ -56,7 +56,6 @@ class PaymentsIndex extends Component
     #[Title('Payments')]
     public function render()
     {
-        // dd($this);
         return view('livewire.payments.index');
     }
 }

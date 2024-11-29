@@ -28,7 +28,6 @@ class ClientsShow extends Component
     public function render()
     {
         $this->authorize('view', $this->client);
-
         return view('livewire.clients.show');
     }
 }

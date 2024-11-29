@@ -22,24 +22,22 @@
         </div>
     </flux:card>
 
-    @if(!$vendors->isEmpty())
-        <br>
-        <flux:separator text="+" />
-        <br>
+    <br>
+    <flux:separator text="+" />
+    <br>
 
-        <flux:card class="space-y-6">
-            <div class="flex">
-                <div class="flex-1">
-                    <flux:heading size="lg">Create a Hive</flux:heading>
+    <flux:card class="space-y-6">
+        <div class="flex">
+            <div class="flex-1">
+                <flux:heading size="lg">Create a Hive</flux:heading>
 
-                    <flux:subheading>
-                        <p>Contact us to get started for free. <br> Cell: 224-999-3880 Email: patryk@hive.contractors</p>
-                    </flux:subheading>
-                </div>
+                <flux:subheading>
+                    <p>Contact us to get started for free. <br> Cell: 224-999-3880 Email: patryk@hive.contractors</p>
+                </flux:subheading>
             </div>
-        </flux:card>
+        </div>
+    </flux:card>
 
-        {{-- CREATE NEW VENDOR/BUSINESS --}}
-        {{-- <livewire:vendors.vendor-create /> --}}
-    @endif
+    {{-- CREATE NEW VENDOR/BUSINESS --}}
+    {{-- <livewire:vendors.vendor-create /> --}}
 </div>

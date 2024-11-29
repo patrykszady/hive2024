@@ -193,6 +193,10 @@ return [
                             'type' => 'string',
                         ],
                         [
+                            'name' => 'belongs_to_vendor_id',
+                            'type' => 'string',
+                        ],
+                        [
                             'name' => 'project_id',
                             'type' => 'string',
                         ],

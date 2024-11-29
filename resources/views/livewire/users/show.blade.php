@@ -27,6 +27,7 @@
                                     <x-cards.button
                                         button_color='red'
                                         wire:click="$dispatchTo('users.user-create', 'removeMember', { user: {{$user->id}} })"
+                                        wire:confirm.prompt="Are you sure you want to remove this User from this Vendor?\n\nType REMOVE to confirm|REMOVE"
                                         >
                                         Remove User From Vendor
                                     </x-cards.button>
@@ -291,6 +292,4 @@
         @endcan
         @endif
 	</div>
-
-    <livewire:vendors.vendor-create />
 </div>

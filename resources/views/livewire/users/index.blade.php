@@ -59,7 +59,7 @@
             x-transition
             >
             <flux:button type="submit" variant="primary" wire:click="$dispatchTo('entry.vendor-registration', 'confirmProcessStep', { process_step: 'team_members' })">
-                No Employees
+                No More Employees
             </flux:button>
         </div>
     </div>

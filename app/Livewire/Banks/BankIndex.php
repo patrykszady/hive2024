@@ -29,7 +29,7 @@ class BankIndex extends Component
     {
         $this->banks =
             Bank::whereNotNull('plaid_access_token')
-                ->with(['accounts.checks' => function($query) {
+                ->with(['accounts', 'accounts.checks' => function($query) {
                     $query->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions');
                 }])
                 ->get()
@@ -39,6 +39,9 @@ class BankIndex extends Component
                     }else{
                         $item->error = FALSE;
                     }
+
+                    // $balances = collect($this->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
+                    // if()
                 });
     }
 
@@ -158,8 +161,6 @@ class BankIndex extends Component
     public function render()
     {
         $this->authorize('viewAny', Bank::class);
-
-        return view('livewire.banks.index', [
-        ]);
+        return view('livewire.banks.index');
     }
 }

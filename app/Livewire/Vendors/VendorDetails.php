@@ -11,7 +11,14 @@ class VendorDetails extends Component
     public $registration = FALSE;
     // public $accordian = 'CLOSED';
 
-    protected $listeners = ['refreshComponent' => '$refresh'];
+    //'refreshComponent' => '$refresh',
+    protected $listeners = ['refresh'];
+
+    public function refresh()
+    {
+        $this->registration = FALSE;
+        $this->render();
+    }
 
     public function render()
     {

@@ -55,7 +55,7 @@
                 wire:click="$dispatchTo('entry.vendor-registration', 'confirmProcessStep', { process_step: 'team_members' })"
                 button_color=white
                 >
-                No Employees
+                No More Employees
             </x-cards.button>
         </x-cards.footer>
     </div>

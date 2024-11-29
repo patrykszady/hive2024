@@ -1,136 +1,102 @@
-<x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1' : ''}}">
-    {{-- HEADING --}}
-    <x-cards.heading>
-        <x-slot name="left">
-            <h1>Transaction Accounts</h1>
-            <p class="text-sm text-gray-500">Connect your Transactions to automatically match and organize with Expenses and Receipts.</p>
-        </x-slot>
+<div class="max-w-lg space-y-4">
+    <flux:card>
+        <div class="flex justify-between">
+            <div>
+                <flux:heading size="lg">Transaction Accounts</flux:heading>
+                <flux:subheading size="md">Connect your Transactions to automatically match and organize with Expenses and Receipts.</flux:subheading>
+            </div>
+            <flux:button wire:navigate.hover wire:click="plaid_link_token" size="sm" icon="plus">New Bank Account</flux:button>
+        </div>
+    </flux:card>
 
-        <x-slot name="right">
-            <x-cards.button wire:click="plaid_link_token" wire:loading.class="opacity-50" wire:loading.attr="disabled">
-                New Account
-            </x-cards.button>
-        </x-slot>
-    </x-cards.heading>
+    @foreach($banks as $bank)
+        <flux:card class="space-y-2">
+            <div class="flex justify-between">
+                <flux:heading size="lg">{{$bank->name}}</flux:heading>
 
-    <x-cards.body>
-        <x-lists.ul>
-            @foreach($banks as $bank)
-                @php
-                    if($bank->error){
-                        $line_details = [
-                        1 => [
-                            'text' => $bank->error,
-                            'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'
-                            ],
-                        ];
-                    }else{
-                        $line_details = '';
-                    }
-                @endphp
+                <flux:badge color="{{$bank->error == FALSE ? 'green' : 'red'}}">{{$bank->error == FALSE ? 'Connected' : 'Error'}}</flux:badge>
+            </div>
 
-                <x-lists.search_li
-                    href="{{route('banks.show', $bank->id)}}"
-                    :no_hover=true
-                    :line_details="$line_details"
-                    :line_title="$bank->name"
-                    :bubble_message="$bank->error == FALSE ? 'Connected' : 'Error'"
-                    :bubble_color="$bank->error == FALSE ? 'green' : 'red'"
-                    >
-                </x-lists.search_li>
-                <x-lists.ul>
-                    @foreach($bank->accounts as $account)
-                        @php
-                            $balances = collect($bank->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
-                            if(isset($balances)){
-                                $balance_available = money(isset($balances->balances->available) ? $balances->balances->available : $balances->balances->current);
-                            }else{
-                                $balance_available = "N/A";
-                            }
-                            $line_details = [
-                                1 => [
-                                    'text' => $account->account_number,
-                                    'icon' => 'M2.5 4A1.5 1.5 0 001 5.5V6h18v-.5A1.5 1.5 0 0017.5 4h-15zM19 8.5H1v6A1.5 1.5 0 002.5 16h15a1.5 1.5 0 001.5-1.5v-6zM3 13.25a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5h-1.5a.75.75 0 01-.75-.75zm4.75-.75a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5z'
-                                ],
-                                2 => [
-                                    'text' => $bank->updated_at->diffForHumans(),
-                                    'icon' => 'M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z'
-                                    ],
-                                ];
-                        @endphp
+            @foreach($bank->accounts as $account)
+                <flux:card class="space-y-2">
+                    <div class="flex justify-between">
+                        <flux:heading size="lg">{{$account->account_number . ' | ' . $account->type}}</flux:heading>
+                        <flux:button variant="primary" disabled>
+                            @php
+                                $balances = collect($bank->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
+                            @endphp
 
-                        <x-lists.search_li
-                            :line_details="$line_details"
-                            :line_title="$balance_available"
-                            :bubble_message="$account->type"
-                            >
-                        </x-lists.search_li>
+                            @if(isset($balances))
+                                {{money(isset($balances->balances->available) ? $balances->balances->available : $balances->balances->current)}}
+                            @else
+                                "N/A"
+                            @endif
+                        </flux:button>
+                    </div>
 
-                        @foreach($account->checks()->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions')->get() as $check)
-                            <x-lists.search_li
-                                href="{{route('checks.show', $check->id)}}"
-                                :href_target="'blank'"
-                                :basic=true
-                                :line_title="money($check->amount)"
-                                :line_data="$check->owner"
-                                >
-                            </x-lists.search_li>
-                        @endforeach
+                    @foreach($account->checks()->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions')->get() as $check)
+                        <flux:card>
+                            <div class="flex justify-between">
+                                <a href="{{route('checks.show', $check->id)}}">
+                                    <flux:heading>{{$check->owner}}</flux:heading>
+                                    <flux:subheading>{{$check->check_type . ' ' . $check->check_number . ' ' . $check->date->format('m/d/Y')}}</flux:subheading>
+                                </a>
+                                <a href="{{route('checks.show', $check->id)}}" class="text-red-800"><b>{{money($check->amount)}}</b></a>
+                            </div>
+                        </flux:card>
                     @endforeach
-                </x-lists.ul>
+                </flux:card>
             @endforeach
-        </x-lists.ul>
-    </x-cards.body>
+        </flux:card>
+    @endforeach
 
-    {{-- FOOTER --}}
-</x-cards>
+    {{-- PLAID LINK --}}
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            @this.on('linkToken', exchangeToken => {
+                var handler = Plaid.create({
+                    token: exchangeToken,
 
-{{-- PLAID LINK --}}
-<script>
-    document.addEventListener('livewire:initialized', () => {
-        @this.on('linkToken', exchangeToken => {
-            var handler = Plaid.create({
-                token: exchangeToken,
+                    onLoad: function() {
+                        handler.open();
+                    },
 
-                onLoad: function() {
-                    handler.open();
-                },
+                    onSuccess: function(token, metadata) {
+                        // console.log(metadata);
+                        // Send the public_token to your app server.
+                        // The metadata object contains info about the institution the
+                        // user selected and the account ID or IDs, if the
+                        // Select Account view is enabled.
 
-                onSuccess: function(token, metadata) {
-                    // console.log(metadata);
-                    // Send the public_token to your app server.
-                    // The metadata object contains info about the institution the
-                    // user selected and the account ID or IDs, if the
-                    // Select Account view is enabled.
+                        //plaidLinkItem = plaid_link_item on BankIndex
+                        @this.dispatch('plaidLinkItem', { item_data: metadata })
+                    },
 
-                    //plaidLinkItem = plaid_link_item on BankIndex
-                    @this.dispatch('plaidLinkItem', { item_data: metadata })
-                },
+                    onExit: function(err, metadata) {
+                        // The user exited the Link flow or error above.
+                        if (err != null) {
+                            // The user encountered a Plaid API error prior to exiting.
+                        }
+                            // metadata contains information about the institution
+                            // that the user selected and the most recent API request IDs.
+                            // Storing this information can be helpful for support.
+                    },
 
-                onExit: function(err, metadata) {
-                    // The user exited the Link flow or error above.
-                    if (err != null) {
-                        // The user encountered a Plaid API error prior to exiting.
+                    onEvent: function(eventName, metadata) {
+                        // Optionally capture Link flow events, streamed through
+                        // this callback as your users connect an Item to Plaid.
+                        // For example:
+                        // eventName = "TRANSITION_VIEW"
+                        // metadata  = {
+                        //   link_session_id: "123-abc",
+                        //   mfa_type:        "questions",
+                        //   timestamp:       "2017-09-14T14:42:19.350Z",
+                        //   view_name:       "MFA",
+                        // }
                     }
-                        // metadata contains information about the institution
-                        // that the user selected and the most recent API request IDs.
-                        // Storing this information can be helpful for support.
-                },
-
-                onEvent: function(eventName, metadata) {
-                    // Optionally capture Link flow events, streamed through
-                    // this callback as your users connect an Item to Plaid.
-                    // For example:
-                    // eventName = "TRANSITION_VIEW"
-                    // metadata  = {
-                    //   link_session_id: "123-abc",
-                    //   mfa_type:        "questions",
-                    //   timestamp:       "2017-09-14T14:42:19.350Z",
-                    //   view_name:       "MFA",
-                    // }
-                }
+                });
             });
         });
-    });
-</script>
-<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    </script>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+</div>

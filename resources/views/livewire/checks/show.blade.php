@@ -229,7 +229,7 @@
                                         </flux:cell>
                                         <flux:cell>{{ $expense->date->format('m/d/Y') }}</flux:cell>
                                         <flux:cell><a wire:navigate.hover href="{{route('vendors.show', $expense->vendor->id)}}">{{Str::limit($expense->vendor->name, 20)}}</a></flux:cell>
-                                        <flux:cell><a wire:navigate.hover href="{{route('projects.show', $expense->project->id)}}">{{ Str::limit($expense->project->name, 25) }}</a></flux:cell>
+                                        <flux:cell><a wire:navigate.hover href="{{$expense->project->name == 'EXPENSE SPLIT' ? '' : route('projects.show', $expense->project->id)}}">{{ Str::limit($expense->project->name, 25) }}</a></flux:cell>
                                     </flux:row>
                                 @endforeach
                             </flux:rows>

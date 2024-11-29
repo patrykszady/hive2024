@@ -162,7 +162,7 @@
             <div
                 x-data="{ showMembers: @entangle('registration.vendor_info') }"
                 x-show="showMembers"
-                x-transition.duration.150ms
+                x-transition
                 class="space-y-4"
                 >
 
@@ -173,11 +173,11 @@
 
                 {{-- VENDOR COMPANY EMAILS --}}
                 {{-- DISTRIBUTION LIST --}}
-                @if(in_array($vendor->business_type, ['Sub', 'DBA']))
+                {{-- @if(in_array($vendor->business_type, ['Sub', 'DBA'])) --}}
                     <div
                         x-data="{ showEmails: @entangle('registration.team_members') }"
                         x-show="showEmails"
-                        x-transition.duration.150ms
+                        x-transition
                         >
 
                         <div class="space-y-4">
@@ -190,18 +190,18 @@
                     <div
                         x-data="{ showBanks: @entangle('registration.emails_registered') }"
                         x-show="showBanks"
-                        x-transition.duration.150ms
+                        x-transition
                         >
                         <div>
                             <livewire:banks.bank-index :view="'vendor-registration'">
                         </div>
                     </div>
-                @endif
+                {{-- @endif --}}
                 {{-- VENDOR REGISTRATION FORM --}}
                 <div
                     x-data="{ showRegister: @entangle('registration.banks_registered') }"
                     x-show="showRegister"
-                    x-transition.duration.250ms
+                    x-transition
                     >
                     <form wire:submit="store" x-show="showRegister">
                         <button
@@ -209,8 +209,8 @@
                             type="sbumit"
                             {{-- x-bind:disabled="store" --}}
                             {{-- wire:click="showmodal" --}}
-                            wire:loading.attr="disabled"
-                            disabled
+                            {{-- wire:loading.attr="disabled"
+                            disabled --}}
                             {{-- wire:target="{{$view_text['form_submit']}}, 'expense', 'createExpenseFromTransaction'" --}}
                             {{-- x-bind:disabled="expense.project_id" --}}
                             class="inline-flex justify-center w-full px-4 py-2 text-lg font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"

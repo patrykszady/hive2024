@@ -1,60 +1,34 @@
-<x-modals.modal>
-    <form wire:submit="{{$view_text['form_submit']}}">
-        <x-cards.heading>
-            <x-slot name="left">
-                <h1>{{$view_text['card_title']}}</h1>
-            </x-slot>
-            {{-- <x-slot name="right">
-                @if(isset($form->expense->id))
-                    <x-cards.button href="{{route('expenses.show', $form->expense->id)}}" target="_blank">
-                        Show Expense
-                    </x-cards.button>
-                @endif
-            </x-slot> --}}
-        </x-cards.heading>
+<flux:modal name="distribution_form_modal" class="space-y-2">
+    <div class="flex justify-between">
+        <flux:heading size="lg">{{$view_text['card_title']}}</flux:heading>
+        @if(isset($expense->id))
+            <flux:button wire:navigate.hover href="{{route('expenses.show', $expense->id)}}">Show Expense</flux:button>
+        @endif
+    </div>
 
-        {{-- ROWS --}}
-        <x-cards.body :class="'space-y-4 my-4'">
-            {{-- ADMIN USERS --}}
-            <x-forms.row
-                wire:model.live="form.user_id"
-                errorName="form.user_id"
-                name="form.user_id"
-                text="User"
-                type="dropdown"
-                >
-                <option value="" readonly>Select User</option>
-                @foreach ($form->users as $user)
-                    <option value="{{$user->id}}">{{$user->full_name}}</option>
-                @endforeach
-            </x-forms.row>
+    <flux:separator variant="subtle" />
 
-            <x-forms.row
-                wire:model.live="form.name"
-                errorName="form.name"
-                name="form.name"
-                text="Name"
-                type="text"
-                placeholder="Office"
-                >
-            </x-forms.row>
-        </x-cards.body>
+    <form wire:submit="{{$view_text['form_submit']}}" class="grid gap-6">
+        {{-- TEAM MEMBER --}}
+        <flux:select label="Team Member" wire:model.live="form.user_id" variant="listbox" placeholder="Select User...">
+            @foreach ($form->users as $user)
+                <flux:option value="{{$user->id}}">{{$user->full_name}}</flux:option>
+            @endforeach
+        </flux:select>
 
-        <x-cards.footer>
-            <button
-                type="button"
-                x-on:click="open = false"
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                Cancel
-            </button>
+        {{-- DISTRIBUTION NAME --}}
+        <flux:input
+            wire:model.live="form.name"
+            label="Distribution Name"
+            type="text"
+            placeholder="Office"
+        />
 
-            <button
-                type="submit"
-                class="inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                {{$view_text['button_text']}}
-            </button>
-        </x-cards.footer>
+        {{-- FOOTER --}}
+        <div class="flex space-x-2 sticky bottom-0">
+            <flux:spacer />
+
+            <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
+        </div>
     </form>
-</x-modals.modal>
+</flux:modal>

@@ -80,7 +80,7 @@
 
                     @can('viewAny', App\Models\Bank::class)
                         <flux:navlist.group expandable heading="Accounting">
-                            <flux:navlist.item wire:navigate.hover href="/banks" icon="building-library">Banks</flux:navlist.item>
+                            <flux:navlist.item href="/banks" icon="building-library">Banks</flux:navlist.item>
                             <flux:navlist.item wire:navigate.hover href="/distributions" icon="receipt-percent">Distributions</flux:navlist.item>
                             <flux:navlist.item wire:navigate.hover href="/sheets" icon="document-currency-dollar">Sheets</flux:navlist.item>
                             <flux:navlist.item wire:navigate.hover href="/company_emails" icon="inbox-stack">Company Emails</flux:navlist.item>

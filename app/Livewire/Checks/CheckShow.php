@@ -19,7 +19,7 @@ class CheckShow extends Component
 
     public function mount()
     {
-
+        // dd($this);
     }
 
     #[Title('Check')]

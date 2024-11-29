@@ -78,18 +78,17 @@ class VendorRegistration extends Component
 
     public function confirmProcessStep($process_step){
         $this->confirmProcess($process_step);
-        $this->user->refresh();
-        $this->user->vendor->refresh();
-        $this->vendor->refresh();
 
-        $this->mount();
-        $this->render();
-        // return redirect(route('vendor_registration', $this->vendor->id));
+        if($process_step === 'vendor_info'){
+            $this->dispatch('refresh')->to('vendors.vendor-details');
+        }elseif($process_step === 'team_members'){
+            $this->dispatch('refresh')->to('users.users-index');
+        }
     }
 
     public function addVendorHiveInfo()
     {
-        dd('TOO FAR');
+        // dd('TOO FAR');
         //5-19-2023 ... queue this in case someone EXITS, if job not done and user tries to come back, show the spinning/loading wheel upon login...
         ini_set('max_execution_time', '480000');
         //where vendor is registering initinally or going forward ($vendor->registration->registered = true)

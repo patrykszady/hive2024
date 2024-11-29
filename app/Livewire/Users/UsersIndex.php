@@ -17,44 +17,12 @@ class UsersIndex extends Component
     public $view = NULL;
     public $registration = NULL;
 
-    protected $listeners = ['refreshComponent' => '$refresh', 'testUsers'];
+    protected $listeners = ['refreshComponent' => '$refresh', 'refresh'];
 
     public $view_text = [
         'card_title' => 'Users',
         'button_text' => 'Add User',
     ];
-
-    // #[Computed]
-    // public function users()
-    // {
-    //     return $this->client->users;
-    // }
-    // #[Computed]
-    // public function users()
-    // {
-    //     dd(Client::findOrFail($this->client->id)->users);
-    //     return Client::findOrFail($this->client->id)->users;
-    // }
-
-    public function testUsers()
-    {
-        // dd($this);
-        // $this->client->fresh();
-        //         // dd($this->users);
-        // if($this->view == 'clients.show'){
-        //     $this->view_text['card_title'] = "Client Members";
-        //     $this->users = $this->client->users;
-        // }elseif($this->view == 'vendors.show'){
-        //     $this->view_text['card_title'] = "Team Members";
-        //     $this->users = $this->vendor->users()->employed()->get();
-        // }
-        $this->mount();
-        $this->render();
-        // $this->users = Client::findOrFail($this->client->id)->users()->get();
-        // $this->client->fresh();
-        // // $this->client->users = $this->client->users()->fresh();
-        // dd($this->client->users);
-    }
 
     public function mount()
     {
@@ -67,6 +35,12 @@ class UsersIndex extends Component
         }else{
             dd($this);
         }
+    }
+
+    public function refresh()
+    {
+        $this->registration = FALSE;
+        $this->render();
     }
 
     public function add_user()

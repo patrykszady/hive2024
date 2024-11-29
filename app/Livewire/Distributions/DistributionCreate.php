@@ -17,8 +17,6 @@ class DistributionCreate extends Component
         'form_submit' => 'save',
     ];
 
-    public $modal_show = FALSE;
-
     protected $listeners = ['newDistribution'];
 
     public function mount()
@@ -30,7 +28,7 @@ class DistributionCreate extends Component
 
     public function newDistribution()
     {
-        $this->modal_show = TRUE;
+        $this->modal('distribution_form_modal')->show();
     }
 
     public function updated($field, $value)
@@ -50,7 +48,7 @@ class DistributionCreate extends Component
 
         //12-30-23 why not just refreshComponent => $refresh
         $this->dispatch('refreshForce')->to('distributions.distributions-list');
-        $this->modal_show = FALSE;
+        $this->modal('distribution_form_modal')->close();
 
         $this->dispatch('notify',
             type: 'success',

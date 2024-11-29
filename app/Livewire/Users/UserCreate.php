@@ -72,6 +72,11 @@ class UserCreate extends Component
             $this->user_form = FALSE;
         }
 
+        if($field == 'form.role'){
+            $this->form->via_vendor = NULL;
+            $this->form->hourly_rate = NULL;
+        }
+
         $this->validateOnly($field);
     }
 

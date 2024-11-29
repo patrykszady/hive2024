@@ -19,6 +19,7 @@ use Livewire\WithPagination;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 #[Lazy]
@@ -153,9 +154,9 @@ class ExpenseIndex extends Component
             ->when(!empty($this->check) && is_numeric($this->check), function ($query, $item) {
                 return $query->where('check_id', $this->check);
             })
-            ->whereIn(
-                'expense_status', ['Complete', 'Missing Info', 'No Project', 'No Transaction']
-            )
+            // ->whereIn(
+            //     'expense_status', ['Complete', 'Missing Info', 'No Project', 'No Transaction']
+            // )
             // ->orderBy('date', 'desc')
             ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
             // ->take(10)->get();
@@ -187,7 +188,7 @@ class ExpenseIndex extends Component
                 }
             }
         });
-
+        // dd($expenses);
         return $expenses;
     }
 
@@ -196,21 +197,17 @@ class ExpenseIndex extends Component
     {
         $transactions =
             Transaction::search($this->amount)
-                // ->query(function ($query) {
-                //     //->whereNull('check_id')
-                //     $query->whereNull('expense_id')->whereNull('check_id');
-                // })
-                ->where('is_expense_id_null', 'true')
-                ->where('is_check_id_null', 'true')
+                ->where('is_expense_id_null', TRUE)
+                ->where('is_check_id_null', TRUE)
                 ->whereIn('deposit', ['NOT_DEPOSIT', 'NO_PAYMENTS'])
-                ->when(!empty($this->bank_plaid_ins_id), function ($query, $item) {
-                    return $query->whereIn('bank_account_id', $this->bank_account_ids[$this->bank_plaid_ins_id]);
-                })
-                ->when(!empty($this->expense_vendor), function ($query, $item) {
-                    return $query->where('vendor_id', $this->expense_vendor);
-                })
-                ->orderBy('transaction_date', 'desc')
-                // $this->paginate_number
+                // ->when(!empty($this->bank_plaid_ins_id), function ($query, $item) {
+                //     return $query->whereIn('bank_account_id', $this->bank_account_ids[$this->bank_plaid_ins_id]);
+                // })
+                // ->when(!empty($this->expense_vendor), function ($query, $item) {
+                //     return $query->where('vendor_id', $this->expense_vendor);
+                // })
+
+                ->orderBy('transaction_date', 'DESC')
                 ->paginate(100, pageName: 'transactions-page');
 
         return $transactions;

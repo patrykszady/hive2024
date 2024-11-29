@@ -70,6 +70,20 @@ class Expense extends Model
             'date' => $this->date->format('Y-m-d'),
             'created_at' => $this->created_at->timestamp,
         ]);
+        // return [
+        //     'id' => $this->id,
+        //     'vendor_id' => $this->vendor_id,
+        //     'project_id' => $this->project_id,
+        //     'check_id' => $this->check_id,
+        //     'is_project_id_null' => $this->project_id ? false : true,
+        //     'distribution_id' => $this->distribution_id,
+        //     'is_distribution_id_null' => $this->distribution_id ? false : true,
+        //     'has_splits' => $this->splits->isEmpty() ? false : true,
+        //     'amount' => $this->amount,
+        //     'expense_status' => !is_null($this->project_id) ? "Complete" : "Missing Info",
+        //     'date' => $this->date->format('Y-m-d'),
+        //     'created_at' => $this->created_at->timestamp,
+        // ];
     }
 
     /**

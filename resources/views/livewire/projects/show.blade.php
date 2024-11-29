@@ -100,25 +100,21 @@
 
                     {{-- PROJECT DISTRIBUTIONS --}}
                     @if(!$this->project->distributions->isEmpty())
-                        <x-cards>
-                            <x-cards.heading>
-                                <x-slot name="left">
-                                    <h1>Project Distributions</b></h1>
-                                </x-slot>
-                            </x-cards.heading>
-                            <x-cards.body>
-                                <x-lists.ul>
-                                    @foreach($this->project->distributions as $distribution)
-                                        <x-lists.search_li
-                                            :basic=true
-                                            :line_title="$distribution->name"
-                                            :line_data="money($distribution->pivot->amount) . ' | ' . $distribution->pivot->percent . '%'"
-                                            >
-                                        </x-lists.search_li>
-                                    @endforeach
-                                </x-lists.ul>
-                            </x-cards.body>
-                        </x-cards>
+                        <flux:card class="space-y-2">
+                            {{-- HEADING --}}
+                            <div class="flex justify-between">
+                                <flux:heading size="lg" class="mb-0">Project Distributions</flux:heading>
+                            </div>
+
+                            <flux:separator variant="subtle" />
+
+                            {{-- DETAILS --}}
+                            <x-lists.details_list>
+                                @foreach($this->project->distributions as $distribution)
+                                    <x-lists.details_item title="{{$distribution->name}}" detail="{{money($distribution->pivot->amount) . ' | ' . $distribution->pivot->percent . '%'}}" href="{{route('distributions.show', $distribution->id)}}" />
+                                @endforeach
+                            </x-lists.details_list>
+                        </flux:card>
                     @endif
 
                     {{-- PROJECT PAYMENTS --}}

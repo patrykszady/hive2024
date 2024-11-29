@@ -73,11 +73,11 @@ class ProjectsIndex extends Component
         }
 
         return Project::orderBy('created_at', 'DESC')
-            ->withWhereHas('vendors', function ($query) {
-                $query->where('vendor_id', auth()->user()->vendor->id);
-            })
+            // ->withWhereHas('vendors', function ($query) {
+            //     $query->where('vendor_id', auth()->user()->vendor->id);
+            // })
             ->where('address', 'like', "%{$this->project_name_search}%")
-            ->when($this->project_status_title != NULL, function($query) {
+            ->when($this->project_status_title != NULL && $this->project_status_title != 'ALL', function($query) {
                 return $query->status($this->project_status_title == 'Complete' ? [$this->project_status_title, 'Service Call Complete'] : $this->project_status_title)->sortByDesc('last_status.start_date');
             })
             ->when($this->client != NULL, function ($query) use ($client_ids) {

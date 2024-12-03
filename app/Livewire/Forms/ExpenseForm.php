@@ -334,11 +334,17 @@ class ExpenseForm extends Form
 
     public function delete()
     {
-        //12/13/23 what about !! ASSOCIATED EXPENSES ?
+        //ASSOCIATED EXPENSES
         $associated_expenses = $this->expense->associated;
         foreach($associated_expenses as $associated_expenses){
             $associated_expenses->parent_expense_id = NULL;
             $associated_expenses->save();
+        }
+
+        //SPLITS
+        $splits = $this->expense->splits;
+        foreach($splits as $split){
+            $split->delete();
         }
 
         //TRANSACTIONS

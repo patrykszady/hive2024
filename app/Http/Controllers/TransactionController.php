@@ -1966,6 +1966,7 @@ class TransactionController extends Controller
             // dd($transactions);
             $expenses =
                 Expense::withoutGlobalScopes()
+                    ->whereNull('deleted_at')
                     ->where('vendor_id', $match->vendor_id)
                     //repetative?
                     ->where('belongs_to_vendor_id', $match->belongs_to_vendor_id)

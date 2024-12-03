@@ -21,19 +21,19 @@ class VendorForm extends Form
     #[Rule('required')]
     public $business_type = NULL;
 
-    #[Rule('required|min:3')]
+    #[Rule('nullable|required_unless:business_type,Retail|min:3')]
     public $address = NULL;
 
     #[Rule('nullable|min:2')]
     public $address_2 = NULL;
 
-    #[Rule('required|min:3')]
+    #[Rule('nullable|required_unless:business_type,Retail|min:3')]
     public $city = NULL;
 
-    #[Rule('required|min:2|max:2')]
+    #[Rule('nullable|required_unless:business_type,Retail|min:2|max:2')]
     public $state = NULL;
 
-    #[Rule('required|digits:5', as: 'zip code')]
+    #[Rule('nullable|required_unless:business_type,Retail|digits:5', as: 'zip code')]
     public $zip_code = NULL;
 
     #[Rule('nullable|email|min:5', as: 'business email')]
@@ -84,7 +84,20 @@ class VendorForm extends Form
 
     public function store()
     {
-        dd('form store');
+        $this->authorize('create', Vendor::class);
+        $this->validate();
+
+        return Vendor::create([
+            'business_type' => $this->business_type,
+            'business_name' => $this->business_name,
+            'address' => $this->address,
+            'address_2' => $this->address_2,
+            'city' => $this->city,
+            'state' => $this->state,
+            'zip_code' => $this->zip_code,
+            'business_phone' => $this->business_phone,
+            'business_email' => $this->business_email,
+        ]);
     }
 
     // protected $messages =

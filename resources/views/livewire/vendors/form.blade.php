@@ -14,7 +14,7 @@
                 >
                 <flux:input
                     wire:model.live.debounce.1000ms="business_name_text"
-                    label="Business Name"
+                    label="New Vendor Business Name"
                     type="text"
                     x-bind:disabled="via_vendor"
                     placeholder="Business Name"
@@ -63,7 +63,8 @@
 
                 <div
                     x-data="{open_vendor_form: @entangle('open_vendor_form'), business_name_text: @entangle('business_name_text')}"
-                    x-show="business_name_text && open_vendor_form == false"
+                    {{--  && open_vendor_form == false --}}
+                    x-show="business_name_text"
                     class="mt-4"
                     >
                     @if($view_text['card_title'] != 'Update Vendor')
@@ -86,7 +87,7 @@
                     {{-- BUSINESS NAME & TYPE --}}
                     <div
                         {{-- business_name = business_name_text --}}
-                        x-data="{open_vendor_form: @entangle('open_vendor_form'), vendor: @entangle('vendor'), user: @entangle('user'), business_type: @entangle('form.business_type'), business_name: @entangle('form.business_name'), via_vendor: @entangle('via_vendor')}"
+                        x-data="{open_vendor_form: @entangle('open_vendor_form'), vendor: @entangle('vendor.id'), user: @entangle('user'), business_type: @entangle('form.business_type'), business_name: @entangle('form.business_name'), via_vendor: @entangle('via_vendor')}"
                         x-show="open_vendor_form"
                         class="my-4 space-y-4"
                         x-transition

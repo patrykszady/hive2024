@@ -6,15 +6,18 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Models\Client;
 
-use Livewire\Component;
 use App\Livewire\Forms\VendorForm;
+
+use Livewire\Component;
+
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+use Flux;
 
 class VendorCreate extends Component
 {
     use AuthorizesRequests;
-
     public VendorForm $form;
 
     public $view_text = [
@@ -275,25 +278,13 @@ class VendorCreate extends Component
 
     public function store()
     {
-        $this->validate();
-
         if(isset($this->vendor->id)){
             //attach vendor to auth->user->vendor (logged in/working vendor)
             $vendor = $this->vendor;
             auth()->user()->vendor->vendors()->attach($vendor);
         }else{
+            $vendor = $this->form->store();
             //NEW VENDOR
-            $vendor = Vendor::create([
-                'business_type' => $this->form->business_type,
-                'business_name' => $this->form->business_name,
-                'address' => $this->form->address,
-                'address_2' => $this->form->address_2,
-                'city' => $this->form->city,
-                'state' => $this->form->state,
-                'zip_code' => $this->form->zip_code,
-                'business_phone' => $this->form->business_phone,
-                'business_email' => $this->form->business_email,
-            ]);
 
             //Add existing Vendor to the logged-in-vendor || add $vendor to currently logged in vendor
             auth()->user()->vendor->vendors()->attach($vendor->id);

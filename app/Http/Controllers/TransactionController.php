@@ -1029,13 +1029,12 @@ class TransactionController extends Controller
                 ->whereNull('deleted_at')
                 ->where('belongs_to_vendor_id', $hive_vendor->id)
                 ->whereNotNull('vendor_id')
-                // ->whereId('21228')
+                // ->whereId('23426')
                 //where transacitons->sum != $expense(item)->sum  \\ whereNull checked_at (transactions add up to expense)
                 ->whereDate('date', '>=', Carbon::now()->subMonths(3))
                 ->get();
 
             foreach($expenses as $expense){
-                // dd($expense);
                 $start_date = $expense->date->subDays(7)->format('Y-m-d');
                 $end_date = $expense->date->addDays(21)->format('Y-m-d');
 
@@ -1069,11 +1068,10 @@ class TransactionController extends Controller
                     //whereDoesntHave payments
                     ->doesntHave('payments')
                     ->whereNull('check_number')
-
                     ->whereBetween('transaction_date', [$start_date, $end_date])
 
                     //03/08/2023 floatDiffInDays dateDiff? orderBy faster i think?
-                    ->orderBy('transaction_date', 'asc');
+                    ->orderBy('transaction_date', 'DESC');
 
                 //if expense vendor_id == expense belongs
                 //where Greg pays deposit to GS (expense_id 17637)
@@ -1088,8 +1086,6 @@ class TransactionController extends Controller
                     // }
                     $transactions = $transactions->where('vendor_id', $expense->vendor_id);
                 }
-
-                // dd($transactions->get());
 
                 //if negative
                 if(substr($expense->amount, 0, 1) == '-'){
@@ -1112,18 +1108,24 @@ class TransactionController extends Controller
                         $transaction = Transaction::findOrFail($transactions_full_amount->sortBy('date_diff')->first()->id);
                         $transaction->expense()->associate($expense);
                         $transaction->save();
+                    //where amount != $expense->amount
                     }else{
                         if(!$expense->receipts->isEmpty()){
-                            // dd($expense);
-                            //where amount != $expense->amount
-
                             foreach($transactions as $transaction){
-                                //find $transaction->amount in $receipt_text
-                                if($expense->vendor_id == $transaction->vendor_id){
+                                //find $transaction->amount in $receipt_text. If expense receipt has items .. offset the last item
+                                if($expense->vendor_id === $transaction->vendor_id){
                                     $receipt = $expense->receipts->last();
 
                                     if($receipt->receipt_html){
-                                        $str = $receipt->receipt_html;
+                                        if($receipt->receipt_items->items){
+                                            $last_item_spans = end($receipt->receipt_items->items)->spans[0];
+                                            $offset_chars = $last_item_spans->offset + $last_item_spans->length;
+                                            $str = substr($receipt->receipt_html, $offset_chars);
+                                        //if no items extracted on receipt search for AMOUNT on entire receipt (but can incorrectly find a line item Amount as Receipt total)
+                                        }else{
+                                            $str = $receipt->receipt_html;
+                                        }
+
                                         $re = '/\\D' . str_replace(".", "\.", trim($transaction->amount, '-')) . '/m';
                                         preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
 
@@ -1132,7 +1134,7 @@ class TransactionController extends Controller
                                             $transaction->expense()->associate($expense);
                                             $transaction->save();
 
-                                            continue;
+                                            // continue;
                                         }
                                     }else{
                                         if(isset($receipt->receipt_items->charges)){
@@ -1142,7 +1144,7 @@ class TransactionController extends Controller
                                                 $transaction->expense()->associate($expense);
                                                 $transaction->save();
 
-                                                continue;
+                                                // continue;
                                             }
                                         }
                                     }
@@ -1181,8 +1183,6 @@ class TransactionController extends Controller
                                     $transaction->save();
                                 }
                             }
-                        }else{
-                            // dd('self else pls');
                         }
                     }
                 }else{

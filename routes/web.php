@@ -28,6 +28,8 @@ use App\Livewire\VendorDocs\AuditShow;
 
 use App\Livewire\Categories\CategoriesIndex;
 
+use App\Livewire\Planner\PlannerIndex;
+
 use App\Livewire\Tasks\Planner;
 use App\Livewire\Tasks\PlannerList;
 
@@ -249,10 +251,11 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/sheets', SheetsIndex::class)->name('sheets.index');
     Route::get('/sheet_show', SheetShow::class)->name('sheets.show');
 
-    //TASKS
-    Route::get('/planner', Planner::class)->name('planner.index');
+    //PLANNER
+    Route::get('/planner', PlannerIndex::class)->name('planner.index');
 
     //TASKS
+    Route::get('/planner_gantt', Planner::class)->name('planner.index');
     Route::get('/planner_schedule', PlannerList::class)->name('planner_list.index');
 });
 

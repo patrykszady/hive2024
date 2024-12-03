@@ -799,6 +799,7 @@ class ReceiptController extends Controller
                     continue;
                 }
             }
+
             // dd($messages);
 
             foreach($messages as $key => $message){
@@ -829,13 +830,14 @@ class ReceiptController extends Controller
                         if(strpos($email_subject, $email_receipt->from_subject) !== FALSE){
                             $receipt = $email_receipt;
                         }else{
+                            // dd('in if else');
                             //continue... email Subject not a Receipt
+                            //move the failed email?
                             continue;
                         }
                     }
                 }
 
-                // dd($receipt);
                 //06-17-2023 forwarded/redirected emails? if HIVE doesnt find them? let users forward emails
                     //use $email_to = strtolower($message->getToRecipients()[0]['emailAddress']['address']);
 

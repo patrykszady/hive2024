@@ -18,8 +18,8 @@ class TaskObserver
     public function creating(Task $task): void
     {
         $project = Project::findOrFail($task->project_id);
-        
-        $task->belongs_to_vendor_id =  auth()->user()->vendor->id == $project->belongs_to_vendor_id ? auth()->user()->vendor->id : $project->belongs_to_vendor_id;
+
+        $task->belongs_to_vendor_id = auth()->user()->vendor->id == $project->belongs_to_vendor_id ? auth()->user()->vendor->id : $project->belongs_to_vendor_id;
         $task->created_by_user_id = auth()->user()->id;
     }
 
@@ -30,11 +30,11 @@ class TaskObserver
     {
         //
     }
-    
+
     public function updating(Task $task): void
     {
         // $project = Project::findOrFail($task->project_id);
-        
+
         // $task->belongs_to_vendor_id =  auth()->user()->vendor->id == $project->belongs_to_vendor_id ? auth()->user()->vendor->id : $project->belongs_to_vendor_id;
         // $task->created_by_user_id = auth()->user()->id;
     }

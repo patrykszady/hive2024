@@ -118,7 +118,7 @@ class TaskForm extends Form
     {
         // $this->authorize('create', Expense::class);
         $this->validate();
-        $task = Task::create([
+        return Task::create([
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,

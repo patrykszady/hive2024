@@ -93,7 +93,7 @@ class TaskForm extends Form
         $this->authorize('update', $this->task);
         $this->validate();
 
-        $task = $this->task->update([
+        $this->task->update([
             // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
             // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
             // // 'end_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
@@ -118,7 +118,8 @@ class TaskForm extends Form
     {
         // $this->authorize('create', Expense::class);
         $this->validate();
-        return Task::create([
+        // return $this->component->query()->create([
+        $task = Task::create([
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             // 'start_date' => isset($this->dates[0]) ? (!empty($this->dates[0]) ? $this->dates[0] : NULL) : NULL,
@@ -133,5 +134,7 @@ class TaskForm extends Form
             'order' => 1,
             'duration' => $this->duration
         ]);
+
+        return $task;
     }
 }

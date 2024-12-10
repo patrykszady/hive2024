@@ -8,6 +8,7 @@ use App\Models\Vendor;
 
 use Livewire\Component;
 use App\Livewire\Forms\TaskForm;
+use App\Livewire\Planner\PlannerIndex;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -35,7 +36,18 @@ class TaskCreate extends Component
     public function mount()
     {
         // $this->form->dates[0] = today()->format('m/d/Y');
-        $this->vendors = Vendor::whereNot('business_type', 'Retail')->get();
+        $this->vendors = Vendor::whereNot('business_type', 'Retail')
+            // 12-9-2024 also used in VendorIndex .. needs to be a global scope
+            ->withCount([
+                'expenses',
+                'expenses as expense_count' => function ($query) {
+                    $query->where('created_at', '>=', today()->subYear());
+                }
+            ])
+            //as expense count
+            // sort by expenses ytd
+            ->tap(fn ($query) => 'expense_count' ? $query->orderBy('expense_count', 'desc') : $query)
+            ->get();
         $this->employees = auth()->user()->vendor->users()->employed()->get();
     }
 
@@ -132,13 +144,11 @@ class TaskCreate extends Component
     public function save()
     {
         $this->form->store();
-
-        $this->dispatch('render')->to(PlannerCard::class);
-        // $this->dispatch('refresh_planner')->to(PlannerList::class);
+        $this->dispatch('refreshComponent')->to(PlannerIndex::class);
         $this->modal('task_create_form_modal')->close();
 
         Flux::toast(
-            duration: 5000,
+            duration: 2000,
             position: 'top right',
             variant: 'success',
             heading: 'Task Created',
@@ -152,15 +162,12 @@ class TaskCreate extends Component
         $this->authorize('update', $this->form->task);
         $task = $this->form->update();
 
-        // return redirect(route('planner_list.index'));
-        $this->dispatch('render')->to(PlannerCard::class);
-        // $this->dispatch('sort', key: $task->id, position: $task->order)->to(PlannerCard::class);
-        // $this->dispatch('refresh_planner', task: $this->form->task, project: $this->form->task->project, task_date: $this->form->task->start_date->format('Y-m-d'))->to(PlannerCard::class);
+        $this->dispatch('refreshComponent')->to(PlannerIndex::class);
 
         $this->modal('task_create_form_modal')->close();
 
         Flux::toast(
-            duration: 5000,
+            duration: 2000,
             position: 'top right',
             variant: 'success',
             heading: 'Task Updated',

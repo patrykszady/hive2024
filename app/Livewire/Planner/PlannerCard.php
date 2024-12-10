@@ -16,12 +16,10 @@ use Flux;
 class PlannerCard extends Component
 {
     public Project $project;
-    public $task_date = NULL;
     public TaskForm $form;
+    public $task_date = NULL;
 
-    public $draft = '';
-
-    //$projects comes from PlannerIndex component
+    //comes from PlannerIndex
     public $projects = [];
     public $vendors = [];
     public $employees = [];
@@ -32,25 +30,44 @@ class PlannerCard extends Component
         'form_submit' => 'save',
     ];
 
+    // public function add()
+    // {
+    //     $this->query()->create([
+    //         'title' => $this->pull('draft'),
+    //         'type' => 'Task',
+    //         'duration' => 1,
+    //     ]);
+    // }
+
     public function mount()
     {
         $this->form->project_id = $this->project->id;
-        // $this->vendors = Vendor::whereNot('business_type', 'Retail')->get();
-        // $this->employees = auth()->user()->vendor->users()->employed()->get();
+        // $this->projects = Project::with('tasks')
+        //         ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
+        //         ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']]);
+
+        $this->vendors = Vendor::whereNot('business_type', 'Retail')->get();
+        $this->employees = auth()->user()->vendor->users()->employed()->get();
     }
 
-    public function form_modal()
+    public function form_modal(Task $task)
     {
+        if($task->id){
+            $this->form->setTask($task);
+            $this->view_text = [
+                'card_title' => 'Edit Task',
+                'button_text' => 'Update',
+                'form_submit' => 'edit',
+            ];
+        }else{
+            $this->view_text = [
+                'card_title' => 'Create Task',
+                'button_text' => 'Create',
+                'form_submit' => 'save',
+            ];
+        }
+
         $this->modal('task_create_form_modal')->show();
-    }
-
-    public function add()
-    {
-        $this->query()->create([
-            'title' => $this->pull('draft'),
-            'type' => 'Task',
-            'duration' => 1,
-        ]);
     }
 
     public function sort($key, $position)
@@ -63,6 +80,17 @@ class PlannerCard extends Component
             $task->project()->associate($this->project);
         }
 
+        $task->start_date = $this->task_date;
+        $task_days_count = $task->duration;
+
+        if(in_array($task_days_count, [0, 1])){
+            $task->end_date = $task->start_date;
+            $task->duration = 1;
+        }else{
+            $task->end_date = Carbon::parse($task->start_date)->addDays($task_days_count - 1)->format('Y-m-d');
+        }
+
+        $task->save();
         $task->move($position);
 
         Flux::toast(
@@ -78,13 +106,34 @@ class PlannerCard extends Component
     #[Computed]
     public function tasks()
     {
-        $task_date = Carbon::parse($this->task_date);
         // return $this->query()->get();
+        $task_date = Carbon::parse($this->task_date);
+
         return $this->query()->get()->filter(function($item) use($task_date){
             if(is_null($item->start_date) && $this->task_date == NULL){
                 return $item;
-            }else{
+            }elseif($task_date->between($item->start_date, $item->end_date) && $this->task_date != NULL) {
+                // dd(is_null($item->options->));
+                // dd($item->start_date->isSaturday());
+                // if(isset($item->options['include_weekend_days'])){
+                //     if($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == true){
+                //         return $item;
+                //     }elseif($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == false){
 
+                //     }else{
+                //         if($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == true){
+                //             return $item;
+                //         }elseif($task_date->isSunday() && $item->options['include_weekend_days']['sunday'] == false){
+
+                //         }else{
+                //             return $item;
+                //         }
+                //     }
+                //     // dd($item->options['include_weekend_days']);
+                // }else{
+                //     return $item;
+                // }
+                return $item;
             }
         });
     }
@@ -95,12 +144,34 @@ class PlannerCard extends Component
         return $this->project->tasks();
     }
 
+    public function edit()
+    {
+        $this->authorize('update', $this->form->task);
+
+        $task = $this->form->update();
+
+        $task->move(0);
+
+        $this->render();
+
+        $this->modal('task_create_form_modal')->close();
+
+        Flux::toast(
+            duration: 2000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Task Updated',
+            // route / href / wire:click
+            text: '',
+        );
+    }
+
     public function save()
     {
+        // $this->authorize('create', Task::class);
         $this->form->store();
         $this->form->reset();
         $this->form->project_id = $this->project->id;
-        // $this->tasks;
         $this->modal('task_create_form_modal')->close();
 
         Flux::toast(

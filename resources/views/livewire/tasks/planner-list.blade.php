@@ -56,7 +56,7 @@
                                     'bg-zinc-200' => $day['is_weekend'] ? true : false
                                 ])
                                 >
-                                <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" />
+                                {{-- <livewire:tasks.planner-card :$project :task_date="$day['database_date']" :key="$project->id" /> --}}
                             </flux:card>
                         </div>
                     @endforeach

@@ -11,9 +11,14 @@
     /> --}}
 
     <div x-sort="$wire.sort($key, $position)" x-sort:group="tasks" class="grid gap-3">
+        {{-- <flux:button
+            wire:click="form_modal"
+            icon="plus"
+        /> --}}
         @foreach($this->tasks as $task)
-            {{-- wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })" --}}
             <div
+                wire:click="form_modal({{ $task->id }})"
+                {{-- wire:click="$dispatchTo('tasks.task-create', 'editTask', { task: {{$task->id}} })" --}}
                 x-sort:item="{{$task->id}}"
                 :key="$task->id"
                 @class([

@@ -55,7 +55,7 @@
 
                     <flux:navlist.item wire:navigate.hover icon="home" href="/dashboard">Home</flux:navlist.item>
                     <flux:navlist.item wire:navigate.hover icon="folder" href="/projects">Projects</flux:navlist.item>
-                    <flux:navlist.item wire:navigate.hover icon="calendar" href="/planner_schedule">Planner</flux:navlist.item>
+                    <flux:navlist.item wire:navigate.hover icon="calendar" href="/planner">Planner</flux:navlist.item>
 
                     @canany(['viewAny', 'create'], App\Models\Expense::class)
                         <flux:navlist.group expandable heading="Finances">

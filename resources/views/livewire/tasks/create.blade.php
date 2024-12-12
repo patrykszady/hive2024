@@ -19,18 +19,19 @@
         <flux:input wire:model.live="form.end_date" type="date" max="2999-12-31" label="End Date" />
 
         {{-- SAT/SUN INCLUSION --}}
-        <flux:fieldset>
-            <flux:legend>Work on Weekend</flux:legend>
-            {{-- <flux:description>Choose weekend days</flux:description> --}}
+        <flux:checkbox.group>
+            <flux:fieldset>
+                <flux:legend>Include Weekend</flux:legend>
 
-            <div class="flex gap-4 *:gap-x-2">
-                <flux:checkbox value="saturday" label="Saturday" />
-                <flux:checkbox value="sunday" label="Sunday" />
-            </div>
-        </flux:fieldset>
+                <div class="flex gap-4 *:gap-x-2">
+                    <flux:checkbox wire:model.live="form.include_weekend_days.saturday" value="true" label="Saturday" />
+                    <flux:checkbox wire:model.live="form.include_weekend_days.sunday" value="true" label="Sunday" />
+                </div>
+            </flux:fieldset>
+        </flux:checkbox.group>
 
         {{-- DURATION --}}
-        <flux:input wire:model.live="form.duration" label="Duration" text="Duration" name="duration" disabled />
+        {{-- <flux:input wire:model.live="form.duration" label="Duration" text="Duration" name="duration" disabled /> --}}
 
         {{-- PROJECT --}}
         <flux:select wire:model.live="form.project_id" label="Project" variant="listbox" searchable placeholder="Select project...">

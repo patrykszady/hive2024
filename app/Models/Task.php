@@ -26,7 +26,7 @@ class Task extends Model
     protected $casts = [
         'start_date' => 'date:Y-m-d',
         'end_date' => 'date:Y-m-d',
-        'options' => 'array',
+        'options' => 'object',
     ];
 
     protected function scopeSortable($query, $task)

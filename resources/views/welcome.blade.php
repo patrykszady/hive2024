@@ -39,7 +39,7 @@
                 </h1>
                 <p class="mt-6 text-lg leading-8 text-gray-600">
                     Welcome to Hive Contractors! Our goal is to maximize your bottom line without interrupting what you do best - moving your construction projects forward.
-                    We understand your time is valuable, that's why we seamlessly integrate with your existing workflow, empowering you to focus on your team & clients while we take care of the details.
+                    We understand your time is valuable, that's why we seamlessly integrate with your existing workflow, empowering you to focus on your team & homeowners while we take care of the details.
                     <br>
                     <b>Made by Contractors. For Contractors.<b>
                 </p>
@@ -80,10 +80,10 @@
                             </h2>
                         </a>
 
-                        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Project finances automated</p>
+                        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Projects automated</p>
                         <p class="mt-6 text-lg font-normal leading-8 text-gray-600">
                             {{-- Automate your construction project finances. Your project finances sorted & organized automatically. Understand your project finances with ease. --}}
-                            Simplify and streamline your construction project finances with Hive. Let Hive take care of sorting and organizing your project finances automatically, giving you a clear understanding of your financials effortlessly so you can focus on your projects.
+                            Simplify and streamline your construction project (finances, scheduling, estimates) with Hive Contractors. Let Hive take care of sorting and organizing your project finances automatically, giving you a clear understanding of your financials effortlessly so you can focus on your projects.
                         </p>
                         <dl class="max-w-xl mt-10 space-y-8 text-base leading-7 text-gray-600 lg:max-w-none">
                             <div class="relative pl-9">
@@ -108,8 +108,32 @@
                                     Subcontractor bids & payments.
                                 </dt>
                                 <dd class="inline font-normal">
-                                    Stay ahead of the game with seamless interconnectivity between General Contractors and Subcontractors. Hive allows everyone involved in each project to stay informed about upcoming payments and know exactly who is owed what.
+                                    Stay ahead of the game with seamless interconnectivity between General Contractors and Subcontractors. Hive allows everyone involved in each project to update bids with change orders, keep everyone informed about upcoming payments and know exactly who is owed what.
                                     {{-- Interconnectivity between General Contractors and Subcontractors so everyone involved on each project is able to stay ahead, know what's coming in and who is owed. --}}
+                                </dd>
+                            </div>
+                            <div class="relative pl-9">
+                                <dt class="inline font-semibold text-gray-900">
+                                    <svg class="absolute w-5 h-5 text-indigo-600 left-1 top-1" viewBox="0 0 20 20"
+                                        fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                    </svg>
+                                    Estimates, Invoices, and Change Orders.
+                                </dt>
+                                <dd class="inline font-normal">
+                                    Create estimates, change orders, and invoices in a flash on the go from your phone.
+                                </dd>
+                            </div>
+                            <div class="relative pl-9">
+                                <dt class="inline font-semibold text-gray-900">
+                                    <svg class="absolute w-5 h-5 text-indigo-600 left-1 top-1" viewBox="0 0 20 20"
+                                        fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                                    </svg>
+                                    Scheduling and Team Member Managment.
+                                </dt>
+                                <dd class="inline font-normal">
+                                    {{-- Put an end to countless of calls.  --}}
                                 </dd>
                             </div>
                             <div class="relative pl-9">
@@ -133,20 +157,9 @@
                                     Audits & taxes.
                                 </dt>
                                 <dd class="inline font-normal">
-                                    Say goodbye to the stress of preparing for audits and taxes. Hive automates the process by keeping track of certificates of insurance and expenses, making audits and taxes just a click away.
+                                    Say goodbye to the stress of preparing for audits and taxes. Hive automates the process by keeping track of certificates of insurance and payments, bringing accurate audits and taxes to you with just a click.
                                 </dd>
                             </div>
-                            <div class="relative pl-9">
-                                <dt class="inline font-semibold text-gray-900">
-                                    <svg class="absolute w-5 h-5 text-indigo-600 left-1 top-1" viewBox="0 0 20 20"
-                                        fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                                    </svg>
-                                    Estimates
-                                </dt>
-                                <dd class="inline font-normal">
-                                    Create estimates in a flash on the go from your phone.
-                                </d>
                         </dl>
                     </div>
                     <div class="mt-8">

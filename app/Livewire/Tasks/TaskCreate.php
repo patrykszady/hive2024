@@ -3,8 +3,6 @@
 namespace App\Livewire\Tasks;
 
 use App\Models\Task;
-use App\Models\Project;
-use App\Models\Vendor;
 
 use Livewire\Component;
 use App\Livewire\Forms\TaskForm;
@@ -20,7 +18,7 @@ class TaskCreate extends Component
     use AuthorizesRequests;
 
     public TaskForm $form;
-    //$projects come from the Planner Component
+    //$projects & $vendors & $employees come from the Planner Component
     public $projects = [];
     public $vendors = [];
     public $employees = [];
@@ -33,40 +31,107 @@ class TaskCreate extends Component
 
     protected $listeners = ['editTask', 'addTask'];
 
-    public function mount()
-    {
-        // $this->form->dates[0] = today()->format('m/d/Y');
-        $this->vendors = Vendor::whereNot('business_type', 'Retail')
-            // 12-9-2024 also used in VendorIndex .. needs to be a global scope
-            ->withCount([
-                'expenses',
-                'expenses as expense_count' => function ($query) {
-                    $query->where('created_at', '>=', today()->subYear());
-                }
-            ])
-            //as expense count
-            // sort by expenses ytd
-            ->tap(fn ($query) => 'expense_count' ? $query->orderBy('expense_count', 'desc') : $query)
-            ->get();
-        $this->employees = auth()->user()->vendor->users()->employed()->get();
-    }
-
     public function updated($field, $value)
     {
-        if($field === 'form.start_date' && is_null($this->form->end_date)){
+        if($field === 'form.start_date' && is_null($this->form->end_date) OR $this->form->end_date <= $value){
             $this->form->end_date = $value;
             $this->form->duration = 1;
+        // }elseif($field === 'form.start_date' || 'form.end_date'){
+        //     // $start = $this->form->start_date;
+        //     // $end = $this->form->end_date;
+        //     $start = Carbon::parse($this->form->start_date);
+        //     $end = Carbon::parse($this->form->end_date);
+        // }
+
+
+
+        // }else{
+        //     // $start = $this->form->start_date;
+        //     // $end = $this->form->end_date;
+        //     $start = Carbon::parse($this->form->start_date);
+        //     $end = Carbon::parse($this->form->end_date);
+
+        //     //if weekend .. add/subtract days
+        //     // if(!empty($this->form->include_weekend_days)){
+        //     //     $saturday = isset($this->form->include_weekend_days->saturday) ? $this->form->include_weekend_days->saturday : false;
+        //     //     $sunday = isset($this->form->include_weekend_days->sunday) ? $this->form->include_weekend_days->sunday : false;
+
+        //     //     $duration = $this->countDaysBetweenDates($start, $end, $saturday, $sunday) + 1;
+        //     // }else{
+        //     //     $duration = $end->diff($start)->days;
+        //     // }
+        //     dd($this->form->include_weekend_days->saturday, $this->form->include_weekend_days->saturday);
+
+        //     $saturday = isset($this->form->include_weekend_days->saturday) ? $this->form->include_weekend_days->saturday : false;
+        //     $sunday = isset($this->form->include_weekend_days->sunday) ? $this->form->include_weekend_days->sunday : false;
+        //     // dd($saturday, $sunday);
+        //     $duration = $this->countDaysBetweenDates($start, $end, $saturday, $sunday) + 1;
+
+        //     $this->form->duration = $duration;
+        // }
         }
-
-        if($field === 'form.start_date' || 'form.end_date'){
-            $start = Carbon::parse($this->form->start_date);
-            $end = Carbon::parse($this->form->end_date);
-
-            $duration = $end->diff($start)->days + 1;
-
-            $this->form->duration = $duration;
-        }
+        $this->validateOnly($field);
     }
+
+    //2024-12-09 Copilot help
+    //2024-12-10 SAME ON PlannerIndex
+    //count days between dates and ignore weekend days if between
+    function countDaysBetweenDates($startDate, $endDate, $excludeWeekends = false, $excludeSaturdays = false, $excludeSundays = false) {
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+        $period = CarbonPeriod::create($start, $end);
+
+        $daysCount = 0;
+
+        foreach ($period as $date) {
+            $isSaturday = $date->isSaturday();
+            $isSunday = $date->isSunday();
+
+            if ($excludeWeekends && ($isSaturday || $isSunday)) {
+                continue;
+            }
+
+            if ($excludeSaturdays && $isSaturday) {
+                continue;
+            }
+
+            if ($excludeSundays && $isSunday) {
+                continue;
+            }
+
+            $daysCount++;
+        }
+
+        return $daysCount;
+    }
+
+    // Example usage:
+    // $startDate = '2024-01-01';
+    // $endDate = '2024-01-10';
+    // $daysCount = countDaysBetweenDates($startDate, $endDate, true, false, true);
+    // echo "Total days: $daysCount";
+
+    // function countDaysBetweenDates($start, $end, $includeSaturday, $includeSunday) {
+    //     // dd($start, $end);
+    //     // $start = Carbon::parse($startDate);
+    //     // $end = Carbon::parse($endDate);
+
+    //     $days = $start->diffInDaysFiltered(function (Carbon $date) use ($includeSaturday, $includeSunday) {
+    //         if (!$includeSaturday && $date->isSaturday()) {
+    //             return false;
+    //         }
+    //         if (!$includeSunday && $date->isSunday()) {
+    //             return false;
+    //         }
+    //         return true;
+    //     }, $end);
+
+    //     if($days === 0){
+    //         $days = 1;
+    //     }
+
+    //     return $days;
+    // }
 
     public function addTask($project_id, $date = NULL)
     {
@@ -108,12 +173,11 @@ class TaskCreate extends Component
         $task = $this->form->task;
         $task->delete();
 
-        $this->dispatch('render')->to(PlannerCard::class);
-        // $this->dispatch('refresh_planner')->to(PlannerList::class);
+        $this->dispatch('refreshComponent')->to(PlannerIndex::class);
         $this->modal('task_create_form_modal')->close();
 
         Flux::toast(
-            duration: 5000,
+            duration: 3000,
             position: 'top right',
             variant: 'success',
             heading: 'Task Removed',
@@ -148,7 +212,7 @@ class TaskCreate extends Component
         $this->modal('task_create_form_modal')->close();
 
         Flux::toast(
-            duration: 2000,
+            duration: 3000,
             position: 'top right',
             variant: 'success',
             heading: 'Task Created',
@@ -167,7 +231,7 @@ class TaskCreate extends Component
         $this->modal('task_create_form_modal')->close();
 
         Flux::toast(
-            duration: 2000,
+            duration: 3000,
             position: 'top right',
             variant: 'success',
             heading: 'Task Updated',

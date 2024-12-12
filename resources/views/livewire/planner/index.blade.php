@@ -65,12 +65,20 @@
                                     'space-y-2'
                                 ])
                                 >
-                                {{-- ->where('start_date', $day['database_date']) --}}
                                 @foreach($project->tasks()->get() as $task)
                                     @if(is_null($task->start_date) && $day['database_date'] === NULL)
                                         @include('livewire.planner._task_card')
                                     @elseif(\Carbon\Carbon::parse($day['database_date'])->between($task->start_date, $task->end_date) && $day['database_date'] !== NULL)
-                                        @include('livewire.planner._task_card')
+                                        @if(isset($task->options->include_weekend_days) && $day['is_weekend'])
+                                            {{-- @include('livewire.planner._task_card') --}}
+                                            @if(isset($task->options->include_weekend_days->saturday) && $task->options->include_weekend_days->saturday === true && $day['is_saturday'] === true)
+                                                @include('livewire.planner._task_card')
+                                            @elseif(isset($task->options->include_weekend_days->sunday) && $task->options->include_weekend_days->sunday === true && $day['is_sunday'] === true)
+                                                @include('livewire.planner._task_card')
+                                            @endif
+                                        @else
+                                            @include('livewire.planner._task_card')
+                                        @endif
                                     @endif
                                 @endforeach
                             </flux:card>
@@ -81,7 +89,9 @@
         </div>
     </div>
 
-    {{-- scrollSync --}}
+    <livewire:tasks.task-create :employees="$employees" :projects="$projects" :vendors="$vendors" />
+
+    {{-- scrollSync script --}}
     <script type="text/javascript">
         document.addEventListener('alpine:init', () => {
             Alpine.store('scrollSync', {
@@ -97,6 +107,6 @@
             })
         })
     </script>
-
-    <livewire:tasks.task-create :projects="$this->projects" />
 </div>
+
+

@@ -47,6 +47,7 @@ class TaskForm extends Form
     #[Validate('nullable')]
     public $notes = NULL;
 
+    // #[Validate('nullable')]
     public $include_weekend_days = [];
 
     public ?Task $task;
@@ -73,10 +74,13 @@ class TaskForm extends Form
         // }else{
         //     $new_dates = [$task->start_date->format('m/d/Y'), $task->end_date->format('m/d/Y')];
         // }
+        // $this->dates = $new_dates;
+
         $this->start_date = $task->start_date ? $task->start_date->format('Y-m-d') : NULL;
         $this->end_date = $task->end_date ? $task->end_date->format('Y-m-d') : NULL;
-        $this->include_weekend_days = isset($task->options['include_weekend_days']) ? $task->options['include_weekend_days'] : ['saturday' => false, 'sunday' => false];
-        // $this->dates = $new_dates;
+        $this->include_weekend_days = $task->options->include_weekend_days;
+        // $this->include_weekend_days['saturday'] = $task->options->include_weekend_days->saturday ?? true;
+        // $this->include_weekend_days['sunday'] = $task->options->include_weekend_days->sunday ?? true;
         $this->project_id = $task->project_id;
         $this->order = $task->order;
         $this->duration = $task->duration;
@@ -89,7 +93,6 @@ class TaskForm extends Form
 
     public function update()
     {
-        //$task->options->include_weekend_days = $this->include_weekend_days
         $this->authorize('update', $this->task);
         $this->validate();
 
@@ -131,7 +134,7 @@ class TaskForm extends Form
             'title' => $this->title,
             'notes' => $this->notes,
             'options->include_weekend_days' => $this->include_weekend_days,
-            'order' => 1,
+            'order' => 0,
             'duration' => $this->duration
         ]);
 

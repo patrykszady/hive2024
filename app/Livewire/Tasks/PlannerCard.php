@@ -86,8 +86,6 @@ class PlannerCard extends Component
             if(is_null($item->start_date) && $this->task_date == NULL){
                 return $item;
             }elseif($task_date->between($item->start_date, $item->end_date) && $this->task_date != NULL) {
-                // dd(is_null($item->options->));
-                // dd($item->start_date->isSaturday());
                 // if(isset($item->options['include_weekend_days'])){
                 //     if($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == true){
                 //         return $item;

@@ -12,26 +12,24 @@
         </flux:radio.group>
 
         {{-- TITLE --}}
-        <flux:input wire:model.blur="form.title" label="Title" placeholder="Task Title" />
+        <flux:input wire:model.blur="form.title" label="Title" placeholder="Task Title" autofocus/>
 
         {{-- DATES --}}
         <flux:input wire:model.live="form.start_date" type="date" max="2999-12-31" label="Start Date" />
         <flux:input wire:model.live="form.end_date" type="date" max="2999-12-31" label="End Date" />
 
         {{-- SAT/SUN INCLUSION --}}
-        <flux:checkbox.group>
-            <flux:fieldset>
-                <flux:legend>Include Weekend</flux:legend>
+        <flux:fieldset>
+            <flux:legend>Include Weekend</flux:legend>
 
-                <div class="flex gap-4 *:gap-x-2">
-                    <flux:checkbox wire:model.live="form.include_weekend_days.saturday" value="true" label="Saturday" />
-                    <flux:checkbox wire:model.live="form.include_weekend_days.sunday" value="true" label="Sunday" />
-                </div>
-            </flux:fieldset>
-        </flux:checkbox.group>
+            <div class="flex gap-4 *:gap-x-2">
+                <flux:checkbox wire:model.live="form.include_weekend_days.saturday" label="Saturday" />
+                <flux:checkbox wire:model.live="form.include_weekend_days.sunday" label="Sunday" />
+            </div>
+        </flux:fieldset>
 
         {{-- DURATION --}}
-        {{-- <flux:input wire:model.live="form.duration" label="Duration" text="Duration" name="duration" disabled /> --}}
+        <flux:input wire:model.live="form.duration" label="Duration" text="Duration" name="duration" disabled />
 
         {{-- PROJECT --}}
         <flux:select wire:model.live="form.project_id" label="Project" variant="listbox" searchable placeholder="Select project...">

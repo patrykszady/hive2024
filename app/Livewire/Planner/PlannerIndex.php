@@ -109,7 +109,16 @@ class PlannerIndex extends Component
             $task->end_date = $task->start_date;
             $task->duration = 1;
         }else{
-            $task->end_date = Carbon::parse($task->start_date)->addDays($task_days_count - 1)->format('Y-m-d');
+            // $task->end_date = Carbon::parse($task->start_date)->addDays($task_days_count - 1)->format('Y-m-d');
+            $startDate = $task->start_date;
+            $endDate = $task->end_date;
+
+            $include_weekends = (array) $task->options->include_weekend_days;
+            $excludeSaturdays = !isset($include_weekends['saturday']) || $include_weekends['saturday'] === false;
+            $excludeSundays = !isset($include_weekends['sunday']) || $include_weekends['sunday'] === false;
+            $duration = $this->countDaysBetweenDates($startDate, $endDate, $excludeSaturdays, $excludeSundays);
+
+            $task->duration = $duration;
         }
 
         $task->save();
@@ -125,10 +134,30 @@ class PlannerIndex extends Component
         );
     }
 
-    //2024-12-09 Copilot help
-    //2024-12-10 SAME ON Tasks/TaskCreate
-    //count days between dates and ignore weekend days if between
+    //Copilot help
+    //2024-12-10 SAME ON PlannerIndex
+    //count days between dates and ignore weekend days if checkbox true
+    function countDaysBetweenDates($startDate, $endDate, $excludeSaturdays = true, $excludeSundays = true) {
+        // Include the first day in the count if not saturday or sunday
+        $daysCount = ($startDate->isSaturday() && $excludeSaturdays === true) || ($startDate->isSunday() && $excludeSundays === true) ? 0 : 1;
 
+        // Iterate through each day between the start and end dates
+        $currentDate = $startDate->copy();
+        while ($currentDate->lt($endDate)) {
+            $currentDate->addDay();
+
+            if ($excludeSaturdays && $currentDate->isSaturday()) {
+                continue;
+            }
+            if ($excludeSundays && $currentDate->isSunday()) {
+                continue;
+            }
+
+            $daysCount++;
+        }
+
+        return $daysCount;
+    }
 
     // #[Computed]
     // public function projects()

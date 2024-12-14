@@ -20,10 +20,12 @@ class TaskForm extends Form
 
     // #[Validate('array')]
     // public $dates = NULL;
-    #[Validate('nullable|date_format:Y-m-d|before_or_equal:end_date')]
+    // |date_format:Y-m-d|before_or_equal:end_date')]
+    #[Validate('nullable')]
     public $start_date = NULL;
 
-    #[Validate('nullable|date_format:Y-m-d|after_or_equal:start_date')]
+    // #[Validate('nullable|date_format:Y-m-d|after_or_equal:start_date')]
+    #[Validate('nullable')]
     public $end_date = NULL;
 
     #[Validate('required')]
@@ -47,7 +49,6 @@ class TaskForm extends Form
     #[Validate('nullable')]
     public $notes = NULL;
 
-    // #[Validate('nullable')]
     public $include_weekend_days = [];
 
     public ?Task $task;
@@ -55,7 +56,7 @@ class TaskForm extends Form
     public function rules()
     {
         return [
-            'include_weekend_days.*.checked' => 'nullable', // multiple checkbox
+            'include_weekend_days.*' => 'nullable', // multiple checkbox
         ];
     }
 
@@ -78,9 +79,7 @@ class TaskForm extends Form
 
         $this->start_date = $task->start_date ? $task->start_date->format('Y-m-d') : NULL;
         $this->end_date = $task->end_date ? $task->end_date->format('Y-m-d') : NULL;
-        $this->include_weekend_days = $task->options->include_weekend_days;
-        // $this->include_weekend_days['saturday'] = $task->options->include_weekend_days->saturday ?? true;
-        // $this->include_weekend_days['sunday'] = $task->options->include_weekend_days->sunday ?? true;
+        $this->include_weekend_days = (array) $task->options->include_weekend_days;
         $this->project_id = $task->project_id;
         $this->order = $task->order;
         $this->duration = $task->duration;
@@ -121,7 +120,7 @@ class TaskForm extends Form
     {
         // $this->authorize('create', Expense::class);
         $this->validate();
-        // return $this->component->query()->create([
+
         $task = Task::create([
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,

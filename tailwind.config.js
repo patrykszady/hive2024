@@ -1,3 +1,4 @@
+import colors from 'tailwindcss/colors';
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -9,11 +10,17 @@ module.exports = {
   ],
   theme: {
     extend: {
-        // colors: {
-        //     zinc: {
-        //         ...require('tailwindcss/colors').indigo,
-        //     },
-        // },
+        colors: {
+            // Re-assign Flux's gray of choice...
+            zinc: colors.gray,
+
+            // Accent variables are defined in resources/css/app.css...
+            accent: {
+                DEFAULT: 'var(--color-accent)',
+                content: 'var(--color-accent-content)',
+                foreground: 'var(--color-accent-foreground)',
+            },
+        },
     },
   },
   plugins: [],

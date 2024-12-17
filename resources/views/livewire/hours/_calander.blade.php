@@ -38,9 +38,9 @@
 
                 class="py-1.5 focus:z-10
                     @if(today()->format('Y-m-d') < $day['format'] || $day['confirmed_date'] == TRUE)
-                        ' cursor-not-allowed text-gray-200 bg-gray-600 '
+                        ' cursor-not-allowed text-gray-400 bg-gray-200 '
                     @else
-                        ' hover:bg-indigo-400 hover:text-white hover:font-semibold '
+                        ' hover:bg-sky-400 hover:text-white hover:font-semibold '
                     @endif
 
                     @if(today()->format('Y-m-d') == $day['format'] && $day['has_hours'] == TRUE)
@@ -56,12 +56,12 @@
                     @elseif($day['has_hours'] == TRUE)
                         ' bg-green-100 '
                     @else
-                        ' bg-gray-600 text-gray-400 '
+                        ' bg-gray-200 text-gray-400 '
                     @endif
 
                     @if($this->selected_date)
                         @if($this->selected_date->format('Y-m-d') == $day['format'])
-                            ' font-bold text-white bg-indigo-800 '
+                            ' font-bold text-white bg-sky-600 '
                         @endif
                     @endif
                     {{-- @if($loop->iteration == 1)

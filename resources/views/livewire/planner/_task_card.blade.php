@@ -6,7 +6,7 @@
         'cursor-pointer pl-1 border h-12 border-solid border-gray-300 hover:bg-gray-100 font-bold rounded-md text-clip overflow-hidden bg-white',
         // 'h-12' => !is_null($task->start_date) ? $task->start_date->format('Y-m-d') === $day['database_date'] : false,
         'h-6' => !is_null($task->start_date) ? $task->start_date->format('Y-m-d') !== $day['database_date'] : false,
-        'filtered' => !is_null($task->start_date) ? $task->start_date->format('Y-m-d') != $day['database_date'] : false
+        'filtered' => !is_null($task->start_date) ? $task->start_date->format('Y-m-d') != $day['database_date'] || $task->duration > 1 : false
     ])
     >
     @can('update', $task)

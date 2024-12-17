@@ -25,6 +25,10 @@ class PlannerIndex extends Component
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
+    protected $queryString = [
+        'week' => ['except' => '']
+    ];
+
     public function mount()
     {
         if($this->week){
@@ -92,33 +96,66 @@ class PlannerIndex extends Component
 
     public function sort($key, $position, $project_id, $date_index)
     {
-        $date_database = $this->days[$date_index]['database_date'];
         $project = Project::findOrFail($project_id);
         $task = Task::findOrFail($key);
+        $start_date = Carbon::parse($this->days[$date_index]['database_date']);
 
-        // If this Task does not belong to this Project
+        // If this Task does not belong to this Project, Move the task to new project.
         if($task->project->isNot($project)) {
             $task->displace();
             $task->project()->associate($project);
         }
 
-        $task->start_date = $date_database;
+        $task->start_date = $start_date;
         $task_days_count = $task->duration;
 
         if(in_array($task_days_count, [0, 1])){
             $task->end_date = $task->start_date;
             $task->duration = 1;
-        }else{
-            // $task->end_date = Carbon::parse($task->start_date)->addDays($task_days_count - 1)->format('Y-m-d');
-            $startDate = $task->start_date;
-            $endDate = $task->end_date;
 
+            $options = $task->options;
+            $include_weekends = [];
+            if($start_date->isSaturday()){
+                $include_weekends['saturday'] = true;
+            }
+
+            if($start_date->isSunday()){
+                $include_weekends['sunday'] = true;
+            }
+
+            $options->include_weekend_days = $include_weekends;
+            $task->options = $options;
+
+            //2024-12-15 SAME ON PlannerCard
+            //if not weekend day/ set true on $task
+            // $excludeSaturdays = !isset($include_weekends['saturday']) || $include_weekends['saturday'] === false;
+            // $excludeSundays = !isset($include_weekends['sunday']) || $include_weekends['sunday'] === false;
+
+            // $startDate = $start_date;
+            // // $daysCount = ($startDate->isSaturday() && $excludeSaturdays === true) || ($startDate->isSunday() && $excludeSundays === true) ? 0 : 1;
+            // $daysCount = $excludeSaturdays == true || $startDate->isSunday() == true ? 0 : 1;
+            // $endDate = $startDate->copy()->addDays($task_days_count - $daysCount);
+
+            // $duration = $this->countDaysBetweenDates($startDate, $endDate, $excludeSaturdays, $excludeSundays);
+
+            // $task->duration = $duration;
+            // $task->start_date = $startDate;
+            // $task->end_date = $endDate;
+        }else{
             $include_weekends = (array) $task->options->include_weekend_days;
             $excludeSaturdays = !isset($include_weekends['saturday']) || $include_weekends['saturday'] === false;
             $excludeSundays = !isset($include_weekends['sunday']) || $include_weekends['sunday'] === false;
+
+            $startDate = $start_date;
+            // $daysCount = ($startDate->isSaturday() && $excludeSaturdays === true) || ($startDate->isSunday() && $excludeSundays === true) ? 0 : 1;
+            $daysCount = $excludeSaturdays == true || $startDate->isSunday() == true ? 0 : 1;
+            $endDate = $startDate->copy()->addDays($task_days_count - $daysCount);
+
             $duration = $this->countDaysBetweenDates($startDate, $endDate, $excludeSaturdays, $excludeSundays);
 
             $task->duration = $duration;
+            $task->start_date = $startDate;
+            $task->end_date = $endDate;
         }
 
         $task->save();
@@ -135,7 +172,7 @@ class PlannerIndex extends Component
     }
 
     //Copilot help
-    //2024-12-10 SAME ON PlannerIndex
+    //2024-12-10 SAME ON PlannerCard
     //count days between dates and ignore weekend days if checkbox true
     function countDaysBetweenDates($startDate, $endDate, $excludeSaturdays = true, $excludeSundays = true) {
         // Include the first day in the count if not saturday or sunday
@@ -145,14 +182,12 @@ class PlannerIndex extends Component
         $currentDate = $startDate->copy();
         while ($currentDate->lt($endDate)) {
             $currentDate->addDay();
-
             if ($excludeSaturdays && $currentDate->isSaturday()) {
                 continue;
             }
             if ($excludeSundays && $currentDate->isSunday()) {
                 continue;
             }
-
             $daysCount++;
         }
 

@@ -66,23 +66,22 @@ class ExpenseIndex extends Component
 
     public function updating($field)
     {
-        // $this->resetPage();
         $this->resetPage('expenses-page');
         $this->resetPage('transactions-page');
     }
 
-    public function updated($field, $value)
-    {
-        // dd($field, $value);
-        // && $value == 'NO_PROJECT'
-        // if($field == 'project'){
-        //     $this->expense_vendor = NULL;
-        // }
+    // public function updated($field, $value)
+    // {
+    //     // dd($field, $value);
+    //     // && $value == 'NO_PROJECT'
+    //     // if($field == 'project'){
+    //     //     $this->expense_vendor = NULL;
+    //     // }
 
-        // if($field == 'vendor'){
-        //     $this->project = NULL;
-        // }
-    }
+    //     // if($field == 'vendor'){
+    //     //     $this->project = NULL;
+    //     // }
+    // }
 
     public function mount()
     {

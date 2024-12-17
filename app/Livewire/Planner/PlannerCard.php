@@ -42,12 +42,8 @@ class PlannerCard extends Component
     public function mount()
     {
         $this->form->project_id = $this->project->id;
-        // $this->projects = Project::with('tasks')
-        //         ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
-        //         ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']]);
-
-        $this->vendors = Vendor::whereNot('business_type', 'Retail')->get();
-        $this->employees = auth()->user()->vendor->users()->employed()->get();
+        // $this->vendors = Vendor::whereNot('business_type', 'Retail')->get();
+        // $this->employees = auth()->user()->vendor->users()->employed()->get();
     }
 
     public function form_modal(Task $task)

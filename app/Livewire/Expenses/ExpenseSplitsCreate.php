@@ -89,9 +89,12 @@ class ExpenseSplitsCreate extends Component
         return round($this->expense_total - $this->splits_total, 2);
     }
 
-    public function addSplits($expense_total, Expense $expense)
+    public function addSplits($expense)
     {
-        $this->expense = $expense;
+        // dd($expense_total, $expense['id']);
+        $this->expense = Expense::findOrFail($expense['id']);
+        $expense = $this->expense;
+
         $receipt = $expense->receipts()->latest()->first();
 
         //!is_null($receipt->receipt_items->items
@@ -106,7 +109,7 @@ class ExpenseSplitsCreate extends Component
             $items = NULL;
         }
 
-        $this->expense_total = $expense_total;
+        $this->expense_total = $expense['amount'];
 
         if(!$expense->splits->isEmpty()){
             $this->expense_splits = $expense->splits;

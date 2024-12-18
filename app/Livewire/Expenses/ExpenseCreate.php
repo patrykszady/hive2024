@@ -52,6 +52,7 @@ class ExpenseCreate extends Component
 
     public function mount()
     {
+        $this->expense = Expense::make();
         $this->projects = Project::status(['Active', 'Complete', 'Service Call', 'Service Call Complete'])->sortByDesc('last_status.start_date');
         $this->vendors = Vendor::orderBy('business_name')->get();
     }
@@ -357,9 +358,6 @@ class ExpenseCreate extends Component
         $employees = $team_members->get();
         $via_vendor_employees = $team_members->wherePivotNotNull('via_vendor_id')->get();
 
-        //->whereNot('users.id', auth()->user()->id)
-        $employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
-
         $bank_accounts =
             BankAccount::with('bank')->where('type', 'Checking')
                 ->whereHas('bank', function ($query) {
@@ -368,9 +366,7 @@ class ExpenseCreate extends Component
 
         return view('livewire.expenses.form', [
             'distributions' => $distributions,
-            'employees' => $employees,
             'via_vendor_employees' => $via_vendor_employees,
-            'employees' => $employees,
             'bank_accounts' => $bank_accounts,
             'employees' => $employees,
         ]);

@@ -103,15 +103,13 @@
             x-show="open"
             x-transition
             >
-            <div>
-                <flux:button
-                    wire:click="$dispatchTo('expenses.expense-splits-create', 'addSplits', { expense_total: total, expense: {{$expense}} })"
-                    x-text="splits == true ? 'Edit Splits' : 'Add Splits'"
-                    variant="primary"
-                    class="w-full"
-                    >
-                </flux:button>
-            </div>
+            <flux:button
+                wire:click="$dispatchTo('expenses.expense-splits-create', 'addSplits', { expense: {{$expense}} })"
+                x-text="splits == true ? 'Edit Splits' : 'Add Splits'"
+                variant="primary"
+                class="w-full"
+                >
+            </flux:button>
             <flux:error name="no_splits" />
         </div>
 

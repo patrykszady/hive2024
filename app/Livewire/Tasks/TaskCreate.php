@@ -34,14 +34,16 @@ class TaskCreate extends Component
 
     public function updated($field, $value)
     {
-        $startDate = Carbon::parse($this->form->start_date);
-        $endDate = Carbon::parse($this->form->end_date);
+        if(!is_null($this->form->start_date)){
+            $startDate = Carbon::parse($this->form->start_date);
+            $endDate = Carbon::parse($this->form->end_date);
 
-        $excludeSaturdays = !isset($this->form->include_weekend_days['saturday']) || $this->form->include_weekend_days['saturday'] === false;
-        $excludeSundays = !isset($this->form->include_weekend_days['sunday']) || $this->form->include_weekend_days['sunday'] === false;
-        $duration = $this->countDaysBetweenDates($startDate, $endDate, $excludeSaturdays, $excludeSundays);
+            $excludeSaturdays = !isset($this->form->include_weekend_days['saturday']) || $this->form->include_weekend_days['saturday'] === false;
+            $excludeSundays = !isset($this->form->include_weekend_days['sunday']) || $this->form->include_weekend_days['sunday'] === false;
+            $duration = $this->countDaysBetweenDates($startDate, $endDate, $excludeSaturdays, $excludeSundays);
 
-        $this->form->duration = $duration;
+            $this->form->duration = $duration;
+        }
 
         // $this->validateOnly($field);
     }

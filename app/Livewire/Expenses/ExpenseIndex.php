@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-#[Lazy]
+// #[Lazy]
 class ExpenseIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
@@ -64,7 +64,7 @@ class ExpenseIndex extends Component
         'status' => ['except' => ''],
     ];
 
-    public function updating($field)
+    public function updating()
     {
         $this->resetPage('expenses-page');
         $this->resetPage('transactions-page');
@@ -72,7 +72,7 @@ class ExpenseIndex extends Component
 
     // public function updated($field, $value)
     // {
-    //     // dd($field, $value);
+    //     dd($field, $value);
     //     // && $value == 'NO_PROJECT'
     //     // if($field == 'project'){
     //     //     $this->expense_vendor = NULL;
@@ -188,7 +188,7 @@ class ExpenseIndex extends Component
                 }
             }
         });
-        // dd($expenses);
+
         return $expenses;
     }
 

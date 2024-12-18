@@ -54,7 +54,7 @@
                                 </flux:input.group>
                                 @if(!empty($day_project_tasks[$index]))
                                     @foreach($day_project_tasks[$index] as $task)
-                                        <flux:description><i class="text-indigo-600">{{$task['title']}}</i></flux:description>
+                                        <flux:description><i class="text-sky-600">{{$task['title']}}</i></flux:description>
                                     @endforeach
                                 @endif
                             </div>

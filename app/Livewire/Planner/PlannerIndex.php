@@ -98,7 +98,12 @@ class PlannerIndex extends Component
     {
         $project = Project::findOrFail($project_id);
         $task = Task::findOrFail($key);
-        $start_date = Carbon::parse($this->days[$date_index]['database_date']);
+
+        if(is_null($this->days[$date_index]['database_date'])){
+            $start_date = NULL;
+        }else{
+            $start_date = Carbon::parse($this->days[$date_index]['database_date']);
+        }
 
         // If this Task does not belong to this Project, Move the task to new project.
         if($task->project->isNot($project)) {
@@ -111,16 +116,18 @@ class PlannerIndex extends Component
 
         if(in_array($task_days_count, [0, 1])){
             $task->end_date = $task->start_date;
-            $task->duration = 1;
+            $task->duration = $task_days_count;
 
             $options = $task->options;
             $include_weekends = [];
-            if($start_date->isSaturday()){
-                $include_weekends['saturday'] = true;
-            }
+            if(!is_null($task->start_date)){
+                if($start_date->isSaturday()){
+                    $include_weekends['saturday'] = true;
+                }
 
-            if($start_date->isSunday()){
-                $include_weekends['sunday'] = true;
+                if($start_date->isSunday()){
+                    $include_weekends['sunday'] = true;
+                }
             }
 
             $options->include_weekend_days = $include_weekends;

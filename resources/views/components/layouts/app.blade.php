@@ -131,9 +131,16 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
         </flux:header>
 
-        <flux:main>
-            {{ $slot }}
-        </flux:main>
+        @if(Route::is(['planner.index']))
+            <div class="[grid-area:main] p-0 [[data-flux-container]_&]:px-0" data-flux-main>
+                {{ $slot }}
+            </div>
+        @else
+            {{-- class="!p-0 !lg:p-0 !px-0 !p-0 !lg:py-0 !lg:px-0 !p-0 !lg:py-0" --}}
+            <flux:main>
+                {{ $slot }}
+            </flux:main>
+        @endif
 
         @persist('toast')
             <flux:toast />

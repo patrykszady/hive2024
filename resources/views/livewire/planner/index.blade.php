@@ -61,7 +61,7 @@
                                 @class([
                                     'px-2 py-2',
                                     'bg-zinc-200' => $day['is_weekend'] OR $day['database_date'] === NULL ? true : false,
-                                    // 'bg-green-200' => $day['is_today'] ? true : false,
+                                    'bg-zinc-100' => $day['is_today'] ? true : false,
                                     'space-y-2'
                                 ])
                                 >

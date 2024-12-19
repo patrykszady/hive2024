@@ -334,6 +334,19 @@ class ExpenseForm extends Form
 
     public function delete()
     {
+        //CHECK
+        // $check = $this->expense->check;
+
+        // if($check){
+        //     if($check->amount == $this->expense->amount){
+        //         //if has transactions, remove
+        //         $check->delete();
+        //     }else{
+        //         //edit check
+        //     }
+        // }
+
+        dd(' too far in delete');
         //ASSOCIATED EXPENSES
         $associated_expenses = $this->expense->associated;
         foreach($associated_expenses as $associated_expenses){
@@ -353,6 +366,8 @@ class ExpenseForm extends Form
             $transaction->expense_id = NULL;
             $transaction->save();
         }
+
+
 
         $this->expense->delete();
     }

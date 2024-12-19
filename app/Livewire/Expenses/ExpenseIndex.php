@@ -200,6 +200,12 @@ class ExpenseIndex extends Component
                 ->where('is_expense_id_null', TRUE)
                 ->where('is_check_id_null', TRUE)
                 ->whereIn('deposit', ['NOT_DEPOSIT', 'NO_PAYMENTS'])
+                ->when(!empty($this->expense_vendor) && $this->expense_vendor != '0', function ($query, $item) {
+                    return $query->where('vendor_id', $this->expense_vendor);
+                })
+                ->when($this->expense_vendor == '0', function ($query, $item) {
+                    return $query->where('vendor_id', '0');
+                })
                 // ->when(!empty($this->bank_plaid_ins_id), function ($query, $item) {
                 //     return $query->whereIn('bank_account_id', $this->bank_account_ids[$this->bank_plaid_ins_id]);
                 // })

@@ -277,48 +277,60 @@ class ExpenseCreate extends Component
 
     public function remove()
     {
-        if($this->form->transaction){
-            $remove_type = 'transaction';
-        }else{
-            $remove_type = 'expense';
-        }
-
-        if($remove_type == 'transaction'){
-            $transaction = $this->form->transaction;
-            $transaction->delete();
-
-            $this->dispatch('refreshComponent')->to('expenses.expense-index');
-
-            $this->dispatch('notify',
-                type: 'success',
-                content: 'Transaction Deleted'
-            );
-        }else{
-            $expense = $this->form->delete();
-
-            $url = url()->previous();
-            $route = app('router')->getRoutes($url)->match(app('request')->create($url))->getName();
-
-            if($route == 'expenses.show'){
-                session()->flash('notify', ['success', 'Expense Deleted']);
-                $this->redirect(ExpenseIndex::class);
-            }else{
-                $this->dispatch('refreshComponent')->to('expenses.expense-index');
-
-                $this->dispatch('notify',
-                    type: 'success',
-                    content: 'Expense Deleted'
-                );
-            }
-
-            //queue
-            // UpdateProjectDistributionsAmount::dispatch($this->form->expense->project, $this->form->expense->project->distributions->pluck('id')->toArray());
-            // $this->dispatch('refreshComponent')->to('expenses.expense-show');
-            $this->dispatch('refreshComponent')->to('expenses.expense-index');
-        }
+        $this->form->delete();
 
         $this->modal('expenses_form_modal')->close();
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Expense Deleted.',
+            // route / href / wire:click
+            text: '',
+        );
+
         $this->resetModal();
+
+        // dd($this);
+        // if($this->form->transaction){
+        //     $remove_type = 'transaction';
+        // }else{
+        //     $remove_type = 'expense';
+        // }
+
+        // if($remove_type == 'transaction'){
+        //     $transaction = $this->form->transaction;
+        //     $transaction->delete();
+
+        //     $this->dispatch('refreshComponent')->to('expenses.expense-index');
+
+        //     $this->dispatch('notify',
+        //         type: 'success',
+        //         content: 'Transaction Deleted'
+        //     );
+        // }else{
+        //     $expense = $this->form->delete();
+
+        //     $url = url()->previous();
+        //     $route = app('router')->getRoutes($url)->match(app('request')->create($url))->getName();
+
+        //     if($route == 'expenses.show'){
+        //         session()->flash('notify', ['success', 'Expense Deleted']);
+        //         $this->redirect(ExpenseIndex::class);
+        //     }else{
+        //         $this->dispatch('refreshComponent')->to('expenses.expense-index');
+
+        //         $this->dispatch('notify',
+        //             type: 'success',
+        //             content: 'Expense Deleted'
+        //         );
+        //     }
+
+        //     //queue
+        //     // UpdateProjectDistributionsAmount::dispatch($this->form->expense->project, $this->form->expense->project->distributions->pluck('id')->toArray());
+        //     // $this->dispatch('refreshComponent')->to('expenses.expense-show');
+        //     $this->dispatch('refreshComponent')->to('expenses.expense-index');
+        // }
     }
 
     public function save()

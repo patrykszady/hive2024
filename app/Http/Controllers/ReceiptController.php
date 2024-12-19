@@ -725,7 +725,7 @@ class ReceiptController extends Controller
     //foreach outlook/microsoft email get and process emails...
     public function ms_graph_email_api()
     {
-        //6-28-2023 catch forwarded messages where From is in database table company_emails
+        //6-28-2023 catch forwarded messages where To is in database table company_emails (forward to KNOWN business company_email FROM ANY email) (oR ViveVersa..)
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
         foreach($company_emails as $company_email){
             //check if access_token is expired, if so get new access_token and refresh_token
@@ -800,8 +800,6 @@ class ReceiptController extends Controller
                 }
             }
 
-            // dd($messages);
-
             foreach($messages as $key => $message){
                 if(!isset($message->getToRecipients()[0])){
                     continue;
@@ -816,25 +814,39 @@ class ReceiptController extends Controller
                     Carbon::parse($message->getReceivedDateTime())
                         ->setTimezone('America/Chicago')
                         ->format('Y-m-d');
-
+                // dd($message);
                 // dd([$email_from, $email_from_domain, $email_subject, $email_date]);
                 //find the right Receipt:: that belongs to this email....
                 $from_email_receipts = Receipt::withoutGlobalScopes()->where('from_address', $email_from)->orWhere('from_address', $email_from_domain)->get();
-                // dd($from_email_receipts);
 
                 if($from_email_receipts->isEmpty()){
-                    //continue... email not a Receipt
-                    continue;
+                    //if Email is Forwaded
+                    $re = '/(From:<\/b> |To:<\/b> )([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/';
+                    $string = $message->getBody()->getContent();
+                    // var_dump($string);
+                    // dd();
+                    preg_match_all($re, $string, $matches, PREG_SET_ORDER, 0);
+
+                    if(isset($matches[0][1]) && isset($matches[0][1])){
+                        $email_from = $matches[0][2];
+                        $email_from_domain = substr($email_from, strpos($email_from, "@"));
+
+                        $from_email_receipts = Receipt::withoutGlobalScopes()->where('from_address', $email_from)->orWhere('from_address', $email_from_domain)->get();
+                    }else{
+                        //continue... email not a Receipt
+                        continue;
+                    }
                 }else{
-                    foreach($from_email_receipts as $email_receipt){
-                        if(strpos($email_subject, $email_receipt->from_subject) !== FALSE){
-                            $receipt = $email_receipt;
-                        }else{
-                            // dd('in if else');
-                            //continue... email Subject not a Receipt
-                            //move the failed email?
-                            continue;
-                        }
+
+                }
+
+                foreach($from_email_receipts as $email_receipt){
+                    if(strpos($email_subject, $email_receipt->from_subject) !== FALSE){
+                        $receipt = $email_receipt;
+                    }else{
+                        //continue... email Subject not a Receipt
+                        //move the failed email?
+                        continue;
                     }
                 }
 
@@ -847,7 +859,6 @@ class ReceiptController extends Controller
                     continue;
                 }
 
-                // dd($receipt);
                 //NOTE: $receipt MUST be set by now
                 $receipt_account =
                     ReceiptAccount::withoutGlobalScopes()

@@ -105,7 +105,8 @@
         "sort-packages": true,
         "process-timeout": 0,
         "allow-plugins": {
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         }
     },
     "minimum-stability": "stable",

@@ -17,10 +17,17 @@ class ProjectShow extends Component
     use AuthorizesRequests;
 
     public Project $project;
+    public $estimates = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     //11/07/2024 took reimbursments to ProjectFiances
+
+    public function mount()
+    {
+        //include deleted
+        $this->estimates = $this->project->estimates()->orderBy('created_at', 'DESC')->get();
+    }
 
     #[Title('Project')]
     public function render()

@@ -46,6 +46,7 @@ use App\Livewire\Timesheets\TimesheetShow;
 use App\Livewire\Timesheets\TimesheetPaymentCreate;
 use App\Livewire\Timesheets\TimesheetPaymentIndex;
 
+use App\Livewire\Estimates\EstimatesIndex;
 use App\Livewire\Estimates\EstimateCreate;
 use App\Livewire\Estimates\EstimateShow;
 
@@ -198,6 +199,7 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/categories', CategoriesIndex::class)->name('categories.index');
 
     //ESTIMATES
+    Route::get('/estimates', EstimatesIndex::class)->name('estimates.index');
     Route::get('/estimates/create/{project}', EstimateCreate::class)->name('estimates.create');
     Route::get('/estimates/{estimate}', EstimateShow::class)->name('estimates.show');
 

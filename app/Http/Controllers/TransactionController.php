@@ -262,6 +262,7 @@ class TransactionController extends Controller
 
     public function plaid_transactions_sync()
     {
+        //->where('id', 23)
         $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
         $bank_accounts = BankAccount::all();
         // $transactions = Transaction::whereDate('transaction_date', '<=', '2024-10-25')->get();
@@ -301,6 +302,7 @@ class TransactionController extends Controller
         curl_close($ch);
 
         $result = json_decode($result, true);
+        // dd($result);
 
         $bank_account_ids = $bank_accounts->where('bank_id', $bank->id)->pluck('id')->toArray();
 
@@ -329,6 +331,7 @@ class TransactionController extends Controller
             // if($result['has_more'] == true){
             //     $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
             // }else{
+            // dd($result);
             //ADDED
             foreach($result['added'] as $index => $new_transaction){
                 if($new_transaction['date'] <= $transactions_last_date){
@@ -1400,36 +1403,42 @@ class TransactionController extends Controller
                     foreach($transactions_by_name as $transactions){
                         //summy
                         //clear array before next foreach statement
-                        $transaction_results = array();
+                        if(stristr($transactions[0]['transfer_name'], strtolower($check->user->first_name))){
+                            dd('in if');
+                            $transaction_results = array();
 
-                        $transaction_ids = $transactions->pluck('id')->toArray();
-                        $transaction_plucked = $transactions->pluck('amount')->toArray();
+                            $transaction_ids = $transactions->pluck('id')->toArray();
+                            $transaction_plucked = $transactions->pluck('amount')->toArray();
 
-                        $arr = array_values(array_filter($transaction_plucked));
-                        $n = sizeof($arr);
-                        $ids = $transaction_ids;
+                            $arr = array_values(array_filter($transaction_plucked));
+                            $n = sizeof($arr);
+                            $ids = $transaction_ids;
 
-                        $results = collect($this->subsetSums($arr, $n, $ids, 'transaction'))->sortBy('sum');
+                            $results = collect($this->subsetSums($arr, $n, $ids, 'transaction'))->sortBy('sum');
 
-                        foreach($results as $key => $result) {
-                            $sum = number_format($result['sum'], 2, '.', '');
-                            //this can happen multiple of times.. eg transaction_id 6230
+                            foreach($results as $key => $result) {
+                                $sum = number_format($result['sum'], 2, '.', '');
+                                //this can happen multiple of times.. eg transaction_id 6230
 
-                            //is this Transaction a RETURN CHECK "DEPOSIT"?
-                            if($sum == $check->amount){
-                                $transaction_results = $result;
-                            }
-                        }
-
-                        if(isset($transaction_results['transactions'])){
-                            $transaction_results = collect($transaction_results['transactions']);
-
-                            foreach($transaction_results as $transaction){
-                                $transaction = Transaction::findOrFail($transaction['transaction_id']);
-                                $transaction->check()->associate($check);
-                                $transaction->save();
+                                //is this Transaction a RETURN CHECK "DEPOSIT"?
+                                if($sum == $check->amount){
+                                    $transaction_results = $result;
+                                }
                             }
 
+
+                            if(isset($transaction_results['transactions'])){
+                                $transaction_results = collect($transaction_results['transactions']);
+
+                                foreach($transaction_results as $transaction){
+                                    $transaction = Transaction::findOrFail($transaction['transaction_id']);
+                                    $transaction->check()->associate($check);
+                                    $transaction->save();
+                                }
+
+                                continue;
+                            }
+                        }else{
                             continue;
                         }
                     }
@@ -1446,6 +1455,8 @@ class TransactionController extends Controller
                         ->where('amount', $check->amount)
                         ->orderBy('id', 'DESC')
                         ->get();
+
+                    // dd($transactions);
 
                     foreach($transactions as $transaction){
                         //if $check->check_number is inside of $transaction->check_number, associate $check with $transaction

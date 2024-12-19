@@ -230,15 +230,6 @@ class EstimateShow extends Component
         return [$location, $title_file];
     }
 
-    public function delete()
-    {
-        $estimate = $this->estimate;
-        $estimate->delete();
-
-        //con notification?
-        $this->redirectRoute('projects.show', ['project' => $estimate->project->id]);
-    }
-
     public function sort($key, $position)
     {
         $line_item = EstimateLineItem::findOrFail($key);

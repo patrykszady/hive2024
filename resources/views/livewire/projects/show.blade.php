@@ -48,30 +48,7 @@
         @can('update', $project)
             <div class="col-span-4 space-y-4 lg:col-span-2 lg:col-start-3">
                 {{-- PROJECT ESTIMATES --}}
-                <x-lists.details_card>
-                    {{-- HEADING --}}
-                    <x-slot:heading>
-                        <div>
-                            <flux:heading size="lg" class="mb-0">Project Estimates</flux:heading>
-                        </div>
-
-                        @can('create', [App\Models\Estimate::class, $project])
-                            <flux:button
-                                href="{{route('estimates.create', $project->id)}}"
-                                size="sm"
-                                >
-                                Create Estimate
-                            </flux:button>
-                        @endcan
-                    </x-slot>
-
-                    {{-- DETAILS --}}
-                    <x-lists.details_list>
-                        @foreach($project->estimates as $estimate)
-                            <x-lists.details_item title="Estimate {{$estimate->id}}" detail="{{money($estimate->estimate_sections->sum('total'))}}" href="{{route('estimates.show', $estimate->id)}}" />
-                        @endforeach
-                    </x-lists.details_list>
-                </x-lists.details_card>
+                <livewire:estimates.estimates-index :project="$project" :view="'projects.show'" lazy />
 
                 {{-- PROEJCT LIFESPAN --}}
                 <livewire:project-status.status-create :project="$project" lazy />

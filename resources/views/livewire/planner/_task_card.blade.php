@@ -12,13 +12,13 @@
     @can('update', $task)
         @if(!is_null($task->start_date) ? $task->start_date->format('Y-m-d') == $day['database_date'] : true)
             <span
-                class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-indigo-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
+                class="{{ $task->type == 'Milestone' ? 'text-green-600' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-600' : '' }} {{ $task->type == 'Task' ? 'text-sky-600' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
                 >
                 {{$task->title}}
             </span>
         @else
             <span
-                class="{{ $task->type == 'Milestone' ? 'text-green-300' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-300' : '' }} {{ $task->type == 'Task' ? 'text-indigo-300' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
+                class="{{ $task->type == 'Milestone' ? 'text-green-300' : '' }}  {{ $task->type == 'Material' ? 'text-yellow-300' : '' }} {{ $task->type == 'Task' ? 'text-sky-300' : '' }} {{$task->direction == 'right' ? 'float-right' : ''}}"
                 >
                 {{$task->title}}
             </span>

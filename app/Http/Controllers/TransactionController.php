@@ -262,8 +262,7 @@ class TransactionController extends Controller
 
     public function plaid_transactions_sync()
     {
-        //->where('id', 23)
-        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
+        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->where('id', 21)->get();
         $bank_accounts = BankAccount::all();
         // $transactions = Transaction::whereDate('transaction_date', '<=', '2024-10-25')->get();
 
@@ -302,7 +301,6 @@ class TransactionController extends Controller
         curl_close($ch);
 
         $result = json_decode($result, true);
-        // dd($result);
 
         $bank_account_ids = $bank_accounts->where('bank_id', $bank->id)->pluck('id')->toArray();
 
@@ -317,6 +315,7 @@ class TransactionController extends Controller
             Log::channel('plaid_adds')->info([[$bank->getAttributes(), $bank->plaid_options], $result]);
         }
 
+
         //if not in error state...
         if(!array_key_exists("error_code", $result)){
             $add_to_json =
@@ -325,13 +324,13 @@ class TransactionController extends Controller
                     // "accounts" => $result["accounts"],
                 );
 
-            $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
+            // $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
             $bank->save();
 
             // if($result['has_more'] == true){
             //     $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
             // }else{
-            // dd($result);
+
             //ADDED
             foreach($result['added'] as $index => $new_transaction){
                 if($new_transaction['date'] <= $transactions_last_date){
@@ -339,22 +338,26 @@ class TransactionController extends Controller
                 }else{
                     // dd($new_transaction, Transaction::whereDate('transaction_date', '>=', '2023-01-01')->whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get());
                     //make sure transaction_id does not exist yet.. if it does..update..
-                    if(Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->get()->isNotEmpty()){
-                        $transaction = Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
-                    }elseif(Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['transaction_id'])->get()->isNotEmpty()){
-                        $transaction = Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                    if(Transaction::where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->get()->isNotEmpty()){
+                        $transaction = Transaction::where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
+                    }elseif(Transaction::where('plaid_transaction_id', $new_transaction['transaction_id'])->get()->isNotEmpty()){
+                        $transaction = Transaction::where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
                         // dd($new_transaction, $transaction);
-                    }elseif(Transaction::whereDate('transaction_date', '>=', '2023-01-01')->whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get()->isNotEmpty()){
+                    }elseif(Transaction::whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get()->isNotEmpty()){
                         //11/14/2024 ...used in multiple places on this Controller
-                        $existing_transactions = Transaction::whereDate('transaction_date', '>=', '2023-01-01')->whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get();
+                        $existing_transactions = Transaction::whereDate('transaction_date', $new_transaction['date'])->where('plaid_transaction_id', $new_transaction['transaction_id'])->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get();
 
                         if($existing_transactions->count() === 1){
                             $transaction = $existing_transactions->first();
                         }else{
-                            //LOG
-                            //DiffInDays / Carbon
-                            Log::channel('plaid_adds')->info(['else in line 330ish in TransactionController' => [$new_transaction, $existing_transactions], $result]);
-                            // dd($new_transaction, $existing_transactions);
+                            if($existing_transactions->isEmpty()){
+                                $transaction = new Transaction;
+                            }else{
+                                //LOG
+                                //DiffInDays / Carbon
+                                Log::channel('plaid_adds')->info(['else in line 330ish in TransactionController' => [$new_transaction, $existing_transactions], $result]);
+                                // dd($new_transaction, $existing_transactions);
+                            }
                         }
                     }else{
                         $transaction = new Transaction;

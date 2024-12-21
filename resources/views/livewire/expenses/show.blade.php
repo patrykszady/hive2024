@@ -17,9 +17,13 @@
                             >
                             Edit Expense
                         </flux:button>
-                        <flux:button icon="chevron-down" size="sm">
-                            {{-- ASSOCIATED EXPENSE MODAL --}}
-                        </flux:button>
+                        <flux:dropdown position="bottom" align="end">
+                            <flux:button icon-trailing="chevron-down" size="sm"></flux:button>
+
+                            <flux:menu>
+                                <flux:menu.item wire:click="$dispatchTo('expenses.expenses-associated', 'addAssociatedExpense', { expense: {{$expense->id}}})">Link Expenses</flux:menu.item>
+                            </flux:menu>
+                        </flux:dropdown>
                     </flux:button.group>
                 </x-slot>
 
@@ -143,7 +147,7 @@
                             <flux:columns>
                                 <flux:column>Amount</flux:column>
                                 <flux:column>Project</flux:column>
-                                <flux:column>Reimbursment</flux:column>
+                                <flux:column>Reimb.</flux:column>
                             </flux:columns>
 
                             <flux:rows>
@@ -155,7 +159,7 @@
                                             @if($split->distribution)
                                                 {{$split->distribution->name }}
                                             @else
-                                                <a wire:navigate.hover href="{{route('projects.show', $split->project->id)}}">{{ $split->project->name }}</a>
+                                                <a wire:navigate.hover href="{{route('projects.show', $split->project->id)}}">{{ $split->project->address }}</a>
                                             @endif
                                         </flux:cell>
 

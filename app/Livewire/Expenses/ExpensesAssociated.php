@@ -3,6 +3,8 @@
 namespace App\Livewire\Expenses;
 use App\Models\Expense;
 
+use Flux;
+
 use Livewire\Component;
 
 class ExpensesAssociated extends Component
@@ -10,7 +12,6 @@ class ExpensesAssociated extends Component
     public Expense $expense;
     public $associate_expense = '';
     public $expenses = [];
-    public $showModal = FALSE;
 
     protected $listeners = ['addAssociatedExpense'];
 
@@ -21,16 +22,6 @@ class ExpensesAssociated extends Component
         ];
     }
 
-    public function mount()
-    {
-
-    }
-
-    public function updated($field)
-    {
-        // dd($this);
-    }
-
     public function addAssociatedExpense(Expense $expense)
     {
         $this->expense = $expense;
@@ -39,14 +30,10 @@ class ExpensesAssociated extends Component
             Expense::search($expense->amount)
                 ->orderBy('date', 'desc')
                 ->get()
+                ->whereBetween('date', [$expense->date->subMonths(3), $expense->date->addMonths(3)])
                 ->whereNotIn('id', array_merge(!$expense->associated->isEmpty() ? $expense->associated_expenses->pluck('id')->toArray() : [], [$expense->id]));
-                // ->each(function($this_expense, $key) {
-                //     $this_expense->title = money($this_expense->amount);
-                //     $this_expense->desc = $this_expense->date->format('m/d/Y') . ' | ' . $this_expense->vendor->name;
-                // });
-                // ->whereBetween('date', ['2024-01-01', '2024-08-08']);
 
-        $this->showModal = TRUE;
+        $this->modal('associated_expenses_form_modal')->show();
     }
 
     public function save()
@@ -55,11 +42,15 @@ class ExpensesAssociated extends Component
         $this->expense->save();
 
         $this->dispatch('refreshComponent')->to('expenses.expense-show');
-        $this->showModal = FALSE;
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Expenses Associated',
-            route: 'expenses/' . $this->associate_expense
+        $this->modal('associated_expenses_form_modal')->close();
+
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Expenses Associated',
+            // route / href / wire:click
+            text: '',
         );
     }
 

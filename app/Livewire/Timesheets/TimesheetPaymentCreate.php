@@ -34,6 +34,8 @@ class TimesheetPaymentCreate extends Component
 
     public $disable_paid_by = FALSE;
 
+    protected $listeners = ['refreshComponent' => '$refresh'];
+
     protected function rules()
     {
         return [

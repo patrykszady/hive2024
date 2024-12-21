@@ -77,6 +77,12 @@ class ExpenseCreate extends Component
             }
         }
 
+        if($field === 'form.paid_by'){
+            if($value === "NULL"){
+                $this->form->paid_by = NULL;
+            }
+        }
+
         if($field == 'form.reimbursment'){
             // dd($value);
             // if($value == NULL){
@@ -335,7 +341,6 @@ class ExpenseCreate extends Component
 
     public function save()
     {
-        dd($this);
         //return with Error... splits needed if Project is SPLIT
         if($this->split == TRUE && empty($this->expense_splits)){
             return $this->addError('no_splits', 'Splits required if Project is Split');

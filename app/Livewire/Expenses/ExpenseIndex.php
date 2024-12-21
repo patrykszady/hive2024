@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-// #[Lazy]
+#[Lazy]
 class ExpenseIndex extends Component
 {
     use WithPagination, AuthorizesRequests;

@@ -120,7 +120,7 @@
             x-transition
             >
             <flux:select label="Paid By" wire:model.live="form.paid_by" placeholder="Choose who paid...">
-                <flux:option value="">{{auth()->user()->vendor->name}}</flux:option>
+                <flux:option value="NULL">{{auth()->user()->vendor->name}}</flux:option>
                 @foreach($employees as $employee)
                     <flux:option value="{{$employee->id}}">{{$employee->first_name}}</flux:option>
                 @endforeach

@@ -424,7 +424,6 @@ class TransactionController extends Controller
                     $transaction = Transaction::whereDate('transaction_date', '>=', '2023-01-01')->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
                 }else{
                     Log::channel('plaid_adds')->info(['else in line 392ish in TransactionController' => [$new_transaction, $existing_transactions], $result]);
-                    // dd($new_transaction, $result);
                     continue;
                 }
 

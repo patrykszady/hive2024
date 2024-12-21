@@ -346,7 +346,7 @@ class ExpenseForm extends Form
         //     }
         // }
 
-        dd(' too far in delete');
+        // dd(' too far in delete');
         //ASSOCIATED EXPENSES
         $associated_expenses = $this->expense->associated;
         foreach($associated_expenses as $associated_expenses){
@@ -366,8 +366,6 @@ class ExpenseForm extends Form
             $transaction->expense_id = NULL;
             $transaction->save();
         }
-
-
 
         $this->expense->delete();
     }

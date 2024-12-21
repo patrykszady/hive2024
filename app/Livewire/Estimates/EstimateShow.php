@@ -6,6 +6,8 @@ use App\Models\Estimate;
 use App\Models\EstimateSection;
 use App\Models\EstimateLineItem;
 
+use App\Livewire\Projects\ProjectFinances;
+
 use App\Jobs\SendInitialEstimateEmail;
 
 use Spatie\Browsershot\Browsershot;
@@ -107,6 +109,9 @@ class EstimateShow extends Component
             // route / href / wire:click
             text: 'Section ' . $section->name,
         );
+
+        //dispatch to refresh on project finances
+        $this->dispatch('refresh')->to(ProjectFinances::class);
     }
 
     public function sectionUpdate($section_index)
@@ -119,7 +124,7 @@ class EstimateShow extends Component
         $this->estimate_refresh();
 
         Flux::toast(
-            duration: 10000,
+            duration: 5000,
             position: 'top right',
             variant: 'success',
             heading: 'Section Name Updated',
@@ -128,28 +133,22 @@ class EstimateShow extends Component
         );
     }
 
-    public function itemsRearrange($section_index)
-    {
-        $section = $this->sections[$section_index];
-
-        if($section->items_rearrange == FALSE){
-            $section->items_rearrange = TRUE;
-        }else{
-            $section->items_rearrange = FALSE;
-        }
-    }
-
-    // public function itemsRearrangeOrder($list)
+    // public function itemsRearrange($section_index)
     // {
-    //     foreach($list as $item){
-    //         EstimateLineItem::find($item['value'])->update(['section_index' => $item['order']]);
+    //     $section = $this->sections[$section_index];
+
+    //     if($section->items_rearrange == FALSE){
+    //         $section->items_rearrange = TRUE;
+    //     }else{
+    //         $section->items_rearrange = FALSE;
     //     }
     // }
 
-    public function sectionDuplicate($section_id)
+    public function sectionDuplicate($section_index)
     {
-        $line_items = $this->estimate->estimate_line_items()->where('section_id', $section_id)->get();
-        $section_to_duplicate = $this->estimate->estimate_sections()->where('id', $section_id)->first();
+        $section = $this->sections[$section_index];
+        $line_items = $this->estimate->estimate_line_items()->where('section_id', $section->id)->get();
+        $section_to_duplicate = $this->estimate->estimate_sections()->where('id', $section->id)->first();
 
         $section = $this->create_new_section($section_to_duplicate->name . ' -Copy');
 
@@ -174,10 +173,14 @@ class EstimateShow extends Component
 
         $this->estimate_refresh();
 
-        // $this->dispatch('notify',
-        //     type: 'success',
-        //     content: 'Section Duplicated'
-        // );
+        Flux::toast(
+            duration: 10000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Section Duplicated',
+            // route / href / wire:click
+            text: 'Section ' . $section->name,
+        );
     }
 
     public function getEstimateTotalProperty()
@@ -290,6 +293,22 @@ class EstimateShow extends Component
         }
 
         $writer->close();
+    }
+
+    public function deleteEstimate()
+    {
+        $this->estimate->delete();
+
+        Flux::toast(
+            duration: 10000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Estimate Removed',
+            // route / href / wire:click
+            text: '',
+        );
+
+        $this->redirectRoute('projects.show', ['project' => $this->estimate->project->id]);
     }
 
     #[Title('Estimate')]

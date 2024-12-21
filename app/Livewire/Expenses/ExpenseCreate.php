@@ -335,6 +335,7 @@ class ExpenseCreate extends Component
 
     public function save()
     {
+        dd($this);
         //return with Error... splits needed if Project is SPLIT
         if($this->split == TRUE && empty($this->expense_splits)){
             return $this->addError('no_splits', 'Splits required if Project is Split');

@@ -22,7 +22,7 @@ class PaymentCreate extends Component
 
     public PaymentForm $form;
 
-    public Client $client;
+    public $client = NULL;
     public $client_id = NULL;
     public $projects = [];
 
@@ -59,57 +59,7 @@ class PaymentCreate extends Component
     public function clients()
     {
         $YTD = Carbon::now()->subYear();
-        //where has at least one project in the past year
-        // 11/24/2024
 
-        // $projects = Project::with('client')->with(['last_status' => function ($query) {
-        //     $query->where('title', 'Active');
-        // }])->where('created_at', '>=', $YTD)
-        // ->orderBy('created_at', 'DESC')
-        // ->get();
-
-        // $projects = Project::with('client')
-        // ->when(1 == 1, function($query) {
-        //     return $query->status('Active')->sortByDesc('last_status.start_date');
-        // })
-        // ->get();
-
-        // dd($projects);
-        // return Client::whereHas('projects', function ($query) use ($YTD) {
-        //     $query->where('projects.created_at', '>=', $YTD);
-        // })
-        // ->orderBy('created_at', 'DESC')
-        // ->get();
-
-        //->where('projects.created_at', '>=', $YTD);
-        // $clients = Client::whereHas('projects', function ($query) use ($YTD) {
-        //     $query->with(['status' => function ($query) {
-        //             $query->where('title', 'Active');
-        //         }]);
-        // })->get();
-
-        // $clients = Client::withWhereHas('projects', function ($query) use ($YTD) {
-        //     $query->withWhereHas('last_status', function ($query) {
-        //         return $query->where('title', '=', 'Active');
-        //     })->orderBy('projects.created_at', 'DESC');
-        // })
-        // // ->orderBy('created_at', 'DESC')
-        // ->get();
-
-        // $projects = Project::with(['statuses' => function ($query){
-        //     $query->where('title', 'Active')
-        //           ->orderBy('created_at', 'desc')
-        //           ->take(1);
-        // }])->first();
-        // //status(['Active', 'Service Call'])
-        // // $projects = Project::with('client')->where('created_at', '>=', $YTD)->status(['Active', 'Service Call', 'Complete']);
-        // //     ->withWhereHas('last_status', function ($query) {
-        // //         return $query->where('title', '=', 'Active');
-        // //     })->orderBy('created_at', 'DESC')->first();
-
-        // dd($projects);
-
-        // return $clients;
         return Client::withWhereHas('projects', function ($query) use ($YTD) {
             $query->where('projects.created_at', '>=', $YTD);
         })
@@ -147,7 +97,6 @@ class PaymentCreate extends Component
 
     public function save()
     {
-        // dd($this);
         //validate payment total is greater than $0
         //if less than or equal to 0... send back with error
         if($this->getClientPaymentSumProperty() === 0){

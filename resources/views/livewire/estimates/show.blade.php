@@ -87,13 +87,16 @@
                 <flux:heading>
                     <div class="grid grid-cols-2 gap-4">
                         <flux:input.group>
+                            {{-- on clickaway sectionUpdate --}}
                             <flux:input
+                                wire:keydown.enter="sectionUpdate({{$index}})"
                                 wire:model.blur="sections.{{$index}}.name"
                                 name="sections.{{$index}}.name"
                                 type="text"
                                 required
                                 placeholder="Section Name"
                                 value="{{$section->name}}"
+                                {{-- kbd="Enter" --}}
                             />
 
                             <flux:dropdown>
@@ -114,6 +117,7 @@
                 <flux:accordion transition>
                     <flux:accordion.item>
                         <flux:accordion.heading>
+                            {{-- only when accordion closed --}}
                             {{-- Show Line Items --}}
                         </flux:accordion.heading>
 
@@ -171,7 +175,6 @@
                 <div class="flex justify-between">
                     <flux:button
                         wire:click="$dispatchTo('line-items.estimate-line-item-create', 'addToEstimate', { section_id: {{$section->id}} })"
-                        variant="primary"
                         icon="plus"
                         >
                         Item

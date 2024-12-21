@@ -30,7 +30,9 @@ class PaymentsIndex extends Component
     public function payments()
     {
         if(isset($this->project)){
-            $payments = $this->project->payments()->paginate(10);
+            $payments =
+                $this->project->payments()->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+                ->paginate(15);
                 // Payment::where('project_id', $this->project->id)->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
                 // ->paginate(10);
 

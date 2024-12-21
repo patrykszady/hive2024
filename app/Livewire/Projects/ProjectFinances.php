@@ -20,9 +20,17 @@ class ProjectFinances extends Component
     public Project $project;
     public $finances = [];
 
+    protected $listeners = ['refreshComponent' => '$refresh', 'refresh'];
+
     public function mount()
     {
         $this->finances = $this->project->finances;
+    }
+
+    public function refresh()
+    {
+        $this->mount();
+        $this->render();
     }
 
     //Reimbursement print

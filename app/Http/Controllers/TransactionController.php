@@ -262,7 +262,8 @@ class TransactionController extends Controller
 
     public function plaid_transactions_sync()
     {
-        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->where('id', 21)->get();
+        // ->where('id', 21)
+        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
         $bank_accounts = BankAccount::all();
         // $transactions = Transaction::whereDate('transaction_date', '<=', '2024-10-25')->get();
 
@@ -329,7 +330,7 @@ class TransactionController extends Controller
 
             // if($result['has_more'] == true){
             //     $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
-            // }else{
+            // }
 
             //ADDED
             foreach($result['added'] as $index => $new_transaction){
@@ -1269,8 +1270,8 @@ class TransactionController extends Controller
             //find Expenses per Vendor that have at least 2 expenses sin Transactions
             //associate expenses.. each Expense has the same Transaction
             $transactions = Transaction::
-                where('id', 20541)
-                ->whereIn('bank_account_id', $hive_vendor_bank_account_ids)
+                // where('id', 20541)
+                whereIn('bank_account_id', $hive_vendor_bank_account_ids)
                 ->whereNull('expense_id')
                 //whereDoesntHave payments
                 ->doesntHave('payments')

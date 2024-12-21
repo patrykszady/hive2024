@@ -5,7 +5,11 @@ namespace App\Livewire\LineItems;
 use App\Models\Estimate;
 use App\Models\LineItem;
 
+use App\Livewire\Projects\ProjectFinances;
+
 use Livewire\Component;
+use Livewire\Attributes\Computed;
+
 use App\Livewire\Forms\EstimateLineItemForm;
 
 class EstimateLineItemCreate extends Component
@@ -16,12 +20,9 @@ class EstimateLineItemCreate extends Component
 
     public EstimateLineItemForm $form;
 
-    public $search = '';
-
     public $section_id = NULL;
     public $line_item_id = NULL;
     public $edit_line_item = FALSE;
-    public $line_items = [];
     public $estimate_line_item = [];
     public $section_item_count = NULL;
 
@@ -39,24 +40,28 @@ class EstimateLineItemCreate extends Component
         ];
     }
 
-    public function mount()
-    {
-        $this->line_items = LineItem::get()->keyBy('id');
-    }
-
     public function updated($field, $value)
     {
+        if($field === 'line_item_id'){
+            $this->selected_line_item($value);
+        }
+
         $this->validateOnly($field);
         if(in_array($field, ['form.quantity', 'form.cost'])){
             $this->form->total = $this->getTotalLineItemProperty();
         }
     }
 
+    #[Computed]
+    public function line_items()
+    {
+        return LineItem::orderBy('created_at', 'DESC')->get()->keyBy('id');
+    }
+
     public function selected_line_item($line_item_id)
     {
         $this->line_item_id = $line_item_id;
         $this->form->setLineItem($this->line_items[$line_item_id]);
-        $this->search = $this->form->line_item->name;
         $this->form->total = $this->getTotalLineItemProperty();
     }
 
@@ -88,6 +93,7 @@ class EstimateLineItemCreate extends Component
         $this->estimate_line_item->delete();
         $this->modal('estimate_line_item_form_modal')->close();
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');
+        $this->dispatch('refresh')->to(ProjectFinances::class);
     }
 
     public function editOnEstimate($estimate_line_item_id)
@@ -108,8 +114,9 @@ class EstimateLineItemCreate extends Component
 
         $this->section_id = $this->estimate_line_item->section->id;
         $this->edit_line_item = TRUE;
-        $this->search = $this->estimate_line_item->name;
         $this->modal('estimate_line_item_form_modal')->show();
+
+        $this->dispatch('refresh')->to(ProjectFinances::class);
     }
 
     public function addToEstimate($section_id)
@@ -117,7 +124,6 @@ class EstimateLineItemCreate extends Component
         $section = $this->estimate->estimate_sections()->findOrFail($section_id);
         $this->section_item_count = $section->estimate_line_items->count();
         $this->edit_line_item = FALSE;
-        $this->search = '';
         $this->estimate_line_item = NULL;
         $this->line_item_id = NULL;
         $this->form->reset();
@@ -139,6 +145,7 @@ class EstimateLineItemCreate extends Component
 
         $this->modal('estimate_line_item_form_modal')->close();
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');
+        $this->dispatch('refresh')->to(ProjectFinances::class);
     }
 
     public function save()
@@ -146,15 +153,13 @@ class EstimateLineItemCreate extends Component
         $this->form->store();
 
         $this->modal('estimate_line_item_form_modal')->close();
-        $this->search = '';
         $this->section_item_count = NULL;
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');
+        $this->dispatch('refresh')->to(ProjectFinances::class);
     }
 
     public function render()
     {
-        return view('livewire.line-items.estimate-line-item-create', [
-            'line_items_test' => LineItem::orderBy('created_at', 'DESC')->where('name', 'like', '%' . $this->search . '%')->orWhere('desc', 'like', '%' . $this->search . '%')->get(),
-        ]);
+        return view('livewire.line-items.estimate-line-item-create');
     }
 }

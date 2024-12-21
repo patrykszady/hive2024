@@ -1,4 +1,4 @@
-<flux:modal name="estimate_line_item_form_modal" class="space-y-2">
+<flux:modal name="estimate_line_item_form_modal" class="space-y-2 min-w-96">
     <div class="flex justify-between">
         <flux:heading size="lg">{{$view_text['card_title']}}</flux:heading>
     </div>
@@ -7,49 +7,13 @@
 
     <form wire:submit="{{$view_text['form_submit']}}" class="grid gap-6">
         <div
-            x-data="{ openDropdown: false, search: @entangle('search'), edit_line_item: @entangle('edit_line_item') }"
+            x-data="{ edit_line_item: @entangle('edit_line_item') }"
             >
-            {{-- SEARCH DROPDOWN --}}
-            <x-forms.row
-                x-on:click="openDropdown = true, search = ''"
-                x-bind:disabled="edit_line_item"
-                errorName="search"
-                name="search"
-                text="Select Line Item"
-                type="search_dropdown"
-                placeholder="Search Line Items"
-                >
-
-                <x-slot:rowslot>
-                    <div
-                        x-show="openDropdown && !edit_line_item"
-                        x-transition
-                        class="py-2 mt-1 overflow-y-auto bg-white border rounded-md shadow-lg max-h-64"
-                        >
-                        <x-lists.ul x-on:click="openDropdown = false">
-                            @foreach($line_items_test as $line_item)
-                                @php
-                                    $line_details = [
-                                        1 => [
-                                            'text' => $line_item->desc,
-                                            'icon' => 'M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z'
-                                            ],
-                                        ];
-                                @endphp
-
-                                <x-lists.search_li
-                                    wire:click="selected_line_item({{$line_item->id}})"
-                                    {{-- wire:click="$dispatchTo('line-items.line-item-create', 'editItem', { lineItemId: {{$line_item->id}} })" --}}
-                                    :line_details="$line_details"
-                                    :line_title="$line_item->name"
-                                    :bubble_message="$line_item->category . '/' . $line_item->sub_category"
-                                    >
-                                </x-lists.search_li>
-                            @endforeach
-                        </x-lists.ul>
-                    </div>
-                </x-slot>
-            </x-forms.row>
+            <flux:select variant="listbox" wire:model.live="line_item_id" label="Line Item" searchable placeholder="Choose Line Item..." x-bind:disabled="edit_line_item">
+                @foreach($this->line_items as $line_item)
+                    <flux:option value="{{$line_item->id}}"><div>{{$line_item->name}} <br> <i class="font-normal">{{$line_item->category . ' / ' . $line_item->sub_category}}</i></div></flux:option>
+                @endforeach
+            </flux:select>
         </div>
 
         <div
@@ -60,7 +24,7 @@
             >
             {{-- DESCRIPTION --}}
             <flux:textarea
-                wire:model.live.debounce.500ms="form.desc"
+                wire:model="form.desc"
                 label="Description"
                 rows="auto"
                 resize="none"
@@ -69,7 +33,7 @@
 
             {{-- NOTES --}}
             <flux:textarea
-                wire:model.live.debounce.500ms="form.notes"
+                wire:model="form.notes"
                 label="Notes"
                 rows="auto"
                 resize="none"
@@ -78,10 +42,10 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {{-- CATEGORY --}}
-                <flux:input wire:model.live.debounce.500ms="form.category" label="Category" placeholder="Category" />
+                <flux:input wire:model="form.category" label="Category" placeholder="Category" />
 
                 {{-- SUB CATEGORY --}}
-                <flux:input wire:model.live.debounce.500ms="form.sub_category" label="Sub Category" />
+                <flux:input wire:model="form.sub_category" label="Sub Category" />
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -127,8 +91,12 @@
 
         <div class="flex space-x-2 sticky bottom-0">
             <flux:spacer />
-
-            <flux:button wire:click="removeFromEstimate" variant="danger">Remove</flux:button>
+            <div
+                x-data="{ estimate_line_item: @entangle('estimate_line_item') }"
+                x-show="estimate_line_item"
+                >
+                <flux:button wire:click="removeFromEstimate" variant="danger">Remove</flux:button>
+            </div>
             <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
         </div>
     </form>

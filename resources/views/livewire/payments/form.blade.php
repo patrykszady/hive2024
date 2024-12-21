@@ -9,9 +9,6 @@
         {{-- CLIENT --}}
         <div x-data="{ view: @entangle('view') }">
             <flux:select x-bind:disabled="view" label="Client" wire:model.live="client_id" variant="listbox" searchable placeholder="Choose client...">
-                <x-slot name="search">
-                    <flux:select.search placeholder="Search..." />
-                </x-slot>
                 @foreach($this->clients as $client)
                     <flux:option value="{{$client->id}}">{{$client->name}}</flux:option>
                 @endforeach

@@ -32,6 +32,7 @@ class EstimatesIndex extends Component
             ->paginate(10);
     }
 
+    //also on EstimateShow
     public function deleteEstimate(Estimate $estimate)
     {
         $this->estimate = $estimate;

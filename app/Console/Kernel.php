@@ -28,8 +28,8 @@ class Kernel extends ConsoleKernel
         // if(env('APP_ENV') == 'production'){
             //->timezone('America/Chicago')->between('6:00', '20:00')
             $schedule->call('\App\Http\Controllers\ReceiptController@ms_graph_email_api')->everyTenMinutes()->sendOutputTo(storage_path('logs/schedule.log'));
-            // $schedule->call('\App\Http\Controllers\TransactionController@plaid_item_status')->hourly()->sendOutputTo(storage_path('logs/schedule.log'));
-            // $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_sync')->hourly()->sendOutputTo(storage_path('logs/schedule.log'));
+            $schedule->call('\App\Http\Controllers\TransactionController@plaid_item_status')->hourly()->sendOutputTo(storage_path('logs/schedule.log'));
+            $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_sync')->hourly()->sendOutputTo(storage_path('logs/schedule.log'));
             $schedule->call('\App\Http\Controllers\ReceiptController@amazon_orders_api')->hourly()->sendOutputTo(storage_path('logs/schedule.log'));
             $schedule->call('\App\Http\Controllers\TransactionController@add_check_deposit_to_transactions')->everyTenMinutes()->sendOutputTo(storage_path('logs/schedule.log'));
             $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyTenMinutes()->sendOutputTo(storage_path('logs/schedule.log'));

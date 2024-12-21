@@ -324,7 +324,7 @@ class TransactionController extends Controller
                     // "accounts" => $result["accounts"],
                 );
 
-            // $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
+            $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
             $bank->save();
 
             if($result['has_more'] == true){
@@ -333,83 +333,87 @@ class TransactionController extends Controller
 
             // dd($result['added']);
             //ADDED
+            $transactions = collect();
             foreach($result['added'] as $index => $new_transaction){
-                // if($index == 38){
-                    if($new_transaction['date'] <= $transactions_last_date){
-                        continue;
-                    }else{
-                        // dd($new_transaction, Transaction::whereDate('transaction_date', '>=', '2023-01-01')->whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get());
-                        //make sure transaction_id does not exist yet.. if it does..update..
-                        if(Transaction::whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->get()->isNotEmpty()){
-                            $transaction = Transaction::where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
-                        }elseif(Transaction::whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $new_transaction['transaction_id'])->get()->isNotEmpty()){
-                            $transaction = Transaction::where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
-                        }elseif(Transaction::whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get()->isNotEmpty()){
-                            //11/14/2024 ...used in multiple places on this Controller
-                            $existing_transactions = Transaction::whereDate('transaction_date', $new_transaction['date'])->where('plaid_transaction_id', $new_transaction['transaction_id'])->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get();
-
-                            if($existing_transactions->count() === 1){
-                                $transaction = $existing_transactions->first();
-                            }else{
-                                if($existing_transactions->isEmpty()){
-                                    $transaction = new Transaction;
-                                }else{
-                                    //LOG
-                                    //DiffInDays / Carbon
-                                    Log::channel('plaid_adds')->info(['else in line 330ish in TransactionController' => [$new_transaction, $existing_transactions], $result]);
-                                    // dd($new_transaction, $existing_transactions);
-                                }
-                            }
-                        }else{
-                            $transaction = new Transaction;
-                        }
-
-                        //dates
-                        if($new_transaction['pending'] == TRUE){
-                            $transaction->posted_date = NULL;
-                        }else{
-                            $transaction->posted_date = $new_transaction['date'];
-                        }
-
+            // if($index == 36){
+                if($new_transaction['date'] <= $transactions_last_date){
+                    continue;
+                }else{
+                    // $transactions = $transactions->merge(Transaction::where('plaid_transaction_id', $new_transaction['transaction_id'])->pluck('id'));
+                    // continue;
+                    // dd($new_transaction, Transaction::whereDate('transaction_date', '>=', '2023-01-01')->whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get());
+                    //make sure transaction_id does not exist yet.. if it does..update..
+                    if(Transaction::whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->get()->isNotEmpty()){
+                        $transaction = Transaction::where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
+                    }elseif(Transaction::whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $new_transaction['transaction_id'])->get()->isNotEmpty()){
+                        $transaction = Transaction::where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                    }elseif(Transaction::whereDate('transaction_date', $new_transaction['date'])->whereNotNull('plaid_transaction_id')->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get()->isNotEmpty()){
                         //11/14/2024 ...used in multiple places on this Controller
-                        if($new_transaction['authorized_date'] == NULL){
-                            $transaction->transaction_date = $new_transaction['date'];
-                        }else{
-                            if(isset($transaction->transaction_date)){
+                        $existing_transactions = Transaction::whereDate('transaction_date', $new_transaction['date'])->where('plaid_transaction_id', $new_transaction['transaction_id'])->where('owner', $new_transaction['account_owner'])->where('amount', $new_transaction['amount'])->get();
 
+                        if($existing_transactions->count() === 1){
+                            $transaction = $existing_transactions->first();
+                        }else{
+                            if($existing_transactions->isEmpty()){
+                                $transaction = new Transaction;
                             }else{
-                                $transaction->transaction_date = $new_transaction['authorized_date'];
+                                //LOG
+                                //DiffInDays / Carbon
+                                Log::channel('plaid_adds')->info(['else in line 330ish in TransactionController' => [$new_transaction, $existing_transactions], $result]);
+                                // dd($new_transaction, $existing_transactions);
                             }
                         }
-
-                        //if $transaction['merchant_name'] empty, use $new_transaction['name']
-                        if(isset($new_transaction['merchant_name'])){
-                            $transaction->plaid_merchant_name = $new_transaction['merchant_name'];
-                        }else{
-                            // $transaction->plaid_merchant_name = $new_transaction['name'];
-                            // $transaction->plaid_merchant_name = NULL;
-                        }
-
-                        $transaction->amount = $new_transaction['amount'];
-                        $transaction->plaid_merchant_description = $new_transaction['name'];
-                        $transaction->plaid_transaction_id = $new_transaction['transaction_id'];
-
-                        // if(!$bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id){
-                        //     dd($bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first());
-                        // }
-                        $transaction->bank_account_id = $bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id;
-                        if($new_transaction['check_number'] != NULL){
-                            $transaction->check_number = $new_transaction['check_number'];
-                        }else{
-                            // $transaction->check_number = NULL;
-                        }
-
-                        $transaction->owner = $new_transaction['account_owner'];
-                        $transaction->details = $new_transaction;
-                        $transaction->save();
+                    }else{
+                        $transaction = new Transaction;
                     }
-                // }
+
+                    //dates
+                    if($new_transaction['pending'] == TRUE){
+                        $transaction->posted_date = NULL;
+                    }else{
+                        $transaction->posted_date = $new_transaction['date'];
+                    }
+
+                    //11/14/2024 ...used in multiple places on this Controller
+                    if($new_transaction['authorized_date'] == NULL){
+                        $transaction->transaction_date = $new_transaction['date'];
+                    }else{
+                        if(isset($transaction->transaction_date)){
+
+                        }else{
+                            $transaction->transaction_date = $new_transaction['authorized_date'];
+                        }
+                    }
+
+                    //if $transaction['merchant_name'] empty, use $new_transaction['name']
+                    if(isset($new_transaction['merchant_name'])){
+                        $transaction->plaid_merchant_name = $new_transaction['merchant_name'];
+                    }else{
+                        // $transaction->plaid_merchant_name = $new_transaction['name'];
+                        // $transaction->plaid_merchant_name = NULL;
+                    }
+
+                    $transaction->amount = $new_transaction['amount'];
+                    $transaction->plaid_merchant_description = $new_transaction['name'];
+                    $transaction->plaid_transaction_id = $new_transaction['transaction_id'];
+
+                    // if(!$bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id){
+                    //     dd($bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first());
+                    // }
+                    $transaction->bank_account_id = $bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id;
+                    if($new_transaction['check_number'] != NULL){
+                        $transaction->check_number = $new_transaction['check_number'];
+                    }else{
+                        // $transaction->check_number = NULL;
+                    }
+
+                    $transaction->owner = $new_transaction['account_owner'];
+                    $transaction->details = $new_transaction;
+                    $transaction->save();
+                }
             }
+            // }
+            // dd($transactions->implode(','));
 
             //MODIFIED
             foreach($result['modified'] as $new_transaction){

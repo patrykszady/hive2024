@@ -52,7 +52,8 @@ class PaymentCreate extends Component
     public function updatedClientId(Client $client)
     {
         $this->client = $client;
-        $this->projects = $client->projects()->orderBy('created_at', 'DESC')->get();
+        $YTD = Carbon::now()->subYear();
+        $this->projects = $client->projects()->where('projects.created_at', '>=', $YTD)->orderBy('projects.created_at', 'DESC')->status(['Active', 'Complete', 'Service Call', 'Service Call Complete']);
     }
 
     #[Computed]
@@ -61,7 +62,10 @@ class PaymentCreate extends Component
         $YTD = Carbon::now()->subYear();
 
         return Client::withWhereHas('projects', function ($query) use ($YTD) {
-            $query->where('projects.created_at', '>=', $YTD);
+            $query->where('projects.created_at', '>=', $YTD)
+                ->whereHas('statuses', function ($query) {
+                    return $query->where('title', '=', 'Active');
+                });
         })
         ->orderBy('created_at', 'DESC')
         ->get();

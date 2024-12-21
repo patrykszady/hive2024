@@ -21,6 +21,7 @@
             x-transition
             class="space-y-2"
             >
+
             {{-- DATE --}}
             <flux:input
                 wire:model.live="form.date"

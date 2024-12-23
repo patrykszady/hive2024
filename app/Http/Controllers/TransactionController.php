@@ -324,12 +324,12 @@ class TransactionController extends Controller
                     // "accounts" => $result["accounts"],
                 );
 
-            // $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
+            $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $add_to_json));
             $bank->save();
 
-            // if($result['has_more'] == true){
-            //     $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
-            // }
+            if($result['has_more'] == true){
+                $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
+            }
 
             // dd($result['added']);
             //ADDED

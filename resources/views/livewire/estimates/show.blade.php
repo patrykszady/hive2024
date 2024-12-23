@@ -137,7 +137,7 @@
                                         @foreach($section->estimate_line_items as $line_item)
                                             <div>
                                                 <flux:row x-sort:item="{{$line_item->id}}" :key="$line_item->id">
-                                                    <flux:cell>{{$index + 1}}.{{$line_item->order + 1}}</flux:cell>
+                                                    <flux:cell x-sort:handle>{{$index + 1}}.{{$line_item->order + 1}}</flux:cell>
                                                     <flux:cell variant="strong">
                                                         <a
                                                             class="cursor-pointer"

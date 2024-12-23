@@ -4,7 +4,7 @@
             <flux:heading size="lg"><a href="{{route('banks.show', $bank->id)}}">{{$bank->name}}</a></flux:heading>
             <flux:badge color="{{$bank->error == FALSE ? 'green' : 'red'}}">{{$bank->error == FALSE ? 'Connected' : 'Error'}}</flux:badge>
         </div>
-        @if(!Route::is('banks.index'))
+        @if(Route::is('banks.show'))
             <flux:button wire:navigate.hover wire:click="plaid_link_token_update" size="sm">Update Bank Account</flux:button>
         @endif
     </div>

@@ -334,40 +334,42 @@ class ExpenseForm extends Form
 
     public function delete()
     {
-        //CHECK
-        // $check = $this->expense->check;
+        if($this->transaction){
+            $this->transaction->delete();
+        }else{
+            //CHECK
+            // $check = $this->expense->check;
 
-        // if($check){
-        //     if($check->amount == $this->expense->amount){
-        //         //if has transactions, remove
-        //         $check->delete();
-        //     }else{
-        //         //edit check
-        //     }
-        // }
+            // if($check){
+            //     if($check->amount == $this->expense->amount){
+            //         //if has transactions, remove
+            //         $check->delete();
+            //     }else{
+            //         //edit check
+            //     }
+            // }
+            //ASSOCIATED EXPENSES
+            $associated_expenses = $this->expense->associated;
+            foreach($associated_expenses as $associated_expenses){
+                $associated_expenses->parent_expense_id = NULL;
+                $associated_expenses->save();
+            }
 
-        // dd(' too far in delete');
-        //ASSOCIATED EXPENSES
-        $associated_expenses = $this->expense->associated;
-        foreach($associated_expenses as $associated_expenses){
-            $associated_expenses->parent_expense_id = NULL;
-            $associated_expenses->save();
+            //SPLITS
+            $splits = $this->expense->splits;
+            foreach($splits as $split){
+                $split->delete();
+            }
+
+            //TRANSACTIONS
+            $transactions = $this->expense->transactions;
+            foreach($transactions as $transaction){
+                $transaction->expense_id = NULL;
+                $transaction->save();
+            }
+
+            $this->expense->delete();
         }
-
-        //SPLITS
-        $splits = $this->expense->splits;
-        foreach($splits as $split){
-            $split->delete();
-        }
-
-        //TRANSACTIONS
-        $transactions = $this->expense->transactions;
-        foreach($transactions as $transaction){
-            $transaction->expense_id = NULL;
-            $transaction->save();
-        }
-
-        $this->expense->delete();
     }
 
     public function update()

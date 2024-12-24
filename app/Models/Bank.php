@@ -51,6 +51,19 @@ class Bank extends Model
         return $plaid_options;
     }
 
+    // public function getErrorAttribue($value)
+    // {
+    //     return 'error';
+    //     dd($this->plaid_options->error);
+    //     if($this->plaid_options->error != FALSE){
+    //         return $this->plaid_options->error->error_code;
+    //     }else{
+    //         return FALSE;
+    //     }
+
+    //     return $error;
+    // }
+
     // public function getLastSuccessfulUpdate()
     // {
     //     if(isset($this->plaid_options->transactions->last_successful_update)){

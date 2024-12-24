@@ -14,10 +14,23 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class BankShow extends Component
 {
     use AuthorizesRequests;
+
     public Bank $bank;
+    public $error = NULL;
+
     protected $listeners = [
         'plaidLinkItemUpdate' => 'plaid_link_item_update'
     ];
+
+    public function mount()
+    {
+        // $this->bank = Bank::findOrFail($this->bank);
+        if($this->bank->plaid_options->error != FALSE){
+            $this->error = $this->bank->plaid_options->error->error_code;
+        }else{
+            $this->error = FALSE;
+        }
+    }
 
     //plaidLinkItemUpdate
     //SAME as plaid_link_item on BankIndex
@@ -148,7 +161,6 @@ class BankShow extends Component
     public function render()
     {
         $this->authorize('create', Bank::class);
-
         return view('livewire.banks.show');
     }
 }

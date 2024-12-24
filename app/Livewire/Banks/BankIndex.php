@@ -6,6 +6,7 @@ use App\Models\Bank;
 use App\Models\BankAccount;
 
 use Livewire\Component;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 
 use Carbon\Carbon;
@@ -22,27 +23,27 @@ class BankIndex extends Component
         'refreshComponent' => '$refresh'
     ];
 
-    public $banks = [];
     public $view = NULL;
 
-    public function mount()
+    #[Computed]
+    public function banks()
     {
-        $this->banks =
-            Bank::whereNotNull('plaid_access_token')
-                ->with(['accounts', 'accounts.checks' => function($query) {
-                    $query->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions');
-                }])
-                ->get()
-                ->each(function ($item, $key) {
-                    if($item->plaid_options->error != FALSE){
-                        $item->error = $item->plaid_options->error->error_code;
-                    }else{
-                        $item->error = FALSE;
-                    }
+        return Bank::whereNotNull('plaid_access_token')
+            // ->with(['accounts', 'accounts.checks' => function($query) {
+            //     $query->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions');
+            // }])
+            ->get();
+            // ->each(function ($item, $key) {
+            //     if($item->plaid_options->error != FALSE){
+            //         $item->error = $item->plaid_options->error->error_code;
+            //     }else{
+            //         $item->error = FALSE;
+            //     }
 
-                    // $balances = collect($this->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
-                    // if()
-                });
+            //     // $balances = collect($this->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
+            //     // if()
+            // });
+
     }
 
     public function plaid_link_token()

@@ -38,13 +38,17 @@
 
         <div class="divide-x divide-gray-200">
             @foreach($days as $day_index => $day)
-                <div class="sticky left-0 -ml-14 w-14 pr-2 text-right text-xs text-gray-800">
-                    <span class="font-semibold text-gray-700">{{$day['database_date'] === NULL ? 'NO' : strtok($day['formatted_date'], ',')}}</span>
+                <div
+                    @class([
+                        'sticky left-0 -ml-14 w-14 pr-2 text-right text-xs text-gray-800',
+                        '!text-sky-600' => $day['is_today'] ? true : false
+                    ])
+                    >
+                    <span class="font-semibold">{{$day['database_date'] === NULL ? 'NO' : strtok($day['formatted_date'], ',')}}</span>
                     <br>
                     <span
                         @class([
                             'italic'
-                            // 'text-green' => $day['is_today'] ? true : false
                         ])
                         >
                         {{$day['database_date'] === NULL ? 'DATE' : substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}
@@ -61,7 +65,7 @@
                                 @class([
                                     'px-2 py-2',
                                     'bg-zinc-200' => $day['is_weekend'] OR $day['database_date'] === NULL ? true : false,
-                                    'bg-sky-200' => $day['is_today'] ? true : false,
+                                    '!bg-sky-100' => $day['is_today'] ? true : false,
                                     'space-y-2'
                                 ])
                                 >

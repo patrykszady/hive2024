@@ -63,9 +63,9 @@ class PlannerIndex extends Component
     public function set_week_days($monday)
     {
         $days = CarbonPeriod::create(
-            Carbon::parse($monday)->startOfWeek(Carbon::MONDAY),
+            Carbon::parse($monday)->subWeeks(1)->startOfWeek(Carbon::MONDAY),
             '1 day',
-            Carbon::parse($monday)->addWeek()->endOfWeek(Carbon::SUNDAY)
+            Carbon::parse($monday)->addWeeks(2)->endOfWeek(Carbon::SUNDAY)
         );
 
         $week_days = [

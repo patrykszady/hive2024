@@ -5,6 +5,8 @@ namespace App\Livewire\ProjectStatus;
 use App\Models\Project;
 use App\Models\ProjectStatus;
 
+use Flux;
+
 use Livewire\Component;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -42,15 +44,24 @@ class StatusCreate extends Component
                 'start_date' => $this->project_status_date
             ]);
 
+        if($this->project_status === 'Cancelled'){
+            $this->project->estimates()->delete();
+        }
+
         $this->project_status = NULL;
         $this->mount($this->project);
         $this->render();
 
         $this->dispatch('refreshComponent')->to('projects.project-show');
+        $this->dispatch('refreshComponent')->to('estimates.estimates-index');
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Status Updated'
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Status Update',
+            // route / href / wire:click
+            text: '',
         );
     }
 

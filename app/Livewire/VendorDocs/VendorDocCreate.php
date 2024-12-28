@@ -11,6 +11,8 @@ use App\Jobs\SendVendorDocRequestEmail;
 use Livewire\WithFileUploads;
 use Livewire\Component;
 
+use Flux;
+
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -46,6 +48,7 @@ class VendorDocCreate extends Component
 
     public function requestDocument(Vendor $vendor)
     {
+        // dd('in requestDocument');
         $doc_types = $vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type');
 
         $latest_docs = collect();
@@ -84,6 +87,7 @@ class VendorDocCreate extends Component
 
     public function store()
     {
+        //validate, file must be pdf, jpg, png
         $this->validate();
         // $this->authorize('update', $this->expense);
         $doc_type = $this->doc_file->getClientOriginalExtension();
@@ -91,9 +95,9 @@ class VendorDocCreate extends Component
         $file_location = 'files/vendor_docs/' . $ocr_filename;
         //save file for this->vendor
         $this->doc_file->storeAs('vendor_docs', $ocr_filename, 'files');
-        $document_model = env('AZURE_RECEIPTS_CUSTOM_MODEL_COI');
+        $document_model = env('AZURE_CUSTOM_MODEL_COI');
 
-        //send to form recornizer
+        //send to form recogrnizer
         $insurance_info = app('App\Http\Controllers\ReceiptController')->azure_docs_api($file_location, $document_model, $doc_type);
         $insurance_info = $insurance_info['analyzeResult']['documents'][0]['fields'];
 
@@ -112,57 +116,119 @@ class VendorDocCreate extends Component
             }
         }
 
-        //error ... already exists
-        //create vendor_doc for each $insurance_info
-        $vendor_docs = [];
-        if(isset($insurance_info['general_policy_number']['valueString'])){
-            //check if exists
-            $vendor_doc = VendorDoc::where('number', $insurance_info['general_policy_number']['valueString'])
-                ->where('expiration_date', $insurance_info['general_exp']['valueDate'])->first();
+        foreach($insurance_info['general_multi']['valueArray'] as $general_policy){
+            $general_policy_object = $general_policy['valueObject'];
+            $general_policy_object['number'] = $general_policy_object['general_policy_number']['valueString'];
+            $general_policy_object['eff'] = $general_policy_object['general_eff']['valueDate'];
+            $general_policy_object['exp'] = $general_policy_object['general_exp']['valueDate'];
+
+            //check if exists, if exists, continue and dont save again
+            $vendor_doc = VendorDoc::where('number', $general_policy_object['number'])
+                ->where('expiration_date', $general_policy_object['exp'])->first();
 
             if(is_null($vendor_doc)){
-                $vendor_docs[] = 'general';
-            }
-        }
+                $vendor_doc = VendorDoc::create([
+                    'type' => 'general',
+                    'vendor_id' => $this->vendor->id,
+                    'effective_date' => $general_policy_object['eff'],
+                    'expiration_date' => $general_policy_object['exp'],
+                    'number' => $general_policy_object['number'],
+                    'belongs_to_vendor_id' => auth()->user()->vendor->id,
+                    'doc_filename' => $ocr_filename
+                ]);
 
-        if(isset($insurance_info['workers_policy_number']['valueString'])){
-            if(str_replace(' ', '', $insurance_info['workers_policy_number']['valueString']) != 'N/A'){
-                //check if exists
-                $vendor_doc = VendorDoc::where('number', $insurance_info['workers_policy_number']['valueString'])
-                    ->where('expiration_date', $insurance_info['workers_exp']['valueDate'])->first();
-
-                if(is_null($vendor_doc)){
-                    $vendor_docs[] = 'workers';
+                //link agent and insurance
+                if(isset($agent)){
+                    $vendor_doc->agent_id = $agent->id;
+                    $vendor_doc->save();
                 }
             }
         }
 
-        foreach($vendor_docs as $vendor_doc){
-            $vendor_doc = VendorDoc::create([
-                'type' => $vendor_doc,
-                'vendor_id' => $this->vendor->id,
-                'effective_date' => $insurance_info[$vendor_doc . '_eff']['valueDate'],
-                'expiration_date' => $insurance_info[$vendor_doc . '_exp']['valueDate'],
-                'number' => $insurance_info[$vendor_doc . '_policy_number']['valueString'],
-                'belongs_to_vendor_id' => auth()->user()->vendor->id,
-                'doc_filename' => $ocr_filename
-            ]);
+        foreach($insurance_info['workers_multi']['valueArray'] as $workers_policy){
+            $workers_policy_object = $workers_policy['valueObject'];
+            $workers_policy_object['number'] = $workers_policy_object['workers_policy_number']['valueString'];
+            $workers_policy_object['eff'] = $workers_policy_object['workers_eff']['valueDate'];
+            $workers_policy_object['exp'] = $workers_policy_object['workers_exp']['valueDate'];
 
-            //link agent and insurance
-            if(isset($agent)){
-                $vendor_doc->agent_id = $agent->id;
-                $vendor_doc->save();
+            //check if exists, if exists, continue and dont save again
+            $vendor_doc = VendorDoc::where('number', $workers_policy_object['number'])
+                ->where('expiration_date', $workers_policy_object['exp'])->first();
+
+            if(is_null($vendor_doc)){
+                $vendor_doc = VendorDoc::create([
+                    'type' => 'workers',
+                    'vendor_id' => $this->vendor->id,
+                    'effective_date' => $workers_policy_object['eff'],
+                    'expiration_date' => $workers_policy_object['exp'],
+                    'number' => $workers_policy_object['number'],
+                    'belongs_to_vendor_id' => auth()->user()->vendor->id,
+                    'doc_filename' => $ocr_filename
+                ]);
+
+                //link agent and insurance
+                if(isset($agent)){
+                    $vendor_doc->agent_id = $agent->id;
+                    $vendor_doc->save();
+                }
             }
         }
+
+                //error ... already exists
+        //create vendor_doc for each $insurance_info
+        // $vendor_docs = [];
+        // if(isset($insurance_info['general_policy_number']['valueString'])){
+        //     //check if exists
+        //     $vendor_doc = VendorDoc::where('number', $insurance_info['general_policy_number']['valueString'])
+        //         ->where('expiration_date', $insurance_info['general_exp']['valueDate'])->first();
+
+        //     if(is_null($vendor_doc)){
+        //         $vendor_docs[] = 'general';
+        //     }
+        // }
+
+        // if(isset($insurance_info['workers_policy_number']['valueString'])){
+        //     if(str_replace(' ', '', $insurance_info['workers_policy_number']['valueString']) != 'N/A'){
+        //         //check if exists
+        //         $vendor_doc = VendorDoc::where('number', $insurance_info['workers_policy_number']['valueString'])
+        //             ->where('expiration_date', $insurance_info['workers_exp']['valueDate'])->first();
+
+        //         if(is_null($vendor_doc)){
+        //             $vendor_docs[] = 'workers';
+        //         }
+        //     }
+        // }
+
+        // foreach($vendor_docs as $vendor_doc){
+        //     $vendor_doc = VendorDoc::create([
+        //         'type' => $vendor_doc,
+        //         'vendor_id' => $this->vendor->id,
+        //         'effective_date' => $insurance_info[$vendor_doc . '_eff']['valueDate'],
+        //         'expiration_date' => $insurance_info[$vendor_doc . '_exp']['valueDate'],
+        //         'number' => $insurance_info[$vendor_doc . '_policy_number']['valueString'],
+        //         'belongs_to_vendor_id' => auth()->user()->vendor->id,
+        //         'doc_filename' => $ocr_filename
+        //     ]);
+
+        //     //link agent and insurance
+        //     if(isset($agent)){
+        //         $vendor_doc->agent_id = $agent->id;
+        //         $vendor_doc->save();
+        //     }
+        // }
 
         $this->modal('vendor_doc_form_modal')->close();
         $this->doc_file = NULL;
 
         $this->dispatch('refreshComponent')->to('vendor-docs.vendor-docs-card');
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Vendor Document Added',
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Vendor Document Added',
+            // route / href / wire:click
+            text: '',
         );
     }
 

@@ -11,8 +11,9 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <flux:input wire:model.live="business_name" label="Vendor Name" icon="magnifying-glass" placeholder="Search Vendors" />
+
             <flux:select wire:model.live="vendor_type" label="Business Type" wire:model="vendor_type" placeholder="Choose type...">
-                <flux:option value="" readonly>All Vendor Types</flux:option>
+                <flux:option value="All">All Vendor Types</flux:option>
                 <flux:option value="Sub">Subcontractor</flux:option>
                 <flux:option value="Retail">Retail</flux:option>
                 <flux:option value="1099">1099/Independent</flux:option>
@@ -31,7 +32,7 @@
                 <flux:columns>
                     <flux:column sortable :sorted="$sortBy === 'business_name'" :direction="$sortDirection" wire:click="sort('business_name')">Vendor</flux:column>
                     <flux:column>Type</flux:column>
-                    <flux:column sortable :sorted="$sortBy === 'expense_count'" :direction="$sortDirection" wire:click="sort('expense_count')">Score</flux:column>
+                    {{-- <flux:column sortable :sorted="$sortBy === 'expense_count'" :direction="$sortDirection" wire:click="sort('expense_count')">Score</flux:column> --}}
                 </flux:columns>
 
                 <flux:rows>
@@ -39,7 +40,7 @@
                         <flux:row :key="$vendor->id">
                             <flux:cell variant="strong"><a wire:navigate.hover href="{{route('vendors.show', $vendor->id)}}">{{$vendor->name}}</a></flux:cell>
                             <flux:cell><flux:badge color="green" inset="top bottom">{{$vendor->business_type}}</flux:badge></flux:cell>
-                            <flux:cell>{{$vendor->expense_count}}</flux:cell>
+                            {{-- <flux:cell>{{$vendor->expense_count}}</flux:cell> --}}
                         </flux:row>
                     @endforeach
                 </flux:rows>

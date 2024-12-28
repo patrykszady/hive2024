@@ -1,7 +1,12 @@
-{{-- <x-cards class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-2xl lg:px-8 pb-5 mb-1' : ''}}"> --}}
 <flux:card class="mt-4 space-y-2">
     <div class="flex justify-between">
-        <flux:heading size="lg">{{$view ? 'Insurance' : $vendor->name}}</flux:heading>
+        <flux:heading size="lg">
+            @if($view)
+                Insurance
+            @else
+                <a href="{{route('vendors.show', $vendor->id)}}">{{$vendor->name}}</a>
+            @endif
+        </flux:heading>
 
         @can('create', App\Models\User::class)
             <div class="space-x-2">

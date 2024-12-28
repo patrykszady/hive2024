@@ -21,32 +21,63 @@ class EstimatesIndex extends Component
     public $view = 'estimates.index';
     public $project = NULL;
 
+    protected $listeners = ['refreshComponent' => '$refresh'];
+
     #[Computed]
     public function estimates()
     {
         $project_id = $this->project ? $this->project->id : NULL;
-        return Estimate::withTrashed()->orderBy('created_at', 'DESC')
+
+        $estimates = Estimate::withTrashed()
             ->when($this->project != NULL, function ($query) use ($project_id) {
-                return $query->where('project_id', $project_id);
+                //order by date Active first, then removed (seperate)
+                return $query->where('project_id', $project_id)->orderBy('deleted_at', 'ASC');
             })
+            ->orderBy('created_at', 'DESC')
             ->paginate(10);
+
+        $estimates->getCollection()->each(function ($estimate, $key){
+            if(is_null($estimate->deleted_at)){
+                $estimate->status = 'Active';
+            }else{
+                $estimate->status = 'Removed';
+            }
+        });
+
+        return $estimates;
     }
 
     //also on EstimateShow
     public function deleteEstimate(Estimate $estimate)
     {
-        $this->estimate = $estimate;
+        // $this->estimate = $estimate;
         $estimate->delete();
 
         Flux::toast(
-            duration: 10000,
+            duration: 5000,
             position: 'top right',
             variant: 'success',
             heading: 'Estimate Removed',
             // route / href / wire:click
             text: '',
         );
-        // $this->redirectRoute('projects.show', ['project' => $estimate->project->id]);
+    }
+
+    public function activateEstimate($estimate_id)
+    {
+        $estimate = Estimate::withTrashed()->findOrFail($estimate_id);
+
+        // $this->estimate = $estimate;
+        $estimate->restore();
+
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Estimate Restored',
+            // route / href / wire:click
+            text: '',
+        );
     }
 
     #[Title('Estimates')]

@@ -3,11 +3,12 @@
 namespace App\Livewire\VendorDocs;
 
 use App\Models\VendorDoc;
-use App\Models\Check;
+// use App\Models\Check;
 use App\Models\Vendor;
 
-use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -15,16 +16,23 @@ class VendorDocsIndex extends Component
 {
     use AuthorizesRequests;
 
-    public $vendors = [];
     public $view = NULL;
     public $date = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
-    public function mount()
+    #[Computed]
+    public function vendors()
     {
-        //where vendor has a check in the last year ...
-        $this->vendors = Vendor::has('vendor_docs')->with('vendor_docs')->get();
+        return Vendor::has('vendor_docs')->with('vendor_docs')
+        ->withCount([
+            'expenses',
+            'expenses as expense_count' => function ($query) {
+                $query->where('created_at', '>=', today()->subYear());
+            }
+        ])
+        ->orderBy('expense_count', 'DESC')
+        ->get();
     }
 
     #[Title('Certificates')]

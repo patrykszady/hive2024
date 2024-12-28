@@ -10,9 +10,12 @@
                 </flux:heading>
             </div>
 
-            @if(!Route::is('banks.index'))
-                <flux:button wire:navigate.hover wire:click="plaid_link_token_update" size="sm">Update Bank Account</flux:button>
-            @endif
+            <div>
+                @if(!Route::is('banks.index'))
+                    <flux:button wire:navigate.hover wire:click="plaid_link_token_update" size="sm">Update Bank Account</flux:button>
+                @endif
+                <div class="text-xs"><i>{{$bank->updated_at->diffForHumans()}}</i></div>
+            </div>
         </div>
         @if($error)
             <flux:subheading class="!text-red-800">
@@ -21,12 +24,11 @@
         @endif
 
         @foreach($bank->accounts as $account)
-            <flux:card class="space-y-2">
+            <flux:card class="space-y-2 !p-2">
                 <div class="flex justify-between">
                     <flux:heading size="lg">{{$account->account_number . ' | ' . $account->type}}</flux:heading>
-
                     <div>
-                        <flux:button variant="primary" disabled>
+                        <flux:button variant="primary" disabled class="float-right">
                             @php
                                 $balances = collect($bank->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
                             @endphp
@@ -37,13 +39,11 @@
                                 "N/A"
                             @endif
                         </flux:button>
-
-                        <div><i>{{$bank->updated_at->diffForHumans()}}</i></div>
                     </div>
                 </div>
 
                 @foreach($account->checks()->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions')->get() as $check)
-                    <flux:card>
+                    <flux:card class="!p-2">
                         <div class="flex justify-between">
                             <a href="{{route('checks.show', $check->id)}}">
                                 <flux:heading>{{$check->owner}}</flux:heading>

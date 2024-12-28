@@ -961,11 +961,10 @@ class TransactionController extends Controller
             //06/29/2021 NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2
             $institution_bank_ids = Bank::withoutGlobalScopes()->where('plaid_ins_id', $institution)->pluck('id');
             $institution_bank_ids = BankAccount::whereIn('bank_id', $institution_bank_ids)->pluck('id');
-
             $deposit_check_types = VendorTransaction::groupBy('deposit_check')->where('plaid_inst_id', $institution)->pluck('deposit_check');
 
             //split by check_type of each institution (multiple of bank_ids)
-            foreach($deposit_check_types as $deposit_check_type){
+            foreach($deposit_check_types as $index => $deposit_check_type){
                 //same for type 2 and 3 (check and transfer)
                 $transaction_check_desc = VendorTransaction::where('deposit_check', $deposit_check_type)->where('plaid_inst_id', $institution)->pluck('desc');
 
@@ -993,7 +992,7 @@ class TransactionController extends Controller
                     //NEED A WAY TO INCLUDE BILL PAY (6) IN THIS CODE
 
                     //CHECK
-                    if($deposit_check_type == 2){
+                    if($deposit_check_type === 2){
                         //if transaction_desc = "CHECK" and no number...it saves as check_number "0"..need to change.. but we account for this in $this->add_check_id_to_transactions 06/23/2021
                         $re = '/\d{3,}/';
                         $str = $transaction->plaid_merchant_description;
@@ -1009,15 +1008,15 @@ class TransactionController extends Controller
                         }
 
                     //TRANSFER
-                    }elseif($deposit_check_type == 3){
+                    }elseif($deposit_check_type === 3){
                         $transaction->check_number = '1010101';
 
                     //DEPOSIT
-                    }elseif($deposit_check_type == 1){
+                    }elseif($deposit_check_type === 1){
                         $transaction->deposit = 1; //yes, transaction has a deposit
 
                     //CASH
-                    }elseif($deposit_check_type == 4){
+                    }elseif($deposit_check_type === 4){
                         $transaction->check_number = '2020202';
                     }else{
                         continue;

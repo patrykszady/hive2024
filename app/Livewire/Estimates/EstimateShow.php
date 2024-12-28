@@ -7,6 +7,7 @@ use App\Models\EstimateSection;
 use App\Models\EstimateLineItem;
 
 use App\Livewire\Projects\ProjectFinances;
+// use App\Livewire\Estimates\EstimatesIndex;
 
 use App\Jobs\SendInitialEstimateEmail;
 
@@ -48,10 +49,10 @@ class EstimateShow extends Component
     public function mount()
     {
         $this->sections =
-            $this->estimate->estimate_sections
-                ->each(function ($item, $key) {
-                    $item->items_rearrange = FALSE;
-                });
+            $this->estimate->estimate_sections;
+                // ->each(function ($item, $key) {
+                //     $item->items_rearrange = FALSE;
+                // });
 
         //11-1-2023 MOVE to EstiamteCreate
         //start with one section and an ADD card/button for line items
@@ -119,7 +120,7 @@ class EstimateShow extends Component
         $section = $this->sections[$section_index];
         //ignore 'bid_index' attribute when saving
             //OR put    // public $items_rearrange; on Model
-        $section->offsetUnset('items_rearrange');
+        // $section->offsetUnset('items_rearrange');
         $section->save();
         $this->estimate_refresh();
 
@@ -199,6 +200,7 @@ class EstimateShow extends Component
         $data = $this->create_pdf($this->estimate, $this->sections, $type);
         return Response::download($data[0], $data[1] . '.pdf', $headers);
 
+        //2024-12-25
         // if($type == 'estimate'){
         //     // SendInitialEstimateEmail::dispatch($this->estimate, $this->sections, $type);
         //}
@@ -242,15 +244,15 @@ class EstimateShow extends Component
 
     public function export_csv()
     {
-        $border = new Border(
-            new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THICK, Border::STYLE_SOLID)
-        );
-        $border_thin = new Border(
-            new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
-        );
+        return response()->streamDownload(function () {
+            $border = new Border(
+                new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THICK, Border::STYLE_SOLID)
+            );
+            $border_thin = new Border(
+                new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
+            );
 
-        $writer =
-            SimpleExcelWriter::create('estimate-' . $this->estimate->number . '.xlsx')
+            $writer = SimpleExcelWriter::streamDownload($this->estimate->client->name . ' - Estimate - ' . $this->estimate->project->project_name . ' - ' . $this->estimate->number . '.xlsx')
                 ->addHeader([
                     '',
                     'title',
@@ -262,37 +264,41 @@ class EstimateShow extends Component
                     'total'
                 ]);
 
-        $writer->addRow([]);
+            $writer->addRow([]);
 
-        foreach($this->estimate->estimate_sections as $index => $section){
-            $writer->addRow([
-                'title' => $section->name,
-                '',
-                'category' => NULL,
-                'sub_category' => NULL,
-                'quantity' => NULL,
-                'unit' => NULL,
-                'cost' => NULL,
-                'total' => $section->total,
-            ], (new Style())->setFontBold()->setBorder($border));
-
-            foreach($section->estimate_line_items as $line_item){
+            foreach($this->estimate->estimate_sections as $index => $section){
                 $writer->addRow([
-                    '' => $index + 1 . '.' . $line_item->order + 1,
-                    'title' => $line_item->name,
-                    'category' => $line_item->category,
-                    'sub_category' => $line_item->sub_category,
-                    'quantity' => $line_item->quantity,
-                    'unit' => $line_item->unit_type,
-                    'cost' => $line_item->cost,
-                    'total' => $line_item->total,
-                ]);
+                    'title' => $section->name,
+                    '',
+                    'category' => NULL,
+                    'sub_category' => NULL,
+                    'quantity' => NULL,
+                    'unit' => NULL,
+                    'cost' => NULL,
+                    'total' => $section->total,
+                ], (new Style())->setFontBold()->setBorder($border));
+
+                foreach($section->estimate_line_items as $line_item){
+                    $writer->addRow([
+                        '' => $index + 1 . '.' . $line_item->order + 1,
+                        'title' => $line_item->name,
+                        'category' => $line_item->category,
+                        'sub_category' => $line_item->sub_category,
+                        'quantity' => $line_item->quantity,
+                        'unit' => $line_item->unit_type,
+                        'cost' => $line_item->cost,
+                        'total' => $line_item->total,
+                    ]);
+                }
+
+                $writer->addRow([]);
             }
 
-            $writer->addRow([]);
-        }
+        }, $this->estimate->client->name . ' - Estimate - ' . $this->estimate->project->project_name . ' - ' . $this->estimate->number . '.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
 
-        $writer->close();
+        //2024-12-25 disappearing toast when the above downloads
     }
 
     public function deleteEstimate()
@@ -308,6 +314,8 @@ class EstimateShow extends Component
             text: '',
         );
 
+        //2024-12-25 dispatch to EstimatesIndex deleteEstimate
+        // $this->dispatch('deleteEstimate')->to(EstimatesIndex::class);
         $this->redirectRoute('projects.show', ['project' => $this->estimate->project->id]);
     }
 

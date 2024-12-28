@@ -355,16 +355,17 @@ class ExpenseCreate extends Component
 
         //dispatch and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....
-        $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
-        $this->dispatch('refreshComponent')->to('expenses.expense-show');
-        $this->dispatch('refreshComponent')->to('expenses.expense-index');
-        $this->dispatch('refreshComponent')->to('projects.project-show');
 
-        $this->dispatch('notify',
-            type: 'success',
-            content: 'Expense Created',
-            route: 'expenses/' . $expense->id
-        );
+        // $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
+        // $this->dispatch('refreshComponent')->to('expenses.expense-show');
+        // $this->dispatch('refreshComponent')->to('expenses.expense-index');
+        // $this->dispatch('refreshComponent')->to('projects.project-show');
+
+        // $this->dispatch('notify',
+        //     type: 'success',
+        //     content: 'Expense Created',
+        //     route: 'expenses/' . $expense->id
+        // );
     }
 
     public function render()

@@ -15,7 +15,7 @@
         "barryvdh/laravel-snappy": "^1.0",
         "dcblogdev/laravel-microsoft-graph": "^3.2",
         "doctrine/dbal": "^3.5",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^7.9",
         "h4cc/wkhtmltoimage-amd64": "0.12.x",
         "h4cc/wkhtmltopdf-amd64": "0.12.x",
         "helvetitec/lagoon-charts": "~2.0",
@@ -44,6 +44,7 @@
         "spatie/browsershot": "^3.61",
         "spatie/image": "^2.2",
         "spatie/simple-excel": "^3.6",
+        "symfony/dom-crawler": "^6.4",
         "symfony/http-client": "*",
         "symfony/mailgun-mailer": "^6.2",
         "symfony/panther": "^2.0",
@@ -52,7 +53,7 @@
         "verumconsilium/laravel-browsershot": "^1.3",
         "vlucas/phpdotenv": "^5.5",
         "weidner/goutte": "^2.2",
-        "zoon/puphpeteer": "^2.1"
+        "zoon/puphpeteer": "^2.2"
     },
     "require-dev": {
         "dbrekelmans/bdi": "^1.0",

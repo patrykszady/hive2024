@@ -32,6 +32,7 @@ use Microsoft\Graph\Model;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Symfony\Component\DomCrawler\Crawler;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -45,6 +46,73 @@ use File;
 
 class ReceiptController extends Controller
 {
+    function verifyWorkersComp()
+    {
+        $puppeteer = new Puppeteer;
+        $browser = $puppeteer->launch();
+
+        $page = $browser->newPage();
+        $page->goto('https://google.com');
+        $page->screenshot(['path' => 'example.png']);
+
+        $browser->close();
+
+
+        dd('saved');
+        // Example usage
+        $employerName = 'Faza';
+        // $results = verifyWorkersComp($employerName);
+
+        // foreach ($results as $result) {
+        //     echo $result . PHP_EOL;
+        // }
+        // $url = ;
+
+        $client = new Client();
+        $url = 'http://www.ewccv.com/cvs/'; // Replace with the URL you want to fetch
+
+        // Send a GET request to the URL
+        $response = $client->get($url);
+        // dd($response->getBody());
+        // Get the HTML content of the response
+        $htmlContent = (string) $response->getBody();
+        print_r($htmlContent);
+        dd();
+
+        $puppeteer = new Puppeteer;
+        $browser = $puppeteer->launch();
+        $page = $browser->newPage();
+        $page->goto('https://www.homedepotrebates11percent.com/#/home');
+        $page->waitForTimeout(500);
+        $page->screenshot(['path' => 'example.png']);
+        dd('here');
+
+
+        $client = new Client();
+         // Replace with the actual URL
+
+        // Send a POST request to the search form
+        $response = $client->post($url, [
+            'form_params' => [
+                'employer' => $employerName, // Replace with the actual form field name
+            ]
+        ]);
+
+        // Get the HTML content of the response
+        $html = (string) $response->getBody();
+
+        // Parse the HTML using Symfony DOMCrawler
+        $crawler = new Crawler($html);
+
+        // Extract relevant information from the results
+        $results = $crawler->filter('.result-class')->each(function (Crawler $node, $i) { // Replace with the actual CSS selector
+            return $node->text();
+        });
+
+        dd($results);
+        return $results;
+    }
+
     public function nylas_get_api($url_endpoint)
     {
         $guzzle = new Client();
@@ -1500,7 +1568,6 @@ class ReceiptController extends Controller
     public function azure_docs_api($file_location, $document_model, $doc_type)
     {
         // dd($file_location, $document_model, $doc_type);
-        //jpg or jpeg
         //['jpg', 'jpeg] ?
         if(strtolower($doc_type) == 'jpg'){
             $doc_content_type = 'Content-Type: image/jpeg';
@@ -1509,12 +1576,7 @@ class ReceiptController extends Controller
         }elseif(strtolower($doc_type) == 'png'){
             $doc_content_type = 'Content-Type: image/png';
         }else{
-            //RETURN ERROR
-
-            //LOG
-            //MOVE EMAIL
-            //DO NOT DD FAILED
-            //dd('FAILED ReceiptController azure_receips first else');
+            //Should never be here. VendorDocCreate validates: file must be pdf, jpg, png
         }
 
         $file = file_get_contents(storage_path($file_location));
@@ -1523,7 +1585,7 @@ class ReceiptController extends Controller
         $ch = curl_init();
 
         $azure_api_key = env('AZURE_RECEIPTS_KEY');
-        $azure_api_version = env('AZURE_RECEIPTS_VERSION');
+        $azure_api_version = env('AZURE_CUSTOM_MODEL_COI_VERSION');
         curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $file);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -1548,6 +1610,8 @@ class ReceiptController extends Controller
         $uri =  env('AZURE_RECEIPTS_URL') . '/formrecognizer/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"';
         $result = exec('curl -v -X GET "https://' . $uri);
         $result = json_decode($result, true);
+        //2024-12-25 ..if $result is error...LOG and inform user
+        // dd($result);
 
         //wait but go as soon as done.
         while($result['status'] == "running" || $result['status'] == "notStarted"){
@@ -1555,6 +1619,7 @@ class ReceiptController extends Controller
             $result = exec('curl -v -X GET "https://' . $uri);
             $result = json_decode($result, true);
         }
+        // dd($result);
 
         return $result;
     }

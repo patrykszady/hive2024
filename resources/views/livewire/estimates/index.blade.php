@@ -30,9 +30,6 @@
     <flux:card class="space-y-2">
         <div class="flex justify-between">
             <flux:heading size="lg">Estimates</flux:heading>
-            {{-- @can('create', App\Models\Project::class)
-                <flux:button wire:click="$dispatchTo('projects.project-create', 'newProject', { client_id: '{{$view === NULL ? $client_id : $client->id}}' })">Create Project</flux:button>
-            @endcan --}}
             @if($view !== 'estimates.index')
                 @can('create', [App\Models\Estimate::class, $project])
                     <flux:button
@@ -68,16 +65,23 @@
                 </flux:columns>
 
                 <flux:rows>
-                    @foreach ($this->estimates as $estimate)
+                    @foreach($this->estimates as $estimate)
                         <flux:row :key="$estimate->id">
-                            <flux:cell
-                                wire:navigate.hover
-                                href="{{route('estimates.show', $estimate->id)}}"
-                                variant="strong"
-                                class="cursor-pointer"
-                                >
-                                # {{ $estimate->id }}
-                            </flux:cell>
+                            @if($estimate->status === 'Active')
+                                <flux:cell
+                                    wire:navigate.hover
+                                    href="{{route('estimates.show', $estimate->id)}}"
+                                    variant="strong"
+                                    class="cursor-pointer"
+                                    >
+                                    # {{ $estimate->id }}
+                                </flux:cell>
+                            @else
+                                <flux:cell>
+                                    # {{ $estimate->id }}
+                                </flux:cell>
+                            @endif
+
                             <flux:cell>{{ money($estimate->estimate_sections->sum('total')) }}</flux:cell>
                             <flux:cell>{{ $estimate->created_at->format('m/d/Y') }}</flux:cell>
                             @if($view === 'estimates.index')
@@ -89,6 +93,7 @@
                                     {{ $estimate->project->client->name }}
                                 </flux:cell>
                             @endif
+
                             {{-- <flux:cell
                                 wire:click="$dispatchTo('projects.expense-create', 'editExpense', { expense: {{$project->id}}})"
                                 variant="strong"
@@ -105,8 +110,9 @@
                             @endif --}}
                             <flux:cell>
                                 {{-- :color="$estimate->project->last_status->title == 'Complete' ? 'green' : ($estimate->project->last_status->title == 'Active' ? 'blue' : ($estimate->project->last_status->title == 'Cancelled' ? 'red' : 'yellow'))" --}}
-                                <flux:badge size="sm" :color="is_null($estimate->deleted_at) ? 'green' : 'red'" inset="top bottom">{{is_null($estimate->deleted_at) ? 'Active' : 'Removed'}}</flux:badge>
+                                <flux:badge size="sm" :color="$estimate->status === 'Active' ? 'green' : 'red'" inset="top bottom">{{$estimate->status}}</flux:badge>
                             </flux:cell>
+
                             <flux:cell>
                                 <flux:dropdown position="bottom" align="end">
                                     <flux:button square inset="top bottom" size="sm">
@@ -114,9 +120,13 @@
                                     </flux:button>
 
                                     <flux:menu>
-                                        <flux:menu.item href="{{route('estimates.show', $estimate->id)}}">Open</flux:menu.item>
-                                        {{-- wire:click="$dispatchTo('projects.project-show', 'deleteEstimate', { estimate_id: {{$expense}} })"  --}}
-                                        <flux:menu.item wire:click="deleteEstimate({{$estimate->id}})" variant="danger">Delete</flux:menu.item>
+                                        @if($estimate->status === 'Active')
+                                            <flux:menu.item href="{{route('estimates.show', $estimate->id)}}">Open</flux:menu.item>
+                                            {{-- wire:click="$dispatchTo('projects.project-show', 'deleteEstimate', { estimate_id: {{$expense}} })"  --}}
+                                            <flux:menu.item wire:click="deleteEstimate({{$estimate->id}})" variant="danger">Delete</flux:menu.item>
+                                        @else
+                                            <flux:menu.item wire:click="activateEstimate({{$estimate->id}})">Restore</flux:menu.item>
+                                        @endif
                                     </flux:menu>
                                 </flux:dropdown>
                             </flux:cell>

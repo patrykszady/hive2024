@@ -133,7 +133,6 @@ class LeadController extends Controller
         ]);
 
         Log::channel('angi_webhook_results')->info($lead_data);
-
         return response()->json(['message' => 'success'], 200);
     }
 
@@ -250,7 +249,7 @@ class LeadController extends Controller
                 $company_email->save();
 
                 //add to $company_email json ('api') errors
-                // Log::channel('company_emails_login_error')->error($error);
+                Log::channel('company_emails_login_error')->error($error);
                 continue;
             }
 

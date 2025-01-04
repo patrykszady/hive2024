@@ -404,8 +404,8 @@ class LeadController extends Controller
                         'origin' => $email_found['origin'],
                         'user_id' => $user_id,
                         'lead_data' => $lead_data,
-                        'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
-                        'created_by_user_id' => auth()->user()->id
+                        'belongs_to_vendor_id' => $company_email->vendor_id,
+                        'created_by_user_id' => 0 //AUTOMATED
                     ]);
 
                     //2024-12-30 MOVE TO Observer because it repeats and always gets called with creating a Lead

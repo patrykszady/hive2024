@@ -150,8 +150,15 @@ return [
         ],
 
         'ms_form_amount_not_found' => [
-            'driver' => 'single',
+            'driver' => 'daily',
             'path' => storage_path('logs/ms_form_amount_not_found.log'),
+            'level' => 'debug',
+            'days' => 30,
+        ],
+
+        'angi_webhook_results' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/angi_webhook_results.log'),
             'level' => 'debug',
             'days' => 30,
         ],

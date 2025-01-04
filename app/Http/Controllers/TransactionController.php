@@ -1635,6 +1635,7 @@ class TransactionController extends Controller
             // ->where('id', 21781)
             ->orderBy('posted_date', 'DESC')
             ->get();
+        // dd($transactions);
 
         foreach($transactions as $transaction){
             $vendor_id = $transaction->bank_account->bank->vendor_id;

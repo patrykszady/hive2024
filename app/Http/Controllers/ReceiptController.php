@@ -260,7 +260,7 @@ class ReceiptController extends Controller
                 //LOG ERROR otherwise
 
                 //create sub-HIVE folders in HIVE_CONTRACTORS_RECEIPTS mailbox...
-                $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test'];
+                $sub_folders = ['Saved', 'Duplicate', 'Error', 'Add', 'Retry', 'Test', 'LEADS'];
                 foreach($sub_folders as $folder){
                     //CREATE CHILD HIVE MAILBOX FOLDER $folder
                     try{
@@ -790,13 +790,17 @@ class ReceiptController extends Controller
         }
     }
 
-    //foreach outlook/microsoft email get and process emails...
+    //foreach outlook/microsoft email get and process message...
     public function ms_graph_email_api()
     {
         //6-28-2023 catch forwarded messages where To is in database table company_emails (forward to KNOWN business company_email FROM ANY email) (oR ViveVersa..)
         $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
+        // $messages = app(\App\Http\Controllers\LeadController::class)->ms_graph_auth($company_emails);
+
         foreach($company_emails as $company_email){
             //check if access_token is expired, if so get new access_token and refresh_token
+
+            //13-31-2024 ..should be a Service we can reuse? check
             try{
                 $guzzle = new Client();
                 $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';

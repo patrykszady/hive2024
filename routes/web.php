@@ -6,10 +6,13 @@ use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\MoveController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VendorDocsController;
+use App\Http\Controllers\LeadController;
 
 
 use App\Livewire\Banks\BankShow;
 use App\Livewire\Banks\BankIndex;
+
+use App\Livewire\Leads\LeadsIndex;
 
 use App\Livewire\CompanyEmails\CompanyEmailsIndex;
 // use App\Livewire\CompanyEmails\CompanyEmailsForm;
@@ -99,7 +102,10 @@ Route::middleware('guest')->group(function(){
 
     Route::get('/registration', Registration::class)->middleware('guest')->name('registration');
     // Route::get('/registration-not-ready', Registration::class)->middleware('guest')->name('registration-not-ready');
+
 });
+
+Route::post('/webhooks/angi', [LeadController::class, 'angi_webhook'])->name('webhook.angi');
 
 Route::get('/move', [MoveController::class, 'move'])->name('move');
 
@@ -108,6 +114,10 @@ Route::get('/vendor_selection', VendorSelection::class)->middleware('auth')->nam
 Route::get('/vendor_registration/{vendor}', VendorRegistration::class)->middleware('auth')->name('vendor_registration');
 
 //1-18-2023 combine the next 3 functions into one. Pass type = original or temp
+
+Route::get('leads/leads_in_email', [LeadController::class, 'leads_in_email'])->name('leads.leads_in_email');
+
+
 
 Route::get('vendor_docs/verifyWorkersComp', [ReceiptController::class, 'verifyWorkersComp'])->name('vendor_docs.verifyWorkersComp');
 Route::get('expenses/original_receipts/{receipt}', [ReceiptController::class, 'original_receipt'])->name('expenses.original_receipt');
@@ -209,6 +219,11 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/audit', AuditShow::class)->name('vendor_docs.audit');
     Route::get('/vendor_docs', VendorDocsIndex::class)->name('vendor_docs.index');
 
+    //LEADS
+    // Route::post('/webhook', [LeadsIndex::class, 'handle']);
+
+    Route::get('/leads', LeadsIndex::class)->name('leads.index');
+
     //BANKS
     Route::get('/banks', BankIndex::class)->name('banks.index');
     Route::get('/banks/{bank}', BankShow::class)->name('banks.show');
@@ -259,8 +274,8 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/planner', PlannerIndex::class)->name('planner.index');
 
     //TASKS
-    Route::get('/planner_gantt', Planner::class)->name('planner.index');
-    Route::get('/planner_schedule', PlannerList::class)->name('planner_list.index');
+    // Route::get('/planner_gantt', Planner::class)->name('planner.index');
+    // Route::get('/planner_schedule', PlannerList::class)->name('planner_list.index');
 });
 
 require __DIR__.'/auth.php';

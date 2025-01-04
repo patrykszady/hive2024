@@ -70,6 +70,11 @@ class User extends Authenticatable
         return $this->belongsTo(Vendor::class, 'primary_vendor_id')->withoutGlobalScopes();
     }
 
+    public function leads()
+    {
+        return $this->hasMany(Leads::class);
+    }
+
     public function clients()
     {
         return $this->belongsToMany(Client::class)->withTimestamps();

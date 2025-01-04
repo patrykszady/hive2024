@@ -21,6 +21,7 @@ class PaymentCreate extends Component
     use AuthorizesRequests;
 
     public PaymentForm $form;
+    public Payment $payment;
 
     public $client = NULL;
     public $client_id = NULL;
@@ -28,7 +29,13 @@ class PaymentCreate extends Component
 
     public $view = FALSE;
 
-    protected $listeners = ['addProject', 'removeProject'];
+    public $view_text = [
+        'card_title' => 'Create Client Payment',
+        'button_text' => 'Add Payment',
+        'form_submit' => 'save',
+    ];
+
+    protected $listeners = ['addProject', 'removeProject', 'editPayment'];
 
     protected function rules()
     {
@@ -56,6 +63,24 @@ class PaymentCreate extends Component
         $this->projects = $client->projects()->where('projects.created_at', '>=', $YTD)->orderBy('projects.created_at', 'DESC')->status(['Active', 'Complete', 'Service Call', 'Service Call Complete']);
     }
 
+    public function editPayment(Payment $payment)
+    {
+        $this->payment = $payment;
+        $this->client = $payment->project->client;
+        $this->client_id = $payment->project->client->id;
+        $this->updatedClientId($this->client);
+        $this->form->setPayment($this->payment);
+
+        dd($this->projects);
+        $this->view_text = [
+            'card_title' => 'Update Client Payment',
+            'button_text' => 'Update Payment',
+            'form_submit' => 'update',
+        ];
+
+        $this->modal('payment_form_modal')->show();
+    }
+
     #[Computed]
     public function clients()
     {
@@ -79,6 +104,12 @@ class PaymentCreate extends Component
     // 8-31-2022 | 9-10-2023 similar on VendorPaymentForm
     public function addProject(Client $client = NULL)
     {
+        $this->view_text = [
+            'card_title' => 'Create Client Payment',
+            'button_text' => 'Add Payment',
+            'form_submit' => 'save',
+        ];
+
         if(isset($client->id)){
             $this->view = TRUE;
             $this->client_id = $client->id;
@@ -115,14 +146,6 @@ class PaymentCreate extends Component
     #[Title('Payment')]
     public function render()
     {
-        $view_text = [
-            'card_title' => 'Create Client Payment',
-            'button_text' => 'Add Payment',
-            'form_submit' => 'save',
-        ];
-
-        return view('livewire.payments.form', [
-            'view_text' => $view_text,
-        ]);
+        return view('livewire.payments.form');
     }
 }

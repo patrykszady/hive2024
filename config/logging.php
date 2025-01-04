@@ -156,6 +156,13 @@ return [
             'days' => 30,
         ],
 
+        'leads_in_email_error' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/leads_in_email_error.log'),
+            'level' => 'debug',
+            'days' => 30,
+        ],
+
         'plaid_transaction_removal' => [
             'driver' => 'single',
             'path' => storage_path('logs/plaid_transaction_removal.log'),

@@ -235,6 +235,10 @@ return [
                             'type' => 'int64',
                         ],
                         [
+                            'name' => 'deleted_at',
+                            'type' => 'int64',
+                        ],
+                        [
                             'name' => '__soft_deleted',
                             'type' => 'int32',
                             'optional' => true,
@@ -300,6 +304,10 @@ return [
                         ],
                         [
                             'name' => 'created_at',
+                            'type' => 'int64',
+                        ],
+                        [
+                            'name' => 'deleted_at',
                             'type' => 'int64',
                         ],
                         [

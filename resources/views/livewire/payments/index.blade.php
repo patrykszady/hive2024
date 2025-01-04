@@ -31,9 +31,14 @@
                 <flux:rows>
                     @foreach ($this->payments as $payment)
                         <flux:row :key="$payment->id">
-                            <flux:cell variant="strong">{{ money($payment->amount) }}</flux:cell>
+                            <flux:cell
+                                wire:click="$dispatchTo('payments.payment-create', 'editPayment', { payment: {{$payment->id}}})"
+                                variant="strong"
+                                class="cursor-pointer"
+                                >
+                                {{ money($payment->amount) }}
+                            </flux:cell>
                             <flux:cell>{{ $payment->date->format('m/d/Y') }}</flux:cell>
-
                             @if($view != 'projects.show')
                                 <flux:cell
                                     wire:navigate.hover
@@ -43,7 +48,6 @@
                                     {{ $payment->project->name }}
                                 </flux:cell>
                             @endif
-
                             <flux:cell>{{ $payment->reference }}</flux:cell>
                             <flux:cell>
                                 <flux:badge size="sm" :color="$payment->transaction_id != NULL ? 'green' : 'red'" inset="top bottom">{{ $payment->transaction_id != NULL ? 'Complete' : 'Missing Transaction' }}</flux:badge>

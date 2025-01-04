@@ -54,8 +54,8 @@
                     <flux:separator class="m-2" />
 
                     <flux:navlist.item wire:navigate.hover icon="home" href="/dashboard">Home</flux:navlist.item>
+                    <flux:navlist.item wire:navigate.hover icon="magnifying-glass-plus" href="/leads">Leads</flux:navlist.item>
                     <flux:navlist.item wire:navigate.hover icon="folder" href="/projects">Projects</flux:navlist.item>
-                    {{--  wire:navigate.hover --}}
                     <flux:navlist.item icon="calendar" href="/planner">Planner</flux:navlist.item>
 
                     @canany(['viewAny', 'create'], App\Models\Expense::class)

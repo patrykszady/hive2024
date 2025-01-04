@@ -48,7 +48,7 @@ class PaymentsIndex extends Component
 
     public function sort($column) {
         if ($this->sortBy === $column) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'asc' : 'desc';
         } else {
             $this->sortBy = $column;
             $this->sortDirection = 'asc';

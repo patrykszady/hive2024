@@ -1,4 +1,4 @@
-<flux:option value="ALL">All Projects</flux:option>
+<flux:option value="ALL">All Status</flux:option>
 <flux:option value="Invited">Invited</flux:option>
 <flux:option value="Estimate">Estimate</flux:option>
 <flux:option value="Awaiting Response">Response</flux:option>

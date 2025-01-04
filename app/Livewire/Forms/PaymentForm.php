@@ -7,8 +7,14 @@ use App\Models\Payment;
 use Livewire\Attributes\Rule;
 use Livewire\Form;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class PaymentForm extends Form
 {
+    use AuthorizesRequests;
+
+    public ?Payment $payment;
+
     #[Rule('required|date|before_or_equal:today|after:2017-01-01')]
     public $date = NULL;
 
@@ -17,6 +23,15 @@ class PaymentForm extends Form
 
     #[Rule('nullable')]
     public $note = NULL;
+
+    public function setPayment(Payment $payment)
+    {
+        $this->payment = $payment;
+
+        $this->date = $this->payment->date->format('Y-m-d');
+        $this->invoice = $this->payment->reference;
+        $this->note = $this->payment->note;
+    }
 
     public function store()
     {

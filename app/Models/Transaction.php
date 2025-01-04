@@ -46,6 +46,7 @@ class Transaction extends Model
             'transaction_date' => $this->transaction_date,
             'posted_date' => $this->posted_date,
             'created_at' => $this->created_at->timestamp,
+            'deleted_at' => $this->deleted_at ? $this->deleted_at->timestamp : null,
         ]);
         // return [
         //     'id' => $this->id,

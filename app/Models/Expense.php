@@ -70,6 +70,7 @@ class Expense extends Model
             'expense_status' => !is_null($this->project_id) ? "Complete" : "Missing Info",
             'date' => $this->date->format('Y-m-d'),
             'created_at' => $this->created_at->timestamp,
+            'deleted_at' => $this->deleted_at ? $this->deleted_at->timestamp : null,
         ]);
         // return [
         //     'id' => $this->id,

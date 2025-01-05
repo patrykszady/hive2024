@@ -115,7 +115,7 @@ Route::get('/vendor_registration/{vendor}', VendorRegistration::class)->middlewa
 //1-18-2023 combine the next 3 functions into one. Pass type = original or temp
 
 Route::post('/webhooks/angi', [WebhookController::class, 'angi_webhook'])->withoutMiddleware([Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
-Route::get('leads/leads_in_email', [LeadController::class, 'leads_in_email'])->name('leads.leads_in_email');
+Route::get('/leads/leads_in_email', [LeadController::class, 'leads_in_email'])->name('leads.leads_in_email');
 
 Route::get('vendor_docs/verifyWorkersComp', [ReceiptController::class, 'verifyWorkersComp'])->name('vendor_docs.verifyWorkersComp');
 Route::get('expenses/original_receipts/{receipt}', [ReceiptController::class, 'original_receipt'])->name('expenses.original_receipt');

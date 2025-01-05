@@ -37,7 +37,7 @@ class ClientCreate extends Component
     // public $address = NULL;
     public $team_member = FALSE;
 
-    protected $listeners = ['addUser', 'resetModal', 'editClient'];
+    protected $listeners = ['addUser', 'resetModal', 'editClient', 'newClient'];
 
     // public function rules()
     // {

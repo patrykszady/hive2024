@@ -29,14 +29,6 @@ class LeadsIndex extends Component
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
-    // public function handle(Request $request)
-    // {
-    //     dd($request);
-    //     dd('tests');
-    //     // Log::info('Webhook received', ['data' => $request->all()]);
-    //     return response()->json(['message' => 'Webhook received successfully!'], 200);
-    // }
-
     #[Computed]
     public function leads()
     {

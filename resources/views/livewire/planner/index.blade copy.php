@@ -1,5 +1,5 @@
 <div>
-    <div class="sticky top-0 flex-none overflow-x-scroll z-50" x-bind="scrollSync">
+    <div class="sticky top-0 flex-none overflow-x-scroll" x-bind="scrollSync">
         <div class="divide-x divide-white text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
             {{-- First. leftmost table column on the first row.  --}}
             <div class="col-end-1 w-14 sticky left-0 bg-white ring-1 ring-gray-100 shadow"></div>
@@ -21,13 +21,18 @@
                             icon="plus"
                         />
                     </flux:card>
+
+                    {{-- ACCORDIAN HERE --}}
+
+                    {{-- <div class="mt-2">
+                        <livewire:planner.planner-card :task_date="NULL" :projects="$this->projects" :$project :key="$project->id" />
+                    </div> --}}
                 </div>
             @endforeach
         </div>
 
         {{-- NO DATE/ NOT SCHEDULE --}}
-        {{-- ACCORDIAN HERE --}}
-        <div class="flex flex-auto overflow-x-auto bg-gray-100">
+        <div class="flex flex-auto overflow-x-auto bg-gray-100" x-bind="scrollSync">
             <div class="sticky left-0 w-14 flex-none ring-1 ring-gray-100 shadow bg-white"></div>
 
             <div class="divide-x divide-gray-200">
@@ -41,6 +46,8 @@
                     <span class="italic">DATE</span>
                 </div>
             </div>
+
+            {{-- ACCORDIAN HERE --}}
 
             <div class="text-sm text-gray-500 grid grid-flow-col">
                 @foreach($days as $day_index => $day)
@@ -110,9 +117,10 @@
                                 >
                                 @foreach($project->tasks()->get() as $task)
                                     @if(is_null($task->start_date) && $day['database_date'] === NULL)
-                                        {{-- @include('livewire.planner._task_card') --}}
+                                        @include('livewire.planner._task_card')
                                     @elseif(\Carbon\Carbon::parse($day['database_date'])->between($task->start_date, $task->end_date) && $day['database_date'] !== NULL)
                                         @if(isset($task->options->include_weekend_days) && $day['is_weekend'])
+                                            {{-- @include('livewire.planner._task_card') --}}
                                             @if(isset($task->options->include_weekend_days->saturday) && $task->options->include_weekend_days->saturday === true && $day['is_saturday'] === true)
                                                 @include('livewire.planner._task_card')
                                             @elseif(isset($task->options->include_weekend_days->sunday) && $task->options->include_weekend_days->sunday === true && $day['is_sunday'] === true)

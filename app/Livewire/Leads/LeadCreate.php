@@ -13,6 +13,7 @@ class LeadCreate extends Component
 {
     public $lead = NULL;
     public $user = NULL;
+    public $reply = NULL;
     public $full_name = NULL;
 
     public $date = NULL;
@@ -34,6 +35,8 @@ class LeadCreate extends Component
             'lead.notes' => 'nullable',
             'lead.address' => 'required',
             'lead.origin' => 'required',
+            'reply' => 'required',
+            'lead.reply_to_email' => 'required',
             'full_name' => 'nullable',
             'date' => 'required',
         ];
@@ -45,6 +48,7 @@ class LeadCreate extends Component
 
         $this->lead->message = $this->lead->lead_data->message;
         $this->lead->address = $this->lead->lead_data->address;
+        $this->lead->reply_to_email = $this->lead->lead_data->reply_to_email;
         $this->lead->notes = $this->lead->notes;
         $this->lead->origin = $this->lead->origin;
         $this->date = $this->lead->date->format('Y-m-d');

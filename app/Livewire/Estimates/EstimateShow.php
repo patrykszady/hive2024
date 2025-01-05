@@ -117,7 +117,8 @@ class EstimateShow extends Component
 
     public function sectionUpdate($section_index)
     {
-        $section = $this->sections[$section_index];
+        $section = EstimateSection::findOrFail($this->sections[$section_index]['id']);
+        $section->name = $this->sections[$section_index]['name'];
         //ignore 'bid_index' attribute when saving
             //OR put    // public $items_rearrange; on Model
         // $section->offsetUnset('items_rearrange');

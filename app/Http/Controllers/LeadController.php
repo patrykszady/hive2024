@@ -386,7 +386,7 @@ class LeadController extends Controller
                     }else{
                         //create from data
                         if(isset($lead_data['phone']) && isset($lead_data['email']) && isset($lead_data['name'])){
-                            $name = $lead_data['name'];
+                            $name = preg_replace('/\s+/', ' ', trim($lead_data['name']));
                             $nameParts = explode(' ', $name);
                             $lastName = array_pop($nameParts);
                             $firstName = implode(' ', $nameParts);

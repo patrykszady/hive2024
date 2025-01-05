@@ -27,12 +27,14 @@ class EstimateCombine extends Component
     }
 
     public function mount(){
-        $client_projects = $this->client->projects->pluck('id')->toArray();
-        $this->estimates = Estimate::whereIn('project_id', $client_projects)->with('project')->get();
+        // $client_projects = $this->client->projects->pluck('id')->toArray();
+        // $this->estimates = Estimate::whereIn('project_id', $client_projects)->with('project')->get();
+        $this->estimates = Estimate::orderBy('created_at', 'DESC')->get();
+        // dd($this->estimates);
     }
 
     public function combineModal($existing_estimate_id)
-    {       
+    {
         $this->estimates = $this->estimates->where('id', '!=', $existing_estimate_id);
         $this->estimate = Estimate::findOrFail($existing_estimate_id);
         $this->modal_show = TRUE;

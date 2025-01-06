@@ -1,3 +1,4 @@
+{{--  x-on:close="console.log({close: $event})" x-on:cancel="console.log({cancel: $event})" --}}
 <flux:modal name="lead_form_modal" class="space-y-2">
     <div class="flex justify-between">
         <flux:heading size="lg">Lead</flux:heading>
@@ -61,7 +62,7 @@
                     />
 
                     <flux:button
-                        wire:click="$dispatchTo('users.user-create', 'newMember', { model: 'client', model_id: 'NEW'})"
+                        {{-- wire:click="$dispatchTo('users.user-create', 'newMember', { model: 'client', model_id: 'NEW'})" --}}
                         icon="plus"
                         >
                         Create Client
@@ -98,5 +99,5 @@
         <flux:tab.panel name="messages">...</flux:tab.panel>
     </flux:tab.group>
 
-    <livewire:users.user-create />
+    {{-- <livewire:users.user-create /> --}}
 </flux:modal>

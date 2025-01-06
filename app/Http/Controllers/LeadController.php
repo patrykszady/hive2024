@@ -260,19 +260,11 @@ class LeadController extends Controller
                         // ->where('from_subject', $message->getSubject())
                         // ->get();
 
-                if($email_found){
-                    foreach($email_found['from_subject'] as $index => $from_subject){
-                        if(!is_null(strpos($message->getSubject(), $from_subject))){
-                            $email_found = $email_found;
-                        }else{
-                            continue;
-                        }
-                    }
+                if(in_array($message->getSubject(), $email_found['from_subject'])){
+                    $email_found = $email_found;
                 }else{
                     continue;
                 }
-
-                // dd($email_found, $message->getSubject());
 
                 if($email_found){
                     $lead_data = collect();

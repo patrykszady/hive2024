@@ -1,5 +1,5 @@
 <div>
-    <div class="sticky top-0 flex-none overflow-x-scroll z-50 bg-gray-200" x-bind="scrollSync">
+    <div class="sticky top-0 flex-none overflow-x-scroll z-10 bg-gray-200" x-bind="scrollSync">
         <div class="divide-x divide-white text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
             {{-- First. leftmost table column on the first row.  --}}
             <div class="col-end-1 w-14 sticky left-0 bg-white ring-1 ring-gray-100 shadow"></div>

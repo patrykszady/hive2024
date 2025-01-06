@@ -11,6 +11,10 @@ class LeadStatus extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'created_at' => 'date:Y-m-d',
+    ];
+
     public function lead()
     {
         return $this->belongsTo(Lead::class);

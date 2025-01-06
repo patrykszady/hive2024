@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Leads;
 
+use App\Livewire\Forms\LeadForm;
 use App\Models\Lead;
 use App\Models\LeadStatus;
 
@@ -11,6 +12,8 @@ use Livewire\Component;
 
 class LeadCreate extends Component
 {
+    public LeadForm $form;
+
     public $lead = NULL;
     public $user = NULL;
     public $reply = NULL;
@@ -19,7 +22,7 @@ class LeadCreate extends Component
     public $date = NULL;
     public $lead_status = NULL;
 
-    protected $listeners = ['editLead'];
+    protected $listeners = ['editLead', 'addLead'];
     public $view_text = [
         'card_title' => 'Create Expense',
         'button_text' => 'Create',
@@ -33,13 +36,18 @@ class LeadCreate extends Component
             'lead.message' => 'required',
             // 12-30-2024 MAKE THIS A CHAT/COMMET/MSG section
             'lead.notes' => 'nullable',
-            'lead.address' => 'required',
+            'lead.address' => 'nullable',
             'lead.origin' => 'required',
-            'reply' => 'required',
-            'lead.reply_to_email' => 'required',
+            // 'reply' => 'required',
+            'lead.reply_to_email' => 'nullable',
             'full_name' => 'nullable',
             'date' => 'required',
         ];
+    }
+
+    public function addLead()
+    {
+        $this->modal('lead_form_modal')->show();
     }
 
     public function editLead(Lead $lead)

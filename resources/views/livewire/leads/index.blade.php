@@ -1,4 +1,4 @@
-<div class="max-w-3xl">
+<div class="max-w-5xl">
     @if($view === NULL)
         <flux:card class="space-y-2 mb-4">
             <div>
@@ -23,9 +23,14 @@
     @endif
 
     <flux:card class="space-y-2">
-        <div>
+        <div class="flex justify-between">
             <flux:heading size="lg">Leads</flux:heading>
+            @can('create', App\Models\Project::class)
+                {{-- , { client_id: '{{$view === NULL ? $client_id : $client->id}}' } --}}
+                <flux:button wire:click="$dispatchTo('leads.lead-create', 'addLead')">Add Lead</flux:button>
+            @endcan
         </div>
+
         <flux:separator variant="subtle" />
 
         <div class="space-y-2">
@@ -33,9 +38,9 @@
                 <flux:columns>
                     <flux:column sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
                     <flux:column>User</flux:column>
-                    <flux:column>Origin</flux:column>
                     <flux:column>Status</flux:column>
                     <flux:column>Last Contact</flux:column>
+                    <flux:column>Origin</flux:column>
                     <flux:column>Address</flux:column>
                     {{--
                     @if($view === NULL)
@@ -65,20 +70,26 @@
                             <flux:cell>
                                 {{ $lead->lead_data['name'] }}
                             </flux:cell>
-                            <flux:cell>
-                                {{ $lead->origin }}
-                            </flux:cell>
+
                             <flux:cell>
                                 @if($lead->last_status)
-                                @php
-                                    $color = $lead->last_status->title === 'New' ? 'yellow' : (in_array($lead->last_status->title, ['Message 1', 'Message 2', 'Message 3']) ? 'sky' : ($lead->last_status->title === 'Won' ? 'green' : (in_array($lead->last_status->title, ['Lost', "Not a Fit"]) ? 'red' : 'red')));
-                                @endphp
+                                    @php
+                                        $color = $lead->last_status->title === 'New' ? 'yellow' : (in_array($lead->last_status->title, ['Message 1', 'Message 2', 'Message 3']) ? 'sky' : ($lead->last_status->title === 'Won' ? 'green' : (in_array($lead->last_status->title, ['Lost', "Not a Fit"]) ? 'red' : 'red')));
+                                    @endphp
                                     <flux:badge color="{{$color}}">{{ $lead->last_status->title }}</flux:badge>
                                 @endif
                             </flux:cell>
 
                             <flux:cell>
+                                @if($lead->last_status)
+                                    @if(!in_array($lead->last_status->title, ['New', 'Won', 'Lost', 'Not a Fit']))
+                                        {{ $lead->last_status->created_at->diffForHumans() }}
+                                    @endif
+                                @endif
+                            </flux:cell>
 
+                            <flux:cell>
+                                {{ $lead->origin }}
                             </flux:cell>
 
                             <flux:cell>

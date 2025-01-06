@@ -32,7 +32,8 @@ class LeadsIndex extends Component
     #[Computed]
     public function leads()
     {
-        $leads = Lead::with(['user', 'last_status'])->when($this->origin, function ($query) {
+        $leads =
+            Lead::with(['user', 'last_status'])->when($this->origin, function ($query) {
                 return $query->where('origin', $this->origin);
             })
             ->orderBy($this->sortBy, $this->sortDirection)

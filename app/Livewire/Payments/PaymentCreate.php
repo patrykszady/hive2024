@@ -59,8 +59,9 @@ class PaymentCreate extends Component
     public function updatedClientId(Client $client)
     {
         $this->client = $client;
-        $YTD = Carbon::now()->subYear();
-        $this->projects = $client->projects()->where('projects.created_at', '>=', $YTD)->orderBy('projects.created_at', 'DESC')->status(['Active', 'Complete', 'Service Call', 'Service Call Complete']);
+        // $YTD = Carbon::now()->subYear();
+        //->where('projects.created_at', '>=', $YTD)
+        $this->projects = $client->projects()->orderBy('projects.created_at', 'DESC')->status(['Active', 'Complete', 'Service Call', 'Service Call Complete']);
     }
 
     public function editPayment(Payment $payment)
@@ -84,11 +85,12 @@ class PaymentCreate extends Component
     #[Computed]
     public function clients()
     {
-        $YTD = Carbon::now()->subYear();
+        // $YTD = Carbon::now()->subYear();
 
-        return Client::withWhereHas('projects', function ($query) use ($YTD) {
-            $query->where('projects.created_at', '>=', $YTD)
-                ->whereHas('statuses', function ($query) {
+        // use ($YTD)
+        return Client::withWhereHas('projects', function ($query) {
+            //->where('projects.created_at', '>=', $YTD)
+            $query->whereHas('statuses', function ($query) {
                     return $query->where('title', '=', 'Active');
                 });
         })

@@ -6,7 +6,7 @@
     <flux:separator variant="subtle" />
 
     <flux:tab.group>
-        <flux:tabs wire:model="tab">
+        <flux:tabs>
             <flux:tab name="details">Details</flux:tab>
             <flux:tab name="messages">Mesages</flux:tab>
         </flux:tabs>

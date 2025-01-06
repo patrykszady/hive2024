@@ -107,8 +107,8 @@
                                     <flux:menu.separator />
                                     <flux:menu.item wire:click="sectionDuplicate({{$index}})">Duplicate Section</flux:menu.item>
                                     <flux:menu.separator />
-                                    <flux:menu.item wire:click="sectionDuplicate({{$index}})">Duplicate Section</flux:menu.item>
-                                    <flux:menu.separator />
+                                    {{-- <flux:menu.item wire:click="sectionDuplicate({{$index}})">Copy to Estimate</flux:menu.item>
+                                    <flux:menu.separator /> --}}
                                     <flux:menu.item wire:click="sectionRemove({{$index}})" variant="danger">Delete Section</flux:menu.item>
                                 </flux:menu>
                             </flux:dropdown>

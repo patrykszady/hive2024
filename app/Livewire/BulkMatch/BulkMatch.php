@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Transactions;
+namespace App\Livewire\BulkMatch;
 
 // use App\Models\Vendor;
 // use App\Models\Expense;

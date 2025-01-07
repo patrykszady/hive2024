@@ -1,4 +1,3 @@
-{{-- CREATE RECEIPT ACCOUNT --}}
 <flux:card class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1' : ''}}">
     <div class="mb-4">
         <flux:heading size="lg">Receipt Accounts</flux:heading>

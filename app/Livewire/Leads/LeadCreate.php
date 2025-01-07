@@ -2,9 +2,12 @@
 
 namespace App\Livewire\Leads;
 
+use App\Mail\LeadMessage;
 use App\Livewire\Forms\LeadForm;
 use App\Models\Lead;
 use App\Models\LeadStatus;
+
+use Illuminate\Support\Facades\Mail;
 
 use Flux;
 
@@ -38,7 +41,9 @@ class LeadCreate extends Component
             'lead.notes' => 'nullable',
             'lead.address' => 'nullable',
             'lead.origin' => 'required',
-            // 'reply' => 'required',
+            'lead.phone' => 'nullable',
+            'lead.email' => 'nullable',
+            'reply' => 'nullable',
             'lead.reply_to_email' => 'nullable',
             'full_name' => 'nullable',
             'date' => 'required',
@@ -59,6 +64,8 @@ class LeadCreate extends Component
         $this->lead->reply_to_email = $this->lead->lead_data->reply_to_email;
         $this->lead->notes = $this->lead->notes;
         $this->lead->origin = $this->lead->origin;
+        $this->lead->phone = $this->lead->lead_data->phone;
+        $this->lead->email = $this->lead->lead_data->email;
         $this->date = $this->lead->date->format('Y-m-d');
         $this->user = $this->lead->user;
         $this->lead_status = $this->lead->last_status ? $this->lead->last_status->title : NULL;
@@ -69,6 +76,13 @@ class LeadCreate extends Component
         }else{
             $this->full_name = $this->lead->lead_data['name'];
         }
+
+        $name = preg_replace('/\s+/', ' ', trim($this->full_name));
+        $nameParts = explode(' ', $name);
+        $lastName = array_pop($nameParts);
+        $firstName = implode(' ', $nameParts);
+
+        $this->reply = 'Hi ' . $firstName . ',';
 
         $this->view_text = [
             'card_title' => 'Edit Lead',
@@ -83,6 +97,8 @@ class LeadCreate extends Component
     {
         $lead = Lead::findOrFail($this->lead->id);
         $lead->lead_data['address'] = $this->lead->address;
+        $lead->lead_data['phone'] = $this->lead->phone;
+        $lead->lead_data['email'] = $this->lead->email;
         $lead->notes = $this->lead->notes;
         $lead->save();
 
@@ -103,6 +119,14 @@ class LeadCreate extends Component
             // route / href / wire:click
             text: '',
         );
+    }
+
+    public function message_reply()
+    {
+        // dd($this);
+        //queue
+        //send mail
+        // Mail::to('patryk.szady@live.com')->send(new LeadMessage($this->lead, $this->reply));
     }
 
     public function render()

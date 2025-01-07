@@ -80,8 +80,6 @@ class CheckCreate extends Component
             route: 'checks/' . $check->id
         );
 
-        // $this->modal_show = FALSE;
-
         $this->dispatch('refreshComponent')->to('checks.check-show');
     }
 

@@ -1,5 +1,5 @@
 {{--  x-on:close="console.log({close: $event})" x-on:cancel="console.log({cancel: $event})" --}}
-<flux:modal name="lead_form_modal" class="space-y-2">
+<flux:modal name="lead_form_modal" class="space-y-2" :dismissible="false">
     <div class="flex justify-between">
         <flux:heading size="lg">Lead</flux:heading>
     </div>
@@ -22,22 +22,6 @@
                     resize="none"
                 />
 
-                {{-- <flux:input
-                    wire:model.live="lead.reply_to_email"
-                    disabled
-                    label="To:"
-                    type="text"
-                />
-
-                <flux:textarea
-                    wire:model.live="reply"
-                    label="Reply"
-                    rows="auto"
-                    resize="none"
-                />
-
-                <flux:button variant="primary" wire:click="email">Message</flux:button> --}}
-
                 <flux:input
                     wire:model.live="date"
                     disabled
@@ -55,20 +39,34 @@
                 <flux:input.group label="User">
                     <flux:input
                         wire:model.live="full_name"
-                        disabled
-
+                        x-bind:disabled="{{!is_null($user)}}"
                         type="text"
-                        placeholder="Create User"
+                        placeholder="Lead User"
                     />
 
                     <flux:button
                         {{-- wire:click="$dispatchTo('users.user-create', 'newMember', { model: 'client', model_id: 'NEW'})" --}}
                         icon="plus"
                         >
-                        Create Client
+                        {{ is_null($user) ? 'Add User' : 'Add Client' }}
                     </flux:button>
                 </flux:input.group>
 
+                <flux:input
+                    wire:model.live="lead.phone"
+                    label="Phone"
+                    x-bind:disabled="{{!is_null($user)}}"
+                    type="number"
+                    placeholder="Phone"
+                />
+
+                <flux:input
+                    wire:model.live="lead.email"
+                    label="Email"
+                    x-bind:disabled="{{!is_null($user)}}"
+                    type="text"
+                    placeholder="Email"
+                />
 
                 <flux:input
                     wire:model.live="lead.address"
@@ -96,7 +94,33 @@
                 </div>
             </form>
         </flux:tab.panel>
-        <flux:tab.panel name="messages">...</flux:tab.panel>
+        <flux:tab.panel name="messages">
+            <form wire:submit="message_reply" class="grid gap-6">
+                <flux:textarea
+                    wire:model.live="lead.message"
+                    disabled
+                    label="Message"
+                    rows="auto"
+                    resize="none"
+                />
+
+                <flux:input
+                    wire:model.live="lead.reply_to_email"
+                    disabled
+                    label="To: {{$full_name}}"
+                    type="text"
+                />
+
+                <flux:textarea
+                    wire:model.live="reply"
+                    label="Reply"
+                    rows="8"
+                    resize="none"
+                />
+
+                {{-- <flux:button type="submit" variant="primary">Message</flux:button> --}}
+            </form>
+        </flux:tab.panel>
     </flux:tab.group>
 
     {{-- <livewire:users.user-create /> --}}

@@ -66,7 +66,7 @@ use App\Livewire\Entry\Registration;
 use App\Livewire\Entry\VendorRegistration;
 
 use App\Livewire\Transactions\MatchVendor;
-use App\Livewire\Transactions\BulkMatch;
+use App\Livewire\BulkMatch\BulkMatch;
 
 use App\Livewire\Expenses\ExpenseIndex;
 use App\Livewire\Expenses\ExpenseShow;

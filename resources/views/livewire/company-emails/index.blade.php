@@ -1,32 +1,30 @@
 <div class="{{$view == NULL ? 'w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1 space-y-6' : ''}}">
     {{-- COMPANY EMAILS --}}
-    <x-lists.details_card>
-        {{-- HEADING --}}
-        <x-slot:heading>
-            <div>
-                <flux:heading size="lg" class="mb-0">Company Email Accounts</flux:heading>
-                <flux:subheading>Email accounts you use to recieve digital receipts from merchants.</flux:subheading>
-            </div>
-
+    <flux:card>
+        <div class="flex justify-between">
+            <flux:heading size="lg">Company Email Accounts</flux:heading>
             <flux:button
                 {{-- wire:click="$dispatchTo('projects.project-create', 'editProject', { project: {{$project->id}}})" --}}
                 size="sm"
                 >
                 Add Email Account
             </flux:button>
-            {{-- <a href="{{route('nylas_login')}}" type="button"
-                class="inline-flex justify-center px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Add Email Account
-            </a>
-            <a href="{{route('ms_graph_login')}}" type="button"
-                class="inline-flex justify-center px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Add Microsoft Email
-            </a>
-            <a href="{{route('google_cloud_login')}}" type="button"
-                class="inline-flex justify-center px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Add Google Email
-            </a> --}}
-        </x-slot>
+        </div>
+        <flux:subheading>Email accounts you use to recieve digital receipts from merchants.</flux:subheading>
+
+        <flux:separator variant="subtle" />
+        {{-- <a href="{{route('nylas_login')}}" type="button"
+            class="inline-flex justify-center px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Add Email Account
+        </a>
+        <a href="{{route('ms_graph_login')}}" type="button"
+            class="inline-flex justify-center px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Add Microsoft Email
+        </a>
+        <a href="{{route('google_cloud_login')}}" type="button"
+            class="inline-flex justify-center px-4 py-2 text-sm text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            Add Google Email
+        </a> --}}
 
         {{-- DETAILS --}}
         <x-lists.details_list>
@@ -51,8 +49,7 @@
                 @endif --}}
             {{-- @endcan --}}
         </x-lists.details_list>
-    </x-lists.details_card>
-
+    </flux:card>
     @if(request()->routeIs('company_emails.index'))
         <livewire:receipt-accounts.receipt-accounts-index />
     @endif

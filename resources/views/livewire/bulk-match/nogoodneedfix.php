@@ -31,7 +31,7 @@
                             >
 
                             <option value="" readonly>Select Vendor</option>
-                            @foreach ($new_vendors as $vendor)
+                            @foreach ($this->new_vendors as $vendor)
                                 <option value="{{$vendor->id}}">{{$vendor->name}}</option>
                             @endforeach
                         </x-forms.row>

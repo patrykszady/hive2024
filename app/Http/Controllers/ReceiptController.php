@@ -31,6 +31,7 @@ use Microsoft\Graph\Http;
 use Microsoft\Graph\Model;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -56,7 +57,6 @@ class ReceiptController extends Controller
         $page->screenshot(['path' => 'example.png']);
 
         $browser->close();
-
 
         dd('saved');
         // Example usage
@@ -1158,7 +1158,11 @@ class ReceiptController extends Controller
                         //if is for testing only...
                         // if($loop == 1){
                             $attachment = $attachment_found;
+                            // $result = AzureDI::make()->analyzeDocument($attachment);
 
+                            // dd(response()->json($result->getPathname()));
+                            // return response()->json($result);
+                            // https://github.com/blue-hex/laravel-azure-di
                             $doc_type = 'pdf';
                             $ocr_filename = date('Y-m-d-H-i-s') . '-' . rand(10,99) . '.' . $doc_type;
                             $content_bytes = array_values((array) $attachment)[0]['contentBytes'];
@@ -1571,6 +1575,54 @@ class ReceiptController extends Controller
 
     public function azure_docs_api($file_location, $document_model, $doc_type)
     {
+        // $result = AzureDI::make()->analyzeDocument('https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/rest-api/receipt.png');
+
+        // dd(response()->json($result));
+        // $endpoint = 'https://hive20251name.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-receipt:analyze?api-version=2024-11-30';
+        // $apiKey = '5JcYKZ5a8D5YHlKnj783TWHgml7ZnjtlLWfxTiHASpHtvbt8fiOYJQQJ99BAACYeBjFXJ3w3AAALACOGN2aU';
+        // $documentUrl = 'https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/rest-api/receipt.png';
+
+        // $ch = curl_init();
+
+        // curl_setopt($ch, CURLOPT_URL, $endpoint);
+        // curl_setopt($ch, CURLOPT_POST, 1);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['urlSource' => $documentUrl]));
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        //     'Content-Type: application/json',
+        //     'Ocp-Apim-Subscription-Key: ' . $apiKey,
+        // ]);
+        // curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // $response = curl_exec($ch);
+
+
+        // if (curl_errno($ch)) {
+        //     echo 'Error:' . curl_error($ch);
+        // } else {
+        //     echo $response;
+        // }
+
+        // curl_close($ch);
+
+        // dd();
+
+        // $response = Http::withHeaders([
+        //     'Content-Type' => 'application/json',
+        //     'Ocp-Apim-Subscription-Key' => '5JcYKZ5a8D5YHlKnj783TWHgml7ZnjtlLWfxTiHASpHtvbt8fiOYJQQJ99BAACYeBjFXJ3w3AAALACOGN2aU',
+        // ])->post('https://hive20251name.cognitiveservices.azure.com/documentintelligence/documentModels/prebuilt-receipt:analyze?api-version=2024-11-30', [
+        //     'urlSource' => 'https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/rest-api/receipt.png',
+        // ]);
+
+        // echo $response->body();
+        // dd();
+
+        // $file = file_get_contents(storage_path($file_location));
+
+        // // Assuming the package has a method to analyze documents
+        // $result = AzureDI::make()->analyzeDocument($file);
+
+        // dd(response()->json($result));
+        // return response()->json($result);
         // dd($file_location, $document_model, $doc_type);
         //['jpg', 'jpeg] ?
         if(strtolower($doc_type) == 'jpg'){
@@ -1585,12 +1637,54 @@ class ReceiptController extends Controller
 
         $file = file_get_contents(storage_path($file_location));
 
+        // $endpoint = 'https://hive20251name.cognitiveservices.azure.com';
+        // $subscriptionKey = '5JcYKZ5a8D5YHlKnj783TWHgml7ZnjtlLWfxTiHASpHtvbt8fiOYJQQJ99BAACYeBjFXJ3w3AAALACOGN2aU';
+        // $receiptPath = 'https://raw.githubusercontent.com/Azure-Samples/cognitive-services-REST-api-samples/master/curl/form-recognizer/rest-api/receipt.png';
+
+        // $client = new Client();
+        // $headers = [
+        //     'Content-Type' => 'application/octet-stream',
+        //     'Ocp-Apim-Subscription-Key' => $subscriptionKey,
+        // ];
+
+        // try {
+        //     // Submit the receipt for analysis
+        //     $postResponse = $client->post($endpoint, [
+        //         'headers' => $headers,
+        //         'body' => fopen($receiptPath, 'r'),
+        //     ]);
+
+        //     $operationLocation = $postResponse->getHeader('Operation-Location')[0];
+
+        //     // Polling the GET request to check the status
+        //     do {
+        //         $getResponse = $client->get($operationLocation, [
+        //             'headers' => [
+        //                 'Ocp-Apim-Subscription-Key' => $subscriptionKey,
+        //             ],
+        //         ]);
+        //         $result = json_decode($getResponse->getBody(), true);
+        //         sleep(5); // Wait for 5 seconds before checking again
+        //     } while ($result['status'] !== 'succeeded');
+
+        //     // Output the results
+        //     echo json_encode($result, JSON_PRETTY_PRINT);
+        // } catch (ClientException $e) {
+        //     echo 'Error: ' . $e->getMessage();
+        //     echo 'Status Code: ' . $e->getResponse()->getStatusCode();
+        //     echo 'Response Body: ' . $e->getResponse()->getBody()->getContents();
+        // }
+
+
+        // dd('TOO LATE');
+
+
         //start OCR
         $ch = curl_init();
 
-        $azure_api_key = env('AZURE_RECEIPTS_KEY');
-        $azure_api_version = env('AZURE_CUSTOM_MODEL_COI_VERSION');
-        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
+        $azure_api_key = env('AZURE_DI_API_KEY');
+        $azure_api_version = env('AZURE_DI_VERSION');
+        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_DI_ENDPOINT') . "/documentintelligence/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $file);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -1607,11 +1701,12 @@ class ReceiptController extends Controller
         $re = '/(\d|\D){8}-(\d|\D){4}-(\d|\D){4}-(\d|\D){4}-(\d|\D){12}/m';
         $str = $location_result;
         preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+        // dd($matches);
         $operation_location_id = $matches[0][0];
 
         //get OCR result
         //&pages=[1]d
-        $uri =  env('AZURE_RECEIPTS_URL') . '/formrecognizer/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"';
+        $uri =  env('AZURE_DI_ENDPOINT') . '/documentintelligence/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"';
         $result = exec('curl -v -X GET "https://' . $uri);
         $result = json_decode($result, true);
         //2024-12-25 ..if $result is error...LOG and inform user

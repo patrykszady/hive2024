@@ -32,5 +32,5 @@
     </flux:table>
 
     {{--  :distributions="$distributions" :vendors="$bulk_matches->unique('vendor.id')->pluck('vendor.id')" --}}
-    <livewire:bulk-match.bulk-match-create />
+    <livewire:bulk-match.bulk-match-create :distributions="$distributions" :vendors="$bulk_matches->unique('vendor.id')->pluck('vendor.id')" />
 </flux:card>

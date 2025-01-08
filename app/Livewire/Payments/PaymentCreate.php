@@ -72,7 +72,7 @@ class PaymentCreate extends Component
         $this->updatedClientId($this->client);
         $this->form->setPayment($this->payment);
 
-        dd($this->projects);
+        // dd($this->projects);
         $this->view_text = [
             'card_title' => 'Update Client Payment',
             'button_text' => 'Update Payment',

@@ -1890,7 +1890,11 @@ class ReceiptController extends Controller
         if(isset($ocr_receipt_extract_prefix['SubTotal'])){
             $subtotal = $ocr_receipt_extract_prefix['SubTotal']['valueCurrency']['amount'];
         }elseif(isset($ocr_receipt_extract_prefix['Subtotal'])){
-            $subtotal = $ocr_receipt_extract_prefix['Subtotal']['valueNumber'];
+            if(isset($ocr_receipt_extract_prefix['Subtotal']['valueNumber'])){
+                $subtotal = $ocr_receipt_extract_prefix['Subtotal']['valueCurrency']['amount'];
+            }else{
+                $subtotal = NULL;
+            }
         }else{
             $subtotal = NULL;
         }
@@ -1913,7 +1917,7 @@ class ReceiptController extends Controller
                         }
 
                         if(isset($line_item['valueObject']['TotalPrice'])){
-                            $total_price = $line_item['valueObject']['TotalPrice']['valueNumber'];
+                            $total_price = $line_item['valueObject']['TotalPrice']['valueCurrency']['amount'];
                         }elseif(isset($line_item['valueObject']['Amount'])){
                             $total_price = $line_item['valueObject']['Amount']['valueCurrency']['amount'];
                         }else{
@@ -1921,12 +1925,12 @@ class ReceiptController extends Controller
                         }
 
                         if($line_item_price == "0" && $total_price == "0"){
-                            $items[$key]['valueObject']['TotalPrice']['valueNumber'] = "0.00";
+                            $items[$key]['valueObject']['TotalPrice']['valueCurrency']['amount'] = "0.00";
                         }else{
                             if($line_item_price != "0"){
                                 $line_item_total = $quantity * $line_item_price;
                                 if($line_item_total != $total_price){
-                                    $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $line_item_total;
+                                    $items[$key]['valueObject']['TotalPrice']['valueCurrency']['amount'] = $line_item_total;
                                 }
                             }
                         }
@@ -1939,7 +1943,7 @@ class ReceiptController extends Controller
 
         //AMOUNT
         if(isset($ocr_receipt_extract_prefix['Total'])){
-            $amount = $ocr_receipt_extract_prefix['Total']['valueNumber'];
+            $amount = $ocr_receipt_extract_prefix['Total']['valueCurrency']['amount'];
         }elseif(isset($ocr_receipt_extract_prefix['InvoiceTotal'])){
             $amount = $ocr_receipt_extract_prefix['InvoiceTotal']['valueCurrency']['amount'];
         }elseif(isset($ocr_receipt_extract_prefix['SubTotal']) && isset($ocr_receipt_extract_prefix['TotalTax'])){

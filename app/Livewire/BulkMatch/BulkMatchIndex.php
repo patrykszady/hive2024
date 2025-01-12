@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Component;
 use Livewire\Attributes\Title;
 
-class BulkMatch extends Component
+class BulkMatchIndex extends Component
 {
     use AuthorizesRequests;
 
@@ -41,15 +41,15 @@ class BulkMatch extends Component
 
     public function updated($field, $value)
     {
-        if(substr($field, 0, 19) == 'vendor_amount_group'){
-            //toggle checkmark
-            $vendor_transactions_key = preg_replace("/[^0-9]/", '', $field);
+        // if(substr($field, 0, 19) == 'vendor_amount_group'){
+        //     //toggle checkmark
+        //     $vendor_transactions_key = preg_replace("/[^0-9]/", '', $field);
 
-            if($this->vendor_amount_group[$vendor_transactions_key]['checkbox'] == false){
-                //remove from vendor_amount_group
-                unset($this->vendor_amount_group[$vendor_transactions_key]);
-            }
-        }
+        //     if($this->vendor_amount_group[$vendor_transactions_key]['checkbox'] == false){
+        //         //remove from vendor_amount_group
+        //         unset($this->vendor_amount_group[$vendor_transactions_key]);
+        //     }
+        // }
 
         $this->validateOnly($field);
     }
@@ -61,14 +61,14 @@ class BulkMatch extends Component
 
     // public function updatedAnyAmount($value)
     // {
-    //     $this->any_amount = $value;
+
     //     $this->amount = NULL;
     // }
 
     // public function updatedAmount($value)
     // {
     //     if(empty($value)){
-    //         $this->any_amount = FALSE;
+
     //         $this->amount = NULL;
     //     }
     // }

@@ -28,6 +28,20 @@ class PaymentForm extends Form
     {
         $this->payment = $payment;
 
+        if($this->payment->payments_grouped->isEmpty()){
+            // $payments = $this->payment->payments_grouped;
+            // $payments->push($this->payment);
+            $parent_payment = Payment::where('parent_client_payment_id', $this->payment->id)->get();
+            $parent_payment->push($this->payment);
+            $payments->push($parent_payment);
+        }else{
+            $payments = $this->payment->payments_grouped;
+        }
+
+        dd($payments);
+        // $this->payment = $payment;
+        dd("in past");
+
         $this->date = $this->payment->date->format('Y-m-d');
         $this->invoice = $this->payment->reference;
         $this->note = $this->payment->note;

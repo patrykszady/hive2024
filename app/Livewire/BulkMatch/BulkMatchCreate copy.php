@@ -4,23 +4,23 @@ namespace App\Livewire\BulkMatch;
 
 use App\Models\Vendor;
 use App\Models\Expense;
-use App\Models\Distribution;
 use App\Models\Transaction;
 use App\Models\TransactionBulkMatch;
 
 use App\Livewire\Forms\BulkMatchForm;
 
-use Flux;
-
 use Livewire\Component;
-use Livewire\Attributes\Computed;
 
 class BulkMatchCreate extends Component
 {
     public BulkMatchForm $form;
 
+    public $new_vendors = [];
+    public $existing_vendors = [];
+    public $distributions = [];
     public $new_vendor = NULL;
     // public $split = FALSE;
+    public $showModal = FALSE;
 
     public $split = FALSE;
     public $splits_count = 0;
@@ -41,19 +41,31 @@ class BulkMatchCreate extends Component
         ];
     }
 
+    public function mount($distributions, $vendors)
+    {
+        // dd($this->split);
+        $this->distributions = $distributions;
+
+        $transactions =
+            Transaction::whereHas('vendor')->whereDoesntHave('expense')->whereNull('check_number')->whereNotNull('posted_date')->where('posted_date', '<', today()->subDays(3)->format('Y-m-d'))
+                ->get()->groupBy('vendor_id');
+
+        $expenses_no_project =
+            Expense::whereHas('vendor')->whereDoesntHave('splits')->where('project_id', "0")->whereNull('distribution_id')
+                ->get()->groupBy('vendor_id');
+
+        $this->new_vendors = Vendor::whereIn('id', $transactions->keys())->orWhereIn('id', $expenses_no_project->keys())->where('business_type', 'Retail')->orderBy('business_name')->get();
+        $this->existing_vendors = Vendor::whereIn('id', $vendors)->get();
+    }
+
     public function updated($field, $value)
     {
-        // if($field == 'form.amount_type' && $value == 'NEW'){
-        //     $this->form->amount = NULL;
-        //     $this->form->amount_type = 'ANY';
-        // }
-        // dd($field, $value);
-        // if($field == 'form.amount_type' && $value == TRUE){
-        //     $this->form->amount = NULL;
-        //     $this->form->amount_type = NULL;
-        // }elseif($field == 'form.amount_type' && $value == FALSE){
-        //     $this->form->amount_type = 'ANY';
-        // }
+        if($field == 'form.any_amount' && $value == TRUE){
+            $this->form->amount = NULL;
+            $this->form->amount_type = NULL;
+        }elseif($field == 'form.any_amount' && $value == FALSE){
+            $this->form->amount_type = '=';
+        }
 
         if($field == 'form.vendor_id' && $value != NULL && !isset($this->form->match)){
             $this->new_vendor = Vendor::findOrFail($value);
@@ -94,33 +106,6 @@ class BulkMatchCreate extends Component
         $this->validateOnly($field);
     }
 
-    #[Computed]
-    public function new_vendors()
-    {
-        $transactions =
-            Transaction::whereHas('vendor')->whereDoesntHave('expense')->whereNull('check_number')->whereNotNull('posted_date')->where('posted_date', '<', today()->subDays(3)->format('Y-m-d'))
-                ->get()->groupBy('vendor_id');
-
-        $expenses_no_project =
-            Expense::whereHas('vendor')->whereDoesntHave('splits')->where('project_id', "0")->whereNull('distribution_id')
-                ->get()->groupBy('vendor_id');
-
-        return Vendor::whereIn('id', $transactions->keys())->orWhereIn('id', $expenses_no_project->keys())->where('business_type', 'Retail')->orderBy('business_name')->get();
-        // $this->existing_vendors = Vendor::whereIn('id', $vendors)->get();
-    }
-
-    #[Computed]
-    public function vendors()
-    {
-        return Vendor::where('business_type', 'Retail')->get();
-    }
-
-    #[Computed]
-    public function distributions()
-    {
-        return Distribution::all();
-    }
-
     public function bulkSplits()
     {
         $this->bulk_splits = collect();
@@ -148,14 +133,7 @@ class BulkMatchCreate extends Component
         $this->splits_count = 0;
         $this->bulk_splits = [];
         $this->form->reset();
-
-        $this->view_text = [
-            'card_title' => 'Add New Automatic Bulk Match',
-            'button_text' => 'Create Bulk Match',
-            'form_submit' => 'save',
-        ];
-
-        $this->modal('bulk_match_form_modal')->show();
+        $this->showModal = TRUE;
     }
 
     public function updateMatch(TransactionBulkMatch $match)
@@ -174,12 +152,12 @@ class BulkMatchCreate extends Component
         }
 
         $this->view_text = [
-            'card_title' => 'Edit ' . $match->vendor->name .' Bulk Match',
+            'card_title' => 'Edit New Automatic Bulk Match',
             'button_text' => 'Edit Bulk Match',
             'form_submit' => 'edit',
         ];
 
-        $this->modal('bulk_match_form_modal')->show();
+        $this->showModal = TRUE;
     }
 
     public function remove()
@@ -194,7 +172,6 @@ class BulkMatchCreate extends Component
 
     public function edit()
     {
-        dd('in edit');
         $this->form->update();
         //refresh main component of transactions/bulk_match
         $this->dispatch('refreshComponent')->to('transactions.bulk-match');
@@ -208,17 +185,11 @@ class BulkMatchCreate extends Component
     public function save()
     {
         $this->form->store();
-        $this->dispatch('refreshComponent')->to('bulk-match.bulk-match');
-
-        $this->modal('bulk_match_form_modal')->close();
-
-        Flux::toast(
-            duration: 5000,
-            position: 'top right',
-            variant: 'success',
-            heading: 'Match Created',
-            // route / href / wire:click
-            text: '',
+        $this->dispatch('refreshComponent')->to('transactions.bulk-match');
+        $this->showModal = FALSE;
+        $this->dispatch('notify',
+            type: 'success',
+            content: 'Match Saved'
         );
     }
 

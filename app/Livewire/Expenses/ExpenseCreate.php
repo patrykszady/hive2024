@@ -267,7 +267,7 @@ class ExpenseCreate extends Component
         // UpdateProjectDistributionsAmount::dispatch($expense->project, $expense->project->distributions->pluck('id')->toArray());
 
         Flux::toast(
-            duration: 10000,
+            duration: 5000,
             position: 'top right',
             variant: 'success',
             heading: 'Expense Updated.',

@@ -33,4 +33,9 @@ class Payment extends Model
     {
         return $this->belongsTo(Transaction::class);
     }
+
+    public function payments_grouped()
+    {
+        return $this->hasMany(Payment::class, 'id', 'parent_client_payment_id');
+    }
 }

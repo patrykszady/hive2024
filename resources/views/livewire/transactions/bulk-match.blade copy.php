@@ -1,6 +1,6 @@
 <flux:card class="w-full px-4 sm:px-6 lg:max-w-xl lg:px-8 pb-5 mb-1}}">
     <div class="flex justify-between">
-        <flux:heading size="lg">Vendor Recurring Transactions</flux:heading>
+        <flux:heading size="lg">Vendor Bulk Transaction Match</flux:heading>
         <flux:button wire:click="$dispatchTo('bulk-match.bulk-match-create', 'newMatch')" size="sm" icon="plus">New Bulk Match</flux:button>
     </div>
     <flux:subheading class>Bulk Match Transactions for Retail Vendors. Manual Match Below.</flux:subheading>
@@ -32,5 +32,5 @@
     </flux:table>
 
     {{--  :distributions="$distributions" :vendors="$bulk_matches->unique('vendor.id')->pluck('vendor.id')" --}}
-    <livewire:bulk-match.bulk-match-create />
+    <livewire:bulk-match.bulk-match-create :distributions="$distributions" :vendors="$bulk_matches->unique('vendor.id')->pluck('vendor.id')" />
 </flux:card>

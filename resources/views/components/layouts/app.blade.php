@@ -131,11 +131,7 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
         </flux:header>
 
-        <flux:main
-            @class([
-                '!p-0 !lg:p-0' => Route::is(['planner.index'])
-            ])
-            >
+        <flux:main>
             {{ $slot }}
         </flux:main>
 

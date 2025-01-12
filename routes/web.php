@@ -66,7 +66,7 @@ use App\Livewire\Entry\Registration;
 use App\Livewire\Entry\VendorRegistration;
 
 use App\Livewire\Transactions\MatchVendor;
-use App\Livewire\BulkMatch\BulkMatch;
+use App\Livewire\BulkMatch\BulkMatchIndex;
 
 use App\Livewire\Expenses\ExpenseIndex;
 use App\Livewire\Expenses\ExpenseShow;
@@ -169,7 +169,7 @@ Route::get('receipts/amazon_orders_api', [ReceiptController::class, 'amazon_orde
 
 Route::get('insurance/find_insurance_dates', [VendorDocsController::class, 'find_insurance_dates']);
 
-Route::get('transactions/bulk_match', BulkMatch::class)->name('transactions.bulk_match');
+Route::get('transactions/bulk_match', BulkMatchIndex::class)->name('transactions.bulk_match');
 //plaid webhooks
 // Route::post('plaid_webhooks', 'TransactionController@plaid_webhooks');
 // Route::get('fire_webhook', 'TransactionController@fire_webhook');

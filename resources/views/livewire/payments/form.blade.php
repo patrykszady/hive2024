@@ -7,13 +7,11 @@
 
     <form wire:submit="{{$view_text['form_submit']}}" class="grid gap-6">
         {{-- CLIENT --}}
-        <div x-data="{ view: @entangle('view') }">
-            <flux:select x-bind:disabled="view" label="Client" wire:model.live="client_id" variant="listbox" searchable placeholder="Choose client...">
-                @foreach($this->clients as $client)
-                    <flux:option value="{{$client->id}}">{{$client->name}}</flux:option>
-                @endforeach
-            </flux:select>
-        </div>
+        <flux:select x-bind:disabled="{{$view_text['form_submit'] === 'update'}}" label="Client" wire:model.live="client_id" variant="listbox" searchable placeholder="Choose client...">
+            @foreach($this->clients as $client)
+                <flux:option value="{{$client->id}}">{{$client->name}}</flux:option>
+            @endforeach
+        </flux:select>
 
         <div
             x-data="{ open: @entangle('client_id') }"
@@ -59,7 +57,7 @@
                         <div>
                             <flux:input.group>
                                 <flux:input.group.prefix>$</flux:input.group.prefix>
-                                <flux:input wire:model.live="projects.{{$index}}.amount" type="number" inputmode="decimal" step="0.01" />
+                                <flux:input wire:model.live="projects.{{$index}}.amount" :key="$index" type="number" inputmode="decimal" step="0.01" placeholder="99.99" />
                             </flux:input.group>
                         </div>
                     </div>

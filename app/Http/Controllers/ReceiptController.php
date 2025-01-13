@@ -1811,11 +1811,7 @@ class ReceiptController extends Controller
         }
 
         //PO NUMBER
-        if(isset($ocr_receipt_extract_prefix['PurchaseOrder'])){
-            $purchase_order_number = $ocr_receipt_extract_prefix['PurchaseOrder']['valueString'];
-        }else{
-            $purchase_order_number = NULL;
-        }
+        $purchase_order_number = $ocr_receipt_extract_prefix['PurchaseOrder']['valueString'] ?? NULL;
 
         //TOTAL TAX
         if(isset($ocr_receipt_extract_prefix['TotalTax'])){

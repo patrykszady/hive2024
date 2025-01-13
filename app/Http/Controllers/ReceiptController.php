@@ -850,7 +850,7 @@ class ReceiptController extends Controller
             //         ->execute();
             // dd($user_hive_folder);
 
-            if(env('APP_ENV') == 'production'){
+            if(env('APP_ENV') === 'production'){
                 //6-12-2023 6-27-2023 6-6-2024 exclude ones already read ... save $message->getId() to a (temp) database/log file?...
                 $messages_inbox = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/inbox/messages?top=20")
                     ->setReturnType(Message::class)
@@ -1411,7 +1411,6 @@ class ReceiptController extends Controller
             $doc_type = 'jpg';
         }
 
-        // dd('here, doc saved in folder');
         //ocr the file
         $document_model = $receipt->options['document_model'];
         $ocr_receipt_extracted = $this->azure_receipts($ocr_path, $doc_type, $document_model);
@@ -1470,6 +1469,8 @@ class ReceiptController extends Controller
                 }else{
                     $purchase_order = trim($matches[1]);
                 }
+            }elseif(isset($ocr_receipt_data['fields']['purchase_order'])){
+                $purchase_order = $ocr_receipt_data['fields']['purchase_order'];
             }else{
                 $purchase_order = NULL;
             }
@@ -1684,7 +1685,7 @@ class ReceiptController extends Controller
 
         $azure_api_key = env('AZURE_DI_API_KEY');
         $azure_api_version = env('AZURE_DI_VERSION');
-        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_DI_ENDPOINT') . "/documentintelligence/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
+        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_DI_ENDPOINT') . "/documentintelligence/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version . '&features=queryFields&queryFields=PurchaseOrder');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $file);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -1762,6 +1763,8 @@ class ReceiptController extends Controller
         // }else{
         //     $tip_amount = NULL;
         // }
+
+        // dd($ocr_receipt_extracted);
 
         //HANDWRITTEN
         $handwritten_notes = [];
@@ -1890,7 +1893,7 @@ class ReceiptController extends Controller
         if(isset($ocr_receipt_extract_prefix['SubTotal'])){
             $subtotal = $ocr_receipt_extract_prefix['SubTotal']['valueCurrency']['amount'];
         }elseif(isset($ocr_receipt_extract_prefix['Subtotal'])){
-            if(isset($ocr_receipt_extract_prefix['Subtotal']['valueNumber'])){
+            if(isset($ocr_receipt_extract_prefix['Subtotal']['valueCurrency'])){
                 $subtotal = $ocr_receipt_extract_prefix['Subtotal']['valueCurrency']['amount'];
             }else{
                 $subtotal = NULL;
@@ -1903,40 +1906,62 @@ class ReceiptController extends Controller
         if(isset($ocr_receipt_extract_prefix['Items'])){
             $items = $ocr_receipt_extract_prefix['Items']['valueArray'];
 
+            $formatted_items = [];
             foreach($items as $key => $line_item){
+                // if($key == 1){
+                    // dd($line_item['valueObject']);
+                $formatted_items[$key]['Description'] = $line_item['valueObject']['Description']['valueString'];
+                $formatted_items[$key]['ProductCode'] = $line_item['valueObject']['ProductCode']['valueString'];
+                $formatted_items[$key]['TotalPrice'] = $line_item['valueObject']['TotalPrice']['valueCurrency']['amount'];
+
                 if(isset($line_item['valueObject']['Quantity'])){
-                    if($key == 1){
-                        $quantity = $line_item['valueObject']['Quantity']['valueNumber'];
-
-                        if(isset($line_item['valueObject']['Price']['valueNumber'])){
-                            $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
-                        }elseif(isset($line_item['valueObject']['UnitPrice'])){
-                            $line_item_price = $line_item['valueObject']['UnitPrice']['valueCurrency']['amount'];
-                        }else{
-                            $line_item_price = 0;
-                        }
-
-                        if(isset($line_item['valueObject']['TotalPrice'])){
-                            $total_price = $line_item['valueObject']['TotalPrice']['valueCurrency']['amount'];
-                        }elseif(isset($line_item['valueObject']['Amount'])){
-                            $total_price = $line_item['valueObject']['Amount']['valueCurrency']['amount'];
-                        }else{
-                            $total_price = 0;
-                        }
-
-                        if($line_item_price == "0" && $total_price == "0"){
-                            $items[$key]['valueObject']['TotalPrice']['valueCurrency']['amount'] = "0.00";
-                        }else{
-                            if($line_item_price != "0"){
-                                $line_item_total = $quantity * $line_item_price;
-                                if($line_item_total != $total_price){
-                                    $items[$key]['valueObject']['TotalPrice']['valueCurrency']['amount'] = $line_item_total;
-                                }
-                            }
-                        }
-                    }
+                    $formatted_items[$key]['Quantity'] = $line_item['valueObject']['Quantity']['valueNumber'];
+                }else{
+                    $formatted_items[$key]['Quantity'] = 1;
                 }
+
+                //price each
+                if(isset($line_item['valueObject']['Price'])){
+                    $formatted_items[$key]['Price'] = $line_item['valueObject']['Price']['valueCurrency']['amount'];
+                }else{
+                    $formatted_items[$key]['Price'] = $formatted_items[$key]['TotalPrice'];
+                }
+                // }
+                // if(isset($line_item['valueObject']['Quantity'])){
+                //     if($key == 1){
+                //         $quantity = $line_item['valueObject']['Quantity']['valueNumber'];
+
+                //         if(isset($line_item['valueObject']['Price']['valueNumber'])){
+                //             $line_item_price = $line_item['valueObject']['Price']['valueNumber'];
+                //         }elseif(isset($line_item['valueObject']['UnitPrice'])){
+                //             $line_item_price = $line_item['valueObject']['UnitPrice']['valueCurrency']['amount'];
+                //         }else{
+                //             $line_item_price = 0;
+                //         }
+
+                //         if(isset($line_item['valueObject']['TotalPrice'])){
+                //             $total_price = $line_item['valueObject']['TotalPrice']['valueCurrency']['amount'];
+                //         }elseif(isset($line_item['valueObject']['Amount'])){
+                //             $total_price = $line_item['valueObject']['Amount']['valueCurrency']['amount'];
+                //         }else{
+                //             $total_price = 0;
+                //         }
+
+                //         if($line_item_price == "0" && $total_price == "0"){
+                //             $items[$key]['valueObject']['TotalPrice']['valueCurrency']['amount'] = "0.00";
+                //         }else{
+                //             if($line_item_price != "0"){
+                //                 $line_item_total = $quantity * $line_item_price;
+                //                 if($line_item_total != $total_price){
+                //                     $items[$key]['valueObject']['TotalPrice']['valueCurrency']['amount'] = $line_item_total;
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
             }
+
+            // dd($formatted_items);
         }else{
             $items = NULL;
         }
@@ -1989,7 +2014,7 @@ class ReceiptController extends Controller
         $ocr_receipt_data = [
             'content' => $ocr_receipt_extracted['content'],
             'fields' => [
-                'items' => $items,
+                'items' => $formatted_items,
                 'subtotal' => $subtotal,
                 'total' => $amount,
                 'total_tax' => $total_tax,
@@ -2030,19 +2055,18 @@ class ReceiptController extends Controller
                         $expense_receipt->expense_id = $expense_id;
                         $expense_receipt->receipt_filename = $filename_attached;
                         $expense_receipt->receipt_html = $ocr_receipt_data['content'];
-                        $expense_receipt->receipt_items = json_encode($ocr_receipt_data['fields']);
+                        $expense_receipt->receipt_items = $ocr_receipt_data['fields'];
                         $expense_receipt->save();
                     }
                 }
             }else{
-                // dd('in if else');
                 //use created file from ocr
                 //SAVE expense_receipt_data for each attachment
                 $expense_receipt = new ExpenseReceipts;
                 $expense_receipt->expense_id = $expense_id;
                 $expense_receipt->receipt_filename = $filename;
                 $expense_receipt->receipt_html = $ocr_receipt_data['content'];
-                $expense_receipt->receipt_items = json_encode($ocr_receipt_data['fields']);
+                $expense_receipt->receipt_items = $ocr_receipt_data['fields'];
                 $expense_receipt->save();
             }
         }else{
@@ -2052,7 +2076,7 @@ class ReceiptController extends Controller
             $expense_receipt->expense_id = $expense_id;
             $expense_receipt->receipt_filename = $filename;
             $expense_receipt->receipt_html = $ocr_receipt_data['content'];
-            $expense_receipt->receipt_items = json_encode($ocr_receipt_data['fields']);
+            $expense_receipt->receipt_items = $ocr_receipt_data['fields'];
             $expense_receipt->save();
         }
 

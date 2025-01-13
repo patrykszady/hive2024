@@ -223,14 +223,14 @@
                                     <flux:rows>
                                         @foreach($expense->receipts()->latest()->first()->receipt_items->items as $line_item)
                                             <flux:row>
-                                                <flux:cell colspan="4">{{$line_item->desc}}</flux:cell>
+                                                <flux:cell colspan="4">{{$line_item->Description}}</flux:cell>
                                             </flux:row>
                                             <flux:row>
                                                 {{-- 09/28/24 URL TO ITEM --}}
-                                                <flux:cell class="text-right"><i>{{$line_item->product_code}}</i></flux:cell>
-                                                <flux:cell>{{money($line_item->price_each)}}</flux:cell>
-                                                <flux:cell>{{$line_item->quantity}}</flux:cell>
-                                                <flux:cell variant="strong">{{money($line_item->price_total)}}</flux:cell>
+                                                <flux:cell class="text-right"><i>{{$line_item->ProductCode}}</i></flux:cell>
+                                                <flux:cell>{{money($line_item->Price)}}</flux:cell>
+                                                <flux:cell>{{$line_item->Quantity}}</flux:cell>
+                                                <flux:cell variant="strong">{{money($line_item->TotalPrice)}}</flux:cell>
                                             </flux:row>
 
                                         @endforeach
@@ -242,17 +242,17 @@
                                 <dl class="divide-y divide-gray-100 space-y-3">
                                     <div class="py-3 grid grid-cols-3 gap-4">
                                         <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Subtotal</dt>
-                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->subtotal)}}</dd>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->receipt_items->subtotal)}}</dd>
                                     </div>
 
                                     <div class="py-3 grid grid-cols-3 gap-4">
                                         <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Tax</dt>
-                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->tax)}}</dd>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->receipt_items->total_tax)}}</dd>
                                     </div>
 
                                     <div class="py-3 grid grid-cols-3 gap-4">
                                         <dt class="text-sm font-medium text-gray-900 col-start-2 col-span-1 text-right">Total</dt>
-                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->total)}}</dd>
+                                        <dd class="text-sm text-gray-700 col-start-3 col-span-1">{{money($expense->receipts()->latest()->first()->receipt_items->total)}}</dd>
                                     </div>
                                 </dl>
                             @endif

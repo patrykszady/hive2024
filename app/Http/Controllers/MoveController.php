@@ -59,21 +59,138 @@ class MoveController extends Controller
         //         $wrong_expenses[] = $expense;
         //     }
         // }
+        //->where('id', 14956)
+        $receipts = ExpenseReceipts::whereNotNull('receipt_items')->get();
+
+        // dd($receipts->first());
+        foreach($receipts as $key => $receipt){
+            // dd($receipt->receipt_items);
+            //TAX
+            // $total_tax = $receipt->receipt_items->total_tax;
+            dd($receipt->receipt_items);
+            if(isset($receipt->receipt_items->TotalTax)){
+                if(isset($receipt->receipt_items->TotalTax->valueCurrency)){
+                    $total_tax = $ocr_receipt_extract_prefix['TotalTax']['valueCurrency']['amount'];
+                }elseif(isset($ocr_receipt_extract_prefix['TotalTax']['valueNumber'])){
+                    $total_tax = $ocr_receipt_extract_prefix['TotalTax']['valueNumber'];
+                }else{
+                    $total_tax = NULL;
+                }
+            }else{
+                $total_tax = NULL;
+            }
+
+            //SUBTOTAL
+            if(isset($receipt->receipt_items->subtotal)){
+                if(isset($receipt->receipt_items->subtotal->valueCurrency)){
+                    $subtotal = $receipt->receipt_items->subtotal->valueCurrency->amount;
+                }elseif(isset($receipt->receipt_items->subtotal->valueNumber)){
+                    $subtotal = $receipt->receipt_items->subtotal->valueNumber;
+                }else{
+                    $subtotal = NULL;
+                }
+            }else{
+                $subtotal = NULL;
+            }
+
+            //AMOUNT
+            if(isset($receipt->receipt_items->total)){
+                if(isset($receipt->receipt_items->total->valueCurrency)){
+                    $amount = $receipt->receipt_items->total->valueCurrency->amount;
+                }elseif(isset($receipt->receipt_items->total->valueNumber)){
+                    $amount = $receipt->receipt_items->total->valueNumber;
+                }else{
+                    $amount = NULL;
+                }
+            }elseif(isset($receipt->receipt_items->InvoiceTotal)){
+                $amount = $receipt->receipt_items->InvoiceTotal->valueCurrency->amount;
+            }elseif(isset($receipt->receipt_items->SubTotal) && isset($receipt->receipt_items->TotalTax)){
+                $amount = $receipt->receipt_items->SubTotal->valueCurrency->amount + $receipt->receipt_items->TotalTax->valueCurrency->amount;
+            }else{
+                $amount = NULL;
+            }
+
+            $merchant_name = $receipt->receipt_items->merchant_name;
+            $transaction_date = $receipt->receipt_items->transaction_date;
+
+            $invoice_number = $receipt->receipt_items->invoice_number ?? NULL;
+            $purchase_order = $receipt->receipt_items->purchase_order ?? NULL;
+            $handwritten_notes = $receipt->receipt_items->handwritten_notes ?? NULL;
+
+            $formatted_items = [];
+            foreach($receipt->receipt_items->items as $line_item){
+                $formatted_items[$key]['Description'] = isset($line_item->valueObject->Description->valueString) ? $line_item->valueObject->Description->valueString : NULL;
+                $formatted_items[$key]['ProductCode'] = isset($line_item->valueObject->ProductCode) ? $line_item->valueObject->ProductCode->valueString : NULL;
+
+                if(isset($line_item->valueObject->TotalPrice)){
+                    $formatted_items[$key]['TotalPrice'] = $line_item->valueObject->TotalPrice->valueNumber;
+                }else{
+                    if(isset($line_item->valueObject->TotalPrice)){
+                        $formatted_items[$key]['TotalPrice'] = $line_item->valueObject->TotalPrice->valueNumber;
+                    }elseif(isset($line_item->valueObject->Amount)){
+                        $formatted_items[$key]['TotalPrice'] = $line_item->valueObject->Amount->valueCurrency->amount;
+                    }else{
+                        $formatted_items[$key]['TotalPrice'] = NULL;
+                    }
+                }
+
+                //quantity
+                if(isset($line_item->valueObject->Quantity)){
+                    $formatted_items[$key]['Quantity'] = $line_item->valueObject->Quantity->valueNumber;
+                }else{
+                    $formatted_items[$key]['Quantity'] = 1;
+                }
+
+                //price each
+                if(isset($line_item->valueObject->Price)){
+                    if(isset($line_item->valueObject->Price->valueNumber)){
+                        $formatted_items[$key]['Price'] = $line_item->valueObject->Price->valueNumber;
+                    }elseif(isset($line_item->valueObject->Price->valueCurrency)){
+                        $formatted_items[$key]['Price'] = $line_item->valueObject->Price->valueCurrency->amount;
+                    }
+                }else{
+                    $formatted_items[$key]['Price'] = $formatted_items[$key]['TotalPrice'];
+                }
+
+
+                // $receipt->receipt_items->items = $formatted_items;
+                // $receipt->save();
+            }
+
+            $receipt->receipt_items = [
+                'items' => $formatted_items,
+                'subtotal' => $subtotal,
+                'total' => $amount,
+                'total_tax' => $total_tax,
+                'transaction_date' => $transaction_date,
+                'merchant_name' => $merchant_name,
+                'invoice_number' => $invoice_number,
+                'merchant_name' => $merchant_name,
+                'purchase_order' => $purchase_order,
+                'handwritten_notes' => $handwritten_notes,
+            ];
+
+
+            // dd($receipt->receipt_items);
+            // [$formatted_items, $amount, $subtotal, $total_tax, $merchant_name, $transaction_date];
+            $receipt->save();
+        }
+
 
         // dd($wrong_expenses);
 
-        $sections = EstimateLineItem::whereHas('section')->get()->groupBy('section_id');
+        // $sections = EstimateLineItem::whereHas('section')->get()->groupBy('section_id');
 
-        foreach($sections as $section_items){
-            if(!is_null($section_items)){
-                $iteration = 0;
-                foreach($section_items as $item){
-                    $item->order = $iteration++;
-                    $item->timestamps = false;
-                    $item->save();
-                }
-            }
-        }
+        // foreach($sections as $section_items){
+        //     if(!is_null($section_items)){
+        //         $iteration = 0;
+        //         foreach($section_items as $item){
+        //             $item->order = $iteration++;
+        //             $item->timestamps = false;
+        //             $item->save();
+        //         }
+        //     }
+        // }
 
         dd('done');
         //->first()->sum('amount')

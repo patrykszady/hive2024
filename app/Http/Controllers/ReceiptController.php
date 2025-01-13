@@ -1910,9 +1910,9 @@ class ReceiptController extends Controller
             foreach($items as $key => $line_item){
                 // if($key == 1){
                     // dd($line_item['valueObject']);
-                $formatted_items[$key]['Description'] = $line_item['valueObject']['Description']['valueString'] ?? : NULL;
-                $formatted_items[$key]['ProductCode'] = $line_item['valueObject']['ProductCode']['valueString'] ?? : NULL;
-                $formatted_items[$key]['TotalPrice'] = $line_item['valueObject']['TotalPrice']['valueCurrency']['amount'] ?? : NULL;
+                $formatted_items[$key]['Description'] = $line_item['valueObject']['Description']['valueString'] ?? NULL;
+                $formatted_items[$key]['ProductCode'] = $line_item['valueObject']['ProductCode']['valueString'] ?? NULL;
+                $formatted_items[$key]['TotalPrice'] = $line_item['valueObject']['TotalPrice']['valueCurrency']['amount'] ?? NULL;
 
                 if(isset($line_item['valueObject']['Quantity'])){
                     $formatted_items[$key]['Quantity'] = $line_item['valueObject']['Quantity']['valueNumber'];

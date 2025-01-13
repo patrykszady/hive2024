@@ -37,10 +37,10 @@
                                         :disabled="isset($line_item->split_index) ? $line_item->split_index != $index : FALSE"
                                         />
                                 </flux:cell>
-                                <flux:cell>{{Str::limit($line_item->desc, 20)}}</flux:cell>
-                                <flux:cell>{{money($line_item->price_each)}}</flux:cell>
-                                <flux:cell>{{$line_item->quantity}}</flux:cell>
-                                <flux:cell variant="strong" class="{{isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'text-gray-200' : 'text-gray-500' : 'text-gray-500'}} whitespace-nowrap">{{money($line_item->price_total)}}</flux:cell>
+                                <flux:cell>{{Str::limit($line_item->Description, 20)}}</flux:cell>
+                                <flux:cell>{{money($line_item->Price)}}</flux:cell>
+                                <flux:cell>{{$line_item->Quantity}}</flux:cell>
+                                <flux:cell variant="strong" class="{{isset($line_item->split_index) ? $line_item->split_index != $index || $line_item->split_index == NULL ? 'text-gray-200' : 'text-gray-500' : 'text-gray-500'}} whitespace-nowrap">{{money($line_item->TotalPrice)}}</flux:cell>
                             </flux:row>
                         @endforeach
                     </flux:rows>

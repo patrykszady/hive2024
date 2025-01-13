@@ -27,26 +27,26 @@ class ExpenseReceipts extends Model
         return $this->belongsTo(Expense::class);
     }
 
-    // public function getNotesAttribute($value)
-    // {
-    //     if(!empty($this->receipt_items->handwritten_notes)){
-    //         $handwritten_notes = $this->receipt_items->handwritten_notes;
-    //         $handwritten_notes = implode(' | ', $handwritten_notes);
-    //     }else{
-    //         $handwritten_notes = FALSE;
-    //     }
+    public function getNotesAttribute($value)
+    {
+        if(!empty($this->receipt_items->handwritten_notes)){
+            $handwritten_notes = $this->receipt_items->handwritten_notes;
+            $handwritten_notes = implode(' | ', $handwritten_notes);
+        }else{
+            $handwritten_notes = FALSE;
+        }
 
-    //     if(isset($this->receipt_items->purchase_order)){
-    //         $purchase_order = $this->receipt_items->purchase_order;
-    //     }else{
-    //         $purchase_order = FALSE;
-    //     }
+        if(isset($this->receipt_items->purchase_order)){
+            $purchase_order = $this->receipt_items->purchase_order;
+        }else{
+            $purchase_order = FALSE;
+        }
 
-    //     $notes = array_filter([$handwritten_notes, $purchase_order]);
-    //     $notes = implode(' | ', $notes);
+        $notes = array_filter([$handwritten_notes, $purchase_order]);
+        $notes = implode(' | ', $notes);
 
-    //     return $notes;
-    // }
+        return $notes;
+    }
 
     public function getReceiptItemsAttribute($value)
     {

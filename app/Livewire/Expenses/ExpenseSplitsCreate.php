@@ -55,9 +55,9 @@ class ExpenseSplitsCreate extends Component
             $tax_rate = round($this->expense_line_items->total_tax / $this->expense_line_items->subtotal, 3);
             $tax_rate = 1 + $tax_rate;
             $expense_total = $this->expense_line_items->total;
-
+            // dd($items, $this->expense_line_items);
             $this->expense_splits->transform(function ($split, $key) use ($items, $tax_rate, $expense_total){
-                $items_total = $items->where('split_index', $key)->whereNotNull('split_index')->sum('price_total');
+                $items_total = $items->where('split_index', $key)->whereNotNull('split_index')->sum('TotalPrice');
                 $total_with_tax = $items_total * $tax_rate;
 
                 //if last item without amount? check total...
@@ -75,6 +75,8 @@ class ExpenseSplitsCreate extends Component
                 }else{
                     $split['amount'] = round($total_with_tax, 2);
                 }
+
+                // dd($split);
 
                 return $split;
             });
@@ -148,8 +150,6 @@ class ExpenseSplitsCreate extends Component
                 $this->expense_splits[$index]['project_id'] = 'D:' . $split['distribution_id'];
             }
         }
-
-        // dd($this->expense_splits);
 
         $this->getSplitsSumProperty();
         $this->modal('expense_splits_form_modal')->show();

@@ -238,7 +238,7 @@ class LeadController extends Controller
                         ],
                         1 => [
                             'from_email' => 'notification@houzz.com',
-                            'from_subject' => ['[Houzz] We’ve matched you with a new project!', 'You have a new message on Houzz'],
+                            'from_subject' => ['[Houzz] We’ve matched you with a new project!', 'You have a new message on Houzz' . '%'],
                             'origin' => 'Houzz',
                             'options' => [
                                 'address' => 'regex',
@@ -261,11 +261,20 @@ class LeadController extends Controller
                         // ->get();
 
                 if(!is_null($email_found)){
-                    if(in_array($message->getSubject(), $email_found['from_subject'])){
-                        $email_found = $email_found;
-                    }else{
-                        continue;
+                    foreach($email_found['from_subject'] as $from_subject){
+                        if(strpos($from_subject, $message->getSubject()) !== FALSE){
+                            $email_found = $email_found;
+                        }else{
+                            //continue... email Subject not a Receipt
+                            //move the failed email?
+                            continue;
+                        }
                     }
+                    // if(in_array($message->getSubject(), $email_found['from_subject'])){
+                    //     $email_found = $email_found;
+                    // }else{
+                    //     // continue;
+                    // }
                 }else{
                     continue;
                 }

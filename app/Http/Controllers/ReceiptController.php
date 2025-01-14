@@ -617,11 +617,11 @@ class ReceiptController extends Controller
                     //ITEMS
                     $items = [];
                     foreach($order['lineItems'] as $key => $item){
-                        $items[$key]['valueObject']['Price']['valueNumber'] = $item['purchasedPricePerUnit']['amount'];
-                        $items[$key]['valueObject']['Quantity']['valueNumber'] = $item['itemQuantity'];
-                        $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $item['itemSubTotal']['amount'] ?? 0.00;
-                        $items[$key]['valueObject']['Description']['valueString'] = $item['title'];
-                        $items[$key]['valueObject']['ProductCode']['valueString'] = $item['asin'];
+                        $items[$key]->Price = $item['purchasedPricePerUnit']['amount'];
+                        $items[$key]->Quantity = $item['itemQuantity'];
+                        $items[$key]->TotalPrice = $item['itemSubTotal']['amount'] ?? 0.00;
+                        $items[$key]->Description = $item['title'];
+                        $items[$key]->ProductCode = $item['asin'];
                     }
 
                     //CHARGES
@@ -641,16 +641,14 @@ class ReceiptController extends Controller
                         'total_tax' => $order['orderTax']['amount'],
                         'invoice_number' => $order['orderId'],
                         'purchase_order' => $order['purchaseOrderNumber'],
-                        'transaction_date' => [
-                            'valueDate' => $order_date,
-                        ],
+                        'transaction_date' => $order_date,
                         'charges' => $charges,
                     ];
 
                     ExpenseReceipts::create([
                         'expense_id' => $expense->id,
                         'receipt_html' => NULL,
-                        'receipt_items' => json_encode($expense_receipt_data),
+                        'receipt_items' => $expense_receipt_data,
                         'receipt_filename' => NULL,
                     ]);
                 }
@@ -737,11 +735,11 @@ class ReceiptController extends Controller
                     //ITEMS
                     $items = [];
                     foreach($transaction['transactionLineItems'] as $key => $item){
-                        $items[$key]['valueObject']['Price']['valueNumber'] = $item['principalAmount']['amount'];
-                        $items[$key]['valueObject']['Quantity']['valueNumber'] = $item['itemQuantity'];
-                        $items[$key]['valueObject']['TotalPrice']['valueNumber'] = $item['totalAmount']['amount'];
-                        $items[$key]['valueObject']['Description']['valueString'] = $item['productTitle'];
-                        $items[$key]['valueObject']['ProductCode']['valueString'] = $item['asin'];
+                        $items[$key]->Price = $item['principalAmount']['amount'];
+                        $items[$key]->Quantity = $item['itemQuantity'];
+                        $items[$key]->TotalPrice = $item['totalAmount']['amount'];
+                        $items[$key]->Description = $item['productTitle'];
+                        $items[$key]->ProductCode = $item['asin'];
                     }
 
                     //CHARGES
@@ -760,16 +758,14 @@ class ReceiptController extends Controller
                         'total_tax' => NULL,
                         'invoice_number' => $order_id,
                         'purchase_order' => $transaction['transactionLineItems'][0]['purchaseOrderNumber'],
-                        'transaction_date' => [
-                            'valueDate' => $order_date,
-                        ],
+                        'transaction_date' => $order_date,
                         'charges' => $charges,
                     ];
 
                     ExpenseReceipts::create([
                         'expense_id' => $expense->id,
                         'receipt_html' => NULL,
-                        'receipt_items' => json_encode($expense_receipt_data),
+                        'receipt_items' => $expense_receipt_data,
                         'receipt_filename' => NULL,
                     ]);
                 }else{

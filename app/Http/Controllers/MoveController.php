@@ -67,7 +67,8 @@ class MoveController extends Controller
             // dd($receipt->receipt_items);
             //TAX
             // $total_tax = $receipt->receipt_items->total_tax;
-            dd($receipt->receipt_items);
+            // dd($receipt->receipt_items->total->valueNumber);
+
             if(isset($receipt->receipt_items->TotalTax)){
                 if(isset($receipt->receipt_items->TotalTax->valueCurrency)){
                     $total_tax = $ocr_receipt_extract_prefix['TotalTax']['valueCurrency']['amount'];
@@ -174,6 +175,7 @@ class MoveController extends Controller
             // dd($receipt->receipt_items);
             // [$formatted_items, $amount, $subtotal, $total_tax, $merchant_name, $transaction_date];
             $receipt->save();
+            // dd($receipt);
         }
 
 

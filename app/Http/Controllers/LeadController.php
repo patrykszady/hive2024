@@ -260,8 +260,12 @@ class LeadController extends Controller
                         // ->where('from_subject', $message->getSubject())
                         // ->get();
 
-                if(in_array($message->getSubject(), $email_found['from_subject'])){
-                    $email_found = $email_found;
+                if(!is_null($email_found)){
+                    if(in_array($message->getSubject(), $email_found['from_subject'])){
+                        $email_found = $email_found;
+                    }else{
+                        continue;
+                    }
                 }else{
                     continue;
                 }

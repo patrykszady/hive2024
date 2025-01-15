@@ -43,12 +43,6 @@ class MoveController extends Controller
 {
     public function move()
     {
-        // $splits = ExpenseSplits::whereBetween('id', [3000, 700000])->forceDelete();
-        // foreach($splits as $split)
-        // {
-        //     $split->forceDelete();
-        // }
-
         //expenses for past year where expense has transactions but transactions->amount is no equal to $expense->amount
         // $YTD = Carbon::now()->subYear();
         // $expenses = Expense::where('vendor_id', '!=', 8)->where('date', '>=', $YTD)->withWhereHas('transactions')->get();
@@ -59,8 +53,9 @@ class MoveController extends Controller
         //         $wrong_expenses[] = $expense;
         //     }
         // }
-        //->where('id', 14956)
-        $receipts = ExpenseReceipts::whereNotNull('receipt_items')->whereDate('updated_at', '<=', '2024-12-31')->orderBy('updated_at', 'DESC')->whereNotIn('id', [14720])->get();
+
+        //->whereNotIn('id', [14720])
+        $receipts = ExpenseReceipts::whereNotNull('receipt_items')->whereBetween('updated_at', ['2025-01-01', '2025-01-14'])->where('receipt_html', '!=', 'NONE')->orderBy('updated_at', 'DESC')->get();
 
         foreach($receipts as $receipt){
             // dd($receipt->receipt_items);
@@ -70,55 +65,58 @@ class MoveController extends Controller
             $formatted_items = [];
             if($receipt->receipt_items->items){
                 foreach($receipt->receipt_items->items as $item_key => $item){
-                    // dd($receipt->receipt_items, $item);
-                    //$item->content
-                    // $formatted_items[$item_key]['Description'] = isset($item->valueObject->Description->valueString) ? $item->valueObject->Description->valueString : NULL;
-                    if(isset($item->valueObject->Description)){
-                        if(isset($item->valueObject->Description->valueString)){
-                            $formatted_items[$item_key]['Description'] = $item->valueObject->Description->valueString;
-                        }else{
-                            dd($receipt, $receipt->receipt_items, $item);
+                    if(isset($item->valueObject)){
+                        // dd($receipt->receipt_items, $item);
+                        //$item->content
+                        // $formatted_items[$item_key]['Description'] = isset($item->valueObject->Description->valueString) ? $item->valueObject->Description->valueString : NULL;
+                        if(isset($item->valueObject->Description)){
+                            if(isset($item->valueObject->Description->valueString)){
+                                $formatted_items[$item_key]['Description'] = $item->valueObject->Description->valueString;
+                            }else{
+                                dd($receipt, $receipt->receipt_items, $item);
+                            }
                         }
-                    }
 
-                    $formatted_items[$item_key]['ProductCode'] = isset($item->valueObject->ProductCode) ? $item->valueObject->ProductCode->valueString : NULL;
+                        $formatted_items[$item_key]['ProductCode'] = isset($item->valueObject->ProductCode) ? $item->valueObject->ProductCode->valueString : NULL;
 
-                    if(isset($item->valueObject->TotalPrice->valueNumber)){
-                        $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->TotalPrice->valueNumber;
-                    }elseif(isset($item->valueObject->TotalPrice->valueCurrency)){
-                        $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->TotalPrice->valueCurrency->amount;
-                    }elseif(isset($item->valueObject->Amount)){
-                        $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->Amount->valueCurrency->amount;
-                    }else{
-                        // dd($receipt, $receipt->receipt_items, $item);
-                        $formatted_items[$item_key]['TotalPrice'] = NULL;
-                    }
-
-                    //quantity
-                    if(isset($line_item->valueObject->Quantity)){
-                        if(isset($line_item->valueObject->Quantity->valueNumber)){
-                            $formatted_items[$item_key]['Description'] = $item->valueObject->Description->valueString;
+                        if(isset($item->valueObject->TotalPrice->valueNumber)){
+                            $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->TotalPrice->valueNumber;
+                        }elseif(isset($item->valueObject->TotalPrice->valueCurrency)){
+                            $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->TotalPrice->valueCurrency->amount;
+                        }elseif(isset($item->valueObject->Amount)){
+                            $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->Amount->valueCurrency->amount;
                         }else{
-                            dd($receipt, $receipt->receipt_items, $item);
+                            // dd($receipt, $receipt->receipt_items, $item);
+                            $formatted_items[$item_key]['TotalPrice'] = NULL;
                         }
-                        $formatted_items[$item_key]['Quantity'] = $item->valueObject->Quantity->valueNumber;
-                    }else{
-                        $formatted_items[$item_key]['Quantity'] = 1;
-                    }
 
-                    //price each
-                    if(isset($item->valueObject->Price)){
-                        if(isset($line_item->valueObject->Price->valueNumber)){
-                            $formatted_items[$item_key]['Price'] = $item->valueObject->Price->valueNumber;
-                        }elseif(isset($item->valueObject->Price->valueCurrency)){
-                            $formatted_items[$item_key]['Price'] = $item->valueObject->Price->valueCurrency->amount;
+                        //quantity
+                        if(isset($line_item->valueObject->Quantity)){
+                            if(isset($line_item->valueObject->Quantity->valueNumber)){
+                                $formatted_items[$item_key]['Description'] = $item->valueObject->Description->valueString;
+                            }else{
+                                dd($receipt, $receipt->receipt_items, $item);
+                            }
+                            $formatted_items[$item_key]['Quantity'] = $item->valueObject->Quantity->valueNumber;
+                        }else{
+                            $formatted_items[$item_key]['Quantity'] = 1;
+                        }
+
+                        //price each
+                        if(isset($item->valueObject->Price)){
+                            if(isset($line_item->valueObject->Price->valueNumber)){
+                                $formatted_items[$item_key]['Price'] = $item->valueObject->Price->valueNumber;
+                            }elseif(isset($item->valueObject->Price->valueCurrency)){
+                                $formatted_items[$item_key]['Price'] = $item->valueObject->Price->valueCurrency->amount;
+                            }else{
+                                $formatted_items[$item_key]['Price'] = $formatted_items[$item_key]['TotalPrice'];
+                            }
                         }else{
                             $formatted_items[$item_key]['Price'] = $formatted_items[$item_key]['TotalPrice'];
                         }
                     }else{
-                        $formatted_items[$item_key]['Price'] = $formatted_items[$item_key]['TotalPrice'];
+                        continue 2;
                     }
-
                 }
 
                 // dd($formatted_items);
@@ -157,7 +155,7 @@ class MoveController extends Controller
                 $handwritten_notes = $receipt->receipt_items->handwritten_notes ?? NULL;
 
                 $receipt->receipt_items = [
-                    'items' => $formatted_items,
+                    'items' => $formatted_items ?? $receipt->receipt_items->items,
                     'subtotal' => $subtotal,
                     'total' => $total,
                     'total_tax' => $total_tax,

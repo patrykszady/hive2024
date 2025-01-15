@@ -60,123 +60,123 @@ class MoveController extends Controller
         //     }
         // }
         //->where('id', 14956)
-        $receipts = ExpenseReceipts::whereNotNull('receipt_items')->get();
+        $receipts = ExpenseReceipts::whereNotNull('receipt_items')->whereDate('updated_at', '<=', '2024-12-31')->orderBy('updated_at', 'DESC')->whereNotIn('id', [14720])->get();
 
-        // dd($receipts->first());
-        foreach($receipts as $key => $receipt){
+        foreach($receipts as $receipt){
             // dd($receipt->receipt_items);
             //TAX
             // $total_tax = $receipt->receipt_items->total_tax;
             // dd($receipt->receipt_items->total->valueNumber);
+            $formatted_items = [];
+            if($receipt->receipt_items->items){
+                foreach($receipt->receipt_items->items as $item_key => $item){
+                    // dd($receipt->receipt_items, $item);
+                    //$item->content
+                    // $formatted_items[$item_key]['Description'] = isset($item->valueObject->Description->valueString) ? $item->valueObject->Description->valueString : NULL;
+                    if(isset($item->valueObject->Description)){
+                        if(isset($item->valueObject->Description->valueString)){
+                            $formatted_items[$item_key]['Description'] = $item->valueObject->Description->valueString;
+                        }else{
+                            dd($receipt, $receipt->receipt_items, $item);
+                        }
+                    }
 
-            if(isset($receipt->receipt_items->TotalTax)){
-                if(isset($receipt->receipt_items->TotalTax->valueCurrency)){
-                    $total_tax = $ocr_receipt_extract_prefix['TotalTax']['valueCurrency']['amount'];
-                }elseif(isset($ocr_receipt_extract_prefix['TotalTax']['valueNumber'])){
-                    $total_tax = $ocr_receipt_extract_prefix['TotalTax']['valueNumber'];
-                }else{
-                    $total_tax = NULL;
+                    $formatted_items[$item_key]['ProductCode'] = isset($item->valueObject->ProductCode) ? $item->valueObject->ProductCode->valueString : NULL;
+
+                    if(isset($item->valueObject->TotalPrice->valueNumber)){
+                        $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->TotalPrice->valueNumber;
+                    }elseif(isset($item->valueObject->TotalPrice->valueCurrency)){
+                        $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->TotalPrice->valueCurrency->amount;
+                    }elseif(isset($item->valueObject->Amount)){
+                        $formatted_items[$item_key]['TotalPrice'] = $item->valueObject->Amount->valueCurrency->amount;
+                    }else{
+                        // dd($receipt, $receipt->receipt_items, $item);
+                        $formatted_items[$item_key]['TotalPrice'] = NULL;
+                    }
+
+                    //quantity
+                    if(isset($line_item->valueObject->Quantity)){
+                        if(isset($line_item->valueObject->Quantity->valueNumber)){
+                            $formatted_items[$item_key]['Description'] = $item->valueObject->Description->valueString;
+                        }else{
+                            dd($receipt, $receipt->receipt_items, $item);
+                        }
+                        $formatted_items[$item_key]['Quantity'] = $item->valueObject->Quantity->valueNumber;
+                    }else{
+                        $formatted_items[$item_key]['Quantity'] = 1;
+                    }
+
+                    //price each
+                    if(isset($item->valueObject->Price)){
+                        if(isset($line_item->valueObject->Price->valueNumber)){
+                            $formatted_items[$item_key]['Price'] = $item->valueObject->Price->valueNumber;
+                        }elseif(isset($item->valueObject->Price->valueCurrency)){
+                            $formatted_items[$item_key]['Price'] = $item->valueObject->Price->valueCurrency->amount;
+                        }else{
+                            $formatted_items[$item_key]['Price'] = $formatted_items[$item_key]['TotalPrice'];
+                        }
+                    }else{
+                        $formatted_items[$item_key]['Price'] = $formatted_items[$item_key]['TotalPrice'];
+                    }
+
                 }
-            }else{
-                $total_tax = NULL;
-            }
 
-            //SUBTOTAL
-            if(isset($receipt->receipt_items->subtotal)){
-                if(isset($receipt->receipt_items->subtotal->valueCurrency)){
-                    $subtotal = $receipt->receipt_items->subtotal->valueCurrency->amount;
-                }elseif(isset($receipt->receipt_items->subtotal->valueNumber)){
-                    $subtotal = $receipt->receipt_items->subtotal->valueNumber;
+                // dd($formatted_items);
+
+                $total = $receipt->receipt_items->total ?? NULL;
+                // $subtotal = $receipt->receipt_items->subtotal ?? NULL;
+                //SUBTOTAL
+                if(isset($receipt->receipt_items->subtotal)){
+                    if(isset($receipt->receipt_items->subtotal->valueCurrency)){
+                        $subtotal = $receipt->receipt_items->subtotal->valueCurrency->amount;
+                    }elseif(isset($receipt->receipt_items->subtotal->valueNumber)){
+                        $subtotal = $receipt->receipt_items->subtotal->valueNumber;
+                    }else{
+                        $subtotal = $receipt->receipt_items->subtotal;
+                    }
                 }else{
+                    // dd($receipt->receipt_items);
                     $subtotal = NULL;
                 }
-            }else{
-                $subtotal = NULL;
-            }
 
-            //AMOUNT
-            if(isset($receipt->receipt_items->total)){
-                if(isset($receipt->receipt_items->total->valueCurrency)){
-                    $amount = $receipt->receipt_items->total->valueCurrency->amount;
-                }elseif(isset($receipt->receipt_items->total->valueNumber)){
-                    $amount = $receipt->receipt_items->total->valueNumber;
-                }else{
-                    $amount = NULL;
-                }
-            }elseif(isset($receipt->receipt_items->InvoiceTotal)){
-                $amount = $receipt->receipt_items->InvoiceTotal->valueCurrency->amount;
-            }elseif(isset($receipt->receipt_items->SubTotal) && isset($receipt->receipt_items->TotalTax)){
-                $amount = $receipt->receipt_items->SubTotal->valueCurrency->amount + $receipt->receipt_items->TotalTax->valueCurrency->amount;
-            }else{
-                $amount = NULL;
-            }
-
-            $merchant_name = $receipt->receipt_items->merchant_name;
-            $transaction_date = $receipt->receipt_items->transaction_date;
-
-            $invoice_number = $receipt->receipt_items->invoice_number ?? NULL;
-            $purchase_order = $receipt->receipt_items->purchase_order ?? NULL;
-            $handwritten_notes = $receipt->receipt_items->handwritten_notes ?? NULL;
-
-            $formatted_items = [];
-            foreach($receipt->receipt_items->items as $line_item){
-                $formatted_items[$key]['Description'] = isset($line_item->valueObject->Description->valueString) ? $line_item->valueObject->Description->valueString : NULL;
-                $formatted_items[$key]['ProductCode'] = isset($line_item->valueObject->ProductCode) ? $line_item->valueObject->ProductCode->valueString : NULL;
-
-                if(isset($line_item->valueObject->TotalPrice)){
-                    $formatted_items[$key]['TotalPrice'] = $line_item->valueObject->TotalPrice->valueNumber;
-                }else{
-                    if(isset($line_item->valueObject->TotalPrice)){
-                        $formatted_items[$key]['TotalPrice'] = $line_item->valueObject->TotalPrice->valueNumber;
-                    }elseif(isset($line_item->valueObject->Amount)){
-                        $formatted_items[$key]['TotalPrice'] = $line_item->valueObject->Amount->valueCurrency->amount;
+                $total_tax = $receipt->receipt_items->total_tax ?? NULL;
+                $merchant_name = $receipt->receipt_items->merchant_name ?? NULL;
+                // $transaction_date = $receipt->receipt_items->transaction_date ?? NULL;
+                if(isset($receipt->receipt_items->transaction_date)){
+                    if(isset($receipt->receipt_items->transaction_date->valueDate)){
+                        $transaction_date = $receipt->receipt_items->transaction_date->valueDate;
                     }else{
-                        $formatted_items[$key]['TotalPrice'] = NULL;
-                    }
-                }
-
-                //quantity
-                if(isset($line_item->valueObject->Quantity)){
-                    $formatted_items[$key]['Quantity'] = $line_item->valueObject->Quantity->valueNumber;
-                }else{
-                    $formatted_items[$key]['Quantity'] = 1;
-                }
-
-                //price each
-                if(isset($line_item->valueObject->Price)){
-                    if(isset($line_item->valueObject->Price->valueNumber)){
-                        $formatted_items[$key]['Price'] = $line_item->valueObject->Price->valueNumber;
-                    }elseif(isset($line_item->valueObject->Price->valueCurrency)){
-                        $formatted_items[$key]['Price'] = $line_item->valueObject->Price->valueCurrency->amount;
+                        $transaction_date = $receipt->receipt_items->transaction_date;
                     }
                 }else{
-                    $formatted_items[$key]['Price'] = $formatted_items[$key]['TotalPrice'];
+                    $transaction_date = NULL;
                 }
 
+                $invoice_number = $receipt->receipt_items->invoice_number ?? NULL;
+                $purchase_order = $receipt->receipt_items->purchase_order ?? NULL;
+                $handwritten_notes = $receipt->receipt_items->handwritten_notes ?? NULL;
 
-                // $receipt->receipt_items->items = $formatted_items;
-                // $receipt->save();
+                $receipt->receipt_items = [
+                    'items' => $formatted_items,
+                    'subtotal' => $subtotal,
+                    'total' => $total,
+                    'total_tax' => $total_tax,
+                    'transaction_date' => $transaction_date,
+                    'merchant_name' => $merchant_name,
+                    'invoice_number' => $invoice_number,
+                    'purchase_order' => $purchase_order,
+                    'handwritten_notes' => $handwritten_notes,
+                ];
+
+                $receipt->save();
+            }else{
+                continue;
             }
-
-            $receipt->receipt_items = [
-                'items' => $formatted_items,
-                'subtotal' => $subtotal,
-                'total' => $amount,
-                'total_tax' => $total_tax,
-                'transaction_date' => $transaction_date,
-                'merchant_name' => $merchant_name,
-                'invoice_number' => $invoice_number,
-                'merchant_name' => $merchant_name,
-                'purchase_order' => $purchase_order,
-                'handwritten_notes' => $handwritten_notes,
-            ];
-
-
-            // dd($receipt->receipt_items);
-            // [$formatted_items, $amount, $subtotal, $total_tax, $merchant_name, $transaction_date];
-            $receipt->save();
-            // dd($receipt);
         }
+
+        dd('done');
+
+
 
 
         // dd($wrong_expenses);
@@ -194,7 +194,7 @@ class MoveController extends Controller
         //     }
         // }
 
-        dd('done');
+
         //->first()->sum('amount')
         // $timesheet_totals = Timesheet::where('user_id', 1)->get()->groupBy('date')->each(function($timesheet, $key) {
         //     $timesheet->sum = $timesheet->sum('amount');

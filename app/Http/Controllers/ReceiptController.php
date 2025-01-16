@@ -533,9 +533,8 @@ class ReceiptController extends Controller
                 //Send the (signed) API request.
                 $response = $client->send($signedRequest);
                 $orders = collect(json_decode($response->getBody()->getContents(), true)['orders']);
-                // dd($orders);
 
-                foreach($orders as $key => $order){
+                foreach($orders as $orders_key => $order){
                     $order_date = Carbon::parse($order['orderDate'])->setTimezone('America/Chicago')->format('Y-m-d');
 
                     //check for expense duplicates
@@ -553,8 +552,7 @@ class ReceiptController extends Controller
 
                     //7-17-2023 duplicate by Invoice/ Order # only... see if Order status changed
                     if($duplicates->isEmpty()){
-                        //create expense Model
-                        //CREATE expense
+                        //create expense
                         $expense = Expense::create([
                             'amount' => $order['orderNetTotal']['amount'],
                             'date' => $order_date,
@@ -589,11 +587,11 @@ class ReceiptController extends Controller
 
                         //CHARGES
                         $charges = [];
-                        foreach($order['charges'] as $key => $charge){
-                            $charges[$key]['transactionDate'] = $charge['transactionDate'];
-                            $charges[$key]['transactionId'] = $charge['transactionId'];
-                            $charges[$key]['amount'] = $charge['amount']['amount'];
-                            $charges[$key]['paymentInstrumentLast4Digits'] = $charge['paymentInstrumentLast4Digits'];
+                        foreach($order['charges'] as $charges_key => $charge){
+                            $charges[$charges_key]['transactionDate'] = $charge['transactionDate'];
+                            $charges[$charges_key]['transactionId'] = $charge['transactionId'];
+                            $charges[$charges_key]['amount'] = $charge['amount']['amount'];
+                            $charges[$charges_key]['paymentInstrumentLast4Digits'] = $charge['paymentInstrumentLast4Digits'];
                         }
 
                         $receipt = $expense->receipts()->latest()->first();
@@ -602,7 +600,7 @@ class ReceiptController extends Controller
                             $items = $receipt->receipt_items;
                             $items->charges = $charges;
 
-                            $receipt->receipt_items = json_encode($items);
+                            $receipt->receipt_items = $items;
                             $receipt->save();
                         }
 
@@ -616,21 +614,27 @@ class ReceiptController extends Controller
                     //create expense_receipt_data
                     //ITEMS
                     $items = [];
-                    foreach($order['lineItems'] as $key => $item){
-                        $items[$key]->Price = $item['purchasedPricePerUnit']['amount'];
-                        $items[$key]->Quantity = $item['itemQuantity'];
-                        $items[$key]->TotalPrice = $item['itemSubTotal']['amount'] ?? 0.00;
-                        $items[$key]->Description = $item['title'];
-                        $items[$key]->ProductCode = $item['asin'];
+                    foreach($order['lineItems'] as $items_key => $item){
+                        // if(!isset($item['purchasedPricePerUnit']['amount'])){
+                        //     dd($item, $order);
+                        // }else{
+                        //     dd($item, $order);
+                        // }
+
+                        $items[$items_key]['Price'] = $item['purchasedPricePerUnit']['amount'];
+                        $items[$items_key]['Quantity'] = $item['itemQuantity'];
+                        $items[$items_key]['TotalPrice'] = $item['itemSubTotal']['amount'] ?? 0.00;
+                        $items[$items_key]['Description'] = $item['title'];
+                        $items[$items_key]['ProductCode'] = $item['asin'];
                     }
 
                     //CHARGES
                     $charges = [];
-                    foreach($order['charges'] as $key => $charge){
-                        $charges[$key]['transactionDate'] = $charge['transactionDate'];
-                        $charges[$key]['transactionId'] = $charge['transactionId'];
-                        $charges[$key]['amount'] = $charge['amount']['amount'];
-                        $charges[$key]['paymentInstrumentLast4Digits'] = $charge['paymentInstrumentLast4Digits'];
+                    foreach($order['charges'] as $charges_key => $charge){
+                        $charges[$charges_key]['transactionDate'] = $charge['transactionDate'];
+                        $charges[$charges_key]['transactionId'] = $charge['transactionId'];
+                        $charges[$charges_key]['amount'] = $charge['amount']['amount'];
+                        $charges[$charges_key]['paymentInstrumentLast4Digits'] = $charge['paymentInstrumentLast4Digits'];
                     }
 
                     //items array!
@@ -734,12 +738,12 @@ class ReceiptController extends Controller
                     //create expense_receipt_data
                     //ITEMS
                     $items = [];
-                    foreach($transaction['transactionLineItems'] as $key => $item){
-                        $items[$key]->Price = $item['principalAmount']['amount'];
-                        $items[$key]->Quantity = $item['itemQuantity'];
-                        $items[$key]->TotalPrice = $item['totalAmount']['amount'];
-                        $items[$key]->Description = $item['productTitle'];
-                        $items[$key]->ProductCode = $item['asin'];
+                    foreach($transaction['transactionLineItems'] as $transaction_key => $item){
+                        $items[$transaction_key]['Price'] = $item['principalAmount']['amount'];
+                        $items[$transaction_key]['Quantity'] = $item['itemQuantity'];
+                        $items[$transaction_key]['TotalPrice'] = $item['totalAmount']['amount'];
+                        $items[$transaction_key]['Description'] = $item['productTitle'];
+                        $items[$transaction_key]['ProductCode'] = $item['asin'];
                     }
 
                     //CHARGES

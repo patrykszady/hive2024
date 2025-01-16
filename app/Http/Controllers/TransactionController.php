@@ -1042,7 +1042,7 @@ class TransactionController extends Controller
                 ->whereNull('deleted_at')
                 ->where('belongs_to_vendor_id', $hive_vendor->id)
                 ->whereNotNull('vendor_id')
-                // ->whereId('23688')
+                // ->whereId('23817')
                 //where transacitons->sum != $expense(item)->sum  \\ whereNull checked_at (transactions add up to expense)
                 ->whereDate('date', '>=', Carbon::now()->subMonths(3))
                 ->get();
@@ -1106,6 +1106,7 @@ class TransactionController extends Controller
                 }else{
                     $transactions = $transactions->where('amount', '<=', $transaction_amount_outstanding)->where('amount', 'NOT LIKE', '-%')->get();
                 }
+
                 // dd($transactions);
 
                 //finds correct transaction
@@ -1232,7 +1233,6 @@ class TransactionController extends Controller
                     //associate Expenses...
                 }
 
-                // dd('too far');
 
                 // if(!$transactions->isEmpty()){
                 //     //floatDiffInDays from old/gsd3 TransactionController not by orderBy above

@@ -55,7 +55,7 @@ class MoveController extends Controller
         // }
 
         //->whereNotIn('id', [14720])
-        $receipts = ExpenseReceipts::whereNotNull('receipt_items')->whereBetween('updated_at', ['2025-01-01', '2025-01-14'])->where('receipt_html', '!=', 'NONE')->orderBy('updated_at', 'DESC')->get();
+        $receipts = ExpenseReceipts::whereNotNull('receipt_items')->whereBetween('updated_at', ['2025-01-01', '2025-01-14'])->whereNull('receipt_html')->orderBy('updated_at', 'DESC')->get();
 
         foreach($receipts as $receipt){
             // dd($receipt->receipt_items);

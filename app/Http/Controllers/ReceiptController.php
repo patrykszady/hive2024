@@ -30,6 +30,8 @@ use Microsoft\Graph\Graph;
 use Microsoft\Graph\Http;
 use Microsoft\Graph\Model;
 
+use Dcblogdev\MsGraph\MsGraphAdmin;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
@@ -799,7 +801,6 @@ class ReceiptController extends Controller
 
         foreach($company_emails as $company_email){
             //check if access_token is expired, if so get new access_token and refresh_token
-
             //13-31-2024 ..should be a Service we can reuse? check
             try{
                 $guzzle = new Client();
@@ -1685,7 +1686,7 @@ class ReceiptController extends Controller
 
         $azure_api_key = env('AZURE_DI_API_KEY');
         $azure_api_version = env('AZURE_DI_VERSION');
-        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_DI_ENDPOINT') . "/documentintelligence/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version . '&features=queryFields&queryFields=PurchaseOrder');
+        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_DI_ENDPOINT') . "/documentintelligence/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $file);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -1711,7 +1712,7 @@ class ReceiptController extends Controller
         $result = exec('curl -v -X GET "https://' . $uri);
         $result = json_decode($result, true);
         //2024-12-25 ..if $result is error...LOG and inform user
-        // dd($result);
+        dd($result);
 
         //wait but go as soon as done.
         while($result['status'] == "running" || $result['status'] == "notStarted"){

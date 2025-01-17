@@ -189,6 +189,8 @@ class ExpenseIndex extends Component
             }
         });
 
+        // dd($expenses);
+
         return $expenses;
     }
 

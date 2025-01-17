@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd1dc2a2aa89c32636edf80e49b8af49",
+    "content-hash": "f7ffef61caf0dc360216d569cc24d47e",
     "packages": [
         {
             "name": "2captcha/2captcha",
@@ -723,35 +723,35 @@
         },
         {
             "name": "dcblogdev/laravel-microsoft-graph",
-            "version": "v3.2.6",
+            "version": "v4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dcblogdev/laravel-microsoft-graph.git",
-                "reference": "838e1126162a5f1a5dec5fd2edae9c4a89c168d1"
+                "reference": "c34d9fcd9a8d49d15a1874576de8a720d8ebb4ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dcblogdev/laravel-microsoft-graph/zipball/838e1126162a5f1a5dec5fd2edae9c4a89c168d1",
-                "reference": "838e1126162a5f1a5dec5fd2edae9c4a89c168d1",
+                "url": "https://api.github.com/repos/dcblogdev/laravel-microsoft-graph/zipball/c34d9fcd9a8d49d15a1874576de8a720d8ebb4ec",
+                "reference": "c34d9fcd9a8d49d15a1874576de8a720d8ebb4ec",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-fileinfo": "*",
                 "ext-json": "*",
-                "guzzlehttp/guzzle": "6.x|7.x",
-                "illuminate/support": "5.5.x|5.6.x|5.7.x|5.8.x|6.x|7.x|8.x|9.x|^10.0|^11.0",
-                "league/oauth2-client": "^1.4|^2",
+                "guzzlehttp/guzzle": "7.x",
+                "illuminate/support": "^10.0|^11.0",
+                "league/oauth2-client": "^2",
                 "microsoft/microsoft-graph": "^1.110",
                 "shitware-ltd/flysystem-msgraph": "^1.0"
             },
             "require-dev": {
                 "laravel/pint": "^1.13",
                 "mockery/mockery": "^1.6",
-                "orchestra/testbench": "8.0",
-                "pestphp/pest": "^v1.0|^v2.34",
-                "pestphp/pest-plugin-laravel": "^1.0|v2.4",
-                "pestphp/pest-plugin-parallel": "^1.2"
+                "orchestra/testbench": "v8.0|v9.0",
+                "pestphp/pest": "^v2.34",
+                "pestphp/pest-plugin-laravel": "v2.4",
+                "pestphp/pest-plugin-type-coverage": "^2.8"
             },
             "type": "library",
             "extra": {
@@ -794,7 +794,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dcblogdev/laravel-microsoft-graph/issues",
-                "source": "https://github.com/dcblogdev/laravel-microsoft-graph/tree/v3.2.6"
+                "source": "https://github.com/dcblogdev/laravel-microsoft-graph/tree/v4.0.2"
             },
             "funding": [
                 {
@@ -802,7 +802,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-12T09:18:00+00:00"
+            "time": "2024-11-19T11:49:16+00:00"
         },
         {
             "name": "dflydev/dot-access-data",

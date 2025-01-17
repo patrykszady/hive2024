@@ -99,6 +99,7 @@ class VendorDocCreate extends Component
 
         //send to form recogrnizer
         $insurance_info = app('App\Http\Controllers\ReceiptController')->azure_docs_api($file_location, $document_model, $doc_type);
+        dd($insurance_info);
         $insurance_info = $insurance_info['analyzeResult']['documents'][0]['fields'];
 
         //save/update Agent from the certificate

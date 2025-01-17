@@ -13,7 +13,7 @@
         "algolia/algoliasearch-client-php": "^4.9",
         "aws/aws-sdk-php": "^3.247",
         "barryvdh/laravel-snappy": "^1.0",
-        "dcblogdev/laravel-microsoft-graph": "^3.2",
+        "dcblogdev/laravel-microsoft-graph": "^4.0",
         "doctrine/dbal": "^3.5",
         "guzzlehttp/guzzle": "^7.9",
         "h4cc/wkhtmltoimage-amd64": "0.12.x",

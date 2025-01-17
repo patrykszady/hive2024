@@ -1132,8 +1132,9 @@ class TransactionController extends Controller
 
                                     if($receipt->receipt_html){
                                         if($receipt->receipt_items->items){
-                                            $last_item_spans = end($receipt->receipt_items->items)->spans[0];
-                                            $offset_chars = $last_item_spans->offset + $last_item_spans->length;
+                                            $last_item_str = htmlspecialchars(end($receipt->receipt_items->items)->Description);
+                                            $last_item_str_length = strlen($last_item_str);
+                                            $offset_chars = stripos($receipt->receipt_html, $last_item_str) + $last_item_str_length;
                                             $str = substr($receipt->receipt_html, $offset_chars);
                                         //if no items extracted on receipt search for AMOUNT on entire receipt (but can incorrectly find a line item Amount as Receipt total)
                                         }else{

@@ -244,6 +244,7 @@ return [
                 ],
                 'search-parameters' => [
                     'query_by' => 'amount',
+                    // 'include_fields' => 'expense_status',
                 ],
             ],
             Transaction::class => [

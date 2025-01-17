@@ -76,7 +76,13 @@
                         </span>
                     </div>
 
-                    <div class="text-sm text-gray-500 grid grid-flow-col -mt-8 divide-x">
+                    <div
+                        @class([
+                            'text-sm text-gray-500 grid grid-flow-col -mt-8 divide-x',
+                            'bg-gray-300' => $day['is_weekend']  ? true : false,
+                            'bg-sky-100' => $day['is_today'] ? true : false,
+                        ])
+                        >
                         @foreach($this->projects as $project)
                             {{-- border-2 border-black --}}
                             {{-- divide-y-4 divide-black --}}
@@ -86,13 +92,10 @@
                                     x-sort:group="tasks"
                                     x-sort:config="{ filter: '.filtered' }"
                                     @class([
-                                        // '!px-2 !py-2',
-                                        '!min-h-4',
-                                        '!bg-gray-100 border-none' => $day['is_weekend'] OR $day['database_date'] === NULL ? true : false,
-                                        '!bg-gray-100 border-none' => $day['is_today'] ? true : false,
-                                        '!bg-gray-100 border-none',
-                                        'space-y-1',
-                                        '!p-0'
+                                        '!min-h-4 !bg-gray-100 border-none space-y-1 !p-0',
+                                        // OR $day['database_date'] === NULL
+                                        '!bg-gray-300' => $day['is_weekend'] ? true : false,
+                                        '!bg-sky-100' => $day['is_today'] ? true : false,
                                     ])
                                     >
                                     @foreach($project->tasks()->get() as $task)

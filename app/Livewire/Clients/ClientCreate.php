@@ -231,7 +231,6 @@ class ClientCreate extends Component
         }
 
         $this->modal('client_form_modal')->close();
-        // $this->resetModal();
         $this->dispatch('refreshComponent')->to('clients.clients-index');
     }
 

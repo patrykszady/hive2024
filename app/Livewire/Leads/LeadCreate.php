@@ -121,6 +121,24 @@ class LeadCreate extends Component
         );
     }
 
+    public function remove()
+    {
+        $this->lead->delete();
+
+        $this->lead_status = NULL;
+        $this->modal('lead_form_modal')->close();
+        $this->dispatch('refreshComponent')->to('leads.leads-index');
+
+        Flux::toast(
+            duration: 5000,
+            position: 'top right',
+            variant: 'success',
+            heading: 'Lead Deleted.',
+            // route / href / wire:click
+            text: '',
+        );
+    }
+
     public function message_reply()
     {
         // dd($this);

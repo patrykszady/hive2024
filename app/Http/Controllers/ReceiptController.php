@@ -1712,7 +1712,6 @@ class ReceiptController extends Controller
         $result = exec('curl -v -X GET "https://' . $uri);
         $result = json_decode($result, true);
         //2024-12-25 ..if $result is error...LOG and inform user
-        // dd($result);
 
         //wait but go as soon as done.
         while($result['status'] == "running" || $result['status'] == "notStarted"){

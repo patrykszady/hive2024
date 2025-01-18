@@ -54,6 +54,7 @@ class LeadsIndex extends Component
     #[Title('Leads')]
     public function render()
     {
+        $this->authorize('viewAny', Lead::class);
         return view('livewire.leads.index');
     }
 }

@@ -72,7 +72,7 @@
                         {{-- <flux:option value="" readonly x-text="split ? 'Expense is Split' : 'Select Project'"></flux:option> --}}
 
                         @foreach($projects as $project)
-                            <flux:option wire:key="{{$project->id}}" value="{{$project->id}}"><div>{{$project->address}} <br> <i>{{$project->project_name}}</i></div></flux:option>
+                            <flux:option wire:key="{{$project->id}}" value="{{$project->id}}"><div>{{$project->address}} <br> <i class="font-normal">{{$project->project_name}}</i></div></flux:option>
                         @endforeach
 
                         <flux:option disabled>--------------</flux:option>

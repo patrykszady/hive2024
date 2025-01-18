@@ -35,7 +35,7 @@
                             </x-slot>
 
                             @foreach($projects as $project)
-                                <flux:option value="{{$project->id}}"><div>{{$project->address}} <br> <i>{{$project->project_name}}</i></div></flux:option>
+                                <flux:option value="{{$project->id}}"><div>{{$project->address}} <br> <i class="font-normal">{{$project->project_name}}</i></div></flux:option>
                             @endforeach
                         </flux:select>
 

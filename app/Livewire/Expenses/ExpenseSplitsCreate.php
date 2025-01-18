@@ -127,8 +127,8 @@ class ExpenseSplitsCreate extends Component
 
         //if splits isset / comign from Expense.Update form.. otherwire
         if($this->expense_splits->isEmpty()){
-            $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items]);
-            $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items]);
+            $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items, 'reimbursment' => 'None']);
+            $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items, 'reimbursment' => 'None']);
             $this->splits_count = 2;
         }else{
             foreach($this->expense_splits as $split_index => $split){
@@ -167,7 +167,7 @@ class ExpenseSplitsCreate extends Component
             $items = NULL;
         }
 
-        $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items]);
+        $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items, 'reimbursment' => 'None']);
         $this->splits_count = $this->splits_count + 1;
     }
 

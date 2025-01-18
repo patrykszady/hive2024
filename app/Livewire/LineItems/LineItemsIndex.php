@@ -6,6 +6,7 @@ use App\Models\LineItem;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -15,16 +16,28 @@ class LineItemsIndex extends Component
 
     // public $view;
     public $search = '';
+    //public $category = '';
+
+    protected $queryString = [
+        'search' => ['except' => ''],
+    ];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
+
+    #[Computed]
+    public function line_items()
+    {
+        return LineItem::orderBy('created_at', 'DESC')
+            ->where('name', 'like', '%' . $this->search . '%')
+            ->orWhere('desc', 'like', '%' . $this->search . '%')
+            ->paginate(15);
+    }
 
     #[Title('Line Items')]
     public function render()
     {
         $this->authorize('viewAny', LineItem::class);
 
-        return view('livewire.line-items.index', [
-            'line_items' => LineItem::orderBy('created_at', 'DESC')->where('name', 'like', '%' . $this->search . '%')->orWhere('desc', 'like', '%' . $this->search . '%')->get(),
-        ]);
+        return view('livewire.line-items.index');
     }
 }

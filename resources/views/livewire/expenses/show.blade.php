@@ -2,14 +2,9 @@
     <div class="grid max-w-xl grid-cols-4 gap-4 xl:relative lg:max-w-5xl sm:px-6">
         <div class="col-span-4 space-y-4 lg:col-span-2 lg:h-32 lg:sticky lg:top-5">
             {{-- EXPENSE DETAILS --}}
-            <x-lists.details_card>
-                {{-- HEADING --}}
-                <x-slot:heading>
-                    <div>
-                        <flux:heading size="lg" class="mb-0">Expense Details</flux:heading>
-                        <flux:subheading>Expense and related details like Expense Splits and Expense Receipts.</flux:subheading>
-                    </div>
-
+            <flux:card>
+                <div class="flex justify-between">
+                    <flux:heading size="lg" class="mb-0">Expense Details</flux:heading>
                     <flux:button.group>
                         <flux:button
                             wire:click="$dispatchTo('expenses.expense-create', 'editExpense', { expense: {{$expense->id}}})"
@@ -25,9 +20,11 @@
                             </flux:menu>
                         </flux:dropdown>
                     </flux:button.group>
-                </x-slot>
+                </div>
+                <flux:subheading>Expense and related details like Expense Splits and Expense Receipts.</flux:subheading>
 
-                {{-- DETAILS --}}
+                <flux:separator class="my-2"/>
+
                 <x-lists.details_list>
                     <x-lists.details_item title="Amount" detail="{{money($expense->amount)}}" />
                     <x-lists.details_item title="Date" detail="{{$expense->date->format('m/d/Y')}}" />
@@ -57,7 +54,7 @@
                         <flux:subheading><i>*Expense Created Automatically.</i></flux:subheading>
                     @endif
                 </div>
-            </x-lists.details_card>
+            </flux:card>
 
             {{-- TRANSACTIONS --}}
             {{-- 10-01-2024 USE FROM EXPENSES.INDEX @include --}}

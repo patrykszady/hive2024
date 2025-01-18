@@ -1,21 +1,20 @@
 <flux:card class="!p-0 overflow-x-scroll !h-[48rem] !bg-gray-100">
     <div class="sticky top-0 flex flex-none">
-        <div class="divide-x divide-white text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
+        <div class="divide-x text-sm leading-6 text-gray-500 grid grid-flow-col auto-cols-max">
             {{-- First. leftmost table column on the first row.  --}}
-            <div class="col-end-1 w-14 sticky left-0 bg-white shadow-gray-300 shadow-2xl"></div>
+            <div class="col-end-1 w-14 sticky left-0 bg-white shadow-gray-100 shadow-xl"></div>
 
             @foreach($projects as $project)
                 <div class="w-64 p-2">
-                    <div class="!p-2 flex justify-between hover:bg-gray-100 shadow-2lg shadow-gray-300 bg-white rounded-md border border-solid border-gray-300">
+                    <div class="!p-2 flex justify-between hover:bg-gray-100 shadow-xl shadow-gray-100 bg-white rounded-md border border-solid border-gray-300">
                         <div>
-
-                                <span class="font-semibold text-gray-800">
-                                    <a href="{{route('projects.show', $project->id)}}" target="_blank">{{ Str::limit($project->address, 18) }}</a>
-                                </span>
-                                <br>
-                                <span class="font-normal italic text-gray-600">
-                                    {{ Str::limit($project->project_name, 18) }}
-                                </span>
+                            <span class="font-semibold text-gray-800">
+                                <a href="{{route('projects.show', $project->id)}}" target="_blank">{{ Str::limit($project->address, 18) }}</a>
+                            </span>
+                            <br>
+                            <span class="font-normal italic text-gray-600">
+                                {{ Str::limit($project->project_name, 18) }}
+                            </span>
 
                             {{-- NO DATE/ NOT SCHEDULE --}}
                             {{-- ACCORDIAN HERE --}}
@@ -53,7 +52,7 @@
 
     {{-- HORIZONTAL DATE LINES HERE --}}
     <div class="flex flex-auto bg-gray-100">
-        <div class="sticky left-0 w-14 flex-none shadow-gray-300 shadow-2xl bg-white"></div>
+        <div class="sticky left-0 w-14 flex-none shadow-gray-100 shadow-xl bg-white"></div>
 
         <div>
             @foreach($days as $day_index => $day)
@@ -79,7 +78,7 @@
                     <div
                         @class([
                             'text-sm text-gray-500 grid grid-flow-col -mt-8 divide-x',
-                            'bg-gray-300' => $day['is_weekend']  ? true : false,
+                            'bg-gray-50' => $day['is_weekend']  ? true : false,
                             'bg-sky-100' => $day['is_today'] ? true : false,
                         ])
                         >
@@ -94,7 +93,7 @@
                                     @class([
                                         '!min-h-4 !bg-gray-100 border-none space-y-1 !p-0',
                                         // OR $day['database_date'] === NULL
-                                        '!bg-gray-300' => $day['is_weekend'] ? true : false,
+                                        '!bg-gray-50' => $day['is_weekend'] ? true : false,
                                         '!bg-sky-100' => $day['is_today'] ? true : false,
                                     ])
                                     >

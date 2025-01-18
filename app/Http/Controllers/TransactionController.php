@@ -1354,6 +1354,7 @@ class TransactionController extends Controller
                 ->whereNull('deleted_at')
                 ->where('date', '>', '2021-01-01')
                 ->orderBy('date', 'DESC')
+                ->where('id', 3244)
                 ->get();
 
         foreach($checks as $check){
@@ -1415,9 +1416,8 @@ class TransactionController extends Controller
                         //summy
                         //clear array before next foreach statement
                         if(stristr($transactions[0]['transfer_name'], strtolower($check->user->first_name))){
-                            dd('in if');
-                            $transaction_results = array();
 
+                            $transaction_results = array();
                             $transaction_ids = $transactions->pluck('id')->toArray();
                             $transaction_plucked = $transactions->pluck('amount')->toArray();
 
@@ -1437,6 +1437,7 @@ class TransactionController extends Controller
                                 }
                             }
 
+                            // dd($transaction_results);
 
                             if(isset($transaction_results['transactions'])){
                                 $transaction_results = collect($transaction_results['transactions']);
@@ -1447,7 +1448,7 @@ class TransactionController extends Controller
                                     $transaction->save();
                                 }
 
-                                continue;
+                                // continue;
                             }
                         }else{
                             continue;

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Expense;
 use App\Models\Project;
 use App\Models\Vendor;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -11,8 +10,6 @@ class ExpenseFactory extends Factory
 {
     /**
      * Define the model's default state.
-     *
-     * @return array
      */
     public function definition(): array
     {

@@ -8,7 +8,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-
 // only in Production not in Development enviroment ... EVERYTHING EMAIL RELATED GOES HERE
 // if(env('APP_ENV') == 'production'){
 //->timezone('America/Chicago')->between('6:00', '20:00')

@@ -8,8 +8,6 @@ class ClientObserver
 {
     /**
      * Handle the Client "created" event.
-     *
-     * @return void
      */
     public function created(Client $client): void
     {
@@ -24,8 +22,6 @@ class ClientObserver
 
     /**
      * Handle the Client "updated" event.
-     *
-     * @return void
      */
     public function updated(Client $client): void
     {
@@ -34,8 +30,6 @@ class ClientObserver
 
     /**
      * Handle the Client "deleted" event.
-     *
-     * @return void
      */
     public function deleted(Client $client): void
     {
@@ -44,8 +38,6 @@ class ClientObserver
 
     /**
      * Handle the Client "restored" event.
-     *
-     * @return void
      */
     public function restored(Client $client): void
     {
@@ -54,8 +46,6 @@ class ClientObserver
 
     /**
      * Handle the Client "force deleted" event.
-     *
-     * @return void
      */
     public function forceDeleted(Client $client): void
     {

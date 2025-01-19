@@ -11,11 +11,14 @@ class Timesheet extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $casts = [
-        'date' => 'date:Y-m-d',
-    ];
-
     protected $fillable = ['date', 'user_id', 'vendor_id', 'project_id', 'hours', 'amount', 'paid_by', 'check_id', 'hourly', 'invoice', 'note', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
+
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date:Y-m-d',
+        ];
+    }
 
     protected static function booted()
     {

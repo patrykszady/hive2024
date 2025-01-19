@@ -14,9 +14,12 @@ class ExpenseReceipts extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'receipt_items' => 'json',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'receipt_items' => 'json',
+        ];
+    }
 
     // protected $fillable = ['expense_id', 'receipt_html' , 'receipt_filename'];
 

@@ -13,10 +13,18 @@ class VendorDoc extends Model
     protected $fillable = ['type', 'vendor_id', 'effective_date', 'expiration_date', 'number', 'belongs_to_vendor_id', 'doc_filename', 'created_at', 'updated_at'];
     // protected $dates = ['effective_date', 'expiration_date'];
 
-    protected $casts = [
-        'effective_date' => 'date:Y-m-d',
-        'expiration_date' => 'date:Y-m-d',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'effective_date' => 'date:Y-m-d',
+            'expiration_date' => 'date:Y-m-d',
+        ];
+    }
 
     protected static function booted()
     {

@@ -12,9 +12,12 @@ class CompanyEmail extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'api_json' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'api_json' => 'array',
+        ];
+    }
 
     protected static function booted()
     {

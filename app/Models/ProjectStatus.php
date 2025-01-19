@@ -14,10 +14,13 @@ class ProjectStatus extends Model
 
     protected $fillable = ['project_id', 'belongs_to_vendor_id', 'start_date', 'end_date', 'title', 'created_at', 'updated_at'];
 
-    protected $casts = [
-        'start_date' => 'date:Y-m-d',
-        'end_date' => 'date:Y-m-d',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'date:Y-m-d',
+            'end_date' => 'date:Y-m-d',
+        ];
+    }
 
     protected static function booted()
     {

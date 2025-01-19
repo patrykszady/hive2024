@@ -19,9 +19,17 @@ class Check extends Model
 
     // protected $dates = ['date', 'deleted_at'];
 
-    protected $casts = [
-        'date' => 'date:Y-m-d',
-    ];
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date:Y-m-d',
+        ];
+    }
 
     protected static function booted()
     {

@@ -9,9 +9,12 @@ class Payment extends Model
 {
     protected $fillable = ['distribution_id', 'project_id', 'amount', 'date', 'reference', 'transaction_id', 'belongs_to_vendor_id', 'parent_client_payment_id', 'check_id', 'note', 'created_by_user_id', 'created_at', 'updated_at'];
 
-    protected $casts = [
-        'date' => 'date:Y-m-d',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date:Y-m-d',
+        ];
+    }
 
     protected static function booted()
     {

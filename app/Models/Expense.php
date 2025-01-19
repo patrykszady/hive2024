@@ -15,10 +15,13 @@ class Expense extends Model
 
     protected $fillable = ['amount', 'date', 'invoice', 'note', 'categroy_id', 'project_id', 'distribution_id', 'vendor_id', 'check_id', 'reimbursment', 'belongs_to_vendor_id', 'created_by_user_id', 'paid_by', 'created_at', 'updated_at', 'deleted_at'];
 
-    protected $casts = [
-        'date' => 'date:Y-m-d',
-        'deleted_at' => 'date:Y-m-d',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date:Y-m-d',
+            'deleted_at' => 'date:Y-m-d',
+        ];
+    }
 
     protected static function booted()
     {

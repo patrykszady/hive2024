@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Forms;
 
-use App\Models\EstimateLineItem;
 use App\Models\LineItem;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Models\EstimateLineItem;
+use App\Models\EstimateSection;
+
 use Livewire\Attributes\Rule;
 use Livewire\Form;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EstimateLineItemForm extends Form
 {
@@ -17,25 +20,25 @@ class EstimateLineItemForm extends Form
     public ?EstimateLineItem $estimate_line_item;
 
     #[Rule('required|min:3')]
-    public $category = null;
+    public $category = NULL;
 
     #[Rule('nullable|min:3', as: 'sub category')]
-    public $sub_category = null;
+    public $sub_category = NULL;
 
     #[Rule('required')]
-    public $unit_type = null;
+    public $unit_type = NULL;
 
     #[Rule('required|numeric|min:0.1')]
     public $quantity = 1;
 
     #[Rule('required|numeric', as: 'amount')]
-    public $cost = null;
+    public $cost = NULL;
 
     #[Rule('required|min:3', as: 'description')]
-    public $desc = null;
+    public $desc = NULL;
 
     #[Rule('nullable|min:3')]
-    public $notes = null;
+    public $notes = NULL;
 
     #[Rule('required')]
     public $total = '';

@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Expenses;
 
+use Livewire\Component;
+
 use App\Models\Expense;
 use App\Models\ExpenseSplits;
-use Livewire\Component;
 
 // use App\Livewire\Forms\ExpenseSplitForm;
 
@@ -12,20 +13,14 @@ class ExpenseSplitsCreate extends Component
 {
     // public ExpenseSplitForm $form;
     public Expense $expense;
-
     //keep track of expense_splits.*.amount sum
     public $expense_splits = [];
-
     public $expense_line_items = [];
-
     public $splits_count = 0;
-
     public $splits_total = 0;
-
     public $expense_total = 0;
 
     public $projects;
-
     public $distributions;
 
     protected $listeners = ['refreshComponent' => '$refresh', 'addSplits', 'addSplit', 'removeSplit', 'resetSplits'];
@@ -43,16 +38,16 @@ class ExpenseSplitsCreate extends Component
 
     public function updated($field, $value)
     {
-        if (substr($field, 0, 14) == 'expense_splits' && substr($field, -8) == 'checkbox') {
+        if(substr($field, 0, 14) == 'expense_splits' && substr($field, -8) == 'checkbox'){
             //item belongs to a split (other splits should have this item disabled)
             $matches = [];
             preg_match_all('/\d+/', $field, $matches);
             $index_split = $matches[0][0];
 
-            if ($value == true) {
+            if($value == true){
                 $this->expense_line_items->items[$matches[0][1]]->split_index = $index_split;
-            } else {
-                $this->expense_line_items->items[$matches[0][1]]->split_index = null;
+            }else{
+                $this->expense_line_items->items[$matches[0][1]]->split_index = NULL;
             }
 
             //need to account for tax
@@ -61,13 +56,13 @@ class ExpenseSplitsCreate extends Component
             $tax_rate = 1 + $tax_rate;
             $expense_total = $this->expense_line_items->total;
             // dd($items, $this->expense_line_items);
-            $this->expense_splits->transform(function ($split, $key) use ($items, $tax_rate) {
+            $this->expense_splits->transform(function ($split, $key) use ($items, $tax_rate, $expense_total){
                 $items_total = $items->where('split_index', $key)->whereNotNull('split_index')->sum('TotalPrice');
                 $total_with_tax = $items_total * $tax_rate;
 
                 //if last item without amount? check total...
                 //last one. Adjust a penny $0.01 if $expense->amount != getSplitsSumProperty
-                if ($items->whereNull('split_index')->count() == 0) {
+                if($items->whereNull('split_index')->count() == 0){
                     // dd($this->getSplitsSumProperty());
                     // $difference = $expense_total - ($this->getSplitsSumProperty() + $split['amount']);
                     $split['amount'] = round($total_with_tax, 2);
@@ -77,7 +72,7 @@ class ExpenseSplitsCreate extends Component
                     // dd($split['amount'] + $this->getSplitsSumProperty());
                     //$this->getSplitsSumProperty()
                     // $difference = $this->getSplitsSumProperty();
-                } else {
+                }else{
                     $split['amount'] = round($total_with_tax, 2);
                 }
 
@@ -93,7 +88,6 @@ class ExpenseSplitsCreate extends Component
     public function getSplitsSumProperty()
     {
         $this->splits_total = collect($this->expense_splits)->where('amount', '!=', '')->sum('amount');
-
         return round($this->expense_total - $this->splits_total, 2);
     }
 
@@ -106,42 +100,42 @@ class ExpenseSplitsCreate extends Component
         $receipt = $expense->receipts()->latest()->first();
 
         //!is_null($receipt->receipt_items->items
-        if (! is_null($receipt) && ! is_null($receipt->receipt_items->items)) {
+        if(!is_null($receipt) && !is_null($receipt->receipt_items->items)){
             $this->expense_line_items = $receipt->receipt_items;
 
             $items = [];
-            foreach ($this->expense_line_items->items as $item_index => $line_item) {
-                $items[$item_index] = ['checkbox' => false];
+            foreach($this->expense_line_items->items as $item_index => $line_item){
+                $items[$item_index] = array('checkbox' => false);
             }
-        } else {
-            $items = null;
+        }else{
+            $items = NULL;
         }
 
         $this->expense_total = $expense['amount'];
 
-        if (! $expense->splits->isEmpty()) {
+        if(!$expense->splits->isEmpty()){
             $this->expense_splits = $expense->splits;
-        } elseif (is_array($this->expense_splits) && ! empty($this->expense_splits)) {
+        }elseif(is_array($this->expense_splits) && !empty($this->expense_splits)){
             $this->expense_splits = collect($this->expense_splits);
-        } elseif (! is_array($this->expense_splits)) {
-            if ($this->expense_splits->isEmpty()) {
+        }elseif(!is_array($this->expense_splits)){
+            if($this->expense_splits->isEmpty()){
                 $this->expense_splits = collect();
             }
-        } else {
+        }else{
             $this->expense_splits = collect();
         }
 
         //if splits isset / comign from Expense.Update form.. otherwire
-        if ($this->expense_splits->isEmpty()) {
-            $this->expense_splits->push(['amount' => null, 'project_id' => null, 'items' => $items, 'reimbursment' => 'None']);
-            $this->expense_splits->push(['amount' => null, 'project_id' => null, 'items' => $items, 'reimbursment' => 'None']);
+        if($this->expense_splits->isEmpty()){
+            $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items, 'reimbursment' => 'None']);
+            $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items, 'reimbursment' => 'None']);
             $this->splits_count = 2;
-        } else {
-            foreach ($this->expense_splits as $split_index => $split) {
-                if (isset($split->receipt_items)) {
+        }else{
+            foreach($this->expense_splits as $split_index => $split){
+                if(isset($split->receipt_items)){
                     $split->items = $split->receipt_items;
-                    foreach ($split->items as $item_index => $item) {
-                        if ($item['checkbox'] == true) {
+                    foreach($split->items as $item_index => $item){
+                        if($item['checkbox'] == true){
                             $this->expense_line_items->items[$item_index]->split_index = $split_index;
                         }
                     }
@@ -151,9 +145,9 @@ class ExpenseSplitsCreate extends Component
             $this->splits_count = count($this->expense_splits) - 1;
         }
 
-        foreach ($this->expense_splits as $index => $split) {
-            if ($split['project_id'] == null && isset($split['distribution_id'])) {
-                $this->expense_splits[$index]['project_id'] = 'D:'.$split['distribution_id'];
+        foreach($this->expense_splits as $index => $split){
+            if($split['project_id'] == NULL && isset($split['distribution_id'])){
+                $this->expense_splits[$index]['project_id'] = 'D:' . $split['distribution_id'];
             }
         }
 
@@ -165,26 +159,26 @@ class ExpenseSplitsCreate extends Component
     {
         $receipt = $this->expense->receipts()->latest()->first();
 
-        if (! is_null($receipt) && ! is_null($receipt->receipt_items->items)) {
-            foreach ($this->expense_line_items->items as $item_index => $line_item) {
-                $items[$item_index] = ['checkbox' => false];
+        if(!is_null($receipt) && !is_null($receipt->receipt_items->items)){
+            foreach($this->expense_line_items->items as $item_index => $line_item){
+                $items[$item_index] = array('checkbox' => false);
             }
-        } else {
-            $items = null;
+        }else{
+            $items = NULL;
         }
 
-        $this->expense_splits->push(['amount' => null, 'project_id' => null, 'items' => $items, 'reimbursment' => 'None']);
+        $this->expense_splits->push(['amount' => NULL, 'project_id' => NULL, 'items' => $items, 'reimbursment' => 'None']);
         $this->splits_count = $this->splits_count + 1;
     }
 
     public function removeSplit($index)
     {
-        $split_checked_items = collect($this->expense_splits[$index]['items'])->where('checkbox', true)->keys();
-        foreach ($split_checked_items as $item_index) {
-            $this->expense_line_items->items[$item_index]->split_index = null;
+        $split_checked_items = collect($this->expense_splits[$index]['items'])->where('checkbox', TRUE)->keys();
+        foreach($split_checked_items as $item_index){
+            $this->expense_line_items->items[$item_index]->split_index = NULL;
         }
 
-        if (isset($this->expense_splits[$index]['id'])) {
+        if(isset($this->expense_splits[$index]['id'])){
             $split_to_remove = ExpenseSplits::findOrFail($this->expense_splits[$index]['id']);
             $split_to_remove->delete();
         }
@@ -206,9 +200,9 @@ class ExpenseSplitsCreate extends Component
     {
         $this->validate();
 
-        if (round($this->expense_total - $this->splits_total, 2) != 0.0) {
+        if(round($this->expense_total - $this->splits_total, 2) != 0.0){
             $this->addError('expense_splits_total_match', 'Expense Amount and Splits Amounts must match');
-        } else {
+        }else{
             //send all SPLITS data back to ExpenseForm view
             //send back to ExpenseForm... all validated and tested here
             $this->dispatch('hasSplits', $this->expense_splits)->to(ExpenseCreate::class);

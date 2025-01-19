@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use App\Scopes\BidScope;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Bid extends Model
 {
@@ -19,27 +18,27 @@ class Bid extends Model
         static::addGlobalScope(new BidScope);
     }
 
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function project(): BelongsTo
+    public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function estimate_sections(): HasMany
+    public function estimate_sections()
     {
         return $this->hasMany(EstimateSection::class);
     }
 
     public function getNameAttribute()
     {
-        if ($this->type == 1) {
+        if($this->type == 1){
             $name = 'Original Bid';
-        } else {
-            $name = 'Change Order '.$this->type - 1;
+        }else{
+            $name = 'Change Order ' . $this->type - 1;
         }
 
         return $name;

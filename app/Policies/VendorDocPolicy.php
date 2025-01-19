@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\VendorDoc;
+use Illuminate\Auth\Access\Response;
 
 class VendorDocPolicy
 {
@@ -12,9 +13,9 @@ class VendorDocPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->primary_vendor->pivot->role_id == 1) {
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
-        } else {
+        }else{
             return false;
         }
     }
@@ -24,9 +25,9 @@ class VendorDocPolicy
      */
     public function view(User $user, VendorDoc $vendorDoc): bool
     {
-        if ($user->primary_vendor->pivot->role_id == 1) {
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
-        } else {
+        }else{
             return false;
         }
     }

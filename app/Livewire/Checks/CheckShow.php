@@ -2,17 +2,17 @@
 
 namespace App\Livewire\Checks;
 
+use App\Models\Vendor;
 use App\Models\Check;
 use App\Models\Expense;
 use App\Models\Timesheet;
-use App\Models\Vendor;
-use Livewire\Attributes\Title;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
 class CheckShow extends Component
 {
     public Check $check;
-
     public $employee_timesheets_total = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -46,37 +46,42 @@ class CheckShow extends Component
         // dd($vendor_paid_expenses);
 
         $vendor_expenses =
-            Expense::where('check_id', $this->check->id)
+            Expense::
+                where('check_id', $this->check->id)
                 ->whereNull('reimbursment')
                 ->whereNull('distribution_id')
                 ->whereNull('paid_by')
                 ->get();
 
         $weekly_timesheets =
-            Timesheet::where('check_id', $this->check->id)
+            Timesheet::
+                where('check_id', $this->check->id)
                 ->where('user_id', $this->check->user_id)
                 ->get();
 
         $employee_total_timesheets =
-            Timesheet::where('paid_by', $this->check->user_id)
+            Timesheet::
+                where('paid_by', $this->check->user_id)
                 ->where('check_id', $this->check->id)
                 ->get()
                 ->groupBy(['user_id']);
 
-        foreach ($employee_total_timesheets as $user_id => $employee) {
+        foreach($employee_total_timesheets as $user_id => $employee){
             $employee_timesheets_total[$user_id] = $employee->sum('amount');
         }
 
         // dd($this->employee_timesheets_total[3]);
 
         $employee_weekly_timesheets =
-            Timesheet::where('paid_by', $this->check->user_id)
+            Timesheet::
+                where('paid_by', $this->check->user_id)
                 ->where('check_id', $this->check->id)
                 ->get()
                 ->groupBy(['user_id', 'date']);
 
         $user_paid_expenses =
-            Expense::whereNotNull('paid_by')
+            Expense::
+                whereNotNull('paid_by')
                 // where('paid_by', $this->check->user_id)
                 // ->whereNull('reimbursment')
                 ->where('check_id', $this->check->id)
@@ -84,7 +89,8 @@ class CheckShow extends Component
                 ->get();
 
         $user_distributions =
-            Expense::whereNotNull('distribution_id')
+            Expense::
+                whereNotNull('distribution_id')
                 ->whereNull('reimbursment')
                 ->where('check_id', $this->check->id)
                 ->get();
@@ -93,13 +99,14 @@ class CheckShow extends Component
             Expense::
                 // whereNotNull('distribution_id')
                 whereNull('paid_by')
-                    ->whereNotNull('reimbursment')
-                    ->where('check_id', $this->check->id)
-                    ->get();
+                ->whereNotNull('reimbursment')
+                ->where('check_id', $this->check->id)
+                ->get();
         // dd($user_paid_reimburesements);
 
         $user_paid_by_reimbursements =
-            Expense::where('paid_by', $this->check->user_id)
+            Expense::
+                where('paid_by', $this->check->user_id)
                 ->whereNotNull('reimbursment')
                 ->where('reimbursment', '!=', 'Client')
                 ->where('check_id', $this->check->id)

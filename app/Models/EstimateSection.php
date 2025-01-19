@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EstimateSection extends Model
@@ -14,17 +12,17 @@ class EstimateSection extends Model
 
     protected $fillable = ['estimate_id', 'index', 'name', 'total', 'bid_id', 'created_at', 'updated_at', 'deleted_at'];
 
-    public function estimate(): BelongsTo
+    public function estimate()
     {
         return $this->belongsTo(Estimate::class);
     }
 
-    public function estimate_line_items(): HasMany
+    public function estimate_line_items()
     {
         return $this->hasMany(EstimateLineItem::class, 'section_id');
     }
 
-    public function bid(): BelongsTo
+    public function bid()
     {
         return $this->belongsTo(Bid::class);
     }

@@ -11,13 +11,15 @@ class CompanyEmailsScope implements Scope
     /**
      * Apply the scope to a given Eloquent query builder.
      *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return void
      */
     public function apply(Builder $builder, Model $model)
     {
-        if (auth()->guest()) {
+        if(auth()->guest()){
 
-        } else {
+        }else{
             $builder->where('vendor_id', auth()->user()->primary_vendor_id);
         }
     }

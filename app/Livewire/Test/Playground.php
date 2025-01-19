@@ -8,8 +8,7 @@ use Livewire\Component;
 class Playground extends Component
 {
     public $clients = [];
-
-    public $client_id = null;
+    public $client_id = NULL;
 
     public function mount()
     {
@@ -28,9 +27,9 @@ class Playground extends Component
     public function render()
     {
         //7-12-2024 move to middleware / previous onion layer
-        if (auth()->user()->id === 1) {
+        if(auth()->user()->id === 1){
             return view('livewire.test.playground');
-        } else {
+        }else{
             abort(403);
         }
     }

@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Checks;
 
-use App\Livewire\Forms\CheckForm;
 use App\Models\BankAccount;
 use App\Models\Check;
+
 use Livewire\Component;
+use App\Livewire\Forms\CheckForm;
 
 class CheckCreate extends Component
 {
@@ -14,7 +15,6 @@ class CheckCreate extends Component
     // public $expense_update = NULL;
 
     public $bank_accounts = [];
-
     public $employees = [];
 
     public Check $check;
@@ -45,8 +45,8 @@ class CheckCreate extends Component
         //     $this->form->check_number = NULL;
         // }
 
-        if ($field == 'form.check_type') {
-            $this->form->check_number = null;
+        if($field == 'form.check_type'){
+            $this->form->check_number = NULL;
             // if($this->check->check_type == 'Check'){
 
             // }else{
@@ -77,7 +77,7 @@ class CheckCreate extends Component
         $this->dispatch('notify',
             type: 'success',
             content: 'Check Updated',
-            route: 'checks/'.$check->id
+            route: 'checks/' . $check->id
         );
 
         $this->dispatch('refreshComponent')->to('checks.check-show');
@@ -95,13 +95,13 @@ class CheckCreate extends Component
         $this->validate();
         $this->form->store();
 
-        if ($this->payment_type->getTable() == 'vendors') {
+        if($this->payment_type->getTable() == 'vendors'){
             // dd($this->payment_type->getTable());
             // dd('vendors table');
             //send to VendorPaymentForm
             // dd($this->check);
             $this->dispatch('vendorHasCheck', $this->check);
-        } elseif ($this->payment_type->getTable() == 'expenses') {
+        }elseif($this->payment_type->getTable() == 'expenses'){
             $this->dispatch('hasCheck', $this->check);
         }
     }

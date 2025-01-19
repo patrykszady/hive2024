@@ -8,8 +8,10 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('expense_receipts_data', function (Blueprint $table) {
             $table->json('receipt_items')->after('receipt_html')->nullable();
@@ -22,8 +24,10 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('expense_receipts_data', function (Blueprint $table) {
             $table->dropColumn('receipt_items');

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Route;
+
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -34,21 +35,18 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
 
     //Vednors USER belongs to
-    public function vendors(): BelongsToMany
+    public function vendors()
     {
         return $this->belongsToMany(Vendor::class)->using(UserVendor::class)->withoutGlobalScopes()->withTimestamps()->with('vendor')->withPivot(['is_employed', 'role_id', 'via_vendor_id', 'start_date', 'end_date', 'hourly_rate']);
     }
 
     //User's default/logged in vendor
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         // dd($this->vendors()->find($this->primary_vendor_id));
         // return $this->vendors()->find($this->primary_vendor_id);
@@ -67,32 +65,32 @@ class User extends Authenticatable
     }
 
     //via_vendor
-    public function via_vendor(): BelongsTo
+    public function via_vendor()
     {
         return $this->belongsTo(Vendor::class, 'primary_vendor_id')->withoutGlobalScopes();
     }
 
-    public function leads(): HasMany
+    public function leads()
     {
         return $this->hasMany(Leads::class);
     }
 
-    public function clients(): BelongsToMany
+    public function clients()
     {
         return $this->belongsToMany(Client::class)->withTimestamps();
     }
 
-    public function timesheets(): HasMany
+    public function timesheets()
     {
         return $this->hasMany(Timesheet::class);
     }
 
-    public function task(): HasMany
+    public function task()
     {
         return $this->hasMany(Task::class);
     }
 
-    public function distributions(): HasMany
+    public function distributions()
     {
         return $this->hasMany(Distribution::class);
     }
@@ -103,11 +101,11 @@ class User extends Authenticatable
         // $role_id = $this->vendors()->where('vendors.id', $vendor_id)->first()->pivot->role_id;
         $role_id = $this->primary_vendor->pivot->role_id;
 
-        if ($role_id == 1) {
+        if($role_id == 1){
             $role = 'Admin';
-        } elseif ($role_id == 2) {
+        }elseif($role_id == 2){
             $role = 'Member';
-        } else {
+        }else{
             $role = 'No Role';
         }
 
@@ -118,11 +116,11 @@ class User extends Authenticatable
     {
         $role_id = $this->vendors()->where('vendors.id', $vendor_id)->first()->pivot->role_id;
 
-        if ($role_id == 1) {
+        if($role_id == 1){
             $role = 'Admin';
-        } elseif ($role_id == 2) {
+        }elseif($role_id == 2){
             $role = 'Member';
-        } else {
+        }else{
             $role = 'No Role';
         }
 
@@ -136,7 +134,7 @@ class User extends Authenticatable
 
     public function getFullNameAttribute()
     {
-        return $this->first_name.' '.$this->last_name;
+        return $this->first_name . ' ' . $this->last_name;
     }
 
     //on vendor->user queries

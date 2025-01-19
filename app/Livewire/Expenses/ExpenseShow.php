@@ -3,9 +3,13 @@
 namespace App\Livewire\Expenses;
 
 use App\Models\Expense;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Title;
+use App\Models\Project;
+use App\Models\User;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ExpenseShow extends Component
 {

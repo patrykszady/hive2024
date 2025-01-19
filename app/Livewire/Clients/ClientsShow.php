@@ -3,10 +3,12 @@
 namespace App\Livewire\Clients;
 
 use App\Models\Client;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Title;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ClientsShow extends Component
 {
@@ -26,7 +28,6 @@ class ClientsShow extends Component
     public function render()
     {
         $this->authorize('view', $this->client);
-
         return view('livewire.clients.show');
     }
 }

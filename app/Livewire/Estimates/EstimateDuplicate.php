@@ -4,6 +4,7 @@ namespace App\Livewire\Estimates;
 
 use App\Models\Client;
 use App\Models\Estimate;
+
 use Livewire\Component;
 
 class EstimateDuplicate extends Component
@@ -11,14 +12,12 @@ class EstimateDuplicate extends Component
     public Estimate $estimate;
 
     public $clients = [];
-
     public $client_projects = [];
 
-    public $client_id = null;
+    public $client_id = NULL;
+    public $project_id = NULL;
 
-    public $project_id = null;
-
-    public $modal_show = false;
+    public $modal_show = FALSE;
 
     protected $listeners = ['duplicateModal'];
 
@@ -37,11 +36,11 @@ class EstimateDuplicate extends Component
 
     public function updated($field, $value)
     {
-        if ($field == 'client_id') {
-            if ($value) {
+        if($field == 'client_id'){
+            if($value){
                 $client = $this->clients->where('id', $value)->first();
                 $this->client_projects = $client->projects;
-            } else {
+            }else{
                 $this->resetValidation();
             }
         }
@@ -52,7 +51,7 @@ class EstimateDuplicate extends Component
     public function duplicateModal(Estimate $estimate)
     {
         $this->estimate = $estimate;
-        $this->modal_show = true;
+        $this->modal_show = TRUE;
     }
 
     public function save()
@@ -62,17 +61,17 @@ class EstimateDuplicate extends Component
         //get current estimate and duplicate sections and line_items
         $new_estimate = Estimate::create([
             'project_id' => $this->project_id,
-            'belongs_to_vendor_id' => auth()->user()->vendor->id,
+            'belongs_to_vendor_id' => auth()->user()->vendor->id
             // 'sections' => collect($this->estimate->sections)->toJson(),
         ]);
 
-        foreach ($this->estimate->estimate_sections as $section) {
+        foreach($this->estimate->estimate_sections as $section){
             $new_section = $section->replicate();
             $new_section->estimate_id = $new_estimate->id;
-            $new_section->bid_id = null;
+            $new_section->bid_id = NULL;
             $new_section->save();
 
-            foreach ($this->estimate->estimate_line_items->where('section_id', $section->id) as $line_item) {
+            foreach($this->estimate->estimate_line_items->where('section_id', $section->id) as $line_item){
                 $line_item->unsetEventDispatcher();
                 $new_line_item = $line_item->replicate();
                 $new_line_item->estimate_id = $new_estimate->id;
@@ -84,7 +83,7 @@ class EstimateDuplicate extends Component
         $this->dispatch('notify',
             type: 'success',
             content: 'Estimate Duplicated',
-            route: 'estimates/'.$new_estimate->id
+            route: 'estimates/' . $new_estimate->id
         );
     }
 

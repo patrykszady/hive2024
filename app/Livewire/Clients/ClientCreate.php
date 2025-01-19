@@ -2,14 +2,18 @@
 
 namespace App\Livewire\Clients;
 
-use App\Livewire\Forms\ClientForm;
 use App\Models\Client;
 use App\Models\User;
+
+use App\Livewire\Forms\ClientForm;
+
 use Flux;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Title;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ClientCreate extends Component
 {
@@ -18,14 +22,11 @@ class ClientCreate extends Component
     public ClientForm $form;
 
     public Client $client;
-
     public User $user;
 
-    public $client_name = null;
-
+    public $client_name = NULL;
     public $user_clients = [];
-
-    public $user_client_id = null;
+    public $user_client_id = NULL;
 
     public $view_text = [
         'card_title' => 'Add Client',
@@ -34,7 +35,7 @@ class ClientCreate extends Component
     ];
 
     // public $address = NULL;
-    public $team_member = false;
+    public $team_member = FALSE;
 
     protected $listeners = ['addUser', 'resetModal', 'editClient', 'newClient'];
 
@@ -55,14 +56,14 @@ class ClientCreate extends Component
 
     public function updated($field)
     {
-        if ($this->user_client_id != 'NEW') {
-            if (is_null($this->user_client_id)) {
-                $this->view_text['button_text'] = 'Update Client';
-            } else {
-                $this->view_text['button_text'] = 'View Existing Client';
+        if($this->user_client_id != 'NEW'){
+            if(is_null($this->user_client_id)){
+                $this->view_text['button_text'] = "Update Client";
+            }else{
+                $this->view_text['button_text'] = "View Existing Client";
             }
-        } else {
-            $this->view_text['button_text'] = 'Create Client';
+        }else{
+            $this->view_text['button_text'] = "Create Client";
         }
 
         $this->validateOnly($field);
@@ -70,7 +71,7 @@ class ClientCreate extends Component
 
     public function addUser(User $user, $client_id)
     {
-        if (is_numeric($client_id)) {
+        if(is_numeric($client_id)){
             $this->client = Client::findOrFail($client_id);
             $this->user_client_id = $this->client->id;
             $this->client_name = $this->client->name;
@@ -80,7 +81,7 @@ class ClientCreate extends Component
                 'button_text' => 'Add User',
                 'form_submit' => 'add_user_to_client',
             ];
-        } else {
+        }else{
             $this->user_clients = $user->clients()->withoutGlobalScopes()->with('vendors')->get()->keyBy('id');
             $this->user_client_id = 'NEW';
         }
@@ -110,6 +111,7 @@ class ClientCreate extends Component
         //     //role and hourly here for new vendor?
         //     $this->team_member = 'index';
         // }
+
 
         // $this->address = TRUE;
     }
@@ -181,7 +183,7 @@ class ClientCreate extends Component
         $this->dispatch('notify',
             type: 'success',
             content: 'Client Updated',
-            route: 'clients/'.$client->id
+            route: 'clients/' . $client->id
         );
 
         $this->dispatch('refreshComponent')->to('clients.clients-show');
@@ -191,14 +193,13 @@ class ClientCreate extends Component
     {
         // dd($this);
         //if existing Client ... redirect to that with Livewire.navigate
-        if (is_numeric($this->user_client_id)) {
+        if(is_numeric($this->user_client_id)){
             $this->modal('client_form_modal')->close();
-
-            return $this->redirect('/clients/'.$this->user_client_id, navigate: true);
+            return $this->redirect('/clients/' . $this->user_client_id, navigate: true);
 
         }
         //12-3-22 authorize
-        if (! is_numeric($this->user_client_id)) {
+        if(!is_numeric($this->user_client_id)){
             $client = $this->form->store();
 
             // $this->dispatch('notify',
@@ -206,20 +207,20 @@ class ClientCreate extends Component
             //     content: 'Client Created',
             //     route: 'clients/' . $client->id
             // );
-        } else {
+        }else{
             $auth_user_vendor = auth()->user()->vendor;
             $client = $this->user_clients[$this->user_client_id];
             $client_vendors = $client->vendors()->pluck('vendors.id')->toArray();
 
             $auth_vendor_in_client = in_array($auth_user_vendor->id, $client_vendors);
 
-            if ($auth_vendor_in_client) {
+            if($auth_vendor_in_client){
                 $this->dispatch('notify',
                     type: 'success',
                     content: 'This Client Exists',
-                    route: 'clients/'.$client->id
+                    route: 'clients/' . $client->id
                 );
-            } else {
+            }else{
                 $auth_user_vendor->clients()->attach($client->id);
                 // $this->dispatch('notify',
                 //     type: 'success',

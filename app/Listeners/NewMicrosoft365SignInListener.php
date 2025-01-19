@@ -8,15 +8,15 @@ use Illuminate\Support\Facades\Auth;
 
 class NewMicrosoft365SignInListener
 {
-    public function handle($event): void
+    public function handle($event)
     {
         $tokenId = $event->token['token_id'];
-        $token = MsGraphToken::find($tokenId)->first();
+        $token   = MsGraphToken::find($tokenId)->first();
 
         if ($token->user_id == null) {
             $user = User::create([
-                'name' => $event->token['info']['displayName'],
-                'email' => $event->token['info']['mail'],
+                'name'     => $event->token['info']['displayName'],
+                'email'    => $event->token['info']['mail'],
                 'password' => '',
             ]);
 

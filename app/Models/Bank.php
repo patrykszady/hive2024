@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Models\Scopes\BankScope;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Vendor;
+use App\Models\BankAccount;
+
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Bank extends Model
 {
@@ -23,12 +25,12 @@ class Bank extends Model
         static::addGlobalScope(new BankScope);
     }
 
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function accounts(): HasMany
+    public function accounts()
     {
         return $this->hasMany(BankAccount::class);
     }
@@ -40,9 +42,9 @@ class Bank extends Model
 
     public function getPlaidOptionsAttribute($value)
     {
-        if ($value == null) {
-            $plaid_options = null;
-        } else {
+        if($value == NULL){
+            $plaid_options = NULL;
+        }else{
             $plaid_options = json_decode($value);
         }
 

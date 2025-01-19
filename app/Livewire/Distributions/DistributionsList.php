@@ -3,6 +3,7 @@
 namespace App\Livewire\Distributions;
 
 use App\Models\Distribution;
+
 use Livewire\Component;
 
 class DistributionsList extends Component
@@ -10,8 +11,7 @@ class DistributionsList extends Component
     protected $listeners = ['refreshComponent' => '$refresh', 'refreshForce'];
 
     public $distributions = [];
-
-    public $registration = false;
+    public $registration = FALSE;
 
     public function mount()
     {

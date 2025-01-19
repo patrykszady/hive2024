@@ -4,9 +4,12 @@ namespace App\Livewire\Forms;
 
 use App\Models\Client;
 use App\Models\User;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 use Livewire\Attributes\Rule;
 use Livewire\Form;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class ClientForm extends Form
 {
@@ -20,25 +23,25 @@ class ClientForm extends Form
     public $client_name = '';
 
     #[Rule('nullable|min:3')]
-    public $business_name = null;
+    public $business_name = NULL;
 
     #[Rule('required|min:3')]
-    public $address = null;
+    public $address = NULL;
 
     #[Rule('nullable|min:1')]
-    public $address_2 = null;
+    public $address_2 = NULL;
 
     #[Rule('required|min:3')]
-    public $city = null;
+    public $city = NULL;
 
     #[Rule('required|min:2|max:2')]
-    public $state = null;
+    public $state = NULL;
 
     #[Rule('required|digits:5', as: 'zip code')]
-    public $zip_code = null;
+    public $zip_code = NULL;
 
     #[Rule('nullable|min:1')]
-    public $source = null;
+    public $source = NULL;
 
     public function setUser(User $user)
     {
@@ -72,7 +75,7 @@ class ClientForm extends Form
             'zip_code' => $this->zip_code,
         ]);
 
-        $this->client->vendors()->updateExistingPivot(auth()->user()->vendor->id, ['source' => $this->source]);
+        $this->client->vendors()->updateExistingPivot(auth()->user()->vendor->id, array('source' => $this->source));
 
         //ADD USER TO CLIENT
         // $this->user->clients()->attach($client->id);
@@ -102,10 +105,9 @@ class ClientForm extends Form
         //with pivot Source
         auth()->user()->vendor->clients()->attach($client->id);
 
-        $client->vendors()->updateExistingPivot(auth()->user()->vendor->id, ['source' => $this->source]);
+        $client->vendors()->updateExistingPivot(auth()->user()->vendor->id, array('source' => $this->source));
 
         $this->reset();
-
         return $client;
     }
 }

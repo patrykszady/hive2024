@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use GuzzleHttp\Client as GuzzleClient;
 use OpenAI\Client;
 use OpenAI\Transporters\HttpTransporter;
-use OpenAI\ValueObjects\ApiKey;
 use OpenAI\ValueObjects\Transporter\BaseUri;
 use OpenAI\ValueObjects\Transporter\Headers;
 use OpenAI\ValueObjects\Transporter\QueryParams;
+use OpenAI\ValueObjects\ApiKey;
+use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -18,7 +18,7 @@ class ChatGPTService
 
     public function __construct()
     {
-        $guzzleClient = new GuzzleClient;
+        $guzzleClient = new GuzzleClient();
         $baseUri = BaseUri::from('https://api.openai.com/v1');
         $apiKey = ApiKey::from(env('OPENAI_API_KEY'));
         $headers = Headers::withAuthorization($apiKey);
@@ -38,7 +38,7 @@ class ChatGPTService
             'model' => 'gpt-4',
             'messages' => [
                 // ['role' => 'system', 'content' => 'You are a helpful assistant.'],
-                ['role' => 'user', 'content' => "Extract the name, date, address, referral, phone number, and email from the following text and format it into JSON with lowecase keys but keep value as entered:\n\n$text"],
+                ['role' => 'user', 'content' => "Extract the name, date, address, referral, phone number, and email from the following text and format it into JSON with lowecase keys but keep value as entered:\n\n$text"]
             ],
             'max_tokens' => 150,
         ]);

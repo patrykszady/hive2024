@@ -3,11 +3,13 @@
 namespace App\Jobs;
 
 use App\Mail\RequestInsurance;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+
 use Illuminate\Support\Facades\Mail;
 
 class SendVendorDocRequestEmail implements ShouldQueue
@@ -15,13 +17,9 @@ class SendVendorDocRequestEmail implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $agent_expired_docs;
-
     protected $vendor;
-
     protected $requesting_vendor;
-
     protected $agent_email;
-
     /**
      * Create a new job instance.
      */
@@ -38,10 +36,10 @@ class SendVendorDocRequestEmail implements ShouldQueue
      */
     public function handle(): void
     {
-        if (env('APP_ENV') === 'production') {
+        if(env('APP_ENV') === 'production'){
             Mail::to($this->agent_email)
-                ->cc([$this->vendor->business_email, $this->requesting_vendor->business_email])
-                ->send(new RequestInsurance($this->agent_expired_docs, $this->vendor, $this->requesting_vendor));
+            ->cc([$this->vendor->business_email, $this->requesting_vendor->business_email])
+            ->send(new RequestInsurance($this->agent_expired_docs, $this->vendor, $this->requesting_vendor));
         }
     }
 }

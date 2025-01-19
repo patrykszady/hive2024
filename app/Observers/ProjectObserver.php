@@ -12,7 +12,6 @@ class ProjectObserver
         $user = auth()->user();
         $project->belongs_to_vendor_id = $user->vendor->id;
     }
-
     /**
      * Handle the Project "created" event.
      */

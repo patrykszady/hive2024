@@ -2,41 +2,37 @@
 
 namespace App\Livewire\Timesheets;
 
-use App\Livewire\Forms\TimesheetPaymentForm;
 use App\Models\BankAccount;
-use App\Models\Check;
 use App\Models\Expense;
-use App\Models\Timesheet;
+use App\Models\Check;
 use App\Models\User;
+use App\Models\Timesheet;
 use App\Models\Vendor;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Title;
-// use App\Livewire\Forms\CheckForm;
 
 use Livewire\Component;
+use Livewire\Attributes\Title;
+
+use App\Livewire\Forms\TimesheetPaymentForm;
+// use App\Livewire\Forms\CheckForm;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TimesheetPaymentCreate extends Component
 {
     use AuthorizesRequests;
 
     public TimesheetPaymentForm $form;
-
     // public CheckForm $check_form;
     public User $user;
-
-    public $next_check_auto = false;
+    public $next_check_auto = FALSE;
 
     public $weekly_timesheets = [];
-
     public $employee_weekly_timesheets = [];
-
     public $user_paid_expenses = [];
-
     public $user_reimbursement_expenses = [];
-
     public $user_paid_by_reimbursements = [];
 
-    public $disable_paid_by = false;
+    public $disable_paid_by = FALSE;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -57,17 +53,18 @@ class TimesheetPaymentCreate extends Component
     {
         $this->user->pivot_user_vendor = $this->user->vendors()->where('vendors.id', auth()->user()->primary_vendor_id)->first()->pivot->via_vendor_id;
 
-        if (! is_null($this->user->pivot_user_vendor)) {
+        if(!is_null($this->user->pivot_user_vendor)){
             $via_vendor_back = Vendor::withoutGlobalScopes()->findOrFail($this->user->pivot_user_vendor);
             $this->user->payee_name = $via_vendor_back->business_name;
             $this->user->via_vendor_back = auth()->user()->vendor;
-        } else {
+        }else{
             $this->user->payee_name = $this->user->full_name;
             $this->user->via_vendor_back = $this->user->vendor;
         }
 
         $this->weekly_timesheets =
-            Timesheet::where('user_id', $this->user->id)
+            Timesheet::
+                where('user_id', $this->user->id)
                 ->whereNull('check_id')
                 ->whereNull('paid_by')
                 ->whereNull('deleted_at')
@@ -77,14 +74,15 @@ class TimesheetPaymentCreate extends Component
                     $item->checkbox = true;
                 })
                 ->keyBy('id');
-        // ->groupBy(function($data) {
-        //     // ->startOfWeek()->toFormattedDateString()
-        //     return $data->date->format('Y-m-d');
-        // }, true)
-        // ->toBase();
+                // ->groupBy(function($data) {
+                //     // ->startOfWeek()->toFormattedDateString()
+                //     return $data->date->format('Y-m-d');
+                // }, true)
+                // ->toBase();
 
         $this->employee_weekly_timesheets =
-                Timesheet::with('user')
+                Timesheet::
+                    with('user')
                     ->where('paid_by', $this->user->id)
                     ->whereNull('check_id')
                     ->whereNull('deleted_at')
@@ -96,7 +94,8 @@ class TimesheetPaymentCreate extends Component
                     ->keyBy('id');
 
         $this->user_paid_expenses =
-            Expense::where('paid_by', $this->user->id)
+            Expense::
+                where('paid_by', $this->user->id)
                 ->where(function ($query) {
                     $query->whereNull('reimbursment')->orWhere('reimbursment', 'Client');
                 })
@@ -109,7 +108,8 @@ class TimesheetPaymentCreate extends Component
                 ->keyBy('id');
 
         $this->user_reimbursement_expenses =
-            Expense::where('reimbursment', $this->user->id)
+            Expense::
+                where('reimbursment', $this->user->id)
                 ->whereNull('paid_by')
                 ->whereNull('check_id')
                 ->orderBy('date', 'DESC')
@@ -121,7 +121,8 @@ class TimesheetPaymentCreate extends Component
         // dd($this->user_reimbursement_expenses);
 
         $this->user_paid_by_reimbursements =
-            Expense::where('paid_by', $this->user->id)
+            Expense::
+                where('paid_by', $this->user->id)
                 ->whereNotIn('reimbursment', ['', 'Client'])
                 ->whereNull('check_id')
                 ->orderBy('date', 'DESC')
@@ -140,23 +141,23 @@ class TimesheetPaymentCreate extends Component
         // // dd($this->user_paid_by_reimbursements);
         // // dd($this->user_paid_by_reimbursements->first()->reimbursment);
 
-        if ($this->weekly_timesheets->isEmpty()) {
+        if($this->weekly_timesheets->isEmpty()){
             $this->weekly_timesheets = collect();
         }
 
-        if ($this->employee_weekly_timesheets->isEmpty()) {
+        if($this->employee_weekly_timesheets->isEmpty()){
             $this->employee_weekly_timesheets = collect();
         }
 
-        if ($this->user_paid_expenses->isEmpty()) {
+        if($this->user_paid_expenses->isEmpty()){
             $this->user_paid_expenses = collect();
         }
 
-        if ($this->user_reimbursement_expenses->isEmpty()) {
+        if($this->user_reimbursement_expenses->isEmpty()){
             $this->user_reimbursement_expenses = collect();
         }
 
-        if ($this->user_paid_by_reimbursements->isEmpty()) {
+        if($this->user_paid_by_reimbursements->isEmpty()){
             $this->user_paid_by_reimbursements = collect();
         }
 
@@ -166,27 +167,27 @@ class TimesheetPaymentCreate extends Component
     public function updated($field, $value)
     {
         // $this->validate();
-        if ($field == 'form.bank_account_id') {
-            $this->form->check_type = null;
-            $this->form->check_number = null;
-            $this->next_check_auto = false;
+        if($field == 'form.bank_account_id'){
+            $this->form->check_type = NULL;
+            $this->form->check_number = NULL;
+            $this->next_check_auto = FALSE;
             $this->resetValidation('form.check_number');
         }
 
-        if ($field == 'form.check_type') {
-            if ($value == 'Check') {
+        if($field == 'form.check_type'){
+            if($value == 'Check'){
                 $next_check_number = Check::where('bank_account_id', $this->form->bank_account_id)->where('check_type', 'Check')->orderBy('date', 'DESC')->orderBy('created_at', 'DESC')->first()->check_number + 1;
                 $this->form->check_number = $next_check_number;
-                $this->next_check_auto = true;
-            } else {
-                $this->form->check_number = null;
-                $this->next_check_auto = false;
+                $this->next_check_auto = TRUE;
+            }else{
+                $this->form->check_number = NULL;
+                $this->next_check_auto = FALSE;
                 $this->resetValidation('form.check_number');
             }
         }
 
-        if ($field == 'form.check_number') {
-            $this->next_check_auto = false;
+        if($field == 'form.check_number'){
+            $this->next_check_auto = FALSE;
             $this->validateOnly($field);
         }
         // $this->validateOnly('form.bank_account_id');
@@ -194,53 +195,53 @@ class TimesheetPaymentCreate extends Component
     }
 
     // public function updated($field, $value)
-    // {
-    //     $this->form->validate();
-    // }
-    // public function updated($field, $value)
-    // {
-    //     //reset check and reference if paid_by or check items are changed.
-    //     //8-24-2022 - this goes with VendorPaymentForm as well.
-    //     if($field == 'check.check_type'){
-    //         if($this->check->check_type == 'Check'){
-    //             $this->check_input = TRUE;
-    //         }else{
-    //             $this->check->check_number = NULL;
-    //             $this->check_input = FALSE;
-    //         }
-    //     }
+        // {
+        //     $this->form->validate();
+        // }
+        // public function updated($field, $value)
+        // {
+        //     //reset check and reference if paid_by or check items are changed.
+        //     //8-24-2022 - this goes with VendorPaymentForm as well.
+        //     if($field == 'check.check_type'){
+        //         if($this->check->check_type == 'Check'){
+        //             $this->check_input = TRUE;
+        //         }else{
+        //             $this->check->check_number = NULL;
+        //             $this->check_input = FALSE;
+        //         }
+        //     }
 
-    //     if($field == 'check.paid_by'){
-    //         if($value == ""){
-    //             $this->check->paid_by = NULL;
-    //         }
-    //         $this->check->bank_account_id = NULL;
-    //         $this->check->check_type = NULL;
-    //         $this->check->check_number = NULL;
-    //         $this->check_input = FALSE;
-    //     }
+        //     if($field == 'check.paid_by'){
+        //         if($value == ""){
+        //             $this->check->paid_by = NULL;
+        //         }
+        //         $this->check->bank_account_id = NULL;
+        //         $this->check->check_type = NULL;
+        //         $this->check->check_number = NULL;
+        //         $this->check_input = FALSE;
+        //     }
 
-    //     $this->validateOnly($field);
-    // }
+        //     $this->validateOnly($field);
+        // }
 
     public function getWeeklyTimesheetsTotalProperty()
     {
         $total = 0;
-        $confirm_disable = [];
+        $confirm_disable = array();
         //weekly_timesheets
         $total += $this->weekly_timesheets->where('checkbox', true)->sum('amount');
 
         //employee_weekly_timesheets
         $employee_weekly_timesheets_total = $this->employee_weekly_timesheets->where('checkbox', true)->sum('amount');
-        if ($employee_weekly_timesheets_total != '0.00') {
-            $confirm_disable[] = true;
+        if($employee_weekly_timesheets_total != '0.00'){
+            $confirm_disable[] = TRUE;
         }
         $total += $employee_weekly_timesheets_total;
 
         //user_paid_expenses
         $user_paid_expenses_total = $this->user_paid_expenses->where('checkbox', true)->sum('amount');
-        if ($user_paid_expenses_total != '0.00') {
-            $confirm_disable[] = true;
+        if($user_paid_expenses_total != '0.00'){
+            $confirm_disable[] = TRUE;
         }
         $total += $user_paid_expenses_total;
 
@@ -249,17 +250,17 @@ class TimesheetPaymentCreate extends Component
 
         // //user_paid_by_reimbursements
         $user_paid_by_reimbursements = $this->user_paid_by_reimbursements->where('checkbox', true)->sum('amount');
-        if ($user_paid_by_reimbursements != '0.00') {
-            $confirm_disable[] = true;
+        if($user_paid_by_reimbursements != '0.00'){
+            $confirm_disable[] = TRUE;
         }
         // dd($user_paid_by_reimbursements);
         $total -= $user_paid_by_reimbursements;
 
-        if (in_array('true', $confirm_disable)) {
-            $this->disable_paid_by = true;
-            $this->form->paid_by = null;
-        } else {
-            $this->disable_paid_by = false;
+        if(in_array('true', $confirm_disable)){
+            $this->disable_paid_by = TRUE;
+            $this->form->paid_by = NULL;
+        }else{
+            $this->disable_paid_by = FALSE;
         }
 
         // dd($total);
@@ -272,15 +273,15 @@ class TimesheetPaymentCreate extends Component
         // $this->authorize('create', Expense::class);
 
         //validate Pay User Total Check is greater than $0 / $this->weekly_timesheets has at least one Item in Collection
-        if ($this->weekly_timesheets_total == 0) {
+        if($this->weekly_timesheets_total == 0){
             $this->addError('weekly_timesheets_total', 'Payment needs at least one Timesheet');
-        } else {
+        }else{
             $redirect_route = $this->form->store();
             // dd($redirect_route);
 
-            if ($redirect_route == 'timesheets') {
+            if($redirect_route == 'timesheets'){
                 return redirect()->route('timesheets.payments');
-            } else {
+            }else{
                 $check = $redirect_route;
                 // $expenses = $check->expenses;
                 // foreach($expenses as $expense){
@@ -306,7 +307,7 @@ class TimesheetPaymentCreate extends Component
 
         $view_text = [
             'card_title' => 'Create Daily Hours',
-            'button_text' => 'Pay '.$this->user->first_name,
+            'button_text' => 'Pay ' . $this->user->first_name,
             'form_submit' => 'save',
         ];
 
@@ -317,7 +318,6 @@ class TimesheetPaymentCreate extends Component
             ->whereHas('bank', function ($query) {
                 return $query->whereNotNull('plaid_access_token');
             })->get();
-
         //07/16/2022: what about distributions.. would distributions ever end up here?
         return view('livewire.timesheets.payment-form', [
             'view_text' => $view_text,

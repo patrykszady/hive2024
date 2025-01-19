@@ -4,12 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateTimesheetsTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('timesheets', function (Blueprint $table) {
             $table->id();
@@ -23,7 +25,7 @@ return new class extends Migration
             $table->integer('check_id')->unsigned()->nullable();
             $table->integer('hourly');
             $table->string('invoice')->nullable();
-            $table->string('note')->nullable();
+            $table->string('note')->nullable();   
             $table->integer('created_by_user_id');
             $table->timestamps();
             $table->softDeletes();
@@ -32,8 +34,10 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('timesheets');
     }

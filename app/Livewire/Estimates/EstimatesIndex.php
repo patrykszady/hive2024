@@ -3,40 +3,43 @@
 namespace App\Livewire\Estimates;
 
 use App\Models\Estimate;
-use Flux;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Title;
+
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Lazy;
+
+use Flux;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class EstimatesIndex extends Component
 {
-    use AuthorizesRequests, WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     public $view = 'estimates.index';
-
-    public $project = null;
+    public $project = NULL;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     #[Computed]
     public function estimates()
     {
-        $project_id = $this->project ? $this->project->id : null;
+        $project_id = $this->project ? $this->project->id : NULL;
 
         $estimates = Estimate::withTrashed()
-            ->when($this->project != null, function ($query) use ($project_id) {
+            ->when($this->project != NULL, function ($query) use ($project_id) {
                 //order by date Active first, then removed (seperate)
                 return $query->where('project_id', $project_id)->orderBy('deleted_at', 'ASC');
             })
             ->orderBy('created_at', 'DESC')
             ->paginate(10);
 
-        $estimates->getCollection()->each(function ($estimate, $key) {
-            if (is_null($estimate->deleted_at)) {
+        $estimates->getCollection()->each(function ($estimate, $key){
+            if(is_null($estimate->deleted_at)){
                 $estimate->status = 'Active';
-            } else {
+            }else{
                 $estimate->status = 'Removed';
             }
         });

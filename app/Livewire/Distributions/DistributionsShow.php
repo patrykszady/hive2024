@@ -4,27 +4,28 @@ namespace App\Livewire\Distributions;
 
 use App\Models\Distribution;
 use App\Models\Vendor;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Models\Expense;
+
 use Livewire\Component;
 use Livewire\WithPagination;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class DistributionsShow extends Component
 {
     use AuthorizesRequests, WithPagination;
 
     public Distribution $distribution;
-
-    public $year = null;
-
+    public $year = NULL;
     public $date = [];
 
     public function mount()
     {
         //if $this->year = NULL = YTD
-        if (is_null($this->year)) {
+        if(is_null($this->year)){
             $this->date['start'] = today()->subYear(1)->format('Y-m-d');
             $this->date['end'] = today()->format('Y-m-d');
-        } else {
+        }else{
             dd('year isset/not null');
         }
     }
@@ -66,7 +67,8 @@ class DistributionsShow extends Component
 
         // dd($distribution_vendors[46]);
         $distribution_sum = 0;
-        foreach ($distribution_expenses_vendors as $distribution_vendor) {
+        foreach($distribution_expenses_vendors as $distribution_vendor)
+        {
             $distribution_sum += $distribution_vendor->sum;
             $distribution_expenses_vendors->vendors_sum = $distribution_sum;
         }
@@ -86,7 +88,7 @@ class DistributionsShow extends Component
             })->sum('amount');
 
         // dd($this->distribution->earned);
-        // $this->distribution->projects()->whereBetween('distribution_project.created_at', [$this->date['start'], $this->date['end']])->sum('amount');
+            // $this->distribution->projects()->whereBetween('distribution_project.created_at', [$this->date['start'], $this->date['end']])->sum('amount');
 
         $this->distribution->paid = $distribution_vendors->sum('sum');
 

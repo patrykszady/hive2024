@@ -8,10 +8,8 @@ use Livewire\Component;
 class VendorDocsCard extends Component
 {
     public Vendor $vendor;
-
     public $vendor_docs = [];
-
-    public $view = false;
+    public $view = FALSE;
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
@@ -19,6 +17,7 @@ class VendorDocsCard extends Component
     {
         //dont show where havent done business with / no checks in the last YTD
         // $this->vendor->fresh();
+
 
         //->groupBy('type')->toBase()
         // $this->vendor_docs = $this->vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get();
@@ -37,9 +36,10 @@ class VendorDocsCard extends Component
     {
         $this->vendor_docs = $this->vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type')->toBase();
 
-        foreach ($this->vendor_docs as $type_certificates) {
-            if ($type_certificates->first()->expiration_date <= today()) {
-                $this->vendor->expired_docs = true;
+        foreach($this->vendor_docs as $type_certificates)
+        {
+            if($type_certificates->first()->expiration_date <= today()){
+                $this->vendor->expired_docs = TRUE;
             }
         }
 

@@ -2,31 +2,28 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\TransactionScope;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Scopes\TransactionScope;
+
 use Laravel\Scout\Searchable;
 
 class Transaction extends Model
 {
-    use HasFactory, Searchable, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     // protected $dates = ['transaction_date', 'posted_date', 'date', 'deleted_at'];
 
     protected $guarded = [];
 
-    protected function casts(): array
-    {
-        return [
-            'date' => 'date:Y-m-d',
-            'transaction_date' => 'date:Y-m-d',
-            'posted_date' => 'date:Y-m-d',
-            'details' => 'array',
-        ];
-    }
+    protected $casts = [
+        'date' => 'date:Y-m-d',
+        'transaction_date' => 'date:Y-m-d',
+        'posted_date' => 'date:Y-m-d',
+        'details' => 'array',
+    ];
 
     protected static function booted()
     {
@@ -36,7 +33,7 @@ class Transaction extends Model
     // //Searchable / Typesense
     public function toSearchableArray(): array
     {
-        return array_merge($this->toArray(), [
+        return array_merge($this->toArray(),[
             'id' => (string) $this->id,
             'amount' => $this->amount,
             'deposit' => (string) $this->deposit ? ($this->payments->isEmpty() ? 'NO_PAYMENTS' : 'HAS_PAYMENTS') : 'NOT_DEPOSIT',
@@ -60,7 +57,7 @@ class Transaction extends Model
         return env('APP_ENV') == 'local' ? 'transaction_index_dev' : 'transaction_index';
     }
 
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class)->withDefault([
             //if transaction->vendor_id == NULL?
@@ -68,7 +65,7 @@ class Transaction extends Model
         ]);
     }
 
-    public function expense(): BelongsTo
+    public function expense()
     {
         // return $this->belongsTo(Expense::class)->withDefault([
         //     //if transaction->expense_id == NULL?
@@ -77,7 +74,7 @@ class Transaction extends Model
         return $this->belongsTo(Expense::class);
     }
 
-    public function bank_account(): BelongsTo
+    public function bank_account()
     {
         return $this->belongsTo(BankAccount::class);
     }
@@ -87,12 +84,12 @@ class Transaction extends Model
     //     return $this->hasOneThrough(Bank::class, BankAccount::class);
     // }
 
-    public function payments(): HasMany
+    public function payments()
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function check(): BelongsTo
+    public function check()
     {
         return $this->belongsTo(Check::class);
     }

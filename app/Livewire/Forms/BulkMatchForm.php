@@ -3,9 +3,11 @@
 namespace App\Livewire\Forms;
 
 use App\Models\TransactionBulkMatch;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 use Livewire\Attributes\Validate;
 use Livewire\Form;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BulkMatchForm extends Form
 {
@@ -16,19 +18,19 @@ class BulkMatchForm extends Form
     // 'vendor_amount_group.*.checkbox' => 'nullable',
 
     #[Validate('required')]
-    public $vendor_id = null;
+    public $vendor_id = NULL;
 
     #[Validate('required_unless:amount_type,ANY|nullable|sometimes|numeric|regex:/^-?\d+(\.\d{1,2})?$/')]
-    public $amount = null;
+    public $amount = NULL;
 
     #[Validate('nullable')]
-    public $distribution_id = null;
+    public $distribution_id = NULL;
 
     #[Validate('nullable')]
     public $amount_type = 'ANY';
 
     #[Validate('nullable')]
-    public $desc = null;
+    public $desc = NULL;
 
     public function setMatch(TransactionBulkMatch $match)
     {
@@ -42,12 +44,12 @@ class BulkMatchForm extends Form
 
     public function options()
     {
-        if (! empty($this->component->bulk_splits)) {
+        if(!empty($this->component->bulk_splits)){
             $options['splits'] = [];
 
-            foreach ($this->component->bulk_splits as $index => $split) {
+            foreach($this->component->bulk_splits as $index => $split){
                 //2 decimals required for percent %
-                $options['splits'][$index]['amount'] = $split['amount_type'] == '%' ? '.'.preg_replace('/\./', '', $split['amount']) : $split['amount'];
+                $options['splits'][$index]['amount'] = $split['amount_type'] == '%' ? '.' . preg_replace('/\./', '', $split['amount']) : $split['amount'];
                 $options['splits'][$index]['amount_type'] = $split['amount_type'];
                 $options['splits'][$index]['distribution_id'] = $split['distribution_id'];
             }

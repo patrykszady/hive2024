@@ -3,8 +3,11 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Hour;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+use Livewire\Attributes\Rule;
 use Livewire\Form;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class HourForm extends Form
 {
@@ -15,7 +18,7 @@ class HourForm extends Form
     public function rules()
     {
         return [
-            'projects.*.hours' => 'nullable|numeric|min:.25|max:16',
+            'projects.*.hours' => 'nullable|numeric|min:.25|max:16'
         ];
     }
 
@@ -28,9 +31,9 @@ class HourForm extends Form
     {
         // $this->authorize('create', Expense::class);
         $this->validate();
-        $projects_with_hours = collect($this->projects)->where('hours', '!=', null);
+        $projects_with_hours = collect($this->projects)->where('hours', '!=', NULL);
 
-        foreach ($projects_with_hours as $project) {
+        foreach($projects_with_hours as $project){
             $this_hour = Hour::create([
                 'date' => $this->component->selected_date,
                 'hours' => $project['hours'],
@@ -48,21 +51,21 @@ class HourForm extends Form
         $this->validate();
         $projects_with_hours = collect($this->projects);
 
-        foreach ($projects_with_hours as $project) {
+        foreach($projects_with_hours as $project){
             //update existing hour
-            if (isset($project['hour_id'])) {
+            if(isset($project['hour_id'])){
                 $hour = Hour::findOrFail($project['hour_id']);
-                if ($project['hours'] == null) {
+                if($project['hours'] == NULL){
                     $hour->delete();
-                } else {
+                }else{
                     $hour->update([
                         'hours' => $project['hours'],
                         'project_id' => $project['id'],
                     ]);
                 }
-                //create new hour
-            } else {
-                if (isset($project['hours'])) {
+            //create new hour
+            }else{
+                if(isset($project['hours'])){
                     $hour = Hour::create([
                         'date' => $this->component->selected_date,
                         'hours' => $project['hours'],

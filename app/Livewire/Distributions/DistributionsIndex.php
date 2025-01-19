@@ -2,12 +2,15 @@
 
 namespace App\Livewire\Distributions;
 
-use App\Models\Distribution;
+use App\Models\User;
 use App\Models\Project;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Title;
+use App\Models\Distribution;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
 use Livewire\WithPagination;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class DistributionsIndex extends Component
 {
@@ -36,7 +39,7 @@ class DistributionsIndex extends Component
 
         return view('livewire.distributions.index', [
             'projects_has_dis' => $projects_has_dis,
-            'projects_doesnt_dis' => $projects_doesnt_dis,
+            'projects_doesnt_dis' => $projects_doesnt_dis
         ]);
     }
 }

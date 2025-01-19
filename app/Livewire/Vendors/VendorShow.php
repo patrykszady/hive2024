@@ -3,15 +3,14 @@
 namespace App\Livewire\Vendors;
 
 use App\Models\Vendor;
-use Livewire\Attributes\Title;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
 
 class VendorShow extends Component
 {
     public Vendor $vendor;
-
     public $users = [];
-
     public $vendor_docs = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -19,7 +18,7 @@ class VendorShow extends Component
     public function mount()
     {
         //1/4/24 move to another onion layer ... middleware? gates?
-        if ($this->vendor->id == auth()->user()->vendor->id) {
+        if($this->vendor->id == auth()->user()->vendor->id){
             return redirect(route('dashboard'));
         }
 

@@ -4,11 +4,14 @@ namespace App\Livewire\Banks;
 
 use App\Models\Bank;
 use App\Models\BankAccount;
-use Carbon\Carbon;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
-use Livewire\Component;
+
+use Carbon\Carbon;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BankIndex extends Component
 {
@@ -17,10 +20,10 @@ class BankIndex extends Component
     protected $listeners = [
         'linkToken',
         'plaidLinkItem' => 'plaid_link_item',
-        'refreshComponent' => '$refresh',
+        'refreshComponent' => '$refresh'
     ];
 
-    public $view = null;
+    public $view = NULL;
 
     #[Computed]
     public function banks()
@@ -30,32 +33,32 @@ class BankIndex extends Component
             //     $query->whereIn('check_type', ['Transfer', 'Check'])->whereYear('date', '>=', 2024)->whereDoesntHave('transactions');
             // }])
             ->get();
-        // ->each(function ($item, $key) {
-        //     if($item->plaid_options->error != FALSE){
-        //         $item->error = $item->plaid_options->error->error_code;
-        //     }else{
-        //         $item->error = FALSE;
-        //     }
+            // ->each(function ($item, $key) {
+            //     if($item->plaid_options->error != FALSE){
+            //         $item->error = $item->plaid_options->error->error_code;
+            //     }else{
+            //         $item->error = FALSE;
+            //     }
 
-        //     // $balances = collect($this->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
-        //     // if()
-        // });
+            //     // $balances = collect($this->plaid_options->accounts)->where('account_id', $account->plaid_account_id)->first();
+            //     // if()
+            // });
 
     }
 
     public function plaid_link_token()
     {
-        $data = [
-            'client_id' => env('PLAID_CLIENT_ID'),
-            'secret' => env('PLAID_SECRET'),
-            'client_name' => env('APP_NAME'),
+        $data = array(
+            "client_id" => env('PLAID_CLIENT_ID'),
+            "secret" => env('PLAID_SECRET'),
+            "client_name" => env('APP_NAME'),
             //variable of user json cleaned below (single quotes inside single quotes)
-            'user' => ['client_user_id' => (string) auth()->user()->id], //, 'client_vendor_id' => (string)auth()->user()->getVendor()->id
-            'country_codes' => ['US'],
-            'language' => 'en',
+            "user" => ['client_user_id' => (string)auth()->user()->id], //, 'client_vendor_id' => (string)auth()->user()->getVendor()->id
+            "country_codes" => ['US'],
+            "language" => 'en',
             // "redirect_uri" => OAuth redirect URI must be configured in the developer dashboard. See https://plaid.com/docs/#oauth-redirect-uris
-            'webhook' => env('PLAID_WEBHOOK'),
-        ];
+            "webhook" => env('PLAID_WEBHOOK')
+            );
 
         $data['products'] = ['transactions'];
         $data['required_if_supported_products'] = ['statements'];
@@ -64,11 +67,11 @@ class BankIndex extends Component
         $data = json_encode($data);
 
         //initialize session
-        $ch = curl_init('https://'.env('PLAID_ENV').'.plaid.com/link/token/create');
+        $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/link/token/create");
         //set options
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-        ]);
+            ));
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -91,20 +94,20 @@ class BankIndex extends Component
     {
         //php proccess the $data /aka: add bank and bank_accounts to user
         // Log::channel('plaid')->info(request()->all());
-        $data = [
-            'client_id' => env('PLAID_CLIENT_ID'),
-            'secret' => env('PLAID_SECRET'),
-            'public_token' => $item_data['public_token'],
-        ];
+        $data = array(
+            "client_id"=> env('PLAID_CLIENT_ID'),
+            "secret"=> env('PLAID_SECRET'),
+            "public_token"=> $item_data['public_token']
+            );
 
         //convert array into JSON
         $data = json_encode($data);
         //initialize session
-        $ch = curl_init('https://'.env('PLAID_ENV').'.plaid.com/item/public_token/exchange');
+        $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/item/public_token/exchange");
         //set options
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-        ]);
+            ));
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -127,24 +130,24 @@ class BankIndex extends Component
         $bank->plaid_options = '{"error": false, "balances": false}';
         $bank->save();
 
-        foreach ($item_data['accounts'] as $account) {
+        foreach($item_data['accounts'] as $account){
             $bank_account = new BankAccount;
             $bank_account->bank_id = $bank->id;
             //06/27/2021 if 0 or less than 4 ... add 0 in front until it reaches 4 digits on the BankAccount Model.
             $bank_account->account_number = $account['mask'];
             $bank_account->vendor_id = $bank->vendor_id;
-            $bank_account->type = ucwords($account['subtype']);
-            //06/25/2021 There's way more subtypes...account for all
-            //09/03/2021 add type to database  see https://plaid.com/docs/api/accounts/
-            // checking
-            // savings
-            // credit
-            // cd
-            // money market
-            // 401k
-            // student
-            // auto
-            // consumer
+            $bank_account->type =  ucwords($account['subtype']);
+                //06/25/2021 There's way more subtypes...account for all
+                //09/03/2021 add type to database  see https://plaid.com/docs/api/accounts/
+                    // checking
+                    // savings
+                    // credit
+                    // cd
+                    // money market
+                    // 401k
+                    // student
+                    // auto
+                    // consumer
             $bank_account->plaid_account_id = $account['id'];
             $bank_account->save();
         }
@@ -159,7 +162,6 @@ class BankIndex extends Component
     public function render()
     {
         $this->authorize('viewAny', Bank::class);
-
         return view('livewire.banks.index');
     }
 }

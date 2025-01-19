@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Hour;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class HourPolicy
 {

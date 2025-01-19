@@ -3,9 +3,11 @@
 namespace App\Livewire\Forms;
 
 use App\Models\LineItem;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 use Livewire\Attributes\Rule;
 use Livewire\Form;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class LineItemForm extends Form
 {
@@ -14,25 +16,25 @@ class LineItemForm extends Form
     public ?LineItem $line_item;
 
     #[Rule('required|min:3')]
-    public $name = null;
+    public $name = NULL;
 
     #[Rule('required|min:3', as: 'description')]
-    public $desc = null;
+    public $desc = NULL;
 
     #[Rule('nullable|min:3')]
-    public $notes = null;
+    public $notes = NULL;
 
     #[Rule('required|min:3')]
-    public $category = null;
+    public $category = NULL;
 
     #[Rule('nullable|min:3', as: 'sub category')]
-    public $sub_category = null;
+    public $sub_category = NULL;
 
     #[Rule('required')]
-    public $unit_type = null;
+    public $unit_type = NULL;
 
     #[Rule('required|numeric|regex:/^-?\d+(\.\d{1,2})?$/', as: 'amount')]
-    public $cost = null;
+    public $cost = NULL;
 
     // #[Rule('required|min:0.01')]
     // public $quantity = '';

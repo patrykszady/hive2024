@@ -10,9 +10,9 @@ class DistributionScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        if (auth()->guest()) {
+        if(auth()->guest()){
 
-        } else {
+        }else{
             $builder->where('vendor_id', auth()->user()->primary_vendor_id);
         }
     }

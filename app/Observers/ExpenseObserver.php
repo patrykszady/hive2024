@@ -6,8 +6,10 @@ use App\Models\Expense;
 
 class ExpenseObserver
 {
-    public function creating(Expense $expense): void {}
+    public function creating(Expense $expense): void
+    {
 
+    }
     /**
      * Handle the Expense "created" event.
      */

@@ -2,21 +2,20 @@
 
 namespace App\Livewire\Timesheets;
 
-use App\Livewire\Forms\TimesheetForm;
 use App\Models\Hour;
-use Livewire\Attributes\Title;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
+
+use App\Livewire\Forms\TimesheetForm;
 
 class TimesheetCreate extends Component
 {
     public TimesheetForm $form;
 
     public Hour $hour;
-
     public $user;
-
     public $week;
-
     public $weekly_hours;
 
     public function mount()
@@ -25,16 +24,18 @@ class TimesheetCreate extends Component
         $this->week = $this->hour->date;
         $this->user = $this->hour->user;
 
-        $this->weekly_hours = Hour::with('project')
+        $this->weekly_hours = Hour::
+            with('project')
             ->where('user_id', $this->user->id)
             ->whereNull('timesheet_id')
             ->whereBetween('date', [$this->week->startOfWeek()->format('Y-m-d'), $this->week->endOfWeek()->format('Y-m-d')])
             ->get();
 
-        if ($this->weekly_hours->isEmpty()) {
+
+        if($this->weekly_hours->isEmpty()){
             //7-6-2022 redirect with message ... week either has no hours or has already been confirmed
             return redirect()->route('timesheets.index');
-        } else {
+        }else{
             $this->user->hours = $this->weekly_hours->sum('hours');
             $this->user->hourly = $this->user->vendors()->where('vendors.id', $this->user->vendor->id)->first()->pivot->hourly_rate;
             $this->user->amount = $this->getUserHoursAmountProperty();
@@ -56,14 +57,13 @@ class TimesheetCreate extends Component
 
     public function getUserHoursAmountProperty()
     {
-        if (! empty($this->user->hourly)) {
+        if(!empty($this->user->hourly)){
             $total = $this->user->hours * $this->user->hourly;
-        } else {
+        }else{
             $total = 0;
         }
 
         $this->user->amount = $total;
-
         return $total;
     }
 

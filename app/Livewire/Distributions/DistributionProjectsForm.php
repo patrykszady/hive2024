@@ -4,16 +4,14 @@ namespace App\Livewire\Distributions;
 
 use App\Models\Distribution;
 use App\Models\Project;
+
 use Livewire\Component;
 
 class DistributionProjectsForm extends Component
 {
     public Project $project;
-
-    public $modal_show = false;
-
+    public $modal_show = FALSE;
     public $distributions = [];
-
     public $percent_distributions_sum = 0;
 
     public $view_text = [
@@ -34,20 +32,20 @@ class DistributionProjectsForm extends Component
     }
 
     protected $messages =
-        [
-            'percent_distributions_sum' => 'Percent sum must equal to 100%',
-            'expense_splits.*.amount.required_if' => 'The split amount field is required.',
-            'expense_splits.*.amount.numeric' => 'The amount field must be numberic.',
-        ];
+    [
+        'percent_distributions_sum' => 'Percent sum must equal to 100%',
+        'expense_splits.*.amount.required_if' => 'The split amount field is required.',
+        'expense_splits.*.amount.numeric' => 'The amount field must be numberic.',
+    ];
 
     public function updated($field, $value)
     {
         $this->validateOnly($field);
         //distributions.0.percent
         $index = substr($field, 14, -8);
-        if ($field == 'distributions.'.$index.'.percent') {
-            if ($value == '' || $value == 0 || $value == 0.0 || $value == 0.00) {
-                $this->distributions[$index]['percent'] = '';
+        if($field == 'distributions.' . $index . '.percent'){
+            if($value == "" || $value == 0 || $value == 0.0 || $value == 0.00){
+                $this->distributions[$index]['percent'] = "";
                 // $this->distributions[$index]['percent_amount'] = NULL;
             }
         }
@@ -63,8 +61,8 @@ class DistributionProjectsForm extends Component
     {
         // Public functions should be reset here
         $this->distributions->each(function ($item, $key) {
-            $item->percent = null;
-            $item->percent_amount = null;
+            $item->percent = NULL;
+            $item->percent_amount = NULL;
         });
 
         $this->percent_distributions_sum = 0;
@@ -74,16 +72,16 @@ class DistributionProjectsForm extends Component
     {
         $this->percent_distributions_sum =
             collect($this->distributions)
-                ->reject(function ($distribution) {
-                    return ! $distribution->percent;
+                ->reject(function($distribution){
+                    return !$distribution->percent;
                 })->sum('percent');
 
-        foreach ($this->distributions as $distribution) {
-            if ($distribution->percent != '' && $distribution->percent != 0 && $distribution->percent != null) {
-                $percent = '.'.$distribution->percent;
+        foreach($this->distributions as $distribution){
+            if($distribution->percent != "" && $distribution->percent != 0 && $distribution->percent != NULL){
+                $percent = '.' . $distribution->percent;
                 $distribution->percent_amount = round($this->project->finances['profit'] * $percent, 2);
-            } else {
-                $distribution->percent_amount = null;
+            }else{
+                $distribution->percent_amount = NULL;
             }
         }
 
@@ -94,21 +92,21 @@ class DistributionProjectsForm extends Component
     {
         $this->project = $project;
         $this->resetModal();
-        $this->modal_show = true;
+        $this->modal_show = TRUE;
     }
 
     public function store()
     {
         $this->validate();
 
-        foreach ($this->distributions->whereNotNull('percent') as $distribution) {
-            $distribution->projects()->attach($this->project->id, [
+        foreach($this->distributions->whereNotNull('percent') as $distribution){
+            $distribution->projects()->attach($this->project->id, array(
                 'percent' => $distribution->percent,
                 'amount' => $distribution->percent_amount,
-            ]);
+            ));
         }
 
-        $this->modal_show = false;
+        $this->modal_show = FALSE;
         //emit and refresh so distributions.index removes/refreshes projects_doesnt_dis
         $this->dispatch('refreshComponent')->to('distributions.distributions-index');
         //reset modal data

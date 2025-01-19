@@ -2,26 +2,26 @@
 
 namespace App\Models\Traits;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Lottery;
+use Illuminate\Support\Facades\DB;
 
 trait Sortable
 {
     public static function bootSortable()
     {
-        static::addGlobalScope(function ($query) {
+        static::addGlobalScope(function ($query){
             return $query->orderBy('order');
         });
 
-        static::creating(function ($model) {
-            if (static::sortable($model)->count() === 0) {
+        static::creating(function ($model){
+            if(static::sortable($model)->count() === 0){
                 $model->order = 0;
-            } else {
+            }else{
                 $model->order = static::sortable($model)->max('order') + 1;
             }
         });
 
-        static::deleting(function ($model) {
+        static::deleting(function ($model){
             $model->displace();
         });
     }
@@ -32,23 +32,21 @@ trait Sortable
         //     ->winner(fn () => $this->arrange())
         //     ->choose();
 
-        DB::transaction(function () use ($position) {
+        DB::transaction(function() use($position){
             $current = $this->order;
             $after = $position;
 
             //If there was no position change, dont shift
-            if ($current === $after) {
-                return;
-            }
+            if($current === $after) return;
 
             // move the target todo out of the position stack
             $this->update(['order' => -1]);
 
             //Grab the shifted block and shift it up or down
             $block = static::sortable($this)->whereBetween('order', [
-                min($current, $after),
-                max($current, $after),
-            ]);
+                    min($current, $after),
+                    max($current, $after),
+                ]);
 
             $needToShiftBlockBecauseDraggingTargetDown = $current < $after;
 
@@ -63,10 +61,10 @@ trait Sortable
 
     public function arrange()
     {
-        DB::transaction(function () {
+        DB::transaction(function(){
             $position = 0;
 
-            foreach (static::sortable($this)->get() as $model) {
+            foreach(static::sortable($this)->get() as $model){
                 $model->order = $position++;
                 $model->save();
             }

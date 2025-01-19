@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Models\Scopes\ReceiptAccountScope;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReceiptAccount extends Model
 {
@@ -18,17 +18,17 @@ class ReceiptAccount extends Model
         static::addGlobalScope(new ReceiptAccountScope);
     }
 
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function distribution(): BelongsTo
+    public function distribution()
     {
         return $this->belongsTo(Distribution::class);
     }
 
-    public function company_email(): BelongsTo
+    public function company_email()
     {
         return $this->belongsTo(CompanyEmail::class);
     }

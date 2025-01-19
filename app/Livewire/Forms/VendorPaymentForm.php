@@ -4,6 +4,7 @@ namespace App\Livewire\Forms;
 
 use App\Models\Check;
 use App\Models\Expense;
+
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
@@ -14,25 +15,25 @@ class VendorPaymentForm extends Form
     // public $project_id = '';
 
     #[Validate('required|date|before_or_equal:today|after:2017-01-01')]
-    public $date = null;
+    public $date = NULL;
 
     //required_without:check_form.bank_account_id'
     #[Validate('required_without:bank_account_id')]
-    public $paid_by = null;
+    public $paid_by = NULL;
 
     // required_without:check.paid_by
     #[Validate('required_without:paid_by', as: 'bank account')]
-    public $bank_account_id = null;
+    public $bank_account_id = NULL;
 
     // required_with:check.bank_account_id
     #[Validate('required_with:bank_account_id', as: 'type')]
-    public $check_type = null;
+    public $check_type = NULL;
 
     // #[Validate('required_if:check_type,Check')]
-    public $check_number = null;
+    public $check_number = NULL;
 
     #[Validate('required_with:invoice')]
-    public $invoice = null;
+    public $invoice = NULL;
 
     public function rules()
     {
@@ -48,7 +49,7 @@ class VendorPaymentForm extends Form
                     //->where('vendor_id', '!=', $this->expense->vendor_id)
 
                     //where per vendor bank_account ... all bank accounts that have the inst ID
-                    return $query->where('deleted_at', null)->where('bank_account_id', $this->bank_account_id);
+                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->bank_account_id);
                 }),
                 // ->ignore($this->check),
             ],
@@ -96,7 +97,7 @@ class VendorPaymentForm extends Form
         $this->validate();
 
         //create expense for each $payment_projects. create one Check for all Expenses and associate with the Check.
-        if (empty($this->paid_by)) {
+        if(empty($this->paid_by)){
             $check = Check::create([
                 'check_type' => $this->check_type,
                 'check_number' => $this->check_number,
@@ -106,11 +107,11 @@ class VendorPaymentForm extends Form
                 'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
                 'created_by_user_id' => auth()->user()->id,
             ]);
-        } else {
-            $check = null;
+        }else{
+            $check = NULL;
         }
 
-        foreach ($this->component->projects->where('show', 'true')->where('amount', '>', 0) as $project) {
+        foreach($this->component->projects->where('show', 'true')->where('amount', '>' , 0) as $project){
             //ignore 'show' attribute when saving
             $project->offsetUnset('show');
             Expense::create([
@@ -119,9 +120,9 @@ class VendorPaymentForm extends Form
                 'invoice' => $this->invoice,
                 'project_id' => $project->id,
                 'vendor_id' => $this->component->vendor->id,
-                'check_id' => isset($check) ? $check->id : null,
-                'paid_by' => isset($check) ? null : $this->paid_by,
-                'invoice' => isset($check) ? null : $this->invoice,
+                'check_id' => isset($check) ? $check->id : NULL,
+                'paid_by' => isset($check) ? NULL : $this->paid_by,
+                'invoice' => isset($check) ? NULL : $this->invoice,
                 'belongs_to_vendor_id' => auth()->user()->vendor->id,
                 'created_by_user_id' => auth()->user()->id,
             ]);
@@ -130,8 +131,8 @@ class VendorPaymentForm extends Form
         //09-06-2023 put in observer?
         //if $this->vendor->id is registered
         //create payment for each check (/ payments / expenses / paid_by employee)?
-        if ($this->component->vendor->registration['registered']) {
-            app(\App\Http\Controllers\VendorRegisteredController::class)
+        if($this->component->vendor->registration['registered']){
+            app('App\Http\Controllers\VendorRegisteredController')
                 ->create_payment_from_check(
                     $check,
                     $check->expenses,

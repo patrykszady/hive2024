@@ -2,18 +2,22 @@
 
 namespace App\Livewire\Entry;
 
-use App\Mail\EmailVerificationCode;
+use Livewire\Component;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Validate;
+
 use App\Models\User;
+
+use Twilio\Rest\Client;
+use App\Mail\EmailVerificationCode;
+
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Validate;
-use Livewire\Component;
-use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Validator;
 
 //PROGRESSIVE FORM
 class Registration extends Component
@@ -21,29 +25,23 @@ class Registration extends Component
     public User $user;
 
     #[Validate]
-    public $user_cell = null;
+    public $user_cell = NULL;
 
     #[Validate]
     public $cell_verification_code = '';
-
     public $phone_verification = '';
 
     #[Validate]
     public $email_verification_code = '';
-
     public $email_verification = '';
 
-    public $show_email = false;
+    public $show_email = FALSE;
+    public $show_name = FALSE;
+    public $password = NULL;
+    public $password_confirmation = NULL;
 
-    public $show_name = false;
-
-    public $password = null;
-
-    public $password_confirmation = null;
-
-    public $validate_number = false;
-
-    public $validate_email = false;
+    public $validate_number = FALSE;
+    public $validate_email = FALSE;
 
     public function rules()
     {
@@ -75,14 +73,14 @@ class Registration extends Component
     }
 
     protected $messages =
-        [
-            'user_cell.required' => 'Phone numberis required.',
-            'user_cell.digits' => 'Phone number must be 10 digits.',
-        ];
+    [
+        'user_cell.required' => 'Phone numberis required.',
+        'user_cell.digits' => 'Phone number must be 10 digits.',
+    ];
 
     public function updated($field)
     {
-        if (in_array($field, ['password', 'password_confirmation'])) {
+        if(in_array($field, ['password', 'password_confirmation'])){
             $this->validateOnly('password');
             $this->validateOnly('password_confirmation');
         }
@@ -95,53 +93,52 @@ class Registration extends Component
         $this->validateOnly('user_cell');
         $user_exists = User::where('cell_phone', $this->user_cell)->first();
 
-        if ($user_exists) {
+        if($user_exists){
             $this->user = $user_exists;
-        } else {
+        }else{
             $this->user->cell_phone = $this->user_cell;
         }
 
-        if (isset($this->user->registration['registered'])) {
+        if(isset($this->user->registration['registered'])){
             //2-9-2023 Why doesnt this get passed to redirect?
             // $this->dispatchBrowserEvent('notify', [
             //     'type' => 'success',
             //     'content' => 'User Already Registered'
             // ]);
             session()->flash('error', 'Your number is already registered. Please Login or recover your account instead.');
-
             return redirect(route('login'));
-        } else {
-            if (! isset($this->user->registration['cell_verified'])) {
+        }else{
+            if(!isset($this->user->registration['cell_verified'])){
                 //generate random 6 digit code
                 $this->phone_verification = mt_rand(100000, 999999);
 
                 //send Twillo verification code
-                $sid = env('TWILIO_SID');
-                $token = env('TWILIO_TOKEN');
+                $sid    = env('TWILIO_SID');
+                $token  = env('TWILIO_TOKEN');
                 $twilio = new Client($sid, $token);
 
-                try {
+                try{
                     $twilio->messages->create(
                         // the number you'd like to send the message to
                         $this->user->cell_phone,
                         [
                             'from' => env('TWILIO_FROM'),
-                            'body' => $this->phone_verification.' is your Hive Contractors text verification code.',
+                            'body' => $this->phone_verification . ' is your Hive Contractors text verification code.'
                         ]
                     );
 
-                    $this->validate_number = true;
-                } catch (\Exception $e) {
-                    $this->user_cell = null;
+                    $this->validate_number = TRUE;
+                }catch(\Exception $e){
+                    $this->user_cell = NULL;
                     $this->user = User::make();
                     $this->addError('user_cell', 'Invalid Phone Number.');
                 }
 
                 // $this->user->registration['cell_verified'] =
-            } else {
+            }else{
                 //go to email_verification_code (skip cell_verification_code);
-                $this->validate_number = false;
-                $this->show_email = true;
+                $this->validate_number = FALSE;
+                $this->show_email = TRUE;
             }
         }
     }
@@ -151,11 +148,11 @@ class Registration extends Component
         $this->validateOnly('cell_verification_code');
 
         //validate code with $this->user->phone_verification
-        if ($this->cell_verification_code != $this->phone_verification) {
+        if($this->cell_verification_code != $this->phone_verification){
             return $this->addError('cell_verification_code', 'Code does not match.');
         }
 
-        $this->validate_number = false;
+        $this->validate_number = FALSE;
 
         //User is cell_verified = TRUE
         // if(isset($this->user->id)){
@@ -165,7 +162,7 @@ class Registration extends Component
         // }
 
         //next Validate email (same as cell verification)
-        $this->show_email = true;
+        $this->show_email = TRUE;
     }
 
     public function user_email()
@@ -178,7 +175,7 @@ class Registration extends Component
         //send code to email
         Mail::to($this->user->email)->send(new EmailVerificationCode($this->email_verification));
 
-        $this->validate_email = true;
+        $this->validate_email = TRUE;
         // if(!isset($this->user->registration['email_verified'])){
         //     //generate random 6 digit code
         //     $this->email_verification = mt_rand(100000, 999999);
@@ -200,12 +197,12 @@ class Registration extends Component
         $this->validateOnly('email_verification_code');
 
         //validate code with $this->user->phone_verification
-        if ($this->email_verification_code != $this->email_verification) {
+        if($this->email_verification_code != $this->email_verification){
             return $this->addError('email_verification_code', 'Code does not match.');
         }
 
         //if matches $user->registration->phone = TRUE
-        $this->validate_email = false;
+        $this->validate_email = FALSE;
 
         //User is cell_verified = TRUE
         // if(isset($this->user->id)){
@@ -214,15 +211,15 @@ class Registration extends Component
         //     $this->user->update();
         // }
 
-        $this->show_name = true;
+        $this->show_name = TRUE;
     }
 
     public function register_user()
     {
-        $array = $this->user->registration == null ? [] : $this->user->registration;
-        $this->user->registration = json_encode(array_merge($array, ['registered' => true]));
+        $array = $this->user->registration == NULL ? array() : $this->user->registration;
+        $this->user->registration = json_encode(array_merge($array, ["registered" => TRUE]));
 
-        if (! isset($this->user->id)) {
+        if(!isset($this->user->id)){
             $this->user->cell_phone = $this->user_cell;
             $this->user->email = $this->user->email;
         }

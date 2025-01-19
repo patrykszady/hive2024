@@ -4,18 +4,17 @@ namespace App\Livewire\Sheets;
 
 // use Livewire\Component\Sheets\SheetShow;
 use App\Models\Bank;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Title;
+
 use Livewire\Component;
+use Livewire\Attributes\Title;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SheetsIndex extends Component
 {
     use AuthorizesRequests;
 
     public $start_date = '';
-
     public $end_date = '';
-
     public $banks = [];
 
     protected function rules()
@@ -31,23 +30,24 @@ class SheetsIndex extends Component
     {
         $this->banks =
             Bank::whereNotNull('plaid_access_token')
-                ->with(['accounts'])
-                ->whereHas('accounts', function ($query) {
-                    return $query->whereIn('type', ['Checking', 'Savings']);
+            ->with(['accounts'])
+            ->whereHas('accounts', function ($query) {
+                return $query->whereIn('type', ['Checking', 'Savings']);
                 })
-                ->get()
-                ->each(function ($item, $key) {
-                    $item->checked = false;
-                })
-                ->keyBy('id');
+            ->get()
+            ->each(function ($item, $key) {
+                $item->checked = false;
+            })
+            ->keyBy('id');
     }
+
 
     public function run()
     {
         $this->validate();
         $bank_accounts = collect();
 
-        foreach ($this->banks->where('checked', true) as $bank) {
+        foreach($this->banks->where('checked', true) as $bank){
             $bank_accounts->put($bank->id, $bank->accounts->pluck('id'));
         }
         $bank_account_ids = $bank_accounts->flatten()->toArray();
@@ -56,7 +56,7 @@ class SheetsIndex extends Component
         return redirect()->route('sheets.show', [
             'bank_account_ids' => $bank_account_ids,
             'start_date' => $this->start_date,
-            'end_date' => $this->end_date,
+            'end_date' => $this->end_date
         ]);
 
         // $this->dispatch('sheet_info')->to(SheetShow::class);

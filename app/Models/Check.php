@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Observers\CheckObserver;
 use App\Scopes\CheckScope;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+
 use Illuminate\Database\Eloquent\Casts\Attribute;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Observers\CheckObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 #[ObservedBy([CheckObserver::class])]
 class Check extends Model
@@ -21,54 +22,46 @@ class Check extends Model
 
     // protected $dates = ['date', 'deleted_at'];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'date' => 'date:Y-m-d',
-        ];
-    }
+    protected $casts = [
+        'date' => 'date:Y-m-d',
+    ];
 
     protected static function booted()
     {
         static::addGlobalScope(new CheckScope);
     }
 
-    public function bank_account(): BelongsTo
+    public function bank_account()
     {
         return $this->belongsTo(BankAccount::class);
     }
 
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function checks(): HasMany
+    public function checks()
     {
         return $this->hasMany(Check::class);
     }
 
-    public function timesheets(): HasMany
+    public function timesheets()
     {
         return $this->hasMany(Timesheet::class);
     }
 
-    public function transactions(): HasMany
+    public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function expenses(): HasMany
+    public function expenses()
     {
         return $this->hasMany(Expense::class);
     }
@@ -76,7 +69,7 @@ class Check extends Model
     protected function checkNumber(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->check_type === 'Check' ? $value : '# '.$this->id,
+            get: fn ($value) => $this->check_type === 'Check' ? $value : '# ' . $this->id,
         );
         //->shouldCache();
     }
@@ -84,18 +77,18 @@ class Check extends Model
     public function getOwnerAttribute()
     {
         //$vendor_id = belongs_to_user ($user_id) //distribution of user that belongs to vendor_id
-        if ($this->vendor_id && $this->user_id) {
+        if($this->vendor_id && $this->user_id){
             $owner = $this->user->full_name;
-        } elseif ($this->vendor_id) {
-            if ($this->vendor) {
+        }elseif($this->vendor_id){
+            if($this->vendor){
                 $owner = $this->vendor->business_name;
-            } else {
+            }else{
                 $owner = $this->vendor_id;
             }
-        } elseif ($this->user_id) {
+        }elseif($this->user_id){
             $owner = $this->user->full_name;
-        } else {
-            $owner = null;
+        }else{
+            $owner = NULL;
         }
 
         return $owner;

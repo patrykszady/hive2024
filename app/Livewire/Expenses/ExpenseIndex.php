@@ -2,54 +2,54 @@
 
 namespace App\Livewire\Expenses;
 
-use App\Models\Bank;
-use App\Models\Distribution;
+use App\Models\Vendor;
 use App\Models\Expense;
 use App\Models\Project;
+use App\Models\Bank;
+use App\Models\Distribution;
 use App\Models\Transaction;
-use App\Models\Vendor;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+use Livewire\Component;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
-use Livewire\Component;
+
 use Livewire\WithPagination;
+
+use Carbon\Carbon;
+
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 #[Lazy]
 class ExpenseIndex extends Component
 {
-    use AuthorizesRequests, WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     public $amount = '';
 
     public $expense_vendor = '';
-
     public $vendors = [];
 
     public $project = '';
-
     public $projects = [];
 
     public $distributions = [];
 
     public $check = '';
-
     public $bank_plaid_ins_id = '';
-
     public $banks = [];
-
     public $bank_account_ids = [];
     // public $bank_owners = [];
     // public $bank_owner = NULL;
 
-    public $status = null;
+    public $status = NULL;
 
-    public $view = null;
-
+    public $view = NULL;
     public $paginate_number = 8;
 
     public $sortBy = 'date';
-
     public $sortDirection = 'desc';
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -89,14 +89,14 @@ class ExpenseIndex extends Component
         // dd($transactions);
         $this->authorize('viewAny', Expense::class);
 
-        if (! is_null($this->view)) {
+        if(!is_null($this->view)){
             $this->paginate_number = 5;
         }
 
         $this->banks = Bank::with('accounts')->get()->groupBy('plaid_ins_id')
-            ->each(function ($banks, $bank_plaid_ins_id) {
+            ->each(function($banks, $bank_plaid_ins_id){
                 $this->bank_account_ids[$bank_plaid_ins_id] = [];
-                foreach ($banks as $bank) {
+                foreach($banks as $bank){
                     array_push($this->bank_account_ids[$bank_plaid_ins_id], $bank->accounts->pluck('id')->toArray());
                 }
 
@@ -109,8 +109,7 @@ class ExpenseIndex extends Component
         $this->distributions = Distribution::all();
     }
 
-    public function sort($column)
-    {
+    public function sort($column) {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -124,7 +123,7 @@ class ExpenseIndex extends Component
     {
         $expenses = Expense::search($this->amount)
             ->where('belongs_to_vendor_id', auth()->user()->primary_vendor_id)
-            ->when(! empty($this->expense_vendor) && $this->expense_vendor != '0', function ($query, $item) {
+            ->when(!empty($this->expense_vendor) && $this->expense_vendor != '0', function ($query, $item) {
                 return $query->where('vendor_id', $this->expense_vendor);
             })
             ->when($this->expense_vendor == '0', function ($query, $item) {
@@ -132,7 +131,7 @@ class ExpenseIndex extends Component
             })
 
             // && $this->project != 'NO_PROJECT' && $this->project != 'SPLIT'
-            ->when(! empty($this->project) && is_numeric($this->project), function ($query, $item) {
+            ->when(!empty($this->project) && is_numeric($this->project), function ($query, $item) {
                 return $query->where('project_id', $this->project);
             })
             //and no splits
@@ -152,7 +151,7 @@ class ExpenseIndex extends Component
                         ->where('is_distribution_id_null', 'false')
                         ->where('distribution_id', substr($this->project, 2));
             })
-            ->when(! empty($this->check) && is_numeric($this->check), function ($query, $item) {
+            ->when(!empty($this->check) && is_numeric($this->check), function ($query, $item) {
                 return $query->where('check_id', $this->check);
             })
             // ->whereIn(
@@ -165,7 +164,7 @@ class ExpenseIndex extends Component
             // ->simplePaginate($paginate_number, ['*'], 'expenses_page');
             ->paginate($this->paginate_number, pageName: 'expenses-page');
 
-        $expenses->getCollection()->each(function ($expense, $key) {
+        $expenses->getCollection()->each(function ($expense, $key){
             // if($expense->check){
             //     if($expense->check->transactions->isNotEmpty() && $expense->paid_by != NULL){
             //         $expense->status = 'Complete';
@@ -177,14 +176,14 @@ class ExpenseIndex extends Component
             //         }
             //     }
             // }else
-            if (($expense->transactions->isNotEmpty() && $expense->project->project_name != 'NO PROJECT') || ($expense->paid_by != null && $expense->project->project_name != 'NO PROJECT')) {
+            if(($expense->transactions->isNotEmpty() && $expense->project->project_name != 'NO PROJECT') || ($expense->paid_by != NULL && $expense->project->project_name != 'NO PROJECT')){
                 $expense->status = 'Complete';
-            } else {
-                if ($expense->project->project_name != 'NO PROJECT' && $expense->transactions->isEmpty()) {
+            }else{
+                if($expense->project->project_name != 'NO PROJECT' && $expense->transactions->isEmpty()){
                     $expense->status = 'No Transaction';
-                } elseif ($expense->project->project_name == 'NO PROJECT' && ($expense->transactions->isNotEmpty() || $expense->paid_by != null)) {
+                }elseif($expense->project->project_name == 'NO PROJECT' && ($expense->transactions->isNotEmpty() || $expense->paid_by != NULL)){
                     $expense->status = 'No Project';
-                } else {
+                }else{
                     $expense->status = 'Missing Info';
                 }
             }
@@ -200,10 +199,10 @@ class ExpenseIndex extends Component
     {
         $transactions =
             Transaction::search($this->amount)
-                ->where('is_expense_id_null', true)
-                ->where('is_check_id_null', true)
+                ->where('is_expense_id_null', TRUE)
+                ->where('is_check_id_null', TRUE)
                 ->whereIn('deposit', ['NOT_DEPOSIT', 'NO_PAYMENTS'])
-                ->when(! empty($this->expense_vendor) && $this->expense_vendor != '0', function ($query, $item) {
+                ->when(!empty($this->expense_vendor) && $this->expense_vendor != '0', function ($query, $item) {
                     return $query->where('vendor_id', $this->expense_vendor);
                 })
                 ->when($this->expense_vendor == '0', function ($query, $item) {
@@ -228,3 +227,4 @@ class ExpenseIndex extends Component
         return view('livewire.expenses.index');
     }
 }
+

@@ -4,7 +4,9 @@ namespace App\Mail;
 
 use App\Models\Check;
 use App\Models\Vendor;
+
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
@@ -16,13 +18,9 @@ class VendorPaymentMade extends Mailable
     use Queueable, SerializesModels;
 
     public $check;
-
     public $check_number;
-
     public $vendor;
-
     public $paying_vendor;
-
     /**
      * Create a new message instance.
      *
@@ -31,9 +29,9 @@ class VendorPaymentMade extends Mailable
     public function __construct(Vendor $vendor, Vendor $paying_vendor, Check $check)
     {
         $this->check = $check;
-        if (isset($this->check->check_number)) {
+        if(isset($this->check->check_number)){
             $this->check_number = $this->check->check_number;
-        } else {
+        }else{
             $this->check_number = $this->check->check_type;
         }
 
@@ -50,7 +48,7 @@ class VendorPaymentMade extends Mailable
     {
         return new Envelope(
             // from: new Address('support@hive.contractors', 'Hive Contractors'),
-            subject: $this->paying_vendor->name.' Payment',
+            subject: $this->paying_vendor->name . ' Payment',
         );
     }
 

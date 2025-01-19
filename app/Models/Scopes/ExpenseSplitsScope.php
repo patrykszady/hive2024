@@ -11,21 +11,23 @@ class ExpenseSplitsScope implements Scope
     /**
      * Apply the scope to a given Eloquent query builder.
      *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param  \Illuminate\Database\Eloquent\Model  $model
      * @return void
      */
     public function apply(Builder $builder, Model $model)
     {
         $user = auth()->user();
 
-        if (is_null($user)) {
-
-        } else {
+        if(is_null($user)){
+            $builder;
+        }else{
             //if Admin..all Expenses ... if Member...only expenses the User Paid For....?
-            if ($user->primary_vendor->pivot->role_id == 1) {
+            if($user->primary_vendor->pivot->role_id == 1){
                 $builder->where('belongs_to_vendor_id', auth()->user()->primary_vendor_id);
-            } elseif ($user->primary_vendor->pivot->role_id == 2) {
+            }elseif($user->primary_vendor->pivot->role_id == 2){
                 $builder->where('belongs_to_vendor_id', $user->primary_vendor_id);
-            } else {
+            }else{
                 // $builder;
             }
         }

@@ -4,30 +4,25 @@ namespace App\Livewire\Estimates;
 
 use App\Models\Bid;
 use App\Models\Estimate;
+use App\Models\EstimateSection;
 use App\Models\Project;
+
 use Livewire\Component;
 
 class EstimateAccept extends Component
 {
     public Estimate $estimate;
-
     public Project $project;
 
     public $sections = [];
-
     public $bids = [];
-
     public $payments = [];
-
     public $payments_outstanding = 0;
+    public $include_reimbursement = FALSE;
+    public $start_date = NULL;
+    public $end_date = NULL;
 
-    public $include_reimbursement = false;
-
-    public $start_date = null;
-
-    public $end_date = null;
-
-    public $modal_show = false;
+    public $modal_show = FALSE;
 
     protected $listeners = ['accept', 'addPayment'];
 
@@ -48,13 +43,13 @@ class EstimateAccept extends Component
         $this->project = $estimate->project;
         $this->estimate = $estimate;
 
-        if (! is_null($this->estimate->reimbursments)) {
-            $this->include_reimbursement = true;
+        if(!is_null($this->estimate->reimbursments)){
+            $this->include_reimbursement = TRUE;
         }
 
         $this->bids = $this->project->bids()->vendorBids($this->estimate->vendor->id)->with('estimate_sections')->orderBy('type')->get();
 
-        if ($this->bids->isEmpty()) {
+        if($this->bids->isEmpty()){
             $bid = Bid::create([
                 'amount' => 0.00,
                 'type' => 1,
@@ -67,35 +62,35 @@ class EstimateAccept extends Component
 
         $bids = $this->bids;
 
-        if (isset($this->estimate->options['start_date'])) {
+        if(isset($this->estimate->options['start_date'])){
             $this->start_date = $estimate->options['start_date'];
         }
 
-        if (isset($this->estimate->options['end_date'])) {
+        if(isset($this->estimate->options['end_date'])){
             $this->end_date = $estimate->options['end_date'];
         }
 
         $this->sections =
             $this->estimate
                 ->estimate_sections
-                ->each(function ($item, $key) use ($bids) {
-                    if ($item->bid) {
-                        $bid_index = $bids->search(function ($bid) use ($item) {
+                ->each(function ($item, $key) use($bids) {
+                    if($item->bid){
+                        $bid_index = $bids->search(function($bid) use($item) {
                             return $item->bid->id === $bid->id;
                         });
                         $item->bid_index = $bid_index;
-                    } else {
-                        $item->bid_index = null;
+                    }else{
+                        $item->bid_index = NULL;
                     }
                 });
-        if ($this->estimate->payments) {
+        if($this->estimate->payments){
             $this->payments = collect($this->estimate->payments);
-        } else {
+        }else{
             $this->payments = [
                 0 => [
-                    'amount' => null,
-                    'description' => null,
-                ],
+                    'amount' => NULL,
+                    'description' => NULL
+                ]
             ];
 
             $this->payments = collect($this->payments);
@@ -104,7 +99,7 @@ class EstimateAccept extends Component
 
     public function accept()
     {
-        $this->modal_show = true;
+        $this->modal_show = TRUE;
     }
 
     //new estiamte Bid
@@ -134,8 +129,8 @@ class EstimateAccept extends Component
     public function addPayment()
     {
         $payment = [
-            'amount' => null,
-            'description' => null,
+            'amount' => NULL,
+            'description' => NULL
         ];
 
         $this->payments->push($payment);
@@ -148,21 +143,22 @@ class EstimateAccept extends Component
         $this->payments = $this->payments->values();
     }
 
+
     public function save()
     {
-        if ($this->payments_outstanding < 0) {
+        if($this->payments_outstanding < 0){
             $this->addError('payments_remaining_error', 'Amount Remaining cannot be less than $0.00');
-        } else {
+        }else{
             $estimate = $this->estimate;
             $estimate_options = $this->estimate->options;
 
-            if ($this->include_reimbursement) {
-                $estimate_options['include_reimbursement'] = true;
-            } else {
-                $estimate_options['include_reimbursement'] = false;
+            if($this->include_reimbursement){
+                $estimate_options['include_reimbursement'] = TRUE;
+            }else{
+                $estimate_options['include_reimbursement'] = FALSE;
             }
 
-            if ($this->payments->where('amount', '!=', '')->sum('amount') != 0) {
+            if($this->payments->where('amount', '!=', '')->sum('amount') != 0){
                 $estimate_options['payments'] = $this->payments->toArray();
             }
 
@@ -172,17 +168,17 @@ class EstimateAccept extends Component
             $estimate->options = $estimate_options;
             $estimate->save();
 
-            foreach ($this->bids as $bid_index => $bid) {
+            foreach($this->bids as $bid_index => $bid){
                 $bid_sections = $this->sections->whereNotNull('bid_index')->where('bid_index', $bid_index);
 
-                if ($bid_sections->isEmpty() && $bid_sections->sum('total') == 0.00) {
+                if($bid_sections->isEmpty() && $bid_sections->sum('total') == 0.00){
                     $bid->delete();
-                } elseif (! $bid_sections->isEmpty()) {
+                }elseif(!$bid_sections->isEmpty()){
                     $bid_amount = $bid_sections->sum('total');
                     $bid->amount = $bid_amount;
                     $bid->save();
 
-                    foreach ($bid_sections as $section) {
+                    foreach($bid_sections as $section){
                         //ignore 'bid_index' attribute when saving
                         $section->offsetUnset('bid_index');
                         $section->bid_id = $bid->id;
@@ -193,7 +189,7 @@ class EstimateAccept extends Component
                 }
             }
 
-            $this->modal_show = false;
+            $this->modal_show = FALSE;
 
             $this->dispatch('refreshComponent')->to('estimates.estimate-show');
 

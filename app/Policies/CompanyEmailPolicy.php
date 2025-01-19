@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\CompanyEmail;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class CompanyEmailPolicy
 {
@@ -12,9 +13,9 @@ class CompanyEmailPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->primary_vendor->pivot->role_id == 1) {
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
-        } else {
+        }else{
             return false;
         }
     }
@@ -24,9 +25,9 @@ class CompanyEmailPolicy
      */
     public function view(User $user, CompanyEmail $companyEmail): bool
     {
-        if ($user->primary_vendor->pivot->role_id == 1) {
+        if($user->primary_vendor->pivot->role_id == 1){
             return true;
-        } else {
+        }else{
             return false;
         }
     }

@@ -4,12 +4,14 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateExpenseSplitsTable extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('expense_splits', function (Blueprint $table) {
             $table->id();
@@ -20,7 +22,7 @@ return new class extends Migration
             $table->string('reimbursment')->nullable();
             $table->integer('belongs_to_vendor_id');
             $table->integer('created_by_user_id');
-            $table->string('note')->nullable();
+            $table->string('note')->nullable();            
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,9 +30,11 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('expense_splits');
     }
-};
+}

@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Project;
 use App\Models\Task;
+use App\Models\Project;
 
 class TaskObserver
 {

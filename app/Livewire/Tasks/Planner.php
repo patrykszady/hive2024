@@ -3,21 +3,19 @@
 namespace App\Livewire\Tasks;
 
 use App\Models\Project;
+
+use Livewire\Component;
+use Livewire\Attributes\Title;
+
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
-use Livewire\Attributes\Title;
-use Livewire\Component;
 
 class Planner extends Component
 {
-    public $single_project_id = null;
-
+    public $single_project_id = NULL;
     public $days = [];
-
     public $projects = [];
-
     public $tasks = [];
-
     public $week = '';
 
     protected $queryString = [
@@ -26,10 +24,10 @@ class Planner extends Component
 
     public function mount()
     {
-        if ($this->week) {
+        if($this->week){
             //5-24-2026 must be Y-m-d format, else go to else below
             $monday = $this->week;
-        } else {
+        }else{
             $monday = today()->format('Y-m-d');
         }
 
@@ -37,10 +35,11 @@ class Planner extends Component
 
         //tasks where between week
         $this->projects =
-            Project::when(! is_null($this->single_project_id), function ($query, $item) {
-                return $query->where('id', $this->single_project_id);
-            })
-                ->with(['tasks' => function ($query) {
+            Project::
+                when(!is_null($this->single_project_id), function ($query, $item) {
+                    return $query->where('id', $this->single_project_id);
+                })
+                ->with(['tasks' => function($query) {
                     $query->whereBetween('start_date', [$this->days[0]['database_date'], $this->days[6]['database_date']])->orWhereBetween('end_date', [$this->days[0]['database_date'], $this->days[6]['database_date']]);
                 }])
                 ->status(['Active', 'Scheduled', 'Service Call', 'Invited'])
@@ -57,12 +56,12 @@ class Planner extends Component
         );
 
         $this->days = [];
-        foreach ($days as $confirmed_date) {
+        foreach($days as $confirmed_date){
             //need to account for saturday&sunday / days off
             $this->days[] = [
                 'database_date' => $confirmed_date->format('Y-m-d'),
                 'formatted_date' => $confirmed_date->format('D, m/d'),
-                'is_today' => $confirmed_date == today(),
+                'is_today' => $confirmed_date == today()
             ];
         }
     }
@@ -71,9 +70,9 @@ class Planner extends Component
     {
         $current_monday = $this->days[0]['database_date'];
 
-        if ($direction == 'next') {
+        if($direction == 'next'){
             $monday = Carbon::parse($current_monday)->addWeek()->format('Y-m-d');
-        } elseif ($direction == 'previous') {
+        }elseif($direction == 'previous'){
             $monday = Carbon::parse($current_monday)->subWeek()->format('Y-m-d');
         }
 

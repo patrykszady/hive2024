@@ -3,6 +3,7 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Expense;
+
 use Livewire\Attributes\Validate;
 // use Livewire\Attributes\Rule;
 use Livewire\Form;
@@ -31,14 +32,14 @@ class PostForm extends Form
         Expense::create([
             'amount' => rand(1, 2000),
             'date' => today(),
-            'invoice' => null,
-            'note' => null,
+            'invoice' => NULL,
+            'note' => NULL,
             'project_id' => 219,
-            'distribution_id' => null,
+            'distribution_id' => NULL,
             'vendor_id' => 8,
-            'check_id' => null,
-            'paid_by' => null,
-            'reimbursment' => null,
+            'check_id' => NULL,
+            'paid_by' => NULL,
+            'reimbursment' => NULL,
             'belongs_to_vendor_id' => 1,
             'created_by_user_id' => 1,
         ]);

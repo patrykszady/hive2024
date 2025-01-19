@@ -13,9 +13,9 @@ class EstimateScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        if (auth()->guest()) {
+        if(auth()->guest()){
 
-        } else {
+        }else{
             //->whereNotNull('plaid_access_token')
             $builder
                 // ->whereJsonContains('sections', ['name' => 'Master Bath'])

@@ -3,51 +3,47 @@
 namespace App\Models;
 
 use App\Scopes\TimesheetScope;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 
 class Timesheet extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['date', 'user_id', 'vendor_id', 'project_id', 'hours', 'amount', 'paid_by', 'check_id', 'hourly', 'invoice', 'note', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $casts = [
+        'date' => 'date:Y-m-d',
+    ];
 
-    protected function casts(): array
-    {
-        return [
-            'date' => 'date:Y-m-d',
-        ];
-    }
+    protected $fillable = ['date', 'user_id', 'vendor_id', 'project_id', 'hours', 'amount', 'paid_by', 'check_id', 'hourly', 'invoice', 'note', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
 
     protected static function booted()
     {
         static::addGlobalScope(new TimesheetScope);
     }
 
-    public function hours(): HasMany
+    public function hours()
     {
         return $this->hasMany(Hour::class);
     }
 
-    public function project(): BelongsTo
+    public function project()
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function check(): BelongsTo
+    public function check()
     {
         return $this->belongsTo(Check::class);
     }

@@ -8,8 +8,7 @@ use Livewire\Component;
 class VendorDetails extends Component
 {
     public Vendor $vendor;
-
-    public $registration = false;
+    public $registration = FALSE;
     // public $accordian = 'CLOSED';
 
     //'refreshComponent' => '$refresh',
@@ -17,7 +16,7 @@ class VendorDetails extends Component
 
     public function refresh()
     {
-        $this->registration = false;
+        $this->registration = FALSE;
         $this->render();
     }
 

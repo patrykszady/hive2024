@@ -3,41 +3,35 @@
 namespace App\Livewire\Checks;
 
 use App\Models\Bank;
-use App\Models\BankAccount;
 use App\Models\Check;
 use App\Models\Vendor;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Lazy;
-use Livewire\Attributes\Title;
+use App\Models\BankAccount;
+
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
+use Livewire\Attributes\Lazy;
+use Livewire\Attributes\Computed;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 #[Lazy]
 class ChecksIndex extends Component
 {
-    use AuthorizesRequests, WithPagination;
+    use WithPagination, AuthorizesRequests;
 
     public $banks = [];
-
     public $vendors = [];
-
-    public $bank = '';
-
-    public $check_number = '';
-
-    public $amount = '';
-
+    public $bank = '' ;
+    public $check_number = '' ;
+    public $amount = '' ;
     public $check_type = '';
-
     public $vendor = '';
 
-    public $view = null;
-
+    public $view = NULL;
     public $expense_check_id = '';
 
     public $sortBy = 'date';
-
     public $sortDirection = 'desc';
 
     protected $queryString = [
@@ -45,7 +39,7 @@ class ChecksIndex extends Component
         'check_number' => ['except' => ''],
         'check_type' => ['except' => ''],
         'vendor' => ['except' => ''],
-        'amount' => ['except' => ''],
+        'amount' => ['except' => '']
     ];
 
     public function updating($field)
@@ -65,29 +59,29 @@ class ChecksIndex extends Component
                 ->whereHas('accounts', function ($query) {
                     return $query->whereIn('type', ['Checking', 'Savings']);
                 })->get();
-        //->groupBy('plaid_ins_id')
-        // $this->banks =
-        // Bank::with('accounts')
-        //     ->whereHas('accounts', function ($query) {
-        //         return $query->whereIn('type', ['Checking', 'Savings']);
-        //     })->get()->groupBy('plaid_ins_id');
+                //->groupBy('plaid_ins_id')
+                // $this->banks =
+                // Bank::with('accounts')
+                //     ->whereHas('accounts', function ($query) {
+                //         return $query->whereIn('type', ['Checking', 'Savings']);
+                //     })->get()->groupBy('plaid_ins_id');
     }
 
     #[Computed]
     public function checks()
     {
-        if ($this->view == null) {
+        if($this->view == NULL){
             $paginate_number = 10;
-        } else {
+        }else{
             $paginate_number = 5;
         }
 
-        if ($this->bank) {
+        if($this->bank){
             $bank_account_id = Bank::findOrFail($this->bank)->plaid_ins_id;
             $bank_account_ids = Bank::where('plaid_ins_id', $bank_account_id)->pluck('id');
 
             $bank_accounts = BankAccount::whereIn('bank_id', $bank_account_ids)->pluck('id')->toArray();
-        } else {
+        }else{
             $bank_accounts = BankAccount::all()->pluck('id')->toArray();
         }
 
@@ -113,13 +107,13 @@ class ChecksIndex extends Component
                 })
                 ->paginate($paginate_number);
 
-        $checks->getCollection()->each(function ($check, $key) {
+        $checks->getCollection()->each(function ($check, $key){
             // dd($check->transactions->sum('amount'));
-            if ($check->transactions->sum('amount') == $check->amount) {
+            if($check->transactions->sum('amount') == $check->amount){
                 $check->status = 'Complete';
-            } elseif (($check->transactions->isNotEmpty() && $check->transactions->sum('amount') != $check->amount)) {
+            }elseif(($check->transactions->isNotEmpty() && $check->transactions->sum('amount') != $check->amount)){
                 $check->status = 'Missing Transactions';
-            } else {
+            }else{
                 $check->status = 'No Transactions';
             }
         });

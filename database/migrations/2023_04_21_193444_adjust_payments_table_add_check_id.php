@@ -8,8 +8,10 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('payments', function (Blueprint $table) {
             $table->integer('check_id')->after('parent_client_payment_id')->nullable();
@@ -18,8 +20,10 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::table('payments', function (Blueprint $table) {
             $table->dropColumn('check_id');

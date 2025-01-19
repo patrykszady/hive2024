@@ -8,8 +8,10 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('project_vendor', function (Blueprint $table) {
             $table->id();
@@ -36,14 +38,16 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->json('registration')->after('primary_vendor_id')->nullable();
             $table->dropColumn('email_verified_at');
-            $table->string('password')->nullable()->default(null)->change();
+            $table->string('password')->nullable()->default(NULL)->change();
         });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('project_vendor');
 

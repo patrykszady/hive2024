@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Livewire\Users;
+use Livewire\Component;
 
 use App\Models\User;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 use Illuminate\Support\Facades\Auth;
-use Livewire\Component;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class AdminLoginAsUser extends Component
 {
     use AuthorizesRequests;
 
-    public $user_id = null;
-
+    public $user_id = NULL;
     public $view_text = [
         'card_title' => 'Login As Another User',
         'button_text' => 'Login As User',
@@ -32,7 +32,6 @@ class AdminLoginAsUser extends Component
 
         $user = User::findOrFail($this->user_id);
         Auth::login($user);
-
         return redirect(route('vendor_selection'));
     }
 

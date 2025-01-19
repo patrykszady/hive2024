@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\BankAccountScope;
+use App\Models\Bank;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Scopes\BankAccountScope;
 
 class BankAccount extends Model
 {
@@ -19,29 +20,29 @@ class BankAccount extends Model
         static::addGlobalScope(new BankAccountScope);
     }
 
-    public function bank(): BelongsTo
+    public function bank()
     {
         return $this->belongsTo(Bank::class);
     }
 
-    public function checks(): HasMany
+    public function checks()
     {
         return $this->hasMany(Check::class);
     }
 
-    public function vendor(): BelongsTo
+    public function vendor()
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function transactions(): HasMany
+    public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
 
     public function getNameAndType()
     {
-        return $this->bank->name.' | '.$this->type;
+        return $this->bank->name . ' | ' . $this->type;
     }
 
     //4-11-2022 accout_number setter... if 3 digits, add 0 in front, if 4 ignore

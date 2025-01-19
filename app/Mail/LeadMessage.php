@@ -3,11 +3,13 @@
 namespace App\Mail;
 
 use App\Models\Lead;
+
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
 class LeadMessage extends Mailable
@@ -15,9 +17,7 @@ class LeadMessage extends Mailable
     use Queueable, SerializesModels;
 
     public $lead;
-
     public $reply;
-
     /**
      * Create a new message instance.
      */

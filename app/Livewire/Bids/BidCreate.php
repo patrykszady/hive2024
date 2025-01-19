@@ -2,15 +2,18 @@
 
 namespace App\Livewire\Bids;
 
-use App\Livewire\Forms\BidForm;
 use App\Models\Bid;
 use App\Models\Project;
 use App\Models\Vendor;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
+use App\Livewire\Forms\BidForm;
+
+use Livewire\Component;
 // use Livewire\Attributes\Computed;
 // use Livewire\Attributes\Lazy;
 
-use Livewire\Component;
+use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BidCreate extends Component
 {
@@ -19,9 +22,7 @@ class BidCreate extends Component
     public BidForm $form;
 
     public $bids = [];
-
     public $project;
-
     public $vendor;
 
     public $view_text = [
@@ -59,22 +60,22 @@ class BidCreate extends Component
                 ->orderBy('type')
                 ->get()
                 ->each(function ($item, $key) {
-                    if ($item->amount == 0.00) {
-                        $item->amount = null;
+                    if($item->amount == 0.00){
+                        $item->amount = NULL;
                     }
                     $item->has_estimate_sections = $item->estimate_sections->isEmpty() ? false : true;
                     $item->name = $item->name;
                 })
                 ->toArray();
 
-        if (empty($this->bids)) {
+        if(empty($this->bids)){
             $bid = [
-                'amount' => null,
+                'amount' => NULL,
                 'type' => 1,
                 'project_id' => $this->project->id,
-                'vendor_id' => $this->vendor->id,
+                'vendor_id' =>  $this->vendor->id,
                 'name' => 'Original Bid',
-                'has_estimate_sections' => false,
+                'has_estimate_sections' => false
             ];
 
             $this->bids[] = $bid;
@@ -88,13 +89,13 @@ class BidCreate extends Component
         $bid_index = count($this->bids) + 1;
 
         $bid = [
-            'amount' => null,
+            'amount' => NULL,
             'type' => $bid_index,
             'project_id' => $this->project->id,
             'vendor_id' => $this->vendor->id,
-            'name' => 'Change Order '.$bid_index,
+            'name' => 'Change Order ' . $bid_index,
             // 'name' => 'Change Order ' . $bid_index === 1 ? $bid_index : $bid_index + 1
-            'has_estimate_sections' => false,
+            'has_estimate_sections' => false
         ];
         $this->bids[] = $bid;
     }
@@ -102,7 +103,7 @@ class BidCreate extends Component
     public function removeChangeOrder($index)
     {
         $bid = $this->bids[$index];
-        if (isset($bid['id'])) {
+        if(isset($bid['id'])){
             $bid = Bid::withoutGlobalScopes()->findOrFail($bid['id']);
             $bid->delete();
         }

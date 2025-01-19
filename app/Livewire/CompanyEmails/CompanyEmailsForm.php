@@ -3,17 +3,18 @@
 namespace App\Livewire\CompanyEmails;
 
 use App\Models\CompanyEmail;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Validation\Rule;
+
 use Livewire\Component;
+
+use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CompanyEmailsForm extends Component
 {
     use AuthorizesRequests;
 
-    public $modal_show = null;
-
-    public $email = null;
+    public $modal_show = NULL;
+    public $email = NULL;
 
     protected $listeners = ['addEmail'];
 
@@ -36,8 +37,8 @@ class CompanyEmailsForm extends Component
 
     public function addEmail()
     {
-        $this->email = null;
-        $this->modal_show = true;
+        $this->email = NULL;
+        $this->modal_show = TRUE;
     }
 
     public function mount()
@@ -60,7 +61,7 @@ class CompanyEmailsForm extends Component
 
         $this->dispatch('refreshComponent')->to('company-emails.company-emails-index');
         $this->dispatch('confirmProcessStep', 'emails_registered')->to('entry.vendor-registration');
-        $this->modal_show = false;
+        $this->modal_show = FALSE;
     }
 
     public function render()

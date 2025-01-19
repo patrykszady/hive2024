@@ -3,10 +3,13 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Check;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Validate;
+
 use Livewire\Form;
+
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CheckForm extends Form
 {
@@ -15,7 +18,7 @@ class CheckForm extends Form
     public ?Check $check;
 
     #[Validate('nullable|date|before_or_equal:today|after:2017-01-01')]
-    public $date = null;
+    public $date = NULL;
 
     // required_without:check.bank_account_id
     // #[Rule('nullable', as: 'paid by')]
@@ -23,19 +26,19 @@ class CheckForm extends Form
 
     // required_without:check.paid_by
     #[Validate('required', as: 'bank account')]
-    public $bank_account_id = null;
+    public $bank_account_id = NULL;
 
     // required_with:check.bank_account_id
     #[Validate('required_with:bank_account_id')]
-    public $check_type = null;
+    public $check_type = NULL;
 
     // #[Validate('required_if:check_type,Check')]
-    public $check_number = null;
+    public $check_number = NULL;
 
     // required_with:check.paid_by
     // #[Rule('nullable')]
     // public $invoice = NULL;
-    public $transaction = false;
+    public $transaction = FALSE;
     // protected $messages =
     // [
     //     'check.check_number' => 'Check Number is required if Payment Type is Check',
@@ -55,9 +58,9 @@ class CheckForm extends Form
                     //->where('vendor_id', '!=', $this->expense->vendor_id)
 
                     //where per vendor bank_account ... all bank accounts that have the inst ID
-                    return $query->where('deleted_at', null)->where('bank_account_id', $this->bank_account_id);
+                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->bank_account_id);
                 })
-                    ->ignore($this->check),
+                ->ignore($this->check),
             ],
         ];
     }
@@ -70,8 +73,8 @@ class CheckForm extends Form
         $this->check_type = $this->check->check_type;
         $this->check_number = $this->check->check_number;
 
-        if ($this->check->transactions->sum('amount') == $this->check->amount) {
-            $this->transaction = true;
+        if($this->check->transactions->sum('amount') == $this->check->amount){
+            $this->transaction = TRUE;
         }
     }
 

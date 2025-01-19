@@ -2,25 +2,24 @@
 
 namespace App\Livewire\Categories;
 
-use App\Livewire\Forms\VendorCategoriesForm;
-use App\Models\Category;
-use App\Models\Expense;
-use App\Models\Vendor;
 use Livewire\Component;
+use Livewire\Attributes\Validate;
+
+use App\Models\Expense;
+use App\Models\Category;
+use App\Models\Vendor;
+use App\Models\VendorCategory;
+
+use App\Livewire\Forms\VendorCategoriesForm;
 
 class VendorCategoriesCreate extends Component
 {
     public VendorCategoriesForm $form;
-
     public Vendor $vendor;
-
     public $expense_categories = [];
-
     public $vendor_categories = [];
-
     public $vendor_expense_categories = [];
-
-    public $showModal = false;
+    public $showModal = FALSE;
 
     protected $listeners = ['addCategories'];
 
@@ -51,7 +50,7 @@ class VendorCategoriesCreate extends Component
                 ->toBase();
 
         // dd($this->vendor_expense_categories);
-        $this->showModal = true;
+        $this->showModal = TRUE;
     }
 
     public function save()
@@ -59,7 +58,7 @@ class VendorCategoriesCreate extends Component
         $this->form->store();
         $this->dispatch('refreshComponent')->to('categories.categories-index');
 
-        $this->showModal = false;
+        $this->showModal = FALSE;
         $this->dispatch('notify',
             type: 'success',
             content: 'Vendor Categories Created'

@@ -2,35 +2,34 @@
 
 namespace App\Livewire\Hours;
 
-use App\Livewire\Forms\HourForm;
+use App\Models\Task;
 use App\Models\Hour;
 use App\Models\Project;
-use App\Models\Task;
 use App\Models\Timesheet;
+
+use App\Livewire\Forms\HourForm;
+
+use Illuminate\Database\Eloquent\Builder;
+
+use Livewire\Component;
+use Livewire\Attributes\Rule;
+use Livewire\Attributes\Title;
+
 use Carbon\Carbon;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
-use Livewire\Attributes\Title;
-use Livewire\Component;
 
 class HourCreate extends Component
 {
     public HourForm $form;
 
     public $projects = [];
-
     public $other_projects = [];
-
     public $days = [];
-
     public $hours_count_store = 0;
-
-    public $selected_date = null;
-
-    public $day_index = null;
-
-    public $new_project_id = null;
-
+    public $selected_date = NULL;
+    public $day_index = NULL;
+    public $new_project_id = NULL;
     public $day_project_tasks = [];
 
     public $view_text = [
@@ -54,38 +53,40 @@ class HourCreate extends Component
         $this->other_projects = Project::whereNotIn('id', $this->projects->pluck('id'))->orderBy('created_at', 'DESC')->get();
 
         $confirmed_weeks =
-            Timesheet::orderBy('date', 'DESC')
+            Timesheet::
+                orderBy('date', 'DESC')
                 ->where('user_id', auth()->user()->id)
                 ->where('date', '>', today()->subWeeks(4))
                 ->get()
                 ->groupBy('date');
 
-        if (! $confirmed_weeks->isEmpty()) {
-            foreach ($confirmed_weeks as $confirmed_week) {
+        if(!$confirmed_weeks->isEmpty()){
+            foreach($confirmed_weeks as $confirmed_week)
+            {
                 $week_days = new \DatePeriod(
                     $confirmed_week->first()->date->startOfWeek(Carbon::MONDAY),
                     CarbonInterval::day(),
                     $confirmed_week->first()->date->endOfWeek(Carbon::SUNDAY)
                 );
 
-                foreach ($week_days as $confirmed_date) {
+                foreach($week_days as $confirmed_date){
                     $confirmed_week_days[] = $confirmed_date->format('Y-m-d');
                 }
             }
-        } else {
-            $confirmed_week_days[] = null;
+        }else{
+            $confirmed_week_days[] = NULL;
         }
 
         $this->days = collect();
-        foreach ($this->getDays() as $day) {
+        foreach($this->getDays() as $day){
             $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $day->format('Y-m-d'))->get();
 
             $this->days->push(collect([
                 'format' => $day->format('Y-m-d'),
                 'day' => $day->format('d'),
                 'month' => $day->format('m'),
-                'has_hours' => $user_day_hours->isEmpty() ? false : true,
-                'confirmed_date' => in_array($day->format('Y-m-d'), $confirmed_week_days) ? true : false,
+                'has_hours' => $user_day_hours->isEmpty() ? FALSE : TRUE,
+                'confirmed_date' => in_array($day->format('Y-m-d'), $confirmed_week_days) ? TRUE : FALSE
             ]));
         }
 
@@ -99,28 +100,27 @@ class HourCreate extends Component
 
     public function getHoursCountProperty()
     {
-        $this->hours_count_store = collect($this->form->projects)->where('hours', '!=', null)->sum('hours');
-
+        $this->hours_count_store = collect($this->form->projects)->where('hours', '!=', NULL)->sum('hours');
         return $this->hours_count_store;
     }
 
     public function getDays()
     {
         return new \DatePeriod(
-            Carbon::parse('3 weeks ago')->startOfWeek(Carbon::MONDAY),
+            Carbon::parse("3 weeks ago")->startOfWeek(Carbon::MONDAY),
             CarbonInterval::day(),
-            Carbon::parse('1 week')->startOfWeek(Carbon::MONDAY)->next('Week')
+            Carbon::parse("1 week")->startOfWeek(Carbon::MONDAY)->next("Week")
         );
     }
 
-    public function selectedDate($date, $day_index = null)
+    public function selectedDate($date, $day_index = NULL)
     {
-        if (! is_null($day_index)) {
+        if(!is_null($day_index)){
             $this->day_index = $day_index;
             $new_date = $this->days[$day_index];
 
             $user_day_hours = Hour::where('user_id', auth()->user()->id)->where('date', $new_date['format'])->get();
-            $has_hours = $user_day_hours->isEmpty() ? false : true;
+            $has_hours = $user_day_hours->isEmpty() ? FALSE : TRUE;
             $this->days[$day_index]['has_hours'] = $has_hours;
         }
 
@@ -142,27 +142,27 @@ class HourCreate extends Component
         $merged_projects = $merged_projects->merge($planner_projects_day);
 
         $this->projects =
-            Project::whereIn('id', $merged_projects->pluck('id')->toArray())->with(['tasks' => function ($query) {
-                //CarbonPeriod between each task->start and end_date ... if $this->selected_date->format('Y-m-d') is between Carbon Period
-                $query->where('user_id', auth()->user()->id)->whereNotNull('start_date')
-                    ->each(function ($task) {
-                        $task_duration_days = CarbonPeriod::create($task->start_date, $task->end_date);
+            Project::whereIn('id', $merged_projects->pluck('id')->toArray())->with(['tasks' => function($query) {
+                    //CarbonPeriod between each task->start and end_date ... if $this->selected_date->format('Y-m-d') is between Carbon Period
+                    $query->where('user_id', auth()->user()->id)->whereNotNull('start_date')
+                        ->each(function ($task) {
+                            $task_duration_days = CarbonPeriod::create($task->start_date, $task->end_date);
 
-                        foreach ($task_duration_days as $task_day) {
-                            $this->day_project_tasks[$task->project->id][$task->id]['dates'][] = $task_day->format('Y-m-d');
-                            $this->day_project_tasks[$task->project->id][$task->id]['title'] = $task->title;
-                        }
-                    });
-            }])
+                            foreach($task_duration_days as $task_day){
+                                $this->day_project_tasks[$task->project->id][$task->id]['dates'][] = $task_day->format('Y-m-d');
+                                $this->day_project_tasks[$task->project->id][$task->id]['title'] = $task->title;
+                            }
+                        });
+                }])
                 ->get()
                 ->sortBy([['last_status.title', 'asc'], ['last_status.start_date', 'desc']])
                 ->keyBy('id');
 
-        foreach ($this->day_project_tasks as $project_id => $project_tasks) {
-            foreach ($project_tasks as $task_id => $task) {
-                if (in_array($this->selected_date->format('Y-m-d'), $task['dates'])) {
+        foreach($this->day_project_tasks as $project_id => $project_tasks){
+            foreach($project_tasks as $task_id => $task){
+                if(in_array($this->selected_date->format('Y-m-d'), $task['dates'])){
 
-                } else {
+                }else{
                     //remove $task from array
                     unset($this->day_project_tasks[$project_id][$task_id]);
                 }
@@ -172,19 +172,19 @@ class HourCreate extends Component
         // dd($this->day_project_tasks);
         $this->resetValidation();
 
-        if ($user_day_hours->isEmpty()) {
+        if($user_day_hours->isEmpty()){
             $this->view_text = [
                 'card_title' => 'Create Daily Hours',
                 'button_text' => 'Add Daily Hours',
                 'form_submit' => 'save',
             ];
-        } else {
+        }else{
             //insert hours into the projects_id array
-            foreach ($this->projects as $index => $project) {
+            foreach($this->projects as $index => $project){
                 $project_user_date = Hour::where('user_id', auth()->user()->id)->where('date', $date)->where('project_id', $project->id)->get();
-                if ($project_user_date->isEmpty()) {
+                if($project_user_date->isEmpty()){
 
-                } else {
+                }else{
                     $project->hours = $project_user_date->first()->hours;
                     $project->hour_id = $project_user_date->first()->id;
                 }
@@ -205,25 +205,25 @@ class HourCreate extends Component
     public function add_project()
     {
         //return with error
-        if (is_null($this->new_project_id)) {
+        if(is_null($this->new_project_id)){
             $this->addError('select_new_project', 'Please select another project.');
-        } else {
+        }else{
             $project = $this->other_projects->where('id', $this->new_project_id);
             $this->projects->add($project->first());
 
             $this->form->projects[] = $project->first()->toArray();
 
             $this->other_projects->forget($project->keys()->first());
-            $this->new_project_id = null;
+            $this->new_project_id = NULL;
             $this->render();
         }
     }
 
     public function save()
     {
-        if ($this->hours_count_store == 0) {
+        if($this->hours_count_store == 0){
             $this->addError('hours_count', 'Daily Hours need at least one entry.');
-        } else {
+        }else{
             $this->form->store();
             $this->selectedDate($this->selected_date->format('Y-m-d'), $this->day_index);
             $this->dispatch('notify',

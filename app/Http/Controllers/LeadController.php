@@ -2,19 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Arr;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
 use App\Models\CompanyEmail;
-use App\Models\Lead;
 use App\Models\User;
+use App\Models\Lead;
+
 use App\Services\ChatGPTService;
+
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Carbon\CarbonInterval;
+
 use Exception;
+
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
-use Microsoft\Graph\Graph;
-use Microsoft\Graph\Model\MailFolder;
+
 use Microsoft\Graph\Model\Message;
+use Microsoft\Graph\Model\Attachment;
+use Microsoft\Graph\Model\MailFolder;
+use Microsoft\Graph\Graph;
+use Microsoft\Graph\Http;
+use Microsoft\Graph\Model;
 
 class LeadController extends Controller
 {
@@ -26,95 +38,95 @@ class LeadController extends Controller
     }
 
     // public function ms_graph_auth($company_emails)
-    // {
-    //     foreach($company_emails as $company_email){
-    //         //check if access_token is expired, if so get new access_token and refresh_token
-    //         // app(\App\Http\Controllers\PrintReportContoller::class)->getPrintReport();
-    //         try{
-    //             $guzzle = new Client();
-    //             $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
-    //             $email_account_tokens = json_decode($guzzle->post($url, [
-    //                 'form_params' => [
-    //                     'client_id' => env('MS_GRAPH_CLIENT_ID'),
-    //                     'scope' => env('MS_GRAPH_USER_SCOPES'),
-    //                     'refresh_token' => $company_email->api_json['refresh_token'],
-    //                     'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
-    //                     'grant_type' => 'refresh_token',
-    //                     'client_secret' => env('MS_GRAPH_SECRET_ID'),
-    //                 ],
-    //             ])->getBody()->getContents());
-    //         }catch(RequestException $e){
-    //             if($e->hasResponse()) {
-    //                 $response = $e->getResponse();
-    //                 $responseBody = $response->getBody()->getContents();
-    //                 $error = $responseBody;
-    //             }else{
-    //                 $error = $e->getMessage();
-    //             }
+        // {
+        //     foreach($company_emails as $company_email){
+        //         //check if access_token is expired, if so get new access_token and refresh_token
+        //         // app(\App\Http\Controllers\PrintReportContoller::class)->getPrintReport();
+        //         try{
+        //             $guzzle = new Client();
+        //             $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
+        //             $email_account_tokens = json_decode($guzzle->post($url, [
+        //                 'form_params' => [
+        //                     'client_id' => env('MS_GRAPH_CLIENT_ID'),
+        //                     'scope' => env('MS_GRAPH_USER_SCOPES'),
+        //                     'refresh_token' => $company_email->api_json['refresh_token'],
+        //                     'redirect_uri' => env('MS_GRAPH_REDIRECT_URI'),
+        //                     'grant_type' => 'refresh_token',
+        //                     'client_secret' => env('MS_GRAPH_SECRET_ID'),
+        //                 ],
+        //             ])->getBody()->getContents());
+        //         }catch(RequestException $e){
+        //             if($e->hasResponse()) {
+        //                 $response = $e->getResponse();
+        //                 $responseBody = $response->getBody()->getContents();
+        //                 $error = $responseBody;
+        //             }else{
+        //                 $error = $e->getMessage();
+        //             }
 
-    //             $company_email->api_json += ['errors' => json_decode($error, true)];
-    //             $company_email->save();
+        //             $company_email->api_json += ['errors' => json_decode($error, true)];
+        //             $company_email->save();
 
-    //             //add to $company_email json ('api') errors
-    //             Log::channel('company_emails_login_error')->error($error);
-    //             continue;
-    //         }
+        //             //add to $company_email json ('api') errors
+        //             Log::channel('company_emails_login_error')->error($error);
+        //             continue;
+        //         }
 
-    //         //json
-    //         $api_data = $company_email->api_json;
-    //         $api_data['access_token'] = $email_account_tokens->access_token;
-    //         $api_data['refresh_token'] = $email_account_tokens->refresh_token;
+        //         //json
+        //         $api_data = $company_email->api_json;
+        //         $api_data['access_token'] = $email_account_tokens->access_token;
+        //         $api_data['refresh_token'] = $email_account_tokens->refresh_token;
 
-    //         $company_email->update([
-    //             'api_json' => $api_data,
-    //         ]);
+        //         $company_email->update([
+        //             'api_json' => $api_data,
+        //         ]);
 
-    //         $this->ms_graph = new Graph();
-    //         $this->ms_graph->setAccessToken($company_email->api_json['access_token']);
+        //         $this->ms_graph = new Graph();
+        //         $this->ms_graph->setAccessToken($company_email->api_json['access_token']);
 
-    //         // FOLDER name Test etc
-    //         // $user_hive_folder =
-    //         //     $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders?filter=displayName eq 'Home Depot Rebates'&expand=childFolders")
-    //         //         ->setReturnType(MailFolder::class)
-    //         //         ->execute();
-    //         // dd($user_hive_folder);
+        //         // FOLDER name Test etc
+        //         // $user_hive_folder =
+        //         //     $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders?filter=displayName eq 'Home Depot Rebates'&expand=childFolders")
+        //         //         ->setReturnType(MailFolder::class)
+        //         //         ->execute();
+        //         // dd($user_hive_folder);
 
-    //         if(env('APP_ENV') == 'production'){
-    //             //6-12-2023 6-27-2023 6-6-2024 exclude ones already read ... save $message->getId() to a (temp) database/log file?...
-    //             $messages_inbox = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/inbox/messages?top=20")
-    //                 ->setReturnType(Message::class)
-    //                 ->execute();
+        //         if(env('APP_ENV') == 'production'){
+        //             //6-12-2023 6-27-2023 6-6-2024 exclude ones already read ... save $message->getId() to a (temp) database/log file?...
+        //             $messages_inbox = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/inbox/messages?top=20")
+        //                 ->setReturnType(Message::class)
+        //                 ->execute();
 
-    //             $messages_inbox_retry = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_retry'] . "/messages?top=20")
-    //                 ->setReturnType(Message::class)
-    //                 ->execute();
+        //             $messages_inbox_retry = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_retry'] . "/messages?top=20")
+        //                 ->setReturnType(Message::class)
+        //                 ->execute();
 
-    //             $messages = Arr::collapse([$messages_inbox, $messages_inbox_retry]);
-    //         }else{
-    //             //if array key exists
-    //             if(isset($company_email->api_json['hive_folder_test'])){
-    //                 $messages = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_test'] . "/messages?top=20")
-    //                 ->setReturnType(Message::class)
-    //                 ->execute();
-    //             }else{
-    //                 continue;
-    //             }
-    //         }
+        //             $messages = Arr::collapse([$messages_inbox, $messages_inbox_retry]);
+        //         }else{
+        //             //if array key exists
+        //             if(isset($company_email->api_json['hive_folder_test'])){
+        //                 $messages = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_test'] . "/messages?top=20")
+        //                 ->setReturnType(Message::class)
+        //                 ->execute();
+        //             }else{
+        //                 continue;
+        //             }
+        //         }
 
-    //         return $messages;
-    //     }
-    // }
+        //         return $messages;
+        //     }
+        // }
 
     public function leads_in_email()
     {
-        $company_emails = CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
+        $company_emails =  CompanyEmail::withoutGlobalScopes()->whereNotNull('api_json->user_id')->get();
         // $messages = $this->ms_graph_auth($company_emails);
-        foreach ($company_emails as $company_email) {
+        foreach($company_emails as $company_email){
             //check if access_token is expired, if so get new access_token and refresh_token
             // app(\App\Http\Controllers\PrintReportContoller::class)->getPrintReport();
-            try {
-                $guzzle = new Client;
-                $url = 'https://login.microsoftonline.com/'.env('MS_GRAPH_TENANT_ID').'/oauth2/v2.0/token';
+            try{
+                $guzzle = new Client();
+                $url = 'https://login.microsoftonline.com/' . env('MS_GRAPH_TENANT_ID') . '/oauth2/v2.0/token';
                 $email_account_tokens = json_decode($guzzle->post($url, [
                     'form_params' => [
                         'client_id' => env('MS_GRAPH_CLIENT_ID'),
@@ -125,12 +137,12 @@ class LeadController extends Controller
                         'client_secret' => env('MS_GRAPH_SECRET_ID'),
                     ],
                 ])->getBody()->getContents());
-            } catch (RequestException $e) {
-                if ($e->hasResponse()) {
+            }catch(RequestException $e){
+                if($e->hasResponse()) {
                     $response = $e->getResponse();
                     $responseBody = $response->getBody()->getContents();
                     $error = $responseBody;
-                } else {
+                }else{
                     $error = $e->getMessage();
                 }
 
@@ -139,7 +151,6 @@ class LeadController extends Controller
 
                 //add to $company_email json ('api') errors
                 Log::channel('company_emails_login_error')->error($error);
-
                 continue;
             }
 
@@ -152,7 +163,7 @@ class LeadController extends Controller
                 'api_json' => $api_data,
             ]);
 
-            $this->ms_graph = new Graph;
+            $this->ms_graph = new Graph();
             $this->ms_graph->setAccessToken($company_email->api_json['access_token']);
 
             // FOLDER name Test etc
@@ -162,32 +173,32 @@ class LeadController extends Controller
             //         ->execute();
             // dd($user_hive_folder);
 
-            if (env('APP_ENV') == 'production') {
+            if(env('APP_ENV') == 'production'){
                 //6-12-2023 6-27-2023 6-6-2024 exclude ones already read ... save $message->getId() to a (temp) database/log file?...
-                $messages_inbox = $this->ms_graph->createCollectionRequest('GET', '/me/mailFolders/inbox/messages?top=20')
+                $messages_inbox = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/inbox/messages?top=20")
                     ->setReturnType(Message::class)
                     ->execute();
 
-                $messages_inbox_retry = $this->ms_graph->createCollectionRequest('GET', '/me/mailFolders/'.$company_email->api_json['hive_folder'].'/childFolders/'.$company_email->api_json['hive_folder_retry'].'/messages?top=20')
+                $messages_inbox_retry = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_retry'] . "/messages?top=20")
                     ->setReturnType(Message::class)
                     ->execute();
 
                 $messages = Arr::collapse([$messages_inbox, $messages_inbox_retry]);
-            } else {
+            }else{
                 //if array key exists
-                if (isset($company_email->api_json['hive_folder_test'])) {
-                    $messages = $this->ms_graph->createCollectionRequest('GET', '/me/mailFolders/'.$company_email->api_json['hive_folder'].'/childFolders/'.$company_email->api_json['hive_folder_test'].'/messages?top=20')
+                if(isset($company_email->api_json['hive_folder_test'])){
+                    $messages = $this->ms_graph->createCollectionRequest("GET", "/me/mailFolders/" . $company_email->api_json['hive_folder'] . "/childFolders/" . $company_email->api_json['hive_folder_test'] . "/messages?top=20")
                     // ->addHeaders(["Prefer" => "outlook.body-content-type=\"text\""])
-                        ->setReturnType(Message::class)
-                        ->execute();
-                } else {
+                    ->setReturnType(Message::class)
+                    ->execute();
+                }else{
                     continue;
                 }
             }
             // dd($messages);
 
-            foreach ($messages as $key => $message) {
-                if (! isset($message->getToRecipients()[0])) {
+            foreach($messages as $key => $message){
+                if(!isset($message->getToRecipients()[0])){
                     continue;
                 }
 
@@ -197,7 +208,7 @@ class LeadController extends Controller
                 // dd();
 
                 $email_from = $message->getFrom()->getEmailAddress()->getAddress();
-                $email_from_domain = substr($email_from, strpos($email_from, '@'));
+                $email_from_domain = substr($email_from, strpos($email_from, "@"));
                 $email_subject = $message->getSubject();
                 $email_date =
                     Carbon::parse($message->getReceivedDateTime())
@@ -214,7 +225,7 @@ class LeadController extends Controller
                             // origin = Website, Houzz, Angi, Yelp...
                             'origin' => 'Website',
                             'options' => [
-                                'address' => null,
+                                'address' => NULL,
                                 'email' => 'regex',
                                 'email_regex' => ["/Email 2:\s*([^<]+)/m"],
                                 'name' => 'regex',
@@ -223,7 +234,7 @@ class LeadController extends Controller
                                 'phone_regex' => ["/Phone:\s*([^<]+)/m"],
                                 'message' => 'regex',
                                 'message_regex' => ["/Message 2:\s*([^<]+)/m"],
-                            ],
+                            ]
                         ],
                         1 => [
                             'from_email' => 'notification@houzz.com',
@@ -232,13 +243,13 @@ class LeadController extends Controller
                             'options' => [
                                 'address' => 'regex',
                                 'address_regex' => ["/highlighted-details-text.*?<span>(.*?)<\/span>/", "/https:\/\/st.hzcdn.com\/static\/proLeadEmail\/location.png.*?<span>(.*?)<\/span>/"],
-                                'email' => null,
+                                'email' => NULL,
                                 'name' => 'message_data.name',
-                                'phone' => null,
+                                'phone' => NULL,
                                 'message' => 'regex',
-                                'message_regex' => ['/Still Evaluating(.*?)Reply/s', '/Message(.*?)Reply/s'],
-                            ],
-                        ],
+                                'message_regex' => ["/Still Evaluating(.*?)Reply/s", "/Message(.*?)Reply/s"],
+                            ]
+                        ]
                     ],
                 );
 
@@ -246,24 +257,24 @@ class LeadController extends Controller
                     $from_email_leads
                         ->where('from_email', $message->getFrom()->getEmailAddress()->getAddress())
                         ->first();
-                // ->where('from_subject', $message->getSubject())
-                // ->get();
+                        // ->where('from_subject', $message->getSubject())
+                        // ->get();
 
-                if (! is_null($email_found)) {
-                    foreach ($email_found['from_subject'] as $from_subject) {
-                        if (strpos($from_subject, $message->getSubject()) !== false) {
+                if(!is_null($email_found)){
+                    foreach($email_found['from_subject'] as $from_subject){
+                        if(strpos($from_subject, $message->getSubject()) !== FALSE){
                             $email_subject_found = $email_found;
-                        } else {
+                        }else{
                             //continue... email Subject not found
                             //move the failed email?
                             continue;
                         }
                     }
-                } else {
+                }else{
                     continue;
                 }
 
-                if (isset($email_subject_found)) {
+                if(isset($email_subject_found)){
                     $lead_data = collect();
                     $string = $message->getBody()->getContent();
                     // print_r(htmlspecialchars($string));
@@ -272,20 +283,20 @@ class LeadController extends Controller
 
                     $inputs = ['address', 'phone', 'message', 'email', 'name'];
 
-                    foreach ($inputs as $input) {
-                        if ($email_found['options'][$input] === 'regex') {
-                            $pattern = $email_found['options'][$input.'_regex'];
-                            if (is_array($pattern)) {
-                                foreach ($pattern as $pattern_single) {
+                    foreach($inputs as $input){
+                        if($email_found['options'][$input] === 'regex'){
+                            $pattern = $email_found['options'][$input . '_regex'];
+                            if(is_array($pattern)){
+                                foreach($pattern as $pattern_single){
                                     //preg_match($re, $string, $matches, PREG_OFFSET_CAPTURE, 0);
                                     preg_match($pattern_single, $string, $matches);
-                                    if ($matches) {
+                                    if($matches){
                                         $plain_text = strip_tags($matches[1]);
                                         $plain_text_with_breaks = nl2br($plain_text);
                                         $plain_text_with_layout = html_entity_decode($plain_text_with_breaks);
 
                                         $lead_data[$input] = $plain_text_with_layout;
-                                    } else {
+                                    }else{
                                         continue;
                                     }
                                 }
@@ -293,26 +304,26 @@ class LeadController extends Controller
 
                             // print_r($plain_text_with_layout);
                             // dd();
-                        } else {
-                            if ($email_found['options'][$input] === 'message_data.'.$input) {
+                        }else{
+                            if($email_found['options'][$input] === 'message_data.' . $input){
                                 $lead_data[$input] = $message->getFrom()->getEmailAddress()->getName();
-                            } else {
-                                $lead_data[$input] = null;
+                            }else{
+                                $lead_data[$input] = NULL;
                             }
                         }
                     }
-                } else {
+                }else{
                     break;
                 }
 
-                if (isset($lead_data['email'])) {
+                if(isset($lead_data['email'])){
                     $lead_data['reply_to_email'] = $lead_data['email'];
-                } else {
+                }else{
                     $lead_data['reply_to_email'] = $message->getReplyTo()[0]['emailAddress']['address'];
                 }
 
-                if (! isset($lead_data['date'])) {
-                    $lead_data['date'] = null;
+                if(!isset($lead_data['date'])){
+                    $lead_data['date'] = NULL;
                 }
 
                 try {
@@ -324,38 +335,37 @@ class LeadController extends Controller
                     // continue;
                 }
 
-                if (! isset($details)) {
+                if(!isset($details)){
 
-                } else {
-                    while (is_null($details)) {
+                }else{
+                    while(is_null($details)){
                         sleep(5);
                         $details = $this->chatGPTService->extractDetails(htmlspecialchars($string));
                     }
 
-                    foreach ($details as $detail_name => $text_detail) {
+                    foreach($details as $detail_name => $text_detail){
                         // $detail_test[] = isset($lead_data[$detail_name]);
-                        if (! isset($lead_data[$detail_name])) {
+                        if(!isset($lead_data[$detail_name])){
                             $lead_data[$detail_name] = $text_detail;
-                        } else {
+                        }else{
                             $lead_data[$detail_name] = $text_detail;
                         }
                     }
                 }
 
                 $existing_lead = Lead::where('date', $email_date)->first();
-                if ($existing_lead) {
+                if($existing_lead){
                     $this->ms_graph
-                        ->createRequest('POST', '/users/'.$company_email->api_json['user_id'].'/messages/'.$message->getId().'/move')
+                        ->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
                         ->attachBody(
-                            [
-                                'destinationId' => $company_email->api_json['hive_folder_LEADS'],
-                            ]
-                        )
+                            array(
+                                'destinationId' => $company_email->api_json['hive_folder_LEADS']
+                                )
+                            )
                         ->execute();
-
                     continue;
 
-                } else {
+                }else{
                     $digitsOnly = preg_replace('/\D/', '', $lead_data['phone']);
 
                     // Check if the result is exactly 10 digits long
@@ -371,11 +381,11 @@ class LeadController extends Controller
                     $user = User::where('cell_phone', $lead_data['phone'])->first();
                     // dd($user);
 
-                    if ($user) {
+                    if($user){
                         $user_id = $user->id;
-                    } else {
+                    }else{
                         //create from data
-                        if (isset($lead_data['phone']) && isset($lead_data['email']) && isset($lead_data['name'])) {
+                        if(isset($lead_data['phone']) && isset($lead_data['email']) && isset($lead_data['name'])){
                             $name = preg_replace('/\s+/', ' ', trim($lead_data['name']));
                             $nameParts = explode(' ', $name);
                             $lastName = array_pop($nameParts);
@@ -389,8 +399,8 @@ class LeadController extends Controller
                             ]);
 
                             $user_id = $user->id;
-                        } else {
-                            $user_id = null;
+                        }else{
+                            $user_id = NULL;
                         }
                     }
 
@@ -400,43 +410,43 @@ class LeadController extends Controller
                         'user_id' => $user_id,
                         'lead_data' => $lead_data,
                         'belongs_to_vendor_id' => $company_email->vendor_id,
-                        'created_by_user_id' => 0, //AUTOMATED
+                        'created_by_user_id' => 0 //AUTOMATED
                     ]);
 
                     //2024-12-30 MOVE TO Observer because it repeats and always gets called with creating a Lead
                     $lead->statuses()->create([
                         'title' => 'New',
                         'belongs_to_vendor_id' => $lead->belongs_to_vendor_id,
-                        'created_at' => $email_date,
+                        'created_at' => $email_date
                     ]);
 
                     // dd($lead_data);
 
                     //12-31-2024 ..How to reset in one go //$refresh?
                     // $this->resetVariables();
-                    $details = null;
-                    $lead_data = null;
-                    $lead = null;
-                    $user = null;
-                    $lead_data = null;
-                    $name = null;
-                    $nameParts = null;
-                    $lastName = null;
-                    $firstName = null;
-                    $string = null;
-                    $email_from = null;
-                    $email_found = null;
-                    $email_from_domain = null;
-                    $email_subject = null;
-                    $email_date = null;
+                    $details = NULL;
+                    $lead_data = NULL;
+                    $lead = NULL;
+                    $user = NULL;
+                    $lead_data = NULL;
+                    $name = NULL;
+                    $nameParts = NULL;
+                    $lastName = NULL;
+                    $firstName = NULL;
+                    $string = NULL;
+                    $email_from = NULL;
+                    $email_found = NULL;
+                    $email_from_domain = NULL;
+                    $email_subject = NULL;
+                    $email_date = NULL;
                 }
 
-                $this->ms_graph->createRequest('POST', '/users/'.$company_email->api_json['user_id'].'/messages/'.$message->getId().'/move')
+                $this->ms_graph->createRequest("POST", "/users/" . $company_email->api_json['user_id'] . "/messages/" . $message->getId() . "/move")
                     ->attachBody(
-                        [
-                            'destinationId' => $company_email->api_json['hive_folder_LEADS'],
-                        ]
-                    )
+                        array(
+                            'destinationId' => $company_email->api_json['hive_folder_LEADS']
+                            )
+                        )
                     ->execute();
 
                 continue;

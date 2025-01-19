@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use App\Scopes\TimesheetScope;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Timesheet extends Model
 {

@@ -3,9 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Goutte\Client;
-use Symfony\Component\HttpClient\HttpClient;
-use GuzzleHttp\Client as GuzzleClient;
 
 class ScrapeCommand extends Command
 {

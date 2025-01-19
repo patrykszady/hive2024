@@ -38,7 +38,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->json('registration')->after('primary_vendor_id')->nullable();
             $table->dropColumn('email_verified_at');
-            $table->string('password')->nullable()->default(NULL)->change();
+            $table->string('password')->nullable()->default(null)->change();
         });
     }
 

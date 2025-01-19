@@ -3,28 +3,26 @@
 namespace App\Livewire\Leads;
 
 use App\Models\Lead;
-
-use Livewire\Component;
-use Livewire\WithPagination;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class LeadsIndex extends Component
 {
-    use WithPagination, AuthorizesRequests;
+    use AuthorizesRequests, WithPagination;
 
     public $origin = '';
-    public $view = NULL;
+
+    public $view = null;
+
     public $sortBy = 'date';
+
     public $sortDirection = 'desc';
 
     protected $queryString = [
-        'origin' => ['except' => '']
+        'origin' => ['except' => ''],
     ];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -36,13 +34,14 @@ class LeadsIndex extends Component
             Lead::with(['user', 'last_status'])->when($this->origin, function ($query) {
                 return $query->where('origin', $this->origin);
             })
-            ->orderBy($this->sortBy, $this->sortDirection)
-            ->paginate(15);
+                ->orderBy($this->sortBy, $this->sortDirection)
+                ->paginate(15);
 
         return $leads;
     }
 
-    public function sort($column) {
+    public function sort($column)
+    {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -55,6 +54,7 @@ class LeadsIndex extends Component
     public function render()
     {
         $this->authorize('viewAny', Lead::class);
+
         return view('livewire.leads.index');
     }
 }

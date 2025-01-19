@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Expense;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class ExpenseReceipts extends Model
 {
@@ -29,17 +27,17 @@ class ExpenseReceipts extends Model
 
     public function getNotesAttribute($value)
     {
-        if(!empty($this->receipt_items->handwritten_notes)){
+        if (! empty($this->receipt_items->handwritten_notes)) {
             $handwritten_notes = $this->receipt_items->handwritten_notes;
             $handwritten_notes = implode(' | ', $handwritten_notes);
-        }else{
-            $handwritten_notes = FALSE;
+        } else {
+            $handwritten_notes = false;
         }
 
-        if(isset($this->receipt_items->purchase_order)){
+        if (isset($this->receipt_items->purchase_order)) {
             $purchase_order = $this->receipt_items->purchase_order;
-        }else{
-            $purchase_order = FALSE;
+        } else {
+            $purchase_order = false;
         }
 
         $notes = array_filter([$handwritten_notes, $purchase_order]);
@@ -50,9 +48,9 @@ class ExpenseReceipts extends Model
 
     public function getReceiptItemsAttribute($value)
     {
-        if($value == NULL){
-            $receipt_items = NULL;
-        }else{
+        if ($value == null) {
+            $receipt_items = null;
+        } else {
             $receipt_items = json_decode($value);
         }
 

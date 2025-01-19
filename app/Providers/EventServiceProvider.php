@@ -4,23 +4,20 @@ namespace App\Providers;
 
 use App\Models\Bid;
 use App\Models\Client;
-use App\Models\Expense;
 use App\Models\EstimateLineItem;
+use App\Models\Expense;
 use App\Models\LineItem;
 use App\Models\Project;
-use App\Models\Vendor;
 use App\Models\UserVendor;
-
+use App\Models\Vendor;
 use App\Observers\BidObserver;
 use App\Observers\ClientObserver;
-use App\Observers\ExpenseObserver;
 use App\Observers\EstimateLineItemObserver;
+use App\Observers\ExpenseObserver;
 use App\Observers\LineItemObserver;
-use App\Observers\VendorObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\UserVendorObserver;
-
-
+use App\Observers\VendorObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

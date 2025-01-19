@@ -22,7 +22,7 @@ class CreateExpenseSplitsTable extends Migration
             $table->string('reimbursment')->nullable();
             $table->integer('belongs_to_vendor_id');
             $table->integer('created_by_user_id');
-            $table->string('note')->nullable();            
+            $table->string('note')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

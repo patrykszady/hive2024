@@ -4,9 +4,7 @@ namespace App\Mail;
 
 use App\Models\Agent;
 use App\Models\Vendor;
-
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
@@ -18,9 +16,12 @@ class RequestInsurance extends Mailable
     use Queueable, SerializesModels;
 
     public $requesting_vendor;
+
     public $vendor;
+
     // public $agent;
     public $agent_expired_docs;
+
     /**
      * Create a new message instance.
      *
@@ -44,7 +45,7 @@ class RequestInsurance extends Mailable
     {
         return new Envelope(
             from: new Address('insurance@hive.contractors', 'Hive Contractors'),
-            subject: $this->vendor->name . ' Insurance Certificate',
+            subject: $this->vendor->name.' Insurance Certificate',
         );
     }
 

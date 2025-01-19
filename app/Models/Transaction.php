@@ -2,17 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TransactionScope;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-use App\Models\Scopes\TransactionScope;
-
 use Laravel\Scout\Searchable;
 
 class Transaction extends Model
 {
-    use HasFactory, SoftDeletes, Searchable;
+    use HasFactory, Searchable, SoftDeletes;
 
     // protected $dates = ['transaction_date', 'posted_date', 'date', 'deleted_at'];
 
@@ -33,7 +31,7 @@ class Transaction extends Model
     // //Searchable / Typesense
     public function toSearchableArray(): array
     {
-        return array_merge($this->toArray(),[
+        return array_merge($this->toArray(), [
             'id' => (string) $this->id,
             'amount' => $this->amount,
             'deposit' => (string) $this->deposit ? ($this->payments->isEmpty() ? 'NO_PAYMENTS' : 'HAS_PAYMENTS') : 'NOT_DEPOSIT',

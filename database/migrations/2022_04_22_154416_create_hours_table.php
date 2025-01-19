@@ -37,4 +37,4 @@ class CreateHoursTable extends Migration
     {
         Schema::dropIfExists('hours');
     }
-};
+}

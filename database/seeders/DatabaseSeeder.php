@@ -4,11 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Bank;
 use App\Models\Client;
-use App\Models\User;
-use App\Models\Vendor;
 use App\Models\Expense;
 use App\Models\ExpenseSplits;
 use App\Models\Project;
+use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
             'first_name' => 'Patryk',
             'last_name' => 'Szady',
             'cell_phone' => '2249993880',
-            'email' => 'patryk.szady@live.com'
+            'email' => 'patryk.szady@live.com',
         ]);
         User::factory(19)->create();
         // ->withoutGlobalScopes()
@@ -39,13 +39,12 @@ class DatabaseSeeder extends Seeder
             'city' => 'Prospect Heights',
             'state' => 'IL',
             'zip_code' => '60070',
-            'business_type' => 'Sub'
+            'business_type' => 'Sub',
         ]);
-        
+
         $vendors = Vendor::factory(49)->create();
 
-        foreach($vendors as $vendor)
-        {
+        foreach ($vendors as $vendor) {
             Vendor::withoutGlobalScopes()->find(1)->vendors()->attach($vendor->id);
         }
 
@@ -57,7 +56,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'OFFICE',
                 'vendor_id' => 1,
-                'user_id' => NULL,
+                'user_id' => null,
             ]
         );
 

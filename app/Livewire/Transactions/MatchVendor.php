@@ -2,27 +2,31 @@
 
 namespace App\Livewire\Transactions;
 
-use App\Models\Expense;
-use App\Models\Vendor;
 use App\Models\BankAccount;
+use App\Models\Expense;
 use App\Models\Transaction;
+use App\Models\Vendor;
 use App\Models\VendorTransaction;
-
-use Livewire\Component;
-use Livewire\Attributes\Title;
-
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class MatchVendor extends Component
 {
     use AuthorizesRequests;
 
     public $vendors = [];
+
     public $expense_receipt_merchants = [];
+
     public $merchant_names = [];
+
     public $match_merchant_names = [];
+
     public $match_expense_merchant_names = [];
+
     public $match_vendor_names = [];
+
     public $view_text = [
         'card_title' => 'Save Transactions/Vendor',
         'button_text' => 'Sync Transactions & Vendors',
@@ -48,9 +52,9 @@ class MatchVendor extends Component
                 ->whereNull('deleted_at')
                 ->where('vendor_id', 0)
                 ->get()
-                ->each(function($expense, $key){
+                ->each(function ($expense, $key) {
                     $receipt = $expense->receipts()->latest()->first();
-                    if(isset($receipt->receipt_items->merchant_name)){
+                    if (isset($receipt->receipt_items->merchant_name)) {
                         $expense->merchant_name = $receipt->receipt_items->merchant_name;
                     }
                 })
@@ -70,8 +74,8 @@ class MatchVendor extends Component
         // $this->authorize('create', Expense::class);
         $this->validate();
 
-        foreach($this->match_expense_merchant_names as $key => $vendor_match){
-            if($vendor_match['vendor_id'] == "NEW"){
+        foreach ($this->match_expense_merchant_names as $key => $vendor_match) {
+            if ($vendor_match['vendor_id'] == 'NEW') {
                 //new Retail Vendor
                 $vendor = Vendor::create([
                     'business_type' => 'Retail',
@@ -79,15 +83,15 @@ class MatchVendor extends Component
                 ]);
 
                 $vendor_id = $vendor->id;
-                foreach($this->expense_receipt_merchants[$vendor_match['match_desc']] as $expense){
+                foreach ($this->expense_receipt_merchants[$vendor_match['match_desc']] as $expense) {
                     $expense->vendor_id = $vendor_id;
                     $expense->save();
                 }
-            }else{
-                $deposit_check = NULL;
+            } else {
+                $deposit_check = null;
                 $vendor_id = $vendor_match['vendor_id'];
 
-                $institution_id = NULL;
+                $institution_id = null;
                 $options = json_encode('/i');
 
                 $vendor_transaction = VendorTransaction::create([
@@ -101,7 +105,7 @@ class MatchVendor extends Component
 
             //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, ExpesnesForm@createExpenseFromTransaction
             //add if vendor is not part of the currently logged in vendor
-            if(!in_array($vendor_id, $this->vendors->pluck('id')->toArray())){
+            if (! in_array($vendor_id, $this->vendors->pluck('id')->toArray())) {
                 auth()->user()->vendor->vendors()->attach($vendor_id);
             }
         }
@@ -118,8 +122,8 @@ class MatchVendor extends Component
         $this->validate();
         // $this->authorize('create', Expense::class);
 
-        foreach($this->match_merchant_names as $key => $vendor_match){
-            if($vendor_match['vendor_id'] == "NEW"){
+        foreach ($this->match_merchant_names as $key => $vendor_match) {
+            if ($vendor_match['vendor_id'] == 'NEW') {
                 //new Retail Vendor
                 $vendor = Vendor::create([
                     'business_type' => 'Retail',
@@ -127,40 +131,40 @@ class MatchVendor extends Component
                 ]);
 
                 $vendor_id = $vendor->id;
-            }else{
-                if($vendor_match['vendor_id'] == "DEPOSIT"){
+            } else {
+                if ($vendor_match['vendor_id'] == 'DEPOSIT') {
                     $deposit_check = 1;
-                    $vendor_id = NULL;
-                }elseif($vendor_match['vendor_id'] == "CHECK"){
+                    $vendor_id = null;
+                } elseif ($vendor_match['vendor_id'] == 'CHECK') {
                     $deposit_check = 2;
-                    $vendor_id = NULL;
-                }elseif($vendor_match['vendor_id'] == "TRANSFER"){
+                    $vendor_id = null;
+                } elseif ($vendor_match['vendor_id'] == 'TRANSFER') {
                     $deposit_check = 3;
-                    $vendor_id = NULL;
-                }elseif($vendor_match['vendor_id'] == "CASH"){
+                    $vendor_id = null;
+                } elseif ($vendor_match['vendor_id'] == 'CASH') {
                     $deposit_check = 4;
-                    $vendor_id = NULL;
-                }else{
-                    $deposit_check = NULL;
+                    $vendor_id = null;
+                } else {
+                    $deposit_check = null;
                     $vendor_id = $vendor_match['vendor_id'];
                 }
 
-                if(isset($vendor_match['bank_specific'])){
+                if (isset($vendor_match['bank_specific'])) {
                     $institution_id = $this->merchant_names->values()[$key][0]['bank_account']['bank']['plaid_ins_id'];
-                }else{
-                    $institution_id = NULL;
+                } else {
+                    $institution_id = null;
                 }
 
-                if(isset($vendor_match['options'])){
-                    $options = json_encode($vendor_match['options'] . '/i');
-                }else{
+                if (isset($vendor_match['options'])) {
+                    $options = json_encode($vendor_match['options'].'/i');
+                } else {
                     $options = json_encode('/i');
                 }
 
                 $vendor_transaction = VendorTransaction::create([
                     'vendor_id' => $vendor_id,
                     'deposit_check' => $deposit_check,
-                    'desc' => str_replace("*", "\*", $vendor_match['match_desc']),
+                    'desc' => str_replace('*', "\*", $vendor_match['match_desc']),
                     'plaid_inst_id' => $institution_id,
                     'options' => $options,
                 ]);
@@ -168,7 +172,7 @@ class MatchVendor extends Component
 
             //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, ExpesnesForm@createExpenseFromTransaction
             //add if vendor is not part of the currently logged in vendor
-            if(!in_array($vendor_id, $this->vendors->pluck('id')->toArray())){
+            if (! in_array($vendor_id, $this->vendors->pluck('id')->toArray())) {
                 auth()->user()->vendor->vendors()->attach($vendor_id);
             }
         }
@@ -194,9 +198,9 @@ class MatchVendor extends Component
                 ->with([
                     'bank_account' => fn ($query) => $query->withoutGlobalScopes()->with([
                         'bank' => fn ($query) => $query->withoutGlobalScopes()->with([
-                            'vendor' => fn ($query) => $query->withoutGlobalScopes()
-                        ])
-                    ])
+                            'vendor' => fn ($query) => $query->withoutGlobalScopes(),
+                        ]),
+                    ]),
                 ])
                 ->get()
                 ->groupBy('plaid_merchant_description')

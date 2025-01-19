@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Scopes\PaymentScope;
-
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model

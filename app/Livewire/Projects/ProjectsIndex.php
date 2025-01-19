@@ -2,42 +2,44 @@
 
 namespace App\Livewire\Projects;
 
-use App\Models\Project;
 use App\Models\Client;
-
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\Attributes\Title;
+use App\Models\Project;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Lazy;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 // #[Lazy]
 class ProjectsIndex extends Component
 {
-    use WithPagination, AuthorizesRequests;
+    use AuthorizesRequests, WithPagination;
 
     public $project_name_search = '';
+
     public $client_id = '';
-    public $client = NULL;
+
+    public $client = null;
+
     public $project_status_title = 'Active';
-    public $view = NULL;
+
+    public $view = null;
 
     protected $queryString = [
         'project_name_search' => ['except' => ''],
         'client_id' => ['except' => ''],
-        'project_status_title' => ['except' => '']
+        'project_status_title' => ['except' => ''],
     ];
 
     public function mount()
     {
-        if($this->client){
+        if ($this->client) {
             $this->client_id = $this->client->id;
         }
 
-        if($this->view == TRUE){
-            $this->project_status_title = NULL;
+        if ($this->view == true) {
+            $this->project_status_title = null;
         }
     }
 
@@ -48,11 +50,11 @@ class ProjectsIndex extends Component
 
     public function updated($field)
     {
-        if($field === 'client_id'){
+        if ($field === 'client_id') {
             $this->project_status_title = '';
         }
 
-        if($field === 'project_name_search'){
+        if ($field === 'project_name_search') {
             $this->project_status_title = '';
             $this->client_id = '';
         }
@@ -61,14 +63,14 @@ class ProjectsIndex extends Component
     #[Computed]
     public function projects()
     {
-        if(!is_null($this->client)){
-            if(isset($this->client->vendor_id)){
+        if (! is_null($this->client)) {
+            if (isset($this->client->vendor_id)) {
                 //all clients(projects) with $client->vendor_id
                 $client_ids = Project::where('belongs_to_vendor_id', $this->client->vendor_id)->pluck('client_id')->toArray();
-            }else{
+            } else {
                 $client_ids = [$this->client->id];
             }
-        }else{
+        } else {
             $client_ids = [];
         }
 
@@ -77,10 +79,10 @@ class ProjectsIndex extends Component
             //     $query->where('vendor_id', auth()->user()->vendor->id);
             // })
             ->where('address', 'like', "%{$this->project_name_search}%")
-            ->when($this->project_status_title != NULL && $this->project_status_title != 'ALL', function($query) {
+            ->when($this->project_status_title != null && $this->project_status_title != 'ALL', function ($query) {
                 return $query->status($this->project_status_title == 'Complete' ? [$this->project_status_title, 'Service Call Complete'] : $this->project_status_title)->sortByDesc('last_status.start_date');
             })
-            ->when($this->client != NULL, function ($query) use ($client_ids) {
+            ->when($this->client != null, function ($query) use ($client_ids) {
                 return $query->whereIn('client_id', $client_ids);
             })
             // ->when($this->client_id != NULL, function ($query) {

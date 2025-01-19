@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use App\Scopes\ProjectScope;
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
@@ -109,11 +108,13 @@ class Project extends Model
         return $this->hasMany(ProjectStatus::class);
     }
 
-    public function last_status(){
+    public function last_status()
+    {
         return $this->hasOne(ProjectStatus::class)->orderBy('start_date', 'DESC')->latest();
     }
 
-    public function scopeStatus($query, $status){
+    public function scopeStatus($query, $status)
+    {
         // dd($status);
         return $query->with('last_status')->get()->whereIn('last_status.title', $status);
     }
@@ -154,15 +155,15 @@ class Project extends Model
 
     public function getFullAddressAttribute()
     {
-        if ($this->address_2 == NULL) {
+        if ($this->address_2 == null) {
             $address1 = $this->address;
         } else {
-            $address1 = $this->address . '<br>' . $this->address_2;
+            $address1 = $this->address.'<br>'.$this->address_2;
         }
 
-        $address2 = $this->city . ', ' . $this->state . ' ' . $this->zip_code;
+        $address2 = $this->city.', '.$this->state.' '.$this->zip_code;
 
-        return $address1 . '<br>' .  $address2;
+        return $address1.'<br>'.$address2;
     }
 
     public function getFinancesAttribute()
@@ -178,7 +179,7 @@ class Project extends Model
         $finances['expenses'] = $this->expenses->sum('amount') + $this->expenseSplits->sum('amount');
         $finances['timesheets'] = $this->timesheets->sum('amount');
         $finances['total_cost'] = $finances['timesheets'] + $finances['expenses'];
-        $finances['payments'] =  round($this->payments->sum('amount'), 2);
+        $finances['payments'] = round($this->payments->sum('amount'), 2);
         //amount_format(..., 2)
         $finances['profit'] = $finances['payments'] - $finances['total_cost'];
         $finances['balance'] = $finances['total_project'] - $finances['payments'];
@@ -188,19 +189,19 @@ class Project extends Model
 
     public function getAddressMapURI()
     {
-        $url = 'https://maps.apple.com/?q=' . $this->address . ', ' . $this->city . ', ' . $this->state . ', ' . $this->zip_code;
+        $url = 'https://maps.apple.com/?q='.$this->address.', '.$this->city.', '.$this->state.', '.$this->zip_code;
 
         return $url;
     }
 
     public function getNameAttribute()
     {
-        if($this->project_name == 'EXPENSE SPLIT' || $this->project_name == 'NO PROJECT'){
+        if ($this->project_name == 'EXPENSE SPLIT' || $this->project_name == 'NO PROJECT') {
             $name = $this->project_name;
-        }elseif($this->distribution == TRUE){
+        } elseif ($this->distribution == true) {
             $name = $this->project_name;
-        }else{
-            $name = $this->address . ' | ' . $this->project_name;
+        } else {
+            $name = $this->address.' | '.$this->project_name;
         }
 
         return $name;

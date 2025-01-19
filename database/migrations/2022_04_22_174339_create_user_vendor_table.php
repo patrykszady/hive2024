@@ -36,4 +36,4 @@ class CreateUserVendorTable extends Migration
     {
         Schema::dropIfExists('user_vendor');
     }
-};
+}

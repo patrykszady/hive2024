@@ -5,36 +5,37 @@ namespace App\Livewire\Planner;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Vendor;
-
-use Livewire\Component;
-use Livewire\Attributes\Computed;
-use Livewire\Attributes\Title;
-
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-
 use Flux;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class PlannerIndex extends Component
 {
     public $employees = [];
+
     public $projects = [];
+
     public $vendors = [];
+
     public $days = [];
+
     public $week = '';
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
     protected $queryString = [
-        'week' => ['except' => '']
+        'week' => ['except' => ''],
     ];
 
     public function mount()
     {
-        if($this->week){
+        if ($this->week) {
             //5-24-2024 must be Y-m-d format, else go to else below
             $monday = $this->week;
-        }else{
+        } else {
             $monday = today()->format('Y-m-d');
         }
 
@@ -50,7 +51,7 @@ class PlannerIndex extends Component
                 'expenses',
                 'expenses as expense_count' => function ($query) {
                     $query->where('created_at', '>=', today()->subYear());
-                }
+                },
             ])
             //as expense count
             // sort by expenses ytd
@@ -70,16 +71,16 @@ class PlannerIndex extends Component
 
         $week_days = [
             0 => [
-                "database_date" => NULL,
-                "formatted_date" => NULL,
-                "is_today" => false,
-                "is_weekend" => false,
+                'database_date' => null,
+                'formatted_date' => null,
+                'is_today' => false,
+                'is_weekend' => false,
                 'is_saturday' => false,
-                'is_sunday' => false
-                ]
-            ];
+                'is_sunday' => false,
+            ],
+        ];
 
-        foreach($days as $confirmed_date){
+        foreach ($days as $confirmed_date) {
             //need to account for saturday&sunday / days off
             $week_days[] = [
                 'database_date' => $confirmed_date->format('Y-m-d'),
@@ -87,7 +88,7 @@ class PlannerIndex extends Component
                 'is_today' => $confirmed_date == today(),
                 'is_weekend' => $confirmed_date->isWeekend(),
                 'is_saturday' => $confirmed_date->isSaturday(),
-                'is_sunday' => $confirmed_date->isSunday()
+                'is_sunday' => $confirmed_date->isSunday(),
             ];
         }
 
@@ -99,14 +100,14 @@ class PlannerIndex extends Component
         $project = Project::findOrFail($project_id);
         $task = Task::findOrFail($key);
 
-        if(is_null($this->days[$date_index]['database_date'])){
-            $start_date = NULL;
-        }else{
+        if (is_null($this->days[$date_index]['database_date'])) {
+            $start_date = null;
+        } else {
             $start_date = Carbon::parse($this->days[$date_index]['database_date']);
         }
 
         // If this Task does not belong to this Project, Move the task to new project.
-        if($task->project->isNot($project)) {
+        if ($task->project->isNot($project)) {
             $task->displace();
             $task->project()->associate($project);
         }
@@ -114,18 +115,18 @@ class PlannerIndex extends Component
         $task->start_date = $start_date;
         $task_days_count = $task->duration;
 
-        if(in_array($task_days_count, [0, 1])){
+        if (in_array($task_days_count, [0, 1])) {
             $task->end_date = $task->start_date;
             $task->duration = $task_days_count;
 
             $options = $task->options;
             $include_weekends = [];
-            if(!is_null($task->start_date)){
-                if($start_date->isSaturday()){
+            if (! is_null($task->start_date)) {
+                if ($start_date->isSaturday()) {
                     $include_weekends['saturday'] = true;
                 }
 
-                if($start_date->isSunday()){
+                if ($start_date->isSunday()) {
                     $include_weekends['sunday'] = true;
                 }
             }
@@ -148,10 +149,10 @@ class PlannerIndex extends Component
             // $task->duration = $duration;
             // $task->start_date = $startDate;
             // $task->end_date = $endDate;
-        }else{
+        } else {
             $include_weekends = (array) $task->options->include_weekend_days;
-            $excludeSaturdays = !isset($include_weekends['saturday']) || $include_weekends['saturday'] === false;
-            $excludeSundays = !isset($include_weekends['sunday']) || $include_weekends['sunday'] === false;
+            $excludeSaturdays = ! isset($include_weekends['saturday']) || $include_weekends['saturday'] === false;
+            $excludeSundays = ! isset($include_weekends['sunday']) || $include_weekends['sunday'] === false;
 
             $startDate = $start_date;
             // $daysCount = ($startDate->isSaturday() && $excludeSaturdays === true) || ($startDate->isSunday() && $excludeSundays === true) ? 0 : 1;
@@ -181,7 +182,8 @@ class PlannerIndex extends Component
     //Copilot help
     //2024-12-10 SAME ON PlannerCard
     //count days between dates and ignore weekend days if checkbox true
-    function countDaysBetweenDates($startDate, $endDate, $excludeSaturdays = true, $excludeSundays = true) {
+    public function countDaysBetweenDates($startDate, $endDate, $excludeSaturdays = true, $excludeSundays = true)
+    {
         // Include the first day in the count if not saturday or sunday
         $daysCount = ($startDate->isSaturday() && $excludeSaturdays === true) || ($startDate->isSunday() && $excludeSundays === true) ? 0 : 1;
 

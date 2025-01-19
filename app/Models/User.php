@@ -2,13 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\CanResetPassword;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Route;
-
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -101,11 +97,11 @@ class User extends Authenticatable
         // $role_id = $this->vendors()->where('vendors.id', $vendor_id)->first()->pivot->role_id;
         $role_id = $this->primary_vendor->pivot->role_id;
 
-        if($role_id == 1){
+        if ($role_id == 1) {
             $role = 'Admin';
-        }elseif($role_id == 2){
+        } elseif ($role_id == 2) {
             $role = 'Member';
-        }else{
+        } else {
             $role = 'No Role';
         }
 
@@ -116,11 +112,11 @@ class User extends Authenticatable
     {
         $role_id = $this->vendors()->where('vendors.id', $vendor_id)->first()->pivot->role_id;
 
-        if($role_id == 1){
+        if ($role_id == 1) {
             $role = 'Admin';
-        }elseif($role_id == 2){
+        } elseif ($role_id == 2) {
             $role = 'Member';
-        }else{
+        } else {
             $role = 'No Role';
         }
 
@@ -134,7 +130,7 @@ class User extends Authenticatable
 
     public function getFullNameAttribute()
     {
-        return $this->first_name . ' ' . $this->last_name;
+        return $this->first_name.' '.$this->last_name;
     }
 
     //on vendor->user queries

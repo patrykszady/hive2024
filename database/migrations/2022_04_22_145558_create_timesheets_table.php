@@ -25,7 +25,7 @@ class CreateTimesheetsTable extends Migration
             $table->integer('check_id')->unsigned()->nullable();
             $table->integer('hourly');
             $table->string('invoice')->nullable();
-            $table->string('note')->nullable();   
+            $table->string('note')->nullable();
             $table->integer('created_by_user_id');
             $table->timestamps();
             $table->softDeletes();
@@ -41,4 +41,4 @@ class CreateTimesheetsTable extends Migration
     {
         Schema::dropIfExists('timesheets');
     }
-};
+}

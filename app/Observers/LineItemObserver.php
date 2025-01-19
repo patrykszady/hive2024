@@ -18,6 +18,7 @@ class LineItemObserver
     {
         $lineItem->belongs_to_vendor_id = auth()->user()->vendor->id;
     }
+
     /**
      * Handle the LineItem "updated" event.
      */

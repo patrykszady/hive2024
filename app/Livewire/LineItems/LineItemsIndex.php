@@ -3,16 +3,15 @@
 namespace App\Livewire\LineItems;
 
 use App\Models\LineItem;
-
-use Livewire\Component;
-use Livewire\WithPagination;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class LineItemsIndex extends Component
 {
-    use WithPagination, AuthorizesRequests;
+    use AuthorizesRequests, WithPagination;
 
     // public $view;
     public $search = '';
@@ -28,9 +27,9 @@ class LineItemsIndex extends Component
     public function line_items()
     {
         return LineItem::orderBy('created_at', 'DESC')
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('desc', 'like', '%' . $this->search . '%')
-            ->orWhere('notes', 'like', '%' . $this->search . '%')
+            ->where('name', 'like', '%'.$this->search.'%')
+            ->orWhere('desc', 'like', '%'.$this->search.'%')
+            ->orWhere('notes', 'like', '%'.$this->search.'%')
             ->paginate(15);
     }
 

@@ -3,11 +3,9 @@
 namespace App\Livewire\CompanyEmails;
 
 use App\Models\CompanyEmail;
-
-use Livewire\Component;
-use Livewire\Attributes\Title;
-
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class CompanyEmailsIndex extends Component
 {
@@ -15,16 +13,17 @@ class CompanyEmailsIndex extends Component
 
     protected $listeners = ['refreshComponent' => '$refresh'];
 
-    public $view = NULL;
+    public $view = null;
+
     public $email_accounts = [];
 
     public function mount()
     {
         $this->email_accounts =
-            CompanyEmail::all()->each(function ($email, $key){
-                if(is_null($email->api_json['errors'])){
+            CompanyEmail::all()->each(function ($email, $key) {
+                if (is_null($email->api_json['errors'])) {
                     $email->status = 'Connected';
-                }else{
+                } else {
                     $email->status = 'Error';
                 }
             });

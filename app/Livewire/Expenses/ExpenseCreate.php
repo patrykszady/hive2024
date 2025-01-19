@@ -2,30 +2,20 @@
 
 namespace App\Livewire\Expenses;
 
-use App\Models\Project;
-use App\Models\Vendor;
-use App\Models\Expense;
+use App\Jobs\UpdateProjectDistributionsAmount;
+use App\Livewire\Forms\ExpenseForm;
+use App\Models\BankAccount;
 use App\Models\Check;
 use App\Models\Distribution;
+use App\Models\Expense;
+use App\Models\Project;
 use App\Models\Transaction;
-use App\Models\BankAccount;
-use App\Models\ExpenseSplits;
-use App\Models\ExpenseReceipts;
-use App\Models\Receipt;
-
-use App\Jobs\UpdateProjectDistributionsAmount;
-
-use App\Livewire\Forms\ExpenseForm;
-
+use App\Models\Vendor;
 use Flux;
-
-use Livewire\Component;
-use Livewire\Attributes\Computed;
-use Livewire\WithFileUploads;
-
 use Illuminate\Support\Facades\Route;
-
-use Carbon\Carbon;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class ExpenseCreate extends Component
 {
@@ -39,12 +29,18 @@ class ExpenseCreate extends Component
         'form_submit' => 'save',
     ];
 
-    public $split = FALSE;
-    public $splits = FALSE;
+    public $split = false;
+
+    public $splits = false;
+
     public Expense $expense;
-    public $expense_update = FALSE;
+
+    public $expense_update = false;
+
     public $expense_splits = [];
+
     public $projects = [];
+
     public $vendors = [];
     // public $via_vendor_employees = NULL;
 
@@ -68,22 +64,22 @@ class ExpenseCreate extends Component
     public function updated($field, $value)
     {
         // if SPLIT checked vs if unchecked
-        if($field == 'split'){
-            if($this->split == TRUE){
-                $this->form->split = TRUE;
-                $this->form->project_id = NULL;
-            }else{
-                $this->form->split = FALSE;
+        if ($field == 'split') {
+            if ($this->split == true) {
+                $this->form->split = true;
+                $this->form->project_id = null;
+            } else {
+                $this->form->split = false;
             }
         }
 
-        if($field === 'form.paid_by'){
-            if($value === "NULL"){
-                $this->form->paid_by = NULL;
+        if ($field === 'form.paid_by') {
+            if ($value === 'NULL') {
+                $this->form->paid_by = null;
             }
         }
 
-        if($field == 'form.reimbursment'){
+        if ($field == 'form.reimbursment') {
             // dd($value);
             // if($value == NULL){
             //     $this->form->reimbursment = NULL;
@@ -100,16 +96,16 @@ class ExpenseCreate extends Component
             $this->validateOnly('form.receipt_file');
         }
 
-        if($field == 'form.project_id' && is_numeric($value)){
+        if ($field == 'form.project_id' && is_numeric($value)) {
             $project_title = $this->projects->where('id', $value)->first()->last_status->title;
 
-            if($project_title == 'Complete'){
-                $this->form->project_completed = TRUE;
-            }else{
-                $this->form->project_completed = FALSE;
+            if ($project_title == 'Complete') {
+                $this->form->project_completed = true;
+            } else {
+                $this->form->project_completed = false;
             }
-        }else{
-            $this->form->project_completed = FALSE;
+        } else {
+            $this->form->project_completed = false;
         }
 
         $this->validateOnly($field);
@@ -119,9 +115,9 @@ class ExpenseCreate extends Component
     public function hasSplits($saved_splits)
     {
         $this->expense_splits = $saved_splits;
-        $this->splits = TRUE;
-        $this->split = TRUE;
-        $this->form->split = TRUE;
+        $this->splits = true;
+        $this->split = true;
+        $this->form->split = true;
     }
 
     public function newExpense($amount)
@@ -143,9 +139,9 @@ class ExpenseCreate extends Component
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
 
         $this->expense = $expense;
-        $this->expense_update = TRUE;
+        $this->expense_update = true;
 
-        if(!$expense->splits->isEmpty()){
+        if (! $expense->splits->isEmpty()) {
             $this->hasSplits($expense->splits);
         }
 
@@ -165,10 +161,10 @@ class ExpenseCreate extends Component
         $this->expense = Expense::make();
         $this->form->reset();
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
-        $this->split = FALSE;
-        $this->splits = FALSE;
+        $this->split = false;
+        $this->splits = false;
         $this->expense_splits = [];
-        $this->expense_update = FALSE;
+        $this->expense_update = false;
         // Public functions should be reset here
         // $this->dispatch('resetSplits')->to('expenses.expenses-splits-form');
         // $this->dispatch('refreshComponent')->to('expenses.expenses-splits-form');
@@ -185,41 +181,41 @@ class ExpenseCreate extends Component
         $this->resetModal();
         $this->dispatch('resetSplits')->to('expenses.expense-splits-create');
         // {
-            //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
-            //create Retail vendor here if doesnt exist yet
-            // if(is_null($transaction->vendor_id)){
-            //     $vendor = Vendor::create([
-            //         'business_type' => 'Retail',
-            //         'business_name' => $transaction->plaid_merchant_name,
-            //     ]);
+        //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
+        //create Retail vendor here if doesnt exist yet
+        // if(is_null($transaction->vendor_id)){
+        //     $vendor = Vendor::create([
+        //         'business_type' => 'Retail',
+        //         'business_name' => $transaction->plaid_merchant_name,
+        //     ]);
 
-            //     $vendor_id = $vendor->id;
+        //     $vendor_id = $vendor->id;
 
-            //     //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, MatchVendor@store
-            //     //add if vendor is not part of the currently logged in vendor
-            //     if(!$transaction->bank_account->vendor->vendors->contains($vendor_id)){
-            //         $transaction->bank_account->vendor->vendors()->attach($vendor_id);
-            //     }
+        //     //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, MatchVendor@store
+        //     //add if vendor is not part of the currently logged in vendor
+        //     if(!$transaction->bank_account->vendor->vendors->contains($vendor_id)){
+        //         $transaction->bank_account->vendor->vendors()->attach($vendor_id);
+        //     }
 
-            //     //add this vendor to the existing $this->vendors collection
-            //     $this->vendors->add($vendor);
+        //     //add this vendor to the existing $this->vendors collection
+        //     $this->vendors->add($vendor);
 
-            //     //6-8-2022 run in a queue?
-            //     app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
-            // }else{
-            //     $vendor_id = $transaction->vendor_id;
-            // }
+        //     //6-8-2022 run in a queue?
+        //     app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
+        // }else{
+        //     $vendor_id = $transaction->vendor_id;
+        // }
         // }
 
         // $this->expense_splits = [];
 
         //2/18/2023 if check_number .. expense->vendor_id = GS Construction / logged in vendor?
-        if($transaction->check_number){
-            if($transaction->check_number == '1010101'){
+        if ($transaction->check_number) {
+            if ($transaction->check_number == '1010101') {
                 $check_type = 'Transfer';
-            }elseif($transaction->check_number == '2020202'){
+            } elseif ($transaction->check_number == '2020202') {
                 $check_type = 'Cash';
-            }else{
+            } else {
                 $check_type = 'Check';
             }
 
@@ -227,7 +223,7 @@ class ExpenseCreate extends Component
             $this->form->check_type = $check_type;
 
             //2/18/2023 dont allow changes to $this->check if coming from a transaction...
-            if($check_type == 'Check'){
+            if ($check_type == 'Check') {
                 $this->form->check_number = $transaction->check_number;
             }
         }
@@ -243,9 +239,9 @@ class ExpenseCreate extends Component
         $this->form->amount = $transaction->amount;
         $this->form->date = $transaction->transaction_date->format('Y-m-d');
 
-        if(is_null($transaction->vendor_id)){
-            $this->form->vendor_id = NULL;
-        }else{
+        if (is_null($transaction->vendor_id)) {
+            $this->form->vendor_id = null;
+        } else {
             $this->form->vendor_id = $transaction->vendor_id;
         }
 
@@ -255,7 +251,7 @@ class ExpenseCreate extends Component
     public function edit()
     {
         //return with Error... splits needed if Project is SPLIT
-        if($this->split == TRUE && empty($this->expense_splits)){
+        if ($this->split == true && empty($this->expense_splits)) {
             return $this->addError('no_splits', 'Splits required if Project is Split');
         }
 
@@ -342,7 +338,7 @@ class ExpenseCreate extends Component
     public function save()
     {
         //return with Error... splits needed if Project is SPLIT
-        if($this->split == TRUE && empty($this->expense_splits)){
+        if ($this->split == true && empty($this->expense_splits)) {
             return $this->addError('no_splits', 'Splits required if Project is Split');
         }
         // return $this->dispatch('validateCheck')->to(CheckCreate::class);

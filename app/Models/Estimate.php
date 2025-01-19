@@ -2,18 +2,11 @@
 
 namespace App\Models;
 
-use App\Models\Client;
-
 use App\Models\Scopes\EstimateScope;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
-
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Estimate extends Model
 {
@@ -85,46 +78,46 @@ class Estimate extends Model
 
     public function getStartDateAttribute()
     {
-        if(isset($this->options['start_date'])){
+        if (isset($this->options['start_date'])) {
             return Carbon::parse($this->options['start_date']);
-        }else{
-            return NULL;
+        } else {
+            return null;
         }
     }
 
     public function getEndDateAttribute()
     {
-        if(isset($this->options['end_date'])){
+        if (isset($this->options['end_date'])) {
             return Carbon::parse($this->options['end_date']);
-        }else{
-            return NULL;
+        } else {
+            return null;
         }
     }
 
     public function getReimbursmentsAttribute()
     {
-        if(isset($this->options['include_reimbursement']) && $this->options['include_reimbursement'] == TRUE){
+        if (isset($this->options['include_reimbursement']) && $this->options['include_reimbursement'] == true) {
             return $this->project->finances['reimbursments'];
-        }else{
-            return NULL;
+        } else {
+            return null;
         }
     }
 
     public function getPaymentsAttribute()
     {
-        if(isset($this->options['payments'])){
+        if (isset($this->options['payments'])) {
             return $this->options['payments'];
-        }else{
-            return NULL;
+        } else {
+            return null;
         }
     }
 
     public function getNumberAttribute()
     {
         $number =
-            $this->belongs_to_vendor_id . '-' .
-            $this->client->id . '-' .
-            $this->project->id . '-' .
+            $this->belongs_to_vendor_id.'-'.
+            $this->client->id.'-'.
+            $this->project->id.'-'.
             $this->id;
 
         return $number;

@@ -3,10 +3,8 @@
 namespace App\Livewire\Forms;
 
 use App\Models\ExpenseSplit;
-
-use Livewire\Form;
-
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Form;
 
 class ExpenseSplitForm extends Form
 {
@@ -30,9 +28,9 @@ class ExpenseSplitForm extends Form
     public function setSplits($splits)
     {
         $this->expense_splits = $splits;
-        foreach($this->expense_splits as $index => $split){
-            if($split['project_id'] == NULL && isset($split['distribution_id'])){
-                $this->expense_splits[$index]['project_id'] = 'D:' . $split['distribution_id'];
+        foreach ($this->expense_splits as $index => $split) {
+            if ($split['project_id'] == null && isset($split['distribution_id'])) {
+                $this->expense_splits[$index]['project_id'] = 'D:'.$split['distribution_id'];
             }
         }
     }

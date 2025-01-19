@@ -2,21 +2,20 @@
 
 namespace App\Livewire\VendorDocs;
 
-use App\Models\VendorDoc;
-// use App\Models\Check;
 use App\Models\Vendor;
-
-use Livewire\Component;
+// use App\Models\Check;
+use App\Models\VendorDoc;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class VendorDocsIndex extends Component
 {
     use AuthorizesRequests;
 
-    public $view = NULL;
+    public $view = null;
+
     public $date = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -25,14 +24,14 @@ class VendorDocsIndex extends Component
     public function vendors()
     {
         return Vendor::has('vendor_docs')->with('vendor_docs')
-        ->withCount([
-            'expenses',
-            'expenses as expense_count' => function ($query) {
-                $query->where('created_at', '>=', today()->subYear());
-            }
-        ])
-        ->orderBy('expense_count', 'DESC')
-        ->get();
+            ->withCount([
+                'expenses',
+                'expenses as expense_count' => function ($query) {
+                    $query->where('created_at', '>=', today()->subYear());
+                },
+            ])
+            ->orderBy('expense_count', 'DESC')
+            ->get();
     }
 
     #[Title('Certificates')]
@@ -46,13 +45,11 @@ class VendorDocsIndex extends Component
 
         // dd($checks);
 
-
         //get latest for each type only
         //['vendor_id', 'type']
         //->orderBy('type', 'DESC')
         // $docs = VendorDoc::with('vendor')->orderBy('expiration_date', 'DESC')->get()->groupBy('vendor_id');
         // dd($docs);
-
 
         // foreach($vendors as $vendor){
         //     $doc_types = $vendor->vendor_docs()->orderBy('expiration_date', 'DESC')->with('agent')->get()->groupBy('type');

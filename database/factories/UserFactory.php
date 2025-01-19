@@ -26,7 +26,7 @@ class UserFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
-            'cell_phone' =>  $this->faker->randomFloat($nbMaxDecimals = 0, $min = 2240000000, $max = 8479999999),
+            'cell_phone' => $this->faker->randomFloat($nbMaxDecimals = 0, $min = 2240000000, $max = 8479999999),
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),

@@ -3,11 +3,9 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Vendor;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Rule;
 use Livewire\Form;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class VendorForm extends Form
 {
@@ -16,37 +14,37 @@ class VendorForm extends Form
     public ?Vendor $vendor;
 
     #[Rule('required|min:3')]
-    public $business_name = NULL;
+    public $business_name = null;
 
     #[Rule('required')]
-    public $business_type = NULL;
+    public $business_type = null;
 
     #[Rule('nullable|required_unless:business_type,Retail|min:3')]
-    public $address = NULL;
+    public $address = null;
 
     #[Rule('nullable|min:2')]
-    public $address_2 = NULL;
+    public $address_2 = null;
 
     #[Rule('nullable|required_unless:business_type,Retail|min:3')]
-    public $city = NULL;
+    public $city = null;
 
     #[Rule('nullable|required_unless:business_type,Retail|min:2|max:2')]
-    public $state = NULL;
+    public $state = null;
 
     #[Rule('nullable|required_unless:business_type,Retail|digits:5', as: 'zip code')]
-    public $zip_code = NULL;
+    public $zip_code = null;
 
     #[Rule('nullable|email|min:5', as: 'business email')]
-    public $business_email = NULL;
+    public $business_email = null;
 
     #[Rule('nullable|digits:10', as: 'business phone')]
-    public $business_phone = NULL;
+    public $business_phone = null;
 
     #[Rule('nullable')]
-    public $user_hourly_rate = NULL;
+    public $user_hourly_rate = null;
 
     #[Rule('nullable')]
-    public $user_role = NULL;
+    public $user_role = null;
 
     public function setVendor(Vendor $vendor)
     {

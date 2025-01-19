@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Scopes\DistributionScope;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,6 +20,7 @@ class Distribution extends Model
     public function getBalancesAttribute($value)
     {
         $balances = json_decode($value);
+
         return $balances;
     }
 

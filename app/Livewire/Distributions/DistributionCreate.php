@@ -2,9 +2,8 @@
 
 namespace App\Livewire\Distributions;
 
-use App\Models\Distribution;
-
 use App\Livewire\Forms\DistributionForm;
+use App\Models\Distribution;
 use Livewire\Component;
 
 class DistributionCreate extends Component
@@ -33,9 +32,9 @@ class DistributionCreate extends Component
 
     public function updated($field, $value)
     {
-        if($field == 'form.user_id'){
+        if ($field == 'form.user_id') {
             $user_first_name = $this->form->users->where('id', $value)->first()->first_name;
-            $this->form->name = $user_first_name . ' - Home';
+            $this->form->name = $user_first_name.' - Home';
         }
 
         // $this->validateOnly($field);
@@ -53,7 +52,7 @@ class DistributionCreate extends Component
         $this->dispatch('notify',
             type: 'success',
             content: 'Distribution Created',
-            route: 'distributions/' . $distribution->id
+            route: 'distributions/'.$distribution->id
         );
 
         $this->form->reset();

@@ -520,12 +520,12 @@ class ExpenseForm extends Form
         $ocr_path = 'files/_temp_ocr/'.$ocr_filename;
         $this->receipt_file->storeAs('_temp_ocr', $ocr_filename, 'files');
 
-        $document_model = app('App\Http\Controllers\ReceiptController')->azure_document_model($doc_type, $ocr_path);
+        $document_model = app(\App\Http\Controllers\ReceiptController::class)->azure_document_model($doc_type, $ocr_path);
 
         //send to ReceiptController@azure_receipts with $location and $document_model
-        $ocr_receipt_extracted = app('App\Http\Controllers\ReceiptController')->azure_receipts($ocr_path, $doc_type, $document_model);
+        $ocr_receipt_extracted = app(\App\Http\Controllers\ReceiptController::class)->azure_receipts($ocr_path, $doc_type, $document_model);
         //pass receipt info to ocr_extract method
-        $ocr_receipt_data = app('App\Http\Controllers\ReceiptController')->ocr_extract($ocr_receipt_extracted, $expense_amount);
+        $ocr_receipt_data = app(\App\Http\Controllers\ReceiptController::class)->ocr_extract($ocr_receipt_extracted, $expense_amount);
 
         if (is_null($ocr_receipt_data['fields']['transaction_date'])) {
             //send to ReceiptController@azure_receipts with $location and $document_model
@@ -535,14 +535,14 @@ class ExpenseForm extends Form
                 $document_model = 'prebuilt-invoice';
             }
 
-            $ocr_receipt_extracted = app('App\Http\Controllers\ReceiptController')->azure_receipts($ocr_path, $doc_type, $document_model);
+            $ocr_receipt_extracted = app(\App\Http\Controllers\ReceiptController::class)->azure_receipts($ocr_path, $doc_type, $document_model);
             //pass receipt info to ocr_extract method
-            $ocr_receipt_data = app('App\Http\Controllers\ReceiptController')->ocr_extract($ocr_receipt_extracted, $expense_amount);
+            $ocr_receipt_data = app(\App\Http\Controllers\ReceiptController::class)->ocr_extract($ocr_receipt_extracted, $expense_amount);
         }
 
         //ATTACHMENT
         //send to ReceiptController@add_attachments_to_expense
-        app('App\Http\Controllers\ReceiptController')->add_attachments_to_expense($expense_id, null, $ocr_receipt_data, $ocr_filename);
+        app(\App\Http\Controllers\ReceiptController::class)->add_attachments_to_expense($expense_id, null, $ocr_receipt_data, $ocr_filename);
 
         $this->receipt_file = null;
     }

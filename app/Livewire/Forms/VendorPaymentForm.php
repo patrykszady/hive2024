@@ -131,7 +131,7 @@ class VendorPaymentForm extends Form
         //if $this->vendor->id is registered
         //create payment for each check (/ payments / expenses / paid_by employee)?
         if ($this->component->vendor->registration['registered']) {
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->create_payment_from_check(
                     $check,
                     $check->expenses,

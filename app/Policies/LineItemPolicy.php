@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\LineItem;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class LineItemPolicy
 {
@@ -13,9 +12,9 @@ class LineItemPolicy
      */
     public function viewAny(User $user): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -25,9 +24,9 @@ class LineItemPolicy
      */
     public function view(User $user, LineItem $lineItem): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -37,9 +36,9 @@ class LineItemPolicy
      */
     public function create(User $user): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

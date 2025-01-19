@@ -5,12 +5,10 @@ namespace App\Livewire\Sheets;
 use App\Models\Expense;
 use App\Models\Payment;
 use App\Models\Timesheet;
-
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-
-use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Component;
 
 #[Lazy]
 class SheetMonthly extends Component
@@ -25,15 +23,14 @@ class SheetMonthly extends Component
         // Create a period between the start and end dates
         $period = CarbonPeriod::create($start_date, '1 month', $end_date);
 
-        foreach($period as $month){
+        foreach ($period as $month) {
             $this->months[$month->format('M y')] = [];
         }
 
         $this->months = array_reverse($this->months);
 
         $monthly_payments =
-            Payment::
-                whereBetween('date', [$start_date, $end_date])
+            Payment::whereBetween('date', [$start_date, $end_date])
                 // ->with('project')
                 ->whereHas('project', function ($query) {
                     // $query->status('VIEW ONLY');
@@ -58,13 +55,12 @@ class SheetMonthly extends Component
                 })
                 ->toBase();
 
-        foreach($monthly_payments as $month => $payments){
+        foreach ($monthly_payments as $month => $payments) {
             $this->months[$month]['monthly_payments'] = $payments;
         }
 
         $monthly_expenses =
-            Expense::
-                whereBetween('date', [$start_date, $end_date])
+            Expense::whereBetween('date', [$start_date, $end_date])
                 ->orderBy('date', 'DESC')
                 ->get()
                 ->groupBy(function ($expense) {
@@ -72,15 +68,14 @@ class SheetMonthly extends Component
                 })
                 ->toBase();
 
-        foreach($monthly_expenses as $month => $expenses){
+        foreach ($monthly_expenses as $month => $expenses) {
             $this->months[$month]['monthly_expenses'] = $expenses;
         }
 
         $monthly_timesheets =
-            Timesheet::
-                whereHas('hours', function ($query) use($start_date, $end_date) {
-                    return $query->whereBetween('date', [$start_date, $end_date]);
-                })
+            Timesheet::whereHas('hours', function ($query) use ($start_date, $end_date) {
+                return $query->whereBetween('date', [$start_date, $end_date]);
+            })
                 ->orderBy('date', 'DESC')
                 ->get()
                 ->groupBy(function ($timesheet) {
@@ -88,17 +83,16 @@ class SheetMonthly extends Component
                 })
                 ->toBase();
 
-        foreach($monthly_timesheets as $month => $timesheets){
+        foreach ($monthly_timesheets as $month => $timesheets) {
             $this->months[$month]['monthly_timesheets'] = $timesheets;
         }
 
-        foreach($this->months as $month => $this_month){
+        foreach ($this->months as $month => $this_month) {
             $this->months[$month]['monthly_total_expenses'] = (isset($this_month['monthly_expenses']) ? $this_month['monthly_expenses']->sum('amount') : '0.00') + (isset($this_month['monthly_timesheets']) ? $this_month['monthly_timesheets']->sum('amount') : '0.00');
         }
 
         $last_year_monthly_payments =
-            Payment::
-                whereBetween('date', [$start_date->subYear(), $end_date->subYear()])
+            Payment::whereBetween('date', [$start_date->subYear(), $end_date->subYear()])
                 ->whereHas('project', function ($query) {
                     $query->whereHas('last_status', function ($query) {
                         $query->where('title', '!=', 'VIEW ONLY');
@@ -111,7 +105,7 @@ class SheetMonthly extends Component
                 })
                 ->toBase();
 
-        foreach($last_year_monthly_payments as $month => $payments){
+        foreach ($last_year_monthly_payments as $month => $payments) {
             $this->months[$month]['last_year_monthly_payments'] = $payments;
         }
     }

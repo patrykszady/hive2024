@@ -2,29 +2,29 @@
 
 namespace App\Livewire\VendorDocs;
 
-use Livewire\Component;
-
 use App\Models\Check;
-use App\Models\Vendor;
 use App\Models\Transaction;
-
-use Livewire\Attributes\Title;
-
+use App\Models\Vendor;
 use Carbon\Carbon;
 use Ilovepdf\Ilovepdf;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class AuditShow extends Component
 {
-    public $bank_account_ids = NULL;
-    public $end_date = NULL;
-    public $audit_type = NULL;
+    public $bank_account_ids = null;
 
-    public $vendors_grouped_checks = NULL;
-    public $transactions_no_check = NULL;
+    public $end_date = null;
+
+    public $audit_type = null;
+
+    public $vendors_grouped_checks = null;
+
+    public $transactions_no_check = null;
 
     public $vendor_docs = [];
 
-    public $view = NULL;
+    public $view = null;
 
     protected $queryString = [
         'end_date' => ['except' => ''],
@@ -60,16 +60,16 @@ class AuditShow extends Component
                 ->toBase();
 
         $this->vendor_docs = collect();
-        foreach($this->vendors_grouped_checks as $vendor_id => $vendor_checks){
+        foreach ($this->vendors_grouped_checks as $vendor_id => $vendor_checks) {
             $vendor = Vendor::findOrFail($vendor_id);
             // $vendor_checks->vendor = $vendor;
             $vendor_docs = $vendor->vendor_docs()->where('type', $this->audit_type)->get();
 
-            foreach($vendor_docs as $vendor_doc){
+            foreach ($vendor_docs as $vendor_doc) {
                 $doc_checks = $vendor_checks->whereBetween('date', [$vendor_doc->effective_date, $vendor_doc->expiration_date]);
-                foreach($doc_checks as $vendor_check){
-                    $vendor_check->covered = TRUE;
-                    $this->vendor_docs->push(storage_path('files/vendor_docs/' . $vendor_doc->doc_filename));
+                foreach ($doc_checks as $vendor_check) {
+                    $vendor_check->covered = true;
+                    $this->vendor_docs->push(storage_path('files/vendor_docs/'.$vendor_doc->doc_filename));
                 }
             }
         }
@@ -82,7 +82,7 @@ class AuditShow extends Component
     public function download_documents()
     {
         // app('App\Http\Controllers\VendorDocsController')->audit_docs_pdf($this->vendor_docs);
-        $filename = 'audit-' . auth()->user()->vendor->id . '-' . date('Y-m-d-h-m-s');
+        $filename = 'audit-'.auth()->user()->vendor->id.'-'.date('Y-m-d-h-m-s');
 
         //10-15-2023 Create cover page
         ///////cover page here/// use audit view? csv? table?
@@ -92,8 +92,8 @@ class AuditShow extends Component
         $myTaskMerge = $ilovepdf->newTask('merge');
 
         // Add files to task for upload
-        foreach($this->vendor_docs as $key => $file){
-            ${'merged_' . $key} = $myTaskMerge->addFile($file);
+        foreach ($this->vendor_docs as $key => $file) {
+            ${'merged_'.$key} = $myTaskMerge->addFile($file);
         }
 
         // dd($myTaskMerge);
@@ -108,7 +108,7 @@ class AuditShow extends Component
         $myTaskMerge->download(storage_path('files/vendor_docs/'));
 
         // //stream/download
-        $path = storage_path('files/vendor_docs/' . $filename . '.pdf');
+        $path = storage_path('files/vendor_docs/'.$filename.'.pdf');
         // $response = Response::make(file_get_contents($path), 200, [
         //     'Content-Type' => 'application/pdf'
         // ]);

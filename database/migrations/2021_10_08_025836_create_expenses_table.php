@@ -4,14 +4,12 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateExpensesTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
@@ -27,7 +25,7 @@ class CreateExpensesTable extends Migration
             $table->integer('parent_expense_id')->nullable();
             $table->integer('belongs_to_vendor_id');
             $table->integer('created_by_user_id');
-            $table->string('note')->nullable();            
+            $table->string('note')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -35,11 +33,9 @@ class CreateExpensesTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('expenses');
     }
-}
+};

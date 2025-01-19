@@ -2,24 +2,25 @@
 
 namespace App\Livewire\Entry;
 
-use App\Models\Vendor;
-use App\Models\Project;
-use App\Models\Distribution;
-use App\Models\Client;
-use App\Models\ProjectStatus;
-use App\Models\Check;
-use App\Models\Payment;
 use App\Models\Bid;
+use App\Models\Check;
+use App\Models\Client;
+use App\Models\Distribution;
+use App\Models\Project;
 use App\Models\Scopes\VendorScope;
+use App\Models\Vendor;
 use Livewire\Component;
 
 class VendorRegistration extends Component
 {
     public Vendor $vendor;
+
     public $user;
 
     public $vendor_users;
+
     public $vendor_add_type;
+
     public $registration;
 
     protected $listeners = ['refreshComponent' => '$refresh', 'confirmProcessStep'];
@@ -32,56 +33,58 @@ class VendorRegistration extends Component
         $this->registration = $this->user->vendor->registration;
 
         //06-21-2024 gate or scope? This shouldnt be here...
-        if(is_null($this->user->vendor)){
+        if (is_null($this->user->vendor)) {
             return redirect(route('vendor_selection'));
         }
 
-        if($this->vendor->id != $this->user->vendor->id OR $this->registration['registered']){
+        if ($this->vendor->id != $this->user->vendor->id or $this->registration['registered']) {
             return redirect(route('vendor_selection'));
         }
 
-        if(in_array($this->vendor->business_type, ['Sub', 'DBA'])){
-            if($this->user->vendor->distributions->isEmpty()){
+        if (in_array($this->vendor->business_type, ['Sub', 'DBA'])) {
+            if ($this->user->vendor->distributions->isEmpty()) {
                 //create OFFICE and admin user distributions
                 Distribution::create([
                     'vendor_id' => $this->user->vendor->id,
                     'name' => 'OFFICE',
-                    'user_id' => 0
+                    'user_id' => 0,
                 ]);
 
                 Distribution::create([
                     'vendor_id' => $this->user->vendor->id,
-                    'name' => $this->user->first_name . ' - Home',
-                    'user_id' => $this->user->id
+                    'name' => $this->user->first_name.' - Home',
+                    'user_id' => $this->user->id,
                 ]);
             }
 
-            if($this->user->vendor->company_emails()->exists() AND $this->registration['emails_registered'] == FALSE){
+            if ($this->user->vendor->company_emails()->exists() and $this->registration['emails_registered'] == false) {
                 $this->confirmProcess('emails_registered');
             }
 
-            if($this->user->vendor->banks()->exists() AND $this->registration['banks_registered'] == FALSE){
+            if ($this->user->vendor->banks()->exists() and $this->registration['banks_registered'] == false) {
                 $this->confirmProcess('banks_registered');
             }
-        }elseif($this->vendor->business_type == '1099'){
+        } elseif ($this->vendor->business_type == '1099') {
             $this->confirmProcess('team_members');
             $this->confirmProcess('emails_registered');
             $this->confirmProcess('banks_registered');
         }
     }
 
-    public function confirmProcess($process_step){
+    public function confirmProcess($process_step)
+    {
         $this->registration[$process_step] = true;
         $this->user->vendor->registration = json_encode($this->registration);
         $this->user->vendor->save();
     }
 
-    public function confirmProcessStep($process_step){
+    public function confirmProcessStep($process_step)
+    {
         $this->confirmProcess($process_step);
 
-        if($process_step === 'vendor_info'){
+        if ($process_step === 'vendor_info') {
             $this->dispatch('refresh')->to('vendors.vendor-details');
-        }elseif($process_step === 'team_members'){
+        } elseif ($process_step === 'team_members') {
             $this->dispatch('refresh')->to('users.users-index');
         }
     }
@@ -125,14 +128,14 @@ class VendorRegistration extends Component
         //group $projects_query by 'belongs_to_vendor_id',
         $belongs_to_vendors_ids = array_keys($projects->groupBy('belongs_to_vendor_id')->toArray());
 
-        foreach($belongs_to_vendors_ids as $belongs_to_vendor_id){
+        foreach ($belongs_to_vendors_ids as $belongs_to_vendor_id) {
             //find vendor_id on clients table
             $client = Client::withoutGlobalScopes()->where('vendor_id', $belongs_to_vendor_id)->first();
 
             //if vendor doesn't have a client
             //When created we need to create a Client associated with this vendor_id
             //5-25-2025 incorporate VendorObserver | similar code
-            if(is_null($client)){
+            if (is_null($client)) {
                 //create client from $this->vendor
                 $adding_vendor = Vendor::withoutGlobalScope(VendorScope::class)->findOrFail($belongs_to_vendor_id);
                 // dd($adding_vendor);
@@ -154,17 +157,17 @@ class VendorRegistration extends Component
             $client->vendors()->attach($vendor->id);
         }
 
-        foreach($projects as $project){
-            if($project->belongs_to_vendor_id != $vendor->id){
+        foreach ($projects as $project) {
+            if ($project->belongs_to_vendor_id != $vendor->id) {
                 $vendor_id = $vendor->id;
                 $client_id = $client->id;
-            }else{
+            } else {
                 $vendor_id = $project->belongs_to_vendor_id;
                 $client_id = $project->client_id;
             }
 
             $project->vendors()->attach($vendor_id, ['client_id' => $client_id]);
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->add_project_status(
                     $project->id,
                     $vendor_id,
@@ -175,16 +178,16 @@ class VendorRegistration extends Component
         //PAYMENTS
         $checks = Check::withoutGlobalScopes()
             ->where('vendor_id', $vendor->id)
-            ->with('expenses', function ($query) use ($vendor) {
+            ->with('expenses', function ($query) {
                 $query->withoutGlobalScopes();
             })
-            ->with('timesheets', function ($query) use ($vendor) {
+            ->with('timesheets', function ($query) {
                 $query->withoutGlobalScopes();
             })->get();
 
-        foreach($checks as $check){
+        foreach ($checks as $check) {
             //check->expenses
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->create_payment_from_check(
                     $check,
                     $check->expenses,
@@ -192,7 +195,7 @@ class VendorRegistration extends Component
                 );
 
             //check->timesheets
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->create_payment_from_check(
                     $check,
                     $check->timesheets,
@@ -203,15 +206,15 @@ class VendorRegistration extends Component
         //BIDS
         $projects = Project::all();
 
-        foreach($projects as $project){
+        foreach ($projects as $project) {
             //if payments MORE than bids
-            if($project->finances['payments'] > $project->finances['total_bid']){
+            if ($project->finances['payments'] > $project->finances['total_bid']) {
                 $amount_difference = $project->finances['payments'] - $project->finances['total_bid'];
 
                 //if project has NO Bids... bid type = 1, if more: bid type = 2
-                if(!$project->bids()->exists()){
+                if (! $project->bids()->exists()) {
                     $bid_type = 1;
-                }else{
+                } else {
                     $bid_type = 2;
                 }
 
@@ -225,7 +228,6 @@ class VendorRegistration extends Component
             }
         }
 
-        return;
     }
 
     public function store()
@@ -233,7 +235,7 @@ class VendorRegistration extends Component
         $this->addVendorHiveInfo();
 
         //register vendor with user
-        $this->user->vendor->registration ='{"registered": true}';
+        $this->user->vendor->registration = '{"registered": true}';
         $this->user->vendor->save();
 
         return redirect(route('dashboard'));

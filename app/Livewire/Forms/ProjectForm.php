@@ -3,11 +3,9 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Project;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Rule;
 use Livewire\Form;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ProjectForm extends Form
 {
@@ -16,28 +14,28 @@ class ProjectForm extends Form
     public ?Project $project;
 
     #[Rule('required', as: 'Client')]
-    public $client_id = NULL;
+    public $client_id = null;
 
     #[Rule('required|min:3', as: 'Project Name')]
-    public $project_name = NULL;
+    public $project_name = null;
 
     #[Rule('required|min:3')]
-    public $address = NULL;
+    public $address = null;
 
     #[Rule('nullable|min:2')]
-    public $address_2 = NULL;
+    public $address_2 = null;
 
     #[Rule('required|min:3')]
-    public $city = NULL;
+    public $city = null;
 
     #[Rule('required|min:2|max:2')]
-    public $state = NULL;
+    public $state = null;
 
     #[Rule('required|digits:5', as: 'zip code')]
-    public $zip_code = NULL;
+    public $zip_code = null;
 
     #[Rule('required', as: 'Address')]
-    public $project_existing_address = NULL;
+    public $project_existing_address = null;
 
     public function setProject(Project $project)
     {
@@ -73,7 +71,7 @@ class ProjectForm extends Form
 
     public function store()
     {
-        if($this->project_existing_address == 'CLIENT_PROJECT'){
+        if ($this->project_existing_address == 'CLIENT_PROJECT') {
             $client_address = $this->component->client_addresses->first();
             $this->address = $client_address['address'];
             $this->address_2 = $client_address['address_2'];

@@ -4,20 +4,21 @@ namespace App\Livewire\ProjectStatus;
 
 use App\Models\Project;
 use App\Models\ProjectStatus;
-
 use Flux;
-
-use Livewire\Component;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class StatusCreate extends Component
 {
     // use AuthorizesRequests;
 
     public Project $project;
+
     public $statuses = [];
-    public $project_status = NULL;
-    public $project_status_date = NULL;
+
+    public $project_status = null;
+
+    public $project_status_date = null;
 
     public function rules()
     {
@@ -41,14 +42,14 @@ class StatusCreate extends Component
                 'project_id' => $this->project->id,
                 'belongs_to_vendor_id' => auth()->user()->vendor->id,
                 'title' => $this->project_status,
-                'start_date' => $this->project_status_date
+                'start_date' => $this->project_status_date,
             ]);
 
-        if($this->project_status === 'Cancelled'){
+        if ($this->project_status === 'Cancelled') {
             $this->project->estimates()->delete();
         }
 
-        $this->project_status = NULL;
+        $this->project_status = null;
         $this->mount($this->project);
         $this->render();
 

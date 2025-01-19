@@ -4,17 +4,14 @@ namespace App\Livewire\Timesheets;
 
 use App\Models\Expense;
 use App\Models\Timesheet;
-
-use App\Livewire\Timesheets\TimesheetPaymentCreate;
-
-use Livewire\Component;
-use Livewire\WithPagination;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Title;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class TimesheetPaymentIndex extends Component
 {
-    use WithPagination, AuthorizesRequests;
+    use AuthorizesRequests, WithPagination;
 
     #[Title('Timesheet Payments')]
     public function render()
@@ -23,15 +20,14 @@ class TimesheetPaymentIndex extends Component
 
         $user = auth()->user();
         $vendor_users = $user->vendor->users()->where('is_employed', 1)->get();
-        foreach($vendor_users as $index => $user){
+        foreach ($vendor_users as $index => $user) {
             // $test_user_amount = ;
             // $this->dispatch('refresh_test')->to('timesheets.timesheet-payment-create');
             // dd();
             // dd($user);
 
             $weekly_timesheets =
-            Timesheet::
-                where('user_id', $user->id)
+            Timesheet::where('user_id', $user->id)
                 ->whereNull('check_id')
                 ->whereNull('paid_by')
                 ->whereNull('deleted_at')
@@ -41,15 +37,14 @@ class TimesheetPaymentIndex extends Component
                     $item->checkbox = true;
                 })
                 ->keyBy('id');
-                // ->groupBy(function($data) {
-                //     // ->startOfWeek()->toFormattedDateString()
-                //     return $data->date->format('Y-m-d');
-                // }, true)
-                // ->toBase();
+            // ->groupBy(function($data) {
+            //     // ->startOfWeek()->toFormattedDateString()
+            //     return $data->date->format('Y-m-d');
+            // }, true)
+            // ->toBase();
 
             $employee_weekly_timesheets =
-                    Timesheet::
-                        with('user')
+                    Timesheet::with('user')
                         ->where('paid_by', $user->id)
                         ->whereNull('check_id')
                         ->whereNull('deleted_at')
@@ -61,8 +56,7 @@ class TimesheetPaymentIndex extends Component
                         ->keyBy('id');
 
             $user_paid_expenses =
-                Expense::
-                    where('paid_by', $user->id)
+                Expense::where('paid_by', $user->id)
                     ->where(function ($query) {
                         $query->whereNull('reimbursment')->orWhere('reimbursment', 'Client');
                     })
@@ -75,8 +69,7 @@ class TimesheetPaymentIndex extends Component
                     ->keyBy('id');
 
             $user_reimbursement_expenses =
-                Expense::
-                    where('reimbursment', $user->id)
+                Expense::where('reimbursment', $user->id)
                     ->whereNull('paid_by')
                     ->whereNull('check_id')
                     ->orderBy('date', 'DESC')
@@ -88,8 +81,7 @@ class TimesheetPaymentIndex extends Component
             // dd($this->user_reimbursement_expenses);
 
             $user_paid_by_reimbursements =
-                Expense::
-                    where('paid_by', $user->id)
+                Expense::where('paid_by', $user->id)
                     ->whereNotIn('reimbursment', ['', 'Client'])
                     ->whereNull('check_id')
                     ->orderBy('date', 'DESC')
@@ -108,42 +100,42 @@ class TimesheetPaymentIndex extends Component
             // // dd($this->user_paid_by_reimbursements);
             // // dd($this->user_paid_by_reimbursements->first()->reimbursment);
 
-            if($weekly_timesheets->isEmpty()){
+            if ($weekly_timesheets->isEmpty()) {
                 $weekly_timesheets = collect();
             }
 
-            if($employee_weekly_timesheets->isEmpty()){
+            if ($employee_weekly_timesheets->isEmpty()) {
                 $employee_weekly_timesheets = collect();
             }
 
-            if($user_paid_expenses->isEmpty()){
+            if ($user_paid_expenses->isEmpty()) {
                 $user_paid_expenses = collect();
             }
 
-            if($user_reimbursement_expenses->isEmpty()){
+            if ($user_reimbursement_expenses->isEmpty()) {
                 $user_reimbursement_expenses = collect();
             }
 
-            if($user_paid_by_reimbursements->isEmpty()){
+            if ($user_paid_by_reimbursements->isEmpty()) {
                 $user_paid_by_reimbursements = collect();
             }
             //SAME on getWeeklyTimesheetsTotalProperty on TimesheetPaymentCreate
             $total = 0;
-            $confirm_disable = array();
+            $confirm_disable = [];
             //weekly_timesheets
             $total += $weekly_timesheets->where('checkbox', true)->sum('amount');
 
             //employee_weekly_timesheets
             $employee_weekly_timesheets_total = $employee_weekly_timesheets->where('checkbox', true)->sum('amount');
-            if($employee_weekly_timesheets_total != '0.00'){
-                $confirm_disable[] = TRUE;
+            if ($employee_weekly_timesheets_total != '0.00') {
+                $confirm_disable[] = true;
             }
             $total += $employee_weekly_timesheets_total;
 
             //user_paid_expenses
             $user_paid_expenses_total = $user_paid_expenses->where('checkbox', true)->sum('amount');
-            if($user_paid_expenses_total != '0.00'){
-                $confirm_disable[] = TRUE;
+            if ($user_paid_expenses_total != '0.00') {
+                $confirm_disable[] = true;
             }
             $total += $user_paid_expenses_total;
 
@@ -152,8 +144,8 @@ class TimesheetPaymentIndex extends Component
 
             // //user_paid_by_reimbursements
             $user_paid_by_reimbursements = $user_paid_by_reimbursements->where('checkbox', true)->sum('amount');
-            if($user_paid_by_reimbursements != '0.00'){
-                $confirm_disable[] = TRUE;
+            if ($user_paid_by_reimbursements != '0.00') {
+                $confirm_disable[] = true;
             }
             // dd($user_paid_by_reimbursements);
             $total -= $user_paid_by_reimbursements;
@@ -161,7 +153,6 @@ class TimesheetPaymentIndex extends Component
             $vendor_users[$index]->total = $total;
             // dd($total);
         }
-
 
         // $user_timesheets =
         //     Timesheet::

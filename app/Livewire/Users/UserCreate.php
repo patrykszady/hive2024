@@ -2,26 +2,18 @@
 
 namespace App\Livewire\Users;
 
+use App\Livewire\Clients\ClientCreate;
+use App\Livewire\Clients\ClientsShow;
+use App\Livewire\Dashboard\DashboardShow;
+use App\Livewire\Forms\UserForm;
+use App\Livewire\Vendors\VendorCreate;
+use App\Models\Client;
+// use App\Livewire\Users\TeamMembers;
 use App\Models\User;
 use App\Models\Vendor;
-use App\Models\Client;
-
-use App\Livewire\Forms\UserForm;
-use App\Livewire\Clients\ClientCreate;
-use App\Livewire\Users\UsersIndex;
-use App\Livewire\Clients\ClientsShow;
-// use App\Livewire\Users\TeamMembers;
-use App\Livewire\Vendors\VendorCreate;
-
 use Flux;
-
-use Livewire\Component;
-use App\Livewire\Dashboard\DashboardShow;
-
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class UserCreate extends Component
 {
@@ -35,14 +27,18 @@ class UserCreate extends Component
         'form_submit' => 'save',
     ];
 
-    public $model = ['type' => NULL, 'id' => NULL];
-    public $user_cell = FALSE;
-    public $user_form = FALSE;
+    public $model = ['type' => null, 'id' => null];
+
+    public $user_cell = false;
+
+    public $user_form = false;
 
     // public $business_name = NULL;
-    public $via_vendor = NULL;
+    public $via_vendor = null;
+
     public $via_vendors = [];
-    public $via_client = NULL;
+
+    public $via_client = null;
     // public $client_user_form = NULL;
 
     // public $user_vendor_id = NULL;
@@ -68,13 +64,13 @@ class UserCreate extends Component
 
     public function updated($field, $value)
     {
-        if($field == 'user_cell'){
-            $this->user_form = FALSE;
+        if ($field == 'user_cell') {
+            $this->user_form = false;
         }
 
-        if($field == 'form.role'){
-            $this->form->via_vendor = NULL;
-            $this->form->hourly_rate = NULL;
+        if ($field == 'form.role') {
+            $this->form->via_vendor = null;
+            $this->form->hourly_rate = null;
         }
 
         $this->validateOnly($field);
@@ -99,46 +95,46 @@ class UserCreate extends Component
     public function user_cell_find()
     {
         // $this->form->reset();
-        $this->via_vendor = FALSE;
+        $this->via_vendor = false;
         $this->validateOnly('user_cell');
 
         $user = User::where('cell_phone', $this->user_cell)->first();
 
-        if($user){
+        if ($user) {
             $this->form->setUser($user);
 
             //vendor team member error
-            if($this->model['type'] === 'vendor'){
+            if ($this->model['type'] === 'vendor') {
                 $this->via_vendors = $user->vendors()->where('business_type', '!=', 'Sub')->get();
 
-                if($this->model['id'] == 'NEW'){
+                if ($this->model['id'] == 'NEW') {
 
-                }else{
+                } else {
                     $vendor = Vendor::findOrFail($this->model['id']);
 
-                    if($vendor->users()->where('user_id', $user->id)->employed()->exists()){
-                        return $this->addError('user_exists_on_model', $user->first_name . ' already belongs to Vendor.');
+                    if ($vendor->users()->where('user_id', $user->id)->employed()->exists()) {
+                        return $this->addError('user_exists_on_model', $user->first_name.' already belongs to Vendor.');
                     }
                 }
 
-            //client user error
-            }elseif($this->model['type'] === 'client'){
-                if($this->model['id'] == 'NEW'){
+                //client user error
+            } elseif ($this->model['type'] === 'client') {
+                if ($this->model['id'] == 'NEW') {
 
-                }else{
+                } else {
                     $client = Client::findOrFail($this->model['id']);
 
-                    if($client->users()->where('user_id', $user->id)->exists()){
-                        return $this->addError('user_exists_on_model', $user->first_name . ' already belongs to Client.');
+                    if ($client->users()->where('user_id', $user->id)->exists()) {
+                        return $this->addError('user_exists_on_model', $user->first_name.' already belongs to Client.');
                     }
                 }
-            }else{
+            } else {
                 abort(404);
             }
         }
 
         // $this->resetErrorBag();
-        $this->user_form = TRUE;
+        $this->user_form = true;
 
         // if($this->model['type'] == 'vendor'){
         //     if($this->model['id'] == 'NEW'){
@@ -190,30 +186,30 @@ class UserCreate extends Component
     // }
 
     //new Vendor or Client member
-    public function newMember($model, $model_id = NULL)
+    public function newMember($model, $model_id = null)
     {
-        $this->user_cell = FALSE;
-        $this->user_form = FALSE;
+        $this->user_cell = false;
+        $this->user_form = false;
 
         //creating new Vendor or Client or adding Team Member/Client User to existing Vendor or Client
         $this->model['type'] = $model;
         $this->model['id'] = $model_id;
 
         // 5-17-2023 ... this creates duplicates in the array of $this->model
-        if($model == 'client'){
-            if($this->model['id'] == 'NEW'){
+        if ($model == 'client') {
+            if ($this->model['id'] == 'NEW') {
                 $this->view_text['card_title'] = 'Create Client';
                 $this->view_text['button_text'] = 'Continue to Client';
-            }else{
+            } else {
                 $this->view_text['card_title'] = 'Add User to Client';
                 $this->view_text['button_text'] = 'Add User';
             }
-        }elseif($model == 'vendor'){
+        } elseif ($model == 'vendor') {
             //if creating User for New Vendor dont show user_role or user_hourly
-            if($this->model['id'] == 'NEW'){
+            if ($this->model['id'] == 'NEW') {
                 $this->view_text['card_title'] = 'Add Owner to Vendor';
                 $this->view_text['button_text'] = 'Add Owner';
-            }else{
+            } else {
                 $this->view_text['card_title'] = 'Add User to Vendor';
                 $this->view_text['button_text'] = 'Add User';
             }
@@ -229,7 +225,7 @@ class UserCreate extends Component
             ->updateExistingPivot($user->id, [
                 'end_date' => today()->format('Y-m-d'),
                 'is_employed' => 0,
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
         // Assuming you have User and Role models with a many-to-many relationship
@@ -239,7 +235,7 @@ class UserCreate extends Component
         //6-1-2024 set blurry background...
         $this->dispatch('notify',
             type: 'success',
-            content: $user->first_name . ' Removed.'
+            content: $user->first_name.' Removed.'
         );
     }
 
@@ -293,29 +289,29 @@ class UserCreate extends Component
 
     public function save()
     {
-        if(isset($this->form->user)){
+        if (isset($this->form->user)) {
             $user = $this->form->user;
-        }else{
+        } else {
             //create New User
             $user = $this->form->store();
         }
 
         //Vendor User
-        if($this->model['type'] == 'vendor'){
+        if ($this->model['type'] == 'vendor') {
             // when creating new Vendor
-            if($this->model['id'] == 'NEW'){
+            if ($this->model['id'] == 'NEW') {
                 $user->hourly_rate = $this->form->hourly_rate;
                 $user->role = $this->form->role;
 
                 $this->modal('user_form_modal')->close();
                 $this->dispatch('userVendor', $user->toArray());
-            }else{
+            } else {
                 $user->vendors()->attach(
                     $this->model['id'], [
                         'role_id' => $this->form->role,
                         'hourly_rate' => $this->form->hourly_rate,
                         'start_date' => today()->format('Y-m-d'),
-                        'via_vendor_id' => $this->form->via_vendor ?? NULL
+                        'via_vendor_id' => $this->form->via_vendor ?? null,
                     ]
                 );
 
@@ -333,14 +329,14 @@ class UserCreate extends Component
                     text: '',
                 );
             }
-        //Client User
-        //if existing User .. dispatchTo ClientCreate with user (show existing users the User is part of) and close $this->modal.
-        }elseif($this->model['type'] == 'client'){
+            //Client User
+            //if existing User .. dispatchTo ClientCreate with user (show existing users the User is part of) and close $this->modal.
+        } elseif ($this->model['type'] == 'client') {
             // when creating new Client
-            if($this->model['id'] == 'NEW'){
+            if ($this->model['id'] == 'NEW') {
                 $this->modal('user_form_modal')->close();
                 $this->dispatch('addUser', user: $user->id, client_id: $this->model['id'])->to(ClientCreate::class);
-            }else{
+            } else {
                 //add User to this Client
                 $user->clients()->attach($this->model['id']);
                 $this->client = Client::with('users')->findOrFail($this->model['id']);

@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Client;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UserPolicy
@@ -13,17 +13,17 @@ class UserPolicy
     public function admin_login_as_user(User $user)
     {
         //if user is Patryk Szady
-        if($user->id === 1){
+        if ($user->id === 1) {
             return true;
         }
     }
+
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         //
     }
@@ -31,11 +31,9 @@ class UserPolicy
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, User $model)
+    public function view(User $user, User $model): bool
     {
         //
     }
@@ -43,31 +41,30 @@ class UserPolicy
     /**
      * Determine whether the user can create models.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
         }
     }
 
     public function create_team_member(User $user, $vendor_id)
     {
-        if($user->primary_vendor->pivot->role_id == 1 && in_array($user->vendor->business_type, ['Sub', 'DBA']) && $user->vendor->id == $vendor_id){
+        if ($user->primary_vendor->pivot->role_id == 1 && in_array($user->vendor->business_type, ['Sub', 'DBA']) && $user->vendor->id == $vendor_id) {
             return true;
         }
     }
 
     public function create_client_member(User $user, Client $client)
     {
-        if($client->vendor()->exists()){
+        if ($client->vendor()->exists()) {
             return false;
-        }else{
-            if($user->primary_vendor->pivot->role_id == 1 && in_array($user->vendor->business_type, ['Sub', 'DBA'])){
+        } else {
+            if ($user->primary_vendor->pivot->role_id == 1 && in_array($user->vendor->business_type, ['Sub', 'DBA'])) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
@@ -76,18 +73,16 @@ class UserPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, User $model)
+    public function update(User $user, User $model): bool
     {
-        if($user->id == $model->id){
+        if ($user->id == $model->id) {
             return true;
-        }else{
-            if($user->primary_vendor->pivot->role_id == 1){
+        } else {
+            if ($user->primary_vendor->pivot->role_id == 1) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
@@ -96,11 +91,9 @@ class UserPolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, User $model)
+    public function delete(User $user, User $model): bool
     {
         //
     }
@@ -108,11 +101,9 @@ class UserPolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, User $model)
+    public function restore(User $user, User $model): bool
     {
         //
     }
@@ -120,11 +111,9 @@ class UserPolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, User $model)
+    public function forceDelete(User $user, User $model): bool
     {
         //
     }

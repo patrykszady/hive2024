@@ -2,19 +2,18 @@
 
 namespace App\Livewire\VendorDocs;
 
-use Livewire\Component;
-
 use App\Models\Bank;
 use App\Models\Check;
 use App\Models\Transaction;
-
-use Carbon\Carbon;
+use Livewire\Component;
 
 class AuditIndex extends Component
 {
     public $banks = [];
+
     // public $audit = [];
     public $end_date = '';
+
     public $type = '';
 
     protected function rules()
@@ -39,15 +38,15 @@ class AuditIndex extends Component
 
         $this->banks =
             Bank::whereNotNull('plaid_access_token')
-            ->with(['accounts'])
-            ->whereHas('accounts', function ($query) {
-                return $query->whereIn('type', ['Checking', 'Savings']);
+                ->with(['accounts'])
+                ->whereHas('accounts', function ($query) {
+                    return $query->whereIn('type', ['Checking', 'Savings']);
                 })
-            ->get()
-            ->each(function ($item, $key) {
-                $item->checked = false;
-            })
-            ->keyBy('id');
+                ->get()
+                ->each(function ($item, $key) {
+                    $item->checked = false;
+                })
+                ->keyBy('id');
     }
 
     public function audit_submit()
@@ -85,16 +84,14 @@ class AuditIndex extends Component
         return redirect()->route('vendor_docs.audit', [
             'end_date' => $this->end_date,
             'bank_account_ids' => $bank_account_ids,
-            'audit_type' => $this->type
+            'audit_type' => $this->type,
         ]);
 
         //emitTo AuditShow audit method
 
         // dd($end_date);
 
-
         // return redirect(view('livewire.vendor-docs.audit-show'));
-
 
         // $transactions =
         //     Transaction::

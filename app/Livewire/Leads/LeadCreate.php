@@ -2,30 +2,31 @@
 
 namespace App\Livewire\Leads;
 
-use App\Mail\LeadMessage;
 use App\Livewire\Forms\LeadForm;
+use App\Mail\LeadMessage;
 use App\Models\Lead;
-use App\Models\LeadStatus;
-
-use Illuminate\Support\Facades\Mail;
-
 use Flux;
-
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 
 class LeadCreate extends Component
 {
     public LeadForm $form;
 
-    public $lead = NULL;
-    public $user = NULL;
-    public $reply = NULL;
-    public $full_name = NULL;
+    public $lead = null;
 
-    public $date = NULL;
-    public $lead_status = NULL;
+    public $user = null;
+
+    public $reply = null;
+
+    public $full_name = null;
+
+    public $date = null;
+
+    public $lead_status = null;
 
     protected $listeners = ['editLead', 'addLead'];
+
     public $view_text = [
         'card_title' => 'Create Expense',
         'button_text' => 'Create',
@@ -68,12 +69,12 @@ class LeadCreate extends Component
         $this->lead->email = $this->lead->lead_data->email;
         $this->date = $this->lead->date->format('Y-m-d');
         $this->user = $this->lead->user;
-        $this->lead_status = $this->lead->last_status ? $this->lead->last_status->title : NULL;
+        $this->lead_status = $this->lead->last_status ? $this->lead->last_status->title : null;
 
-        if(!is_null($this->user)){
+        if (! is_null($this->user)) {
             // $this->user->full_name = !is_null($this->user) ? $this->user->full_name : 'Create User';
             $this->full_name = $this->user->full_name;
-        }else{
+        } else {
             $this->full_name = $this->lead->lead_data['name'];
         }
 
@@ -82,7 +83,7 @@ class LeadCreate extends Component
         $lastName = array_pop($nameParts);
         $firstName = implode(' ', $nameParts);
 
-        $this->reply = 'Hi ' . $firstName . ',';
+        $this->reply = 'Hi '.$firstName.',';
 
         $this->view_text = [
             'card_title' => 'Edit Lead',
@@ -107,7 +108,7 @@ class LeadCreate extends Component
             'belongs_to_vendor_id' => $lead->belongs_to_vendor_id,
         ]);
 
-        $this->lead_status = NULL;
+        $this->lead_status = null;
         $this->modal('lead_form_modal')->close();
         $this->dispatch('refreshComponent')->to('leads.leads-index');
 
@@ -125,7 +126,7 @@ class LeadCreate extends Component
     {
         $this->lead->delete();
 
-        $this->lead_status = NULL;
+        $this->lead_status = null;
         $this->modal('lead_form_modal')->close();
         $this->dispatch('refreshComponent')->to('leads.leads-index');
 

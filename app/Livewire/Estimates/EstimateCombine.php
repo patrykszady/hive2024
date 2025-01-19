@@ -3,19 +3,21 @@
 namespace App\Livewire\Estimates;
 
 use App\Models\Client;
-use App\Models\Project;
 use App\Models\Estimate;
-
+use App\Models\Project;
 use Livewire\Component;
 
 class EstimateCombine extends Component
 {
     public Client $client;
-    public $estimate_id = NULL;
-    public $estimate = NULL;
+
+    public $estimate_id = null;
+
+    public $estimate = null;
+
     public $estimates = [];
 
-    public $modal_show = FALSE;
+    public $modal_show = false;
 
     protected $listeners = ['combineModal'];
 
@@ -26,7 +28,8 @@ class EstimateCombine extends Component
         ];
     }
 
-    public function mount(){
+    public function mount()
+    {
         // $client_projects = $this->client->projects->pluck('id')->toArray();
         // $this->estimates = Estimate::whereIn('project_id', $client_projects)->with('project')->get();
         $this->estimates = Estimate::orderBy('created_at', 'DESC')->get();
@@ -37,7 +40,7 @@ class EstimateCombine extends Component
     {
         $this->estimates = $this->estimates->where('id', '!=', $existing_estimate_id);
         $this->estimate = Estimate::findOrFail($existing_estimate_id);
-        $this->modal_show = TRUE;
+        $this->modal_show = true;
     }
 
     public function save()
@@ -46,13 +49,13 @@ class EstimateCombine extends Component
         $new_estimate = Estimate::findOrFail($this->estimate_id);
 
         //get current estimate and duplicate sections and line_items
-        foreach($this->estimate->estimate_sections as $section){
+        foreach ($this->estimate->estimate_sections as $section) {
             $new_section = $section->replicate();
             $new_section->estimate_id = $new_estimate->id;
-            $new_section->bid_id = NULL;
+            $new_section->bid_id = null;
             $new_section->save();
 
-            foreach($this->estimate->estimate_line_items->where('section_id', $section->id) as $line_item){
+            foreach ($this->estimate->estimate_line_items->where('section_id', $section->id) as $line_item) {
                 $line_item->unsetEventDispatcher();
                 $new_line_item = $line_item->replicate();
                 $new_line_item->estimate_id = $new_estimate->id;
@@ -64,10 +67,10 @@ class EstimateCombine extends Component
         $this->dispatch('notify',
             type: 'success',
             content: 'Estimate Duplicated',
-            route: 'estimates/' . $new_estimate->id
+            route: 'estimates/'.$new_estimate->id
         );
 
-        $this->modal_show = FALSE;
+        $this->modal_show = false;
     }
 
     public function render()

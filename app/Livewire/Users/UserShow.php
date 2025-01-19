@@ -4,29 +4,37 @@ namespace App\Livewire\Users;
 
 use App\Models\Check;
 use App\Models\Expense;
-use App\Models\User;
 use App\Models\Timesheet;
 use App\Models\Transaction;
-
-use Livewire\Component;
-use Livewire\Attributes\Title;
-
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class UserShow extends Component
 {
     use AuthorizesRequests;
 
     public User $user;
+
     public $year = 2023;
+
     public $timesheets_paid = 0;
+
     public $timesheets_paid_by = 0;
+
     public $timesheets_paid_others = 0;
+
     public $expenses_paid = 0;
+
     public $distribution_checks = 0;
+
     public $checks_written = 0;
+
     public $distribution_expenses = 0;
+
     public $user_checks = 0;
+
     public $difference = 0;
     // public $modal_show = FALSE;
 
@@ -43,13 +51,12 @@ class UserShow extends Component
     {
         $this->user->this_vendor = $this->user->vendors->where('id', auth()->user()->vendor->id)->first();
 
-        if(!is_null($this->user->this_vendor)){
-            $user_distribution = $this->user->distributions->first() ? $this->user->distributions->first()->id : NULL;
+        if (! is_null($this->user->this_vendor)) {
+            $user_distribution = $this->user->distributions->first() ? $this->user->distributions->first()->id : null;
             $year = $this->year;
 
             $this->checks_written =
-                Check::
-                    where('user_id', $this->user->id)
+                Check::where('user_id', $this->user->id)
                     ->whereYear('date', $this->year)
                     ->where('belongs_to_vendor_id', $this->user->this_vendor->id)
                     // ->pluck('id');
@@ -58,10 +65,9 @@ class UserShow extends Component
 
             //Member Extra Payments
             // if doesnt have a distribution
-            if(!$user_distribution){
+            if (! $user_distribution) {
                 $this->user_checks =
-                    Check::
-                        where('user_id', $this->user->id)
+                    Check::where('user_id', $this->user->id)
                         ->whereYear('date', $this->year)
                         ->whereDoesntHave('timesheets')
                         ->where('belongs_to_vendor_id', $this->user->this_vendor->id)
@@ -70,82 +76,75 @@ class UserShow extends Component
 
             //where check->date is $this->year
             $this->timesheets_paid =
-                Timesheet::
-                    where('user_id', $this->user->id)
+                Timesheet::where('user_id', $this->user->id)
                     ->where('vendor_id', $this->user->this_vendor->id)
                     ->whereNull('paid_by')
-                    ->whereHas('check', function ($query) use($year) {
+                    ->whereHas('check', function ($query) use ($year) {
                         return $query->whereYear('date', $year);
                     })
                     // ->get();
                     ->sum('amount');
 
             // dd($this->timesheets_paid);
-            if($user_distribution){
+            if ($user_distribution) {
                 $this->distribution_checks =
-                    Expense::
-                        where('distribution_id', $user_distribution)
+                    Expense::where('distribution_id', $user_distribution)
                         // ->whereNotNull('check_id')
                         // ->whereYear('date', $this->year)
-                        ->whereHas('check', function ($query) use($year) {
+                        ->whereHas('check', function ($query) use ($year) {
                             return $query->whereYear('date', $year);
                         })
                         ->sum('amount');
-            }else{
+            } else {
                 $this->distribution_checks = 0.00;
             }
 
             $this->timesheets_paid_others =
-                Timesheet::
-                    whereNot('user_id', $this->user->id)
+                Timesheet::whereNot('user_id', $this->user->id)
                     ->where('paid_by', $this->user->id)
                     ->where('vendor_id', $this->user->this_vendor->id)
                     // ->whereNotNull('check_id')
                     // ->whereYear('date', $this->year)
-                    ->whereHas('check', function ($query) use($year) {
+                    ->whereHas('check', function ($query) use ($year) {
                         return $query->whereYear('date', $year);
                     })
                     ->sum('amount');
 
             $this->expenses_paid =
-                Expense::
-                    where('paid_by', $this->user->id)
+                Expense::where('paid_by', $this->user->id)
                     // ->whereYear('date', $year)
                     // ->whereNotNull('check_id')
-                    ->whereHas('check', function ($query) use($year) {
+                    ->whereHas('check', function ($query) use ($year) {
                         return $query->whereYear('date', $year);
                     })
                     // ->get();
                     ->sum('amount');
             // dd($this->expenses_paid);
-                // when(!is_null($user_distribution), function ($query) use ($user_distribution) {
-                //     $query->where('distribution_id', $user_distribution);
+            // when(!is_null($user_distribution), function ($query) use ($user_distribution) {
+            //     $query->where('distribution_id', $user_distribution);
             // })
 
-
             $this->timesheets_paid_by =
-                Timesheet::
-                    withoutGlobalScopes()
+                Timesheet::withoutGlobalScopes()
                     ->where('user_id', $this->user->id)
                     ->where('vendor_id', $this->user->this_vendor->id)
                     ->whereNotNull('paid_by')
-                    ->whereHas('check', function ($query) use($year) {
+                    ->whereHas('check', function ($query) use ($year) {
                         return $query->withoutGlobalScopes()->whereYear('date', $year);
                     })
                     ->sum('amount');
             //         ->get();
             // dd($this->timesheets_paid_by);
 
-            if($user_distribution){
+            if ($user_distribution) {
                 $this->distribution_expenses =
-                Expense::
-                    where('distribution_id', $user_distribution)
+                Expense::where('distribution_id', $user_distribution)
                     ->whereNull('check_id')
                     ->whereYear('date', $year)
                     // whereHas('transactions') ...transaction_date = $year
                     // ->get();
                     ->sum('amount');
-            }else{
+            } else {
                 $this->distribution_expenses = 0.00;
             }
 

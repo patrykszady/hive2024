@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\Estimate;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class EstimatePolicy
 {
@@ -14,9 +13,9 @@ class EstimatePolicy
      */
     public function viewAny(User $user): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -26,9 +25,9 @@ class EstimatePolicy
      */
     public function view(User $user, Estimate $estimate): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -39,9 +38,9 @@ class EstimatePolicy
     public function create(User $user, Project $project): bool
     {
         //can create if project->last_status is NOT X Y and Z
-        if($user->primary_vendor->pivot->role_id === 1 && !in_array($project->last_status->title, ['Complete', 'Service Call', 'Service Call Complete', 'Cancelled', 'VIEW_ONLY'])){
+        if ($user->primary_vendor->pivot->role_id === 1 && ! in_array($project->last_status->title, ['Complete', 'Service Call', 'Service Call Complete', 'Cancelled', 'VIEW_ONLY'])) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

@@ -17,10 +17,7 @@ class BidObserver
     /**
      * Handle the Bid "updated" event.
      */
-    public function updated(Bid $bid): void
-    {
-
-    }
+    public function updated(Bid $bid): void {}
 
     /**
      * Handle the Bid "deleted" event.

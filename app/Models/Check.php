@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Observers\CheckObserver;
 use App\Scopes\CheckScope;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -36,37 +38,37 @@ class Check extends Model
         static::addGlobalScope(new CheckScope);
     }
 
-    public function bank_account()
+    public function bank_account(): BelongsTo
     {
         return $this->belongsTo(BankAccount::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function checks()
+    public function checks(): HasMany
     {
         return $this->hasMany(Check::class);
     }
 
-    public function timesheets()
+    public function timesheets(): HasMany
     {
         return $this->hasMany(Timesheet::class);
     }
 
-    public function transactions()
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function expenses()
+    public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }

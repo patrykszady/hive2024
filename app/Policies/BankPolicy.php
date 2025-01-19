@@ -15,7 +15,7 @@ class BankPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -27,7 +27,7 @@ class BankPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Bank $bank)
+    public function view(User $user, Bank $bank): bool
     {
         return true;
         if ($user->primary_vendor->pivot->role_id == 1) {
@@ -40,7 +40,7 @@ class BankPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -52,7 +52,7 @@ class BankPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Bank $bank)
+    public function update(User $user, Bank $bank): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -64,7 +64,7 @@ class BankPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Bank $bank)
+    public function delete(User $user, Bank $bank): bool
     {
         return false;
     }
@@ -74,7 +74,7 @@ class BankPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Bank $bank)
+    public function restore(User $user, Bank $bank): bool
     {
         return false;
     }
@@ -84,7 +84,7 @@ class BankPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Bank $bank)
+    public function forceDelete(User $user, Bank $bank): bool
     {
         return false;
     }

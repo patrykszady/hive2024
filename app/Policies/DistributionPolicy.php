@@ -15,7 +15,7 @@ class DistributionPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -27,7 +27,7 @@ class DistributionPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Distribution $distribution)
+    public function view(User $user, Distribution $distribution): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -39,7 +39,7 @@ class DistributionPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         //
     }
@@ -49,7 +49,7 @@ class DistributionPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Distribution $distribution)
+    public function update(User $user, Distribution $distribution): bool
     {
         //
     }
@@ -59,7 +59,7 @@ class DistributionPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Distribution $distribution)
+    public function delete(User $user, Distribution $distribution): bool
     {
         //
     }
@@ -69,7 +69,7 @@ class DistributionPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Distribution $distribution)
+    public function restore(User $user, Distribution $distribution): bool
     {
         //
     }
@@ -79,7 +79,7 @@ class DistributionPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Distribution $distribution)
+    public function forceDelete(User $user, Distribution $distribution): bool
     {
         //
     }

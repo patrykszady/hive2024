@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Scopes\ExpenseSplitsScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,17 +31,17 @@ class ExpenseSplits extends Model
         static::addGlobalScope(new ExpenseSplitsScope);
     }
 
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function expense()
+    public function expense(): BelongsTo
     {
         return $this->belongsTo(Expense::class);
     }
 
-    public function distribution()
+    public function distribution(): BelongsTo
     {
         return $this->belongsTo(Distribution::class);
     }

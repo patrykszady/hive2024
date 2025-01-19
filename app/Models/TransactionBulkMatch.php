@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,17 +22,17 @@ class TransactionBulkMatch extends Model
         ];
     }
 
-    public function distribution()
+    public function distribution(): BelongsTo
     {
         return $this->belongsTo(Distribution::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function belongs_to_vendor()
+    public function belongs_to_vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }

@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Scopes\ProjectScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,28 +24,28 @@ class Project extends Model
         static::addGlobalScope(new ProjectScope);
     }
 
-    public function distributions()
+    public function distributions(): BelongsToMany
     {
         return $this->belongsToMany(Distribution::class)->withPivot('percent', 'amount', 'created_at')->withTimestamps();
     }
 
-    public function expenses()
+    public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }
 
-    public function bids()
+    public function bids(): HasMany
     {
         return $this->hasMany(Bid::class);
     }
 
     //projects many to many vendors
-    public function vendors()
+    public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class)->withPivot('client_id')->withTimestamps();
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         // dd($this);
         //project has one vendor via the project_vendor pivot table
@@ -53,19 +58,19 @@ class Project extends Model
         return $this->vendor()->first();
     }
 
-    public function expenseSplits()
+    public function expenseSplits(): HasMany
     {
         return $this->hasMany(ExpenseSplits::class);
     }
 
-    public function clients()
+    public function clients(): BelongsToMany
     {
         //through project_vendor->client_id
 
         return $this->belongsToMany(Client::class, 'project_vendor')->withPivot('vendor_id')->withTimestamps();
     }
 
-    public function client()
+    public function client(): HasOneThrough
     {
         //project has one client via the project_vendor pivot table client_id
         // return $this->hasOneThrough(Client::class, 'project_vendor_pivot', 'project_id', 'client_id');
@@ -78,37 +83,37 @@ class Project extends Model
         return $this->client()->wherePivot('vendor_id', $this->vendor->id)->first();
     }
 
-    public function estimates()
+    public function estimates(): HasMany
     {
         return $this->hasMany(Estimate::class);
     }
 
-    public function hours()
+    public function hours(): HasMany
     {
         return $this->hasMany(Hour::class);
     }
 
-    public function tasks()
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function timesheets()
+    public function timesheets(): HasMany
     {
         return $this->hasMany(Timesheet::class);
     }
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function statuses()
+    public function statuses(): HasMany
     {
         return $this->hasMany(ProjectStatus::class);
     }
 
-    public function last_status()
+    public function last_status(): HasOne
     {
         return $this->hasOne(ProjectStatus::class)->orderBy('start_date', 'DESC')->latest();
     }

@@ -15,7 +15,7 @@ class TransactionBulkMatchPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -27,7 +27,7 @@ class TransactionBulkMatchPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, TransactionBlukMatch $transactionBlukMatch)
+    public function view(User $user, TransactionBlukMatch $transactionBlukMatch): bool
     {
         // return false;
     }
@@ -37,7 +37,7 @@ class TransactionBulkMatchPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -49,7 +49,7 @@ class TransactionBulkMatchPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, TransactionBlukMatch $transactionBlukMatch)
+    public function update(User $user, TransactionBlukMatch $transactionBlukMatch): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -61,7 +61,7 @@ class TransactionBulkMatchPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, TransactionBlukMatch $transactionBlukMatch)
+    public function delete(User $user, TransactionBlukMatch $transactionBlukMatch): bool
     {
         //
     }
@@ -71,7 +71,7 @@ class TransactionBulkMatchPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, TransactionBlukMatch $transactionBlukMatch)
+    public function restore(User $user, TransactionBlukMatch $transactionBlukMatch): bool
     {
         //
     }
@@ -81,7 +81,7 @@ class TransactionBulkMatchPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, TransactionBlukMatch $transactionBlukMatch)
+    public function forceDelete(User $user, TransactionBlukMatch $transactionBlukMatch): bool
     {
         //
     }

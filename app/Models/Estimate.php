@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Scopes\EstimateScope;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -26,27 +29,27 @@ class Estimate extends Model
         static::addGlobalScope(new EstimateScope);
     }
 
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function line_items()
+    public function line_items(): BelongsToMany
     {
         return $this->belongsToMany(LineItem::class)->withPivot('id', 'name', 'category', 'sub_category', 'unit_type', 'cost', 'desc', 'notes', 'quantity', 'total', 'section_id')->withTimestamps();
     }
 
-    public function estimate_line_items()
+    public function estimate_line_items(): HasMany
     {
         return $this->hasMany(EstimateLineItem::class);
     }
 
-    public function estimate_sections()
+    public function estimate_sections(): HasMany
     {
         return $this->hasMany(EstimateSection::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class, 'belongs_to_vendor_id');
     }

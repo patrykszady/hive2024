@@ -9,12 +9,12 @@ class PaymentPolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
     }
 
-    public function create(User $user)
+    public function create(User $user): bool
     {
         if (request()->route()->action['as'] == 'projects.show') {
             $vendor_id = request()->route()->project->client->vendor_id;

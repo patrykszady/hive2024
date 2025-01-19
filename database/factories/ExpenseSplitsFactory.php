@@ -13,7 +13,7 @@ class ExpenseSplitsFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             'amount' => $this->faker->randomFloat($nbMaxDecimals = 2, $min = -100, $max = 999),

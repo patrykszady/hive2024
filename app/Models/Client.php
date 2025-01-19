@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Scopes\ClientScope;
 use App\Models\Scopes\VendorScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -21,22 +23,22 @@ class Client extends Model
         static::addGlobalScope(new ClientScope);
     }
 
-    public function projects()
+    public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'project_vendor', 'client_id', 'project_id');
     }
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class)->withoutGlobalScope(VendorScope::class);
     }
 
-    public function vendors()
+    public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class)->withPivot('source', 'vendor_id')->withTimestamps();
     }

@@ -15,7 +15,7 @@ class TimesheetPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
     }
@@ -25,7 +25,7 @@ class TimesheetPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Timesheet $timesheet)
+    public function view(User $user, Timesheet $timesheet): bool
     {
         // dd($timesheet->user->vendors()->where('vendors.id', 1)->first()->pivot->user_id);
         // dd($timesheet->user->id);
@@ -60,7 +60,7 @@ class TimesheetPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return false;
     }
@@ -70,7 +70,7 @@ class TimesheetPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Timesheet $timesheet)
+    public function update(User $user, Timesheet $timesheet): bool
     {
         //
     }
@@ -80,7 +80,7 @@ class TimesheetPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Timesheet $timesheet)
+    public function delete(User $user, Timesheet $timesheet): bool
     {
         //
     }
@@ -90,7 +90,7 @@ class TimesheetPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Timesheet $timesheet)
+    public function restore(User $user, Timesheet $timesheet): bool
     {
         //
     }
@@ -100,7 +100,7 @@ class TimesheetPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Timesheet $timesheet)
+    public function forceDelete(User $user, Timesheet $timesheet): bool
     {
         //
     }

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,17 +25,17 @@ class Lead extends Model
         ];
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function statuses()
+    public function statuses(): HasMany
     {
         return $this->hasMany(LeadStatus::class);
     }
 
-    public function last_status()
+    public function last_status(): HasOne
     {
         return $this->hasOne(LeadStatus::class)->orderBy('created_at', 'DESC')->latest();
     }

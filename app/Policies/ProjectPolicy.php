@@ -19,7 +19,7 @@ class ProjectPolicy
     //     }
     // }
 
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
     }
@@ -29,7 +29,7 @@ class ProjectPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Project $project)
+    public function view(User $user, Project $project): bool
     {
         return true;
     }
@@ -39,7 +39,7 @@ class ProjectPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -51,7 +51,7 @@ class ProjectPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Project $project)
+    public function update(User $user, Project $project): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -63,7 +63,7 @@ class ProjectPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Project $project)
+    public function delete(User $user, Project $project): bool
     {
         //
     }
@@ -73,7 +73,7 @@ class ProjectPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Project $project)
+    public function restore(User $user, Project $project): bool
     {
         //
     }
@@ -83,7 +83,7 @@ class ProjectPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Project $project)
+    public function forceDelete(User $user, Project $project): bool
     {
         //
     }

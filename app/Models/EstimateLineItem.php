@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Traits\Sortable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,12 +24,12 @@ class EstimateLineItem extends Pivot
         return $estimate_line_item->section->estimate_line_items();
     }
 
-    public function estimate()
+    public function estimate(): BelongsTo
     {
         return $this->belongsTo(Estimate::class)->withTimestamps();
     }
 
-    public function section()
+    public function section(): BelongsTo
     {
         return $this->belongsTo(EstimateSection::class);
     }

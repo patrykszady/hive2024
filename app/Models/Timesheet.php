@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Scopes\TimesheetScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,27 +27,27 @@ class Timesheet extends Model
         static::addGlobalScope(new TimesheetScope);
     }
 
-    public function hours()
+    public function hours(): HasMany
     {
         return $this->hasMany(Hour::class);
     }
 
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function check()
+    public function check(): BelongsTo
     {
         return $this->belongsTo(Check::class);
     }

@@ -11,7 +11,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
             $table->integer('check_id')->after('parent_client_payment_id')->nullable();
@@ -23,7 +23,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('payments', function (Blueprint $table) {
             $table->dropColumn('check_id');

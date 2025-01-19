@@ -59,7 +59,7 @@
                                         <flux:cell>{{ $transaction->bank_account->account_number }}</flux:cell>
                                     </flux:row>
                                     <flux:row>
-                                        <flux:cell colspan="4"><i>{{ $transaction->plaid_merchant_description }}</i></flux:cell>
+                                        <flux:cell colspan="4" class="text-right"><i>{{ $transaction->plaid_merchant_description }}</i></flux:cell>
                                     </flux:row>
                                 @endforeach
                             </flux:rows>

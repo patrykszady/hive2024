@@ -84,7 +84,7 @@
                                         <flux:cell>{{ isset($transaction->owner) ? $transaction->owner : $transaction->bank_account->account_number }}</flux:cell>
                                     </flux:row>
                                     <flux:row>
-                                        <flux:cell colspan="4">{{ $transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description}}</flux:cell>
+                                        <flux:cell colspan="4" class="text-right">{{ $transaction->vendor->name != 'No Vendor' ? $transaction->vendor->name : $transaction->plaid_merchant_description}}</flux:cell>
                                     </flux:row>
                                 @endforeach
                             </flux:rows>

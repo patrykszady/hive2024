@@ -73,10 +73,7 @@ class LineItemForm extends Form
         $this->authorize('create', LineItem::class);
         $this->validate();
 
-        $this->line_item->update(
-            $this->all()
-        );
-
+        $this->line_item->update($this->all());
         $this->reset();
     }
 }

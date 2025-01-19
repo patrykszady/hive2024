@@ -5,7 +5,7 @@
     </div>
     <flux:subheading class>Bulk Match Transactions for Retail Vendors. Manual Match Below.</flux:subheading>
 
-    <flux:separator variant="subtle" />
+    <flux:separator variant="subtle" class="my-2" />
 
     <flux:table>
         <flux:columns>

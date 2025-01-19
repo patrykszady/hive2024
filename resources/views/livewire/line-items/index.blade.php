@@ -22,8 +22,7 @@
                     @foreach($this->line_items as $line_item)
                         <flux:row :key="$line_item->id">
                             <flux:cell
-                                {{-- wire:navigate.hover
-                                href="{{route('projects.show', $line_item->id)}}" --}}
+                                wire:click="$dispatchTo('line-items.line-item-create', 'editItem', { line_item: {{$line_item}}})"
                                 variant="strong"
                                 class="cursor-pointer"
                                 >
@@ -34,19 +33,6 @@
                             </flux:cell>
                             <flux:cell>{{ money($line_item->cost) }}</flux:cell>
                             <flux:cell>{{ $line_item->unit_type }}</flux:cell>
-                            {{--
-
-                            <flux:cell
-                                wire:navigate.hover
-                                href="{{route('clients.show', $project->client->id)}}"
-                                class="cursor-pointer"
-                                >
-                                {{ $project->client->name }}
-                            </flux:cell>
-                            <flux:cell>{{ $project->project_name }}</flux:cell>
-                            <flux:cell>
-
-                            </flux:cell> --}}
                         </flux:row>
                     @endforeach
                 </flux:rows>

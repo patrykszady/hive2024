@@ -14,10 +14,7 @@ use App\Livewire\Forms\EstimateLineItemForm;
 
 class EstimateLineItemCreate extends Component
 {
-    protected $listeners = ['addToEstimate', 'editOnEstimate'];
-
     public Estimate $estimate;
-
     public EstimateLineItemForm $form;
 
     public $section_id = NULL;
@@ -26,12 +23,13 @@ class EstimateLineItemCreate extends Component
     public $estimate_line_item = [];
     public $section_item_count = NULL;
 
-
     public $view_text = [
         'card_title' => 'Add Line Item',
         'button_text' => 'Add Item',
         'form_submit' => 'save',
     ];
+
+    protected $listeners = ['addToEstimate', 'editOnEstimate'];
 
     public function rules()
     {

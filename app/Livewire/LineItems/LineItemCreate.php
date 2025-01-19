@@ -4,6 +4,7 @@ namespace App\Livewire\LineItems;
 
 use App\Models\Estimate;
 use App\Models\LineItem;
+use Livewire\Attributes\Computed;
 use App\Models\EstimateLineItem;
 
 use Livewire\Component;
@@ -13,8 +14,9 @@ use App\Livewire\Forms\LineItemForm;
 class LineItemCreate extends Component
 {
     public ?Estimate $estimate;
-
     public LineItemForm $form;
+
+    public $existing_line_item_id = NULL;
 
     public $view_text = [
         'card_title' => 'Add Line Item',
@@ -22,15 +24,37 @@ class LineItemCreate extends Component
         'form_submit' => 'save',
     ];
 
-    public $modal_show = FALSE;
-    // 'editOnEstimate', 'removeFromEstimate', 'resetModal'
-    // 'addToEstimate'
     protected $listeners = ['addItem', 'editItem'];
+
+    protected function rules()
+    {
+        return [
+            'existing_line_item_id' => 'required',
+        ];
+    }
+
+    public function updated($field)
+    {
+        if($field === 'form.name'){
+            $this->existing_line_item_id = NULL;
+        }
+    }
 
     public function resetModal()
     {
         $this->form->reset();
         $this->resetValidation();
+        $this->existing_line_item_id = NULL;
+    }
+
+    #[Computed]
+    public function line_items()
+    {
+        return LineItem::orderBy('created_at', 'DESC')
+            ->where('name', 'like', '%' . $this->form->name . '%')
+            ->orWhere('desc', 'like', '%' . $this->form->name . '%')
+            ->orWhere('notes', 'like', '%' . $this->form->name . '%')
+            ->get();
     }
 
     public function addItem()
@@ -42,57 +66,43 @@ class LineItemCreate extends Component
             'form_submit' => 'save',
         ];
 
-        $this->modal_show = TRUE;
+        $this->modal('line_item_form_modal')->show();
     }
 
-    // public function addToEstimate(Estimate $estimate, $section)
-    // {
-    //     $this->estimate = $estimate;
-
-    //     $this->view_text = [
-    //         'card_title' => 'Add Line Item',
-    //         'button_text' => 'Add Item',
-    //         'form_submit' => 'save_estimate',
-    //     ];
-
-    //     $this->modal_show = TRUE;
-    // }
-
-    public function editItem($lineItemId)
+    public function editItem(LineItem $line_item)
     {
         $this->resetModal();
+        $this->existing_line_item_id = "NEW";
         $this->view_text = [
             'card_title' => 'Edit Line Item',
             'button_text' => 'Edit Item',
             'form_submit' => 'edit',
         ];
 
-        $line_item = LineItem::findOrFail($lineItemId);
         $this->form->setLineItem($line_item);
-
-        $this->modal_show = TRUE;
+        $this->modal('line_item_form_modal')->show();
     }
 
     public function save()
     {
         $this->form->store();
-        $this->modal_show = FALSE;
+        $this->modal('line_item_form_modal')->close();
+
+        $this->resetModal();
         $this->dispatch('refreshComponent')->to('line-items.line-items-index');
     }
 
     public function edit()
     {
         $this->form->update();
-        $this->modal_show = FALSE;
+        $this->modal('line_item_form_modal')->close();
+
+        $this->resetModal();
         $this->dispatch('refreshComponent')->to('line-items.line-items-index');
     }
 
     public function render()
     {
-        //08-26-2023 paginate here
-        return view('livewire.line-items.form',[
-            // 'view_text' => $view_text,
-            // 'line_items' => LineItem::all(),
-        ]);
+        return view('livewire.line-items.form');
     }
 }

@@ -1,136 +1,88 @@
-<div>
-    <x-modals.modal>
-        <form wire:submit="{{$view_text['form_submit']}}">
-            {{-- HEADER --}}
-            <x-cards.heading>
-                <x-slot name="left">
-                    <h1>{{$view_text['card_title']}}</h1>
-                </x-slot>
-            </x-cards.heading>
+<flux:modal name="line_item_form_modal" class="space-y-2 min-w-96">
+    <div class="flex justify-between">
+        <flux:heading size="lg">{{$view_text['card_title']}}</flux:heading>
+    </div>
 
-            {{-- ROWS --}}
-            <x-cards.body :class="'space-y-4 my-4'">
-                <x-forms.row
-                    wire:model.live.debounce.500ms="form.name"
-                    errorName="form.name"
-                    name="form.name"
-                    text="Item Name"
-                    type="text"
-                    placeholder="Item Name."
-                    >
+    <flux:separator variant="subtle" />
 
-                    {{-- 08-26-2023 show potential duplicates --}}
-                </x-forms.row>
+    <form
+        x-data="{ line_title: @entangle('form.name'), existing_line_item_id: @entangle('existing_line_item_id') }"
+        wire:submit="{{$view_text['form_submit']}}"
+        class="grid gap-6"
+        >
+        <flux:input wire:model.live.debounce.500ms="form.name" label="Item Title" placeholder="Item Title" x-bind:disabled="existing_line_item_id"/>
 
-                <div
-                    x-data="{ open: @entangle('form.name') }"
-                    x-show="open"
-                    x-transition
-                    class="my-4 space-y-4"
-                    >
+        <div
+            x-show="line_title && existing_line_item_id !== 'NEW'"
+            x-transition
+            >
+            <flux:fieldset>
+                <flux:radio.group wire:model.live="existing_line_item_id" label="Existing Line Items" variant="cards" class="flex-col" :indicator="false">
+                    @foreach($this->line_items as $line_item)
+                        <flux:radio value="{{$line_item->id}}" label="{{$line_item->name}}" description="{{$line_item->desc}}" />
+                    @endforeach
 
-                    {{-- DESC --}}
-                    <x-forms.row
-                        wire:model.live.debounce.500ms="form.desc"
-                        errorName="form.desc"
-                        name="form.desc"
-                        text="Description"
-                        type="textarea"
-                        rows="4"
-                        placeholder="Description for this Line Item.">
-                    </x-forms.row>
+                    <flux:radio value="NEW" label="Create New Line Item" description="" />
+                </flux:radio.group>
+            </flux:fieldset>
+        </div>
 
-                    {{-- NOTES --}}
-                    <x-forms.row
-                        wire:model.live.debounce.500ms="form.notes"
-                        errorName="form.notes"
-                        name="form.notes"
-                        text="Notes"
-                        type="textarea"
-                        rows="3"
-                        placeholder="Item Notes.">
-                    </x-forms.row>
+        <div
+            x-show="existing_line_item_id === 'NEW'"
+            x-transition
+            class="space-y-2"
+            >
 
-                    {{-- CATEGORY --}}
-                    <x-forms.row
-                        wire:model.live.debounce.500ms="form.category"
-                        errorName="form.category"
-                        name="form.category"
-                        text="Category"
-                        type="text"
-                        placeholder="Category">
-                    </x-forms.row>
+            {{-- DESCRIPTION --}}
+            <flux:textarea
+                wire:model="form.desc"
+                label="Description"
+                rows="auto"
+                resize="none"
+                placeholder=""
+            />
 
-                    {{-- SUB CATEGORY --}}
-                    <x-forms.row
-                        wire:model.live.debounce.500ms="form.sub_category"
-                        errorName="form.sub_category"
-                        name="form.sub_category"
-                        text="Sub Category"
-                        type="text"
-                        placeholder="Sub Category">
-                    </x-forms.row>
+            {{-- NOTES --}}
+            <flux:textarea
+                wire:model="form.notes"
+                label="Notes"
+                rows="auto"
+                resize="none"
+                placeholder=""
+            />
 
-                    {{-- UNIT TYPE --}}
-                    <x-forms.row
-                        wire:model.live="form.unit_type"
-                        errorName="form.unit_type"
-                        name="form.unit_type"
-                        text="Unit Type"
-                        type="dropdown"
-                        >
-                        @include('livewire.line-items._unit_type_options')
-                    </x-forms.row>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {{-- CATEGORY --}}
+                {{-- placeholder="Category"  --}}
+                <flux:input wire:model="form.category" label="Category" />
 
-                    {{-- COST --}}
-                    <x-forms.row
-                        wire:model.live.debounce.500ms="form.cost"
-                        errorName="form.cost"
-                        name="form.cost"
-                        text="Amount"
-                        type="number"
-                        hint="$"
-                        placeholder="00.00"
-                        inputmode="decimal"
-                        {{-- pattern="[-+,0-9.]*" --}}
-                        step="0.01"
-                        min="0.01"
-                        autofocus
-                        {{-- x-bind:disabled="amount_disabled" --}}
-                        >
-                    </x-forms.row>
-                </div>
-            </x-cards.body>
+                {{-- SUB CATEGORY --}}
+                <flux:input wire:model="form.sub_category" label="Sub Category" />
+            </div>
 
-            <x-cards.footer>
-                <button
-                    type="button"
-                    x-on:click="open = false"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                    Cancel
-                </button>
-                <div
-                    x-data="{ estimate_line_item: @entangle('estimate_line_item') }"
-                    x-show="estimate_line_item"
-                    >
-                    <button
-                        type="button"
-                        wire:click="removeFromEstimate"
-                        {{-- wire:confirm.prompt="Are you sure you want to delete this line item?\n\nType DELETE to confirm|DELETE" --}}
-                        x-on:click="open = false"
-                        class="px-4 py-2 text-sm font-medium text-red-700 bg-white border border-red-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                        >
-                        Remove
-                    </button>
-                </div>
-                <button
-                    type="submit"
-                    class="inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm disabled:opacity-50 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                    {{$view_text['button_text']}}
-                </button>
-            </x-cards.footer>
-        </form>
-    </x-modals.modal>
-</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {{-- UNIT TYPE --}}
+                <flux:select wire:model="form.unit_type" label="Unit Type" placeholder="Choose unit type...">
+                    @include('livewire.line-items._unit_type_options')
+                </flux:select>
+
+                {{-- COST --}}
+                <flux:input
+                    wire:model.live.debounce.500ms="form.cost"
+                    label="Amount"
+                    type="number"
+                    inputmode="decimal"
+                    pattern="[0-9]*"
+                    step="0.01"
+                    placeholder="00.00"
+                />
+            </div>
+
+            <div class="flex space-x-2 sticky bottom-0">
+                <flux:spacer />
+
+                <flux:button type="submit" variant="primary">{{$view_text['button_text']}}</flux:button>
+            </div>
+        </div>
+    </form>
+</flux:modal>

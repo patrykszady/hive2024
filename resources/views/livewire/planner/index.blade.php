@@ -59,18 +59,14 @@
                 @if($day['database_date'] !== NULL)
                     <div
                         @class([
-                            // border-t-2
                             'sticky left-0 -ml-14 w-14 pr-2 text-right text-xs text-gray-800',
-                            '!text-sky-600' => $day['is_today'] ? true : false
+                            '!text-gray-400' => $day['is_weekend'] && !$day['is_today'] ? true : false,
+                            '!text-sky-600' => $day['is_today'] ? true : false,
                         ])
                         >
                         <span class="font-semibold">{{strtok($day['formatted_date'], ',')}}</span>
                         <br>
-                        <span
-                            @class([
-                                'italic'
-                            ])
-                            >
+                        <span class="italic">
                             {{substr($day['formatted_date'], strpos($day['formatted_date'], ', ') + 2)}}
                         </span>
                     </div>

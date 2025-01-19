@@ -30,6 +30,7 @@ class LineItemsIndex extends Component
         return LineItem::orderBy('created_at', 'DESC')
             ->where('name', 'like', '%' . $this->search . '%')
             ->orWhere('desc', 'like', '%' . $this->search . '%')
+            ->orWhere('notes', 'like', '%' . $this->search . '%')
             ->paginate(15);
     }
 

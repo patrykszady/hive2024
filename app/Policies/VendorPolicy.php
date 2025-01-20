@@ -15,7 +15,7 @@ class VendorPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         //
     }
@@ -25,7 +25,7 @@ class VendorPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Vendor $vendor)
+    public function view(User $user, Vendor $vendor): bool
     {
         //
     }
@@ -35,7 +35,7 @@ class VendorPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -47,7 +47,7 @@ class VendorPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Vendor $vendor)
+    public function update(User $user, Vendor $vendor): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -59,7 +59,7 @@ class VendorPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Vendor $vendor)
+    public function delete(User $user, Vendor $vendor): bool
     {
         //
     }
@@ -69,7 +69,7 @@ class VendorPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Vendor $vendor)
+    public function restore(User $user, Vendor $vendor): bool
     {
         //
     }
@@ -79,7 +79,7 @@ class VendorPolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Vendor $vendor)
+    public function forceDelete(User $user, Vendor $vendor): bool
     {
         //
     }

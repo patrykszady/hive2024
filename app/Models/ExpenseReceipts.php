@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +24,7 @@ class ExpenseReceipts extends Model
 
     // protected $fillable = ['expense_id', 'receipt_html' , 'receipt_filename'];
 
-    public function expense()
+    public function expense(): BelongsTo
     {
         return $this->belongsTo(Expense::class);
     }

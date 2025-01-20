@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,7 +12,7 @@ class Agent extends Model
 
     protected $fillable = ['name', 'business_name', 'address', 'phone', 'email'];
 
-    public function vendor_docs()
+    public function vendor_docs(): HasMany
     {
         return $this->hasMany(VendorDoc::class);
     }

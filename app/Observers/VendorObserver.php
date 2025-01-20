@@ -11,7 +11,7 @@ class VendorObserver
      *
      * @return void
      */
-    public function created(Vendor $vendor)
+    public function created(Vendor $vendor): void
     {
         //
     }
@@ -21,7 +21,7 @@ class VendorObserver
      *
      * @return void
      */
-    public function updated(Vendor $vendor)
+    public function updated(Vendor $vendor): void
     {
         //5-23-2023 should be a Policy... "if auth()->user()->vendor CAN update $this->vendor
         //If $this->vendor = auth()->user()->vendor
@@ -61,7 +61,7 @@ class VendorObserver
      *
      * @return void
      */
-    public function deleted(Vendor $vendor)
+    public function deleted(Vendor $vendor): void
     {
         //
     }
@@ -71,7 +71,7 @@ class VendorObserver
      *
      * @return void
      */
-    public function restored(Vendor $vendor)
+    public function restored(Vendor $vendor): void
     {
         //
     }
@@ -81,7 +81,7 @@ class VendorObserver
      *
      * @return void
      */
-    public function forceDeleted(Vendor $vendor)
+    public function forceDeleted(Vendor $vendor): void
     {
         //
     }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Scopes\TransactionScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -58,7 +60,7 @@ class Transaction extends Model
         return env('APP_ENV') == 'local' ? 'transaction_index_dev' : 'transaction_index';
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class)->withDefault([
             //if transaction->vendor_id == NULL?
@@ -66,7 +68,7 @@ class Transaction extends Model
         ]);
     }
 
-    public function expense()
+    public function expense(): BelongsTo
     {
         // return $this->belongsTo(Expense::class)->withDefault([
         //     //if transaction->expense_id == NULL?
@@ -75,7 +77,7 @@ class Transaction extends Model
         return $this->belongsTo(Expense::class);
     }
 
-    public function bank_account()
+    public function bank_account(): BelongsTo
     {
         return $this->belongsTo(BankAccount::class);
     }
@@ -85,12 +87,12 @@ class Transaction extends Model
     //     return $this->hasOneThrough(Bank::class, BankAccount::class);
     // }
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function check()
+    public function check(): BelongsTo
     {
         return $this->belongsTo(Check::class);
     }

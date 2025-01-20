@@ -11,7 +11,7 @@ class ClientObserver
      *
      * @return void
      */
-    public function created(Client $client)
+    public function created(Client $client): void
     {
         //when creating from VendorRegistration with vendor_id
         //attach all $adding_vendor->users to $client
@@ -27,7 +27,7 @@ class ClientObserver
      *
      * @return void
      */
-    public function updated(Client $client)
+    public function updated(Client $client): void
     {
         //
     }
@@ -37,7 +37,7 @@ class ClientObserver
      *
      * @return void
      */
-    public function deleted(Client $client)
+    public function deleted(Client $client): void
     {
         //
     }
@@ -47,7 +47,7 @@ class ClientObserver
      *
      * @return void
      */
-    public function restored(Client $client)
+    public function restored(Client $client): void
     {
         //
     }
@@ -57,7 +57,7 @@ class ClientObserver
      *
      * @return void
      */
-    public function forceDeleted(Client $client)
+    public function forceDeleted(Client $client): void
     {
         //
     }

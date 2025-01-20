@@ -10,7 +10,7 @@ class ExpensePolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
         // if($user->vendor->user_role == 'Admin'){
@@ -23,7 +23,7 @@ class ExpensePolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Expense $expense)
+    public function view(User $user, Expense $expense): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -40,7 +40,7 @@ class ExpensePolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -52,7 +52,7 @@ class ExpensePolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Expense $expense)
+    public function update(User $user, Expense $expense): bool
     {
         if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
@@ -64,7 +64,7 @@ class ExpensePolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Expense $expense)
+    public function delete(User $user, Expense $expense): bool
     {
         return false;
     }
@@ -74,7 +74,7 @@ class ExpensePolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Expense $expense)
+    public function restore(User $user, Expense $expense): bool
     {
         return false;
     }
@@ -84,7 +84,7 @@ class ExpensePolicy
      *
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Expense $expense)
+    public function forceDelete(User $user, Expense $expense): bool
     {
         return false;
     }

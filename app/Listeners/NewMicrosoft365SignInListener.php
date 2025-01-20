@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class NewMicrosoft365SignInListener
 {
-    public function handle($event)
+    public function handle($event): void
     {
         $tokenId = $event->token['token_id'];
         $token = MsGraphToken::find($tokenId)->first();

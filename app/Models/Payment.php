@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Scopes\PaymentScope;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,22 +23,22 @@ class Payment extends Model
         static::addGlobalScope(new PaymentScope);
     }
 
-    public function client()
+    public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function project()
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function transaction()
+    public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
     }
 
-    public function payments_grouped()
+    public function payments_grouped(): HasMany
     {
         return $this->hasMany(Payment::class, 'id', 'parent_client_payment_id');
     }

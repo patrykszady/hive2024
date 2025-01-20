@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\Scopes\ClientScope;
 use App\Models\Scopes\VendorScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,93 +44,93 @@ class Vendor extends Model
         return 'vendors_index';
     }
 
-    public function vendor_categories()
+    public function vendor_categories(): BelongsToMany
     {
         return $this->belongsToMany(VendorCategory::class, 'category_vendor', 'vendor_id', 'vendor_category_id')->withTimestamps();
     }
 
     //Vendors that belong to Logged in vendor / via $user->primary_vendor_id
-    public function vendors()
+    public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class, 'vendors_vendor', 'belongs_to_vendor_id')->withoutGlobalScopes()->withTimestamps();
     }
 
-    public function projects()
+    public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class)->withTimestamps();
     }
 
-    public function estimates()
+    public function estimates(): BelongsToMany
     {
         return $this->belongsToMany(Estimate::class)->withTimestamps();
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class, 'vendors_vendor', 'vendor_id')->withTimestamps();
     }
 
-    public function receipt_account()
+    public function receipt_account(): HasOne
     {
         return $this->hasOne(ReceiptAccount::class);
     }
 
-    public function receipt_accounts()
+    public function receipt_accounts(): HasMany
     {
         return $this->hasMany(ReceiptAccount::class, 'belongs_to_vendor_id');
     }
 
-    public function receipts()
+    public function receipts(): HasMany
     {
         return $this->hasMany(Receipt::class);
     }
 
-    public function task()
+    public function task(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function transactions_bulk_match()
+    public function transactions_bulk_match(): HasMany
     {
         return $this->hasMany(TransactionBulkMatch::class);
     }
 
-    public function company_emails()
+    public function company_emails(): HasMany
     {
         return $this->hasMany(CompanyEmail::class);
     }
 
-    public function bids()
+    public function bids(): HasMany
     {
         return $this->hasMany(Bid::class);
     }
 
-    public function vendor_docs()
+    public function vendor_docs(): HasMany
     {
         return $this->hasMany(VendorDoc::class);
     }
 
-    public function expenses()
+    public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }
 
-    public function banks()
+    public function banks(): HasMany
     {
         return $this->hasMany(Bank::class);
     }
 
-    public function distributions()
+    public function distributions(): HasMany
     {
         return $this->hasMany(Distribution::class);
     }
 
-    public function bank_accounts()
+    public function bank_accounts(): HasMany
     {
         return $this->hasMany(BankAccount::class);
     }
@@ -136,27 +140,27 @@ class Vendor extends Model
     //     return $this->hasMany(ProjectStatus::class, '');
     // }
 
-    public function transactions()
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
     }
 
-    public function hours()
+    public function hours(): HasMany
     {
         return $this->hasMany(Hour::class);
     }
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->with('vendor')->withPivot(['is_employed', 'role_id', 'via_vendor_id', 'start_date', 'end_date', 'hourly_rate']);
     }
 
-    public function clients()
+    public function clients(): BelongsToMany
     {
         return $this->belongsToMany(Client::class);
     }
 
-    public function client()
+    public function client(): HasOne
     {
         return $this->hasOne(Client::class)->withoutGlobalScope(ClientScope::class);
     }

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -39,13 +42,13 @@ class User extends Authenticatable
     }
 
     //Vednors USER belongs to
-    public function vendors()
+    public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class)->using(UserVendor::class)->withoutGlobalScopes()->withTimestamps()->with('vendor')->withPivot(['is_employed', 'role_id', 'via_vendor_id', 'start_date', 'end_date', 'hourly_rate']);
     }
 
     //User's default/logged in vendor
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         // dd($this->vendors()->find($this->primary_vendor_id));
         // return $this->vendors()->find($this->primary_vendor_id);
@@ -64,32 +67,32 @@ class User extends Authenticatable
     }
 
     //via_vendor
-    public function via_vendor()
+    public function via_vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class, 'primary_vendor_id')->withoutGlobalScopes();
     }
 
-    public function leads()
+    public function leads(): HasMany
     {
         return $this->hasMany(Leads::class);
     }
 
-    public function clients()
+    public function clients(): BelongsToMany
     {
         return $this->belongsToMany(Client::class)->withTimestamps();
     }
 
-    public function timesheets()
+    public function timesheets(): HasMany
     {
         return $this->hasMany(Timesheet::class);
     }
 
-    public function task()
+    public function task(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function distributions()
+    public function distributions(): HasMany
     {
         return $this->hasMany(Distribution::class);
     }

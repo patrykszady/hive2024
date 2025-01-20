@@ -12,7 +12,7 @@ class UserVendorObserver
      *
      * @return void
      */
-    public function created(UserVendor $userVendor)
+    public function created(UserVendor $userVendor): void
     {
         $user = $userVendor->pivotParent;
 
@@ -35,14 +35,14 @@ class UserVendorObserver
      *
      * @return void
      */
-    public function updated(UserVendor $userVendor) {}
+    public function updated(UserVendor $userVendor): void {}
 
     /**
      * Handle the UserVendor "deleted" event.
      *
      * @return void
      */
-    public function deleted(UserVendor $userVendor)
+    public function deleted(UserVendor $userVendor): void
     {
         //
     }
@@ -52,7 +52,7 @@ class UserVendorObserver
      *
      * @return void
      */
-    public function restored(UserVendor $userVendor)
+    public function restored(UserVendor $userVendor): void
     {
         //
     }
@@ -62,7 +62,7 @@ class UserVendorObserver
      *
      * @return void
      */
-    public function forceDeleted(UserVendor $userVendor)
+    public function forceDeleted(UserVendor $userVendor): void
     {
         //
     }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Scopes\ExpenseScope;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -79,7 +81,7 @@ class Expense extends Model
         return env('APP_ENV') == 'local' ? 'expenses_index_dev' : 'expenses_index';
     }
 
-    public function project()
+    public function project(): BelongsTo
     {
         //1-4-2022 below creates an N + 1 problem
         return $this->belongsTo(Project::class)->withDefault(function ($project, $expense) {
@@ -96,22 +98,22 @@ class Expense extends Model
         });
     }
 
-    public function check()
+    public function check(): BelongsTo
     {
         return $this->belongsTo(Check::class)->with('expenses');
     }
 
-    public function distribution()
+    public function distribution(): BelongsTo
     {
         return $this->belongsTo(Distribution::class);
     }
 
-    public function category()
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class)->withDefault(function ($expense, $vendor) {
             if ($expense->vendor_id === 0) {
@@ -120,17 +122,17 @@ class Expense extends Model
         });
     }
 
-    public function paidby()
+    public function paidby(): BelongsTo
     {
         return $this->belongsTo(User::class, 'paid_by');
     }
 
-    public function splits()
+    public function splits(): HasMany
     {
         return $this->hasMany(ExpenseSplits::class);
     }
 
-    public function transactions()
+    public function transactions(): HasMany
     {
         // return $this->hasMany(Transaction::class);
         if ($this->check) {
@@ -144,12 +146,12 @@ class Expense extends Model
         }
     }
 
-    public function receipts()
+    public function receipts(): HasMany
     {
         return $this->hasMany(ExpenseReceipts::class);
     }
 
-    public function associated()
+    public function associated(): HasMany
     {
         // dd('in Expense.php associated() function');
         return $this->hasMany(Expense::class, 'id', 'parent_expense_id');

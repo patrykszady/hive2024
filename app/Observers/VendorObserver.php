@@ -9,7 +9,6 @@ class VendorObserver
     /**
      * Handle the Vendor "created" event.
      *
-     * @param  \App\Models\Vendor  $vendor
      * @return void
      */
     public function created(Vendor $vendor)
@@ -20,16 +19,15 @@ class VendorObserver
     /**
      * Handle the Vendor "updated" event.
      *
-     * @param  \App\Models\Vendor  $vendor
      * @return void
      */
     public function updated(Vendor $vendor)
     {
         //5-23-2023 should be a Policy... "if auth()->user()->vendor CAN update $this->vendor
         //If $this->vendor = auth()->user()->vendor
-        if($vendor->id == auth()->user()->vendor->id){
+        if ($vendor->id == auth()->user()->vendor->id) {
             //Update Client if $vendor->client
-            if($vendor->client()->exists()){
+            if ($vendor->client()->exists()) {
                 $client = $vendor->client;
 
                 $client->business_name = $vendor->business_name;
@@ -61,7 +59,6 @@ class VendorObserver
     /**
      * Handle the Vendor "deleted" event.
      *
-     * @param  \App\Models\Vendor  $vendor
      * @return void
      */
     public function deleted(Vendor $vendor)
@@ -72,7 +69,6 @@ class VendorObserver
     /**
      * Handle the Vendor "restored" event.
      *
-     * @param  \App\Models\Vendor  $vendor
      * @return void
      */
     public function restored(Vendor $vendor)
@@ -83,7 +79,6 @@ class VendorObserver
     /**
      * Handle the Vendor "force deleted" event.
      *
-     * @param  \App\Models\Vendor  $vendor
      * @return void
      */
     public function forceDeleted(Vendor $vendor)

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('project_id')->unsigned();
             $table->integer('belongs_to_vendor_id')->unsigned();
-            $table->string('title');  
+            $table->string('title');
             $table->timestamps();
         });
     }

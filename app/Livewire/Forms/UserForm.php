@@ -3,11 +3,9 @@
 namespace App\Livewire\Forms;
 
 use App\Models\User;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Rule;
 use Livewire\Form;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class UserForm extends Form
 {
@@ -16,28 +14,28 @@ class UserForm extends Form
     public ?User $user;
 
     #[Rule('required')]
-    public $first_name = NULL;
+    public $first_name = null;
 
     #[Rule('required')]
-    public $last_name = NULL;
+    public $last_name = null;
 
     #[Rule('required')]
-    public $email = NULL;
+    public $email = null;
 
     #[Rule('nullable')]
-    public $role = NULL;
+    public $role = null;
 
     #[Rule('required_with:role')]
-    public $hourly_rate = NULL;
+    public $hourly_rate = null;
 
     #[Rule('nullable')]
-    public $via_vendor = NULL;
+    public $via_vendor = null;
 
     #[Rule('nullable')]
-    public $business_type = NULL;
+    public $business_type = null;
 
     #[Rule('nullable')]
-    public $business_name = NULL;
+    public $business_name = null;
     // #[Rule('required')]
     // public $cell_phone = NULL;
 

@@ -3,51 +3,47 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Task;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Validate;
 use Livewire\Form;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-use Carbon\Carbon;
 
 class TaskForm extends Form
 {
     use AuthorizesRequests;
 
     #[Validate('required')]
-    public $title = NULL;
+    public $title = null;
 
     // #[Validate('array')]
     // public $dates = NULL;
     // |date_format:Y-m-d|before_or_equal:end_date')]
     #[Validate('nullable')]
-    public $start_date = NULL;
+    public $start_date = null;
 
     // #[Validate('nullable|date_format:Y-m-d|after_or_equal:start_date')]
     #[Validate('nullable')]
-    public $end_date = NULL;
+    public $end_date = null;
 
     #[Validate('required')]
-    public $project_id = NULL;
+    public $project_id = null;
 
     #[Validate('nullable')]
     public $duration = 0;
 
     #[Validate('nullable')]
-    public $order = NULL;
+    public $order = null;
 
     #[Validate('nullable')]
-    public $vendor_id = NULL;
+    public $vendor_id = null;
 
     #[Validate('nullable')]
-    public $user_id = NULL;
+    public $user_id = null;
 
     #[Validate('required')]
     public $type = 'Task';
 
     #[Validate('nullable')]
-    public $notes = NULL;
+    public $notes = null;
 
     public $include_weekend_days = [];
 
@@ -77,8 +73,8 @@ class TaskForm extends Form
         // }
         // $this->dates = $new_dates;
 
-        $this->start_date = $task->start_date ? $task->start_date->format('Y-m-d') : NULL;
-        $this->end_date = $task->end_date ? $task->end_date->format('Y-m-d') : NULL;
+        $this->start_date = $task->start_date ? $task->start_date->format('Y-m-d') : null;
+        $this->end_date = $task->end_date ? $task->end_date->format('Y-m-d') : null;
         $this->include_weekend_days = (array) $task->options->include_weekend_days;
         $this->project_id = $task->project_id;
         $this->order = $task->order;
@@ -110,7 +106,7 @@ class TaskForm extends Form
             'notes' => $this->notes,
             'options->include_weekend_days' => $this->include_weekend_days,
             'duration' => $this->duration,
-            'order' => $this->order
+            'order' => $this->order,
         ]);
 
         return $this->task;
@@ -134,7 +130,7 @@ class TaskForm extends Form
             'notes' => $this->notes,
             'options->include_weekend_days' => $this->include_weekend_days,
             'order' => 0,
-            'duration' => $this->duration
+            'duration' => $this->duration,
         ]);
 
         return $task;

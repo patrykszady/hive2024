@@ -3,20 +3,16 @@
 namespace App\Livewire\Projects;
 
 use App\Models\Project;
-
-use Livewire\Component;
-use Livewire\Attributes\Title;
-
-use Illuminate\Support\Facades\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-use Spatie\Browsershot\Browsershot;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class ProjectShow extends Component
 {
     use AuthorizesRequests;
 
     public Project $project;
+
     public $estimates = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];

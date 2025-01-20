@@ -2,29 +2,30 @@
 
 namespace App\Livewire\Vendors;
 
-use Livewire\Component;
+use App\Models\Vendor;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
-
+use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-use App\Models\Vendor;
 
 class VendorsIndex extends Component
 {
-    use WithPagination, AuthorizesRequests;
+    use AuthorizesRequests, WithPagination;
 
     public $business_name = '';
+
     public $vendor_type = 'Sub';
+
     public $view;
 
     public $sortBy = 'expense_count';
+
     public $sortDirection = 'desc';
 
     protected $queryString = [
         'business_name' => ['except' => ''],
-        'vendor_type' => ['except' => '']
+        'vendor_type' => ['except' => ''],
     ];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -36,7 +37,7 @@ class VendorsIndex extends Component
 
     public function updated($field)
     {
-        if($field === 'business_name'){
+        if ($field === 'business_name') {
             $this->vendor_type = 'All';
         }
     }
@@ -44,14 +45,13 @@ class VendorsIndex extends Component
     #[Computed]
     public function vendors()
     {
-        return Vendor::
-            where('business_name', 'like', "%{$this->business_name}%")
+        return Vendor::where('business_name', 'like', "%{$this->business_name}%")
             // ->where('business_type', 'like', "%{$this->vendor_type}%")
             ->withCount([
                 'expenses',
                 'expenses as expense_count' => function ($query) {
                     $query->where('created_at', '>=', today()->subYear());
-                }
+                },
             ])
             ->when($this->vendor_type === 'All', function ($query, $item) {
                 return $query;
@@ -60,7 +60,6 @@ class VendorsIndex extends Component
                 return $query->where('business_type', 'like', "%{$this->vendor_type}%");
             })
             //as expense count
-
 
             // ->with(['expenses' => function ($query) {
             //     $query->where('created_at', '>=', today()->subYear())->count();
@@ -71,7 +70,8 @@ class VendorsIndex extends Component
             ->paginate(20);
     }
 
-    public function sort($column) {
+    public function sort($column)
+    {
         if ($this->sortBy === $column) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {

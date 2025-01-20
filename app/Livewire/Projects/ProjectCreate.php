@@ -3,23 +3,23 @@
 namespace App\Livewire\Projects;
 
 use App\Livewire\Forms\ProjectForm;
-
-use App\Models\Project;
 use App\Models\Client;
-
-use Livewire\Component;
-use Livewire\Attributes\Computed;
-
-// use Illuminate\Support\Facades\Validator;
+use App\Models\Project;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Computed;
+// use Illuminate\Support\Facades\Validator;
+use Livewire\Component;
 
 class ProjectCreate extends Component
 {
     use AuthorizesRequests;
 
     public ProjectForm $form;
+
     public Project $project;
-    public $existing_client = NULL;
+
+    public $existing_client = null;
+
     public $client_addresses = [];
 
     public $view_text = [
@@ -34,13 +34,13 @@ class ProjectCreate extends Component
     {
         // dd($field, $value);
         $this->validateOnly($field);
-        if($field == 'form.client_id'){
-            if($value){
+        if ($field == 'form.client_id') {
+            if ($value) {
                 $this->resetAddress();
                 $client = $this->clients->where('id', $value)->first();
                 $this->client_addresses = $client->projects;
 
-                if($this->client_addresses->isEmpty()){
+                if ($this->client_addresses->isEmpty()) {
                     $this->client_addresses =
                         collect([
                             collect([
@@ -50,22 +50,22 @@ class ProjectCreate extends Component
                                 'city' => $client['city'],
                                 'state' => $client['state'],
                                 'zip_code' => $client['zip_code'],
-                            ])
+                            ]),
                         ]);
-                }else{
+                } else {
                     $this->client_addresses = $this->client_addresses->unique('address');
                 }
-            }else{
+            } else {
                 $this->form->reset();
                 $this->resetValidation();
             }
         }
 
-        if($field == 'form.project_existing_address'){
-            if($value && $value != 'NEW'){
-                if($value == 'CLIENT_PROJECT'){
+        if ($field == 'form.project_existing_address') {
+            if ($value && $value != 'NEW') {
+                if ($value == 'CLIENT_PROJECT') {
                     $project_address = $this->client_addresses->first();
-                }else{
+                } else {
                     $project_address = $this->client_addresses->where('id', $value)->first();
                 }
 
@@ -74,10 +74,10 @@ class ProjectCreate extends Component
                 $this->form->city = $project_address['city'];
                 $this->form->state = $project_address['state'];
                 $this->form->zip_code = $project_address['zip_code'];
-            }elseif($value == 'NEW'){
+            } elseif ($value == 'NEW') {
                 $this->form->reset('address', 'address_2', 'city', 'zip_code', 'state');
                 $this->resetValidation();
-            }else{
+            } else {
                 $this->resetAddress();
             }
         }
@@ -105,24 +105,24 @@ class ProjectCreate extends Component
     {
         $this->existing_client = $this->clients->where('id', $client_id)->first();
 
-        if(!$this->existing_client){
-            $this->form->client_id = NULL;
+        if (! $this->existing_client) {
+            $this->form->client_id = null;
             $this->client_addresses =
                 collect([
                     collect([
                         // 'CLIENT_PROJECT' => 'CLIENT_PROJECT',
-                        'address' => NULL,
-                        'address_2' =>NULL,
-                        'city' => NULL,
-                        'state' => NULL,
-                        'zip_code' => NULL,
-                    ])
+                        'address' => null,
+                        'address_2' => null,
+                        'city' => null,
+                        'state' => null,
+                        'zip_code' => null,
+                    ]),
                 ]);
-        }else{
+        } else {
             $this->form->client_id = $this->existing_client->id;
             $this->client_addresses = $this->existing_client->projects;
 
-            if($this->client_addresses->isEmpty()){
+            if ($this->client_addresses->isEmpty()) {
                 $this->client_addresses =
                     collect([
                         collect([
@@ -132,7 +132,7 @@ class ProjectCreate extends Component
                             'city' => $this->existing_client['city'],
                             'state' => $this->existing_client['state'],
                             'zip_code' => $this->existing_client['zip_code'],
-                        ])
+                        ]),
                     ]);
 
                 // $client_address = $this->client_addresses->first();
@@ -143,7 +143,7 @@ class ProjectCreate extends Component
                 // $this->form->city = $client_address->city;
                 // $this->form->state = $client_address->state;
                 // $this->form->zip_code = $client_address->zip_code;
-            }else{
+            } else {
                 $this->client_addresses = $this->client_addresses->unique('address');
                 $client_address = $this->client_addresses->first();
 

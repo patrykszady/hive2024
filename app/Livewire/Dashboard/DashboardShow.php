@@ -3,9 +3,8 @@
 namespace App\Livewire\Dashboard;
 
 use App\Models\User;
-
-use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class DashboardShow extends Component
 {

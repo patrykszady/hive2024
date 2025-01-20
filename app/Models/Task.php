@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Sortable;
 use App\Observers\TaskObserver;
-
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-
-use App\Models\Traits\Sortable;
-
-use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[ObservedBy([TaskObserver::class])]
 class Task extends Model
@@ -52,14 +49,14 @@ class Task extends Model
     protected function userId(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => empty($value) ? NULL : $value,
+            set: fn ($value) => empty($value) ? null : $value,
         );
     }
 
     protected function vendorId(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => empty($value) ? NULL : $value,
+            set: fn ($value) => empty($value) ? null : $value,
         );
     }
 
@@ -67,7 +64,7 @@ class Task extends Model
     protected function startDate(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => $value != NULL ? Carbon::parse($value)->format('Y-m-d') : NULL,
+            set: fn ($value) => $value != null ? Carbon::parse($value)->format('Y-m-d') : null,
         );
     }
 
@@ -75,7 +72,7 @@ class Task extends Model
     protected function endDate(): Attribute
     {
         return Attribute::make(
-            set: fn ($value) => $value != NULL ? Carbon::parse($value)->format('Y-m-d') : NULL,
+            set: fn ($value) => $value != null ? Carbon::parse($value)->format('Y-m-d') : null,
         );
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LineItem extends Model
 {
@@ -21,7 +21,7 @@ class LineItem extends Model
         'cost',
         'belongs_to_vendor_id',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     public function estimates()

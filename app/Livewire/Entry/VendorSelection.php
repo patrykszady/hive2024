@@ -3,29 +3,28 @@
 namespace App\Livewire\Entry;
 
 use App\Models\User;
-use App\Models\Check;
-use App\Models\Project;
-use App\Models\Payment;
-use App\Models\ProjectStatus;
 use App\Models\Vendor;
-
-use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class VendorSelection extends Component
 {
     public $user;
+
     public $vendor;
-    public $vendor_id = NULL;
-    public $vendor_name = NULL;
+
+    public $vendor_id = null;
+
+    public $vendor_name = null;
 
     public $vendors = [];
+
     public $clients = [];
 
     public function mount()
     {
         $this->user = auth()->user();
-        $this->user->primary_vendor_id = NULL;
+        $this->user->primary_vendor_id = null;
         $this->user->save();
 
         //where not user removed / where end_date is null
@@ -46,13 +45,13 @@ class VendorSelection extends Component
         $this->vendor = $this->vendors->where('id', $vendor_id)->first();
         $this->vendor_id = $this->vendor->id;
 
-        if($this->vendor->registration['registered']){
+        if ($this->vendor->registration['registered']) {
             $button_text = 'Login to ';
-        }else{
+        } else {
             $button_text = 'Register ';
         }
 
-        $this->vendor_name = $button_text . $this->vendor->business_name;
+        $this->vendor_name = $button_text.$this->vendor->business_name;
     }
 
     //change primary_vendor_id on User::id
@@ -63,9 +62,9 @@ class VendorSelection extends Component
         $this->user->save();
 
         // 3-30-2023 This should be a middleware
-        if($this->vendor->registration['registered']){
+        if ($this->vendor->registration['registered']) {
             return redirect()->route('dashboard');
-        }else{
+        } else {
             return redirect()->route('vendor_registration', $this->vendor_id);
         }
     }

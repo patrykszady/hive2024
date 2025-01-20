@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Scopes\BidScope;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -35,10 +34,10 @@ class Bid extends Model
 
     public function getNameAttribute()
     {
-        if($this->type == 1){
+        if ($this->type == 1) {
             $name = 'Original Bid';
-        }else{
-            $name = 'Change Order ' . $this->type - 1;
+        } else {
+            $name = 'Change Order '.$this->type - 1;
         }
 
         return $name;

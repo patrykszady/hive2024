@@ -2,20 +2,18 @@
 
 namespace App\Livewire\Tasks;
 
-use App\Models\Task;
 use App\Models\Project;
-
-use Livewire\Component;
-use Livewire\Attributes\Computed;
-
+use App\Models\Task;
 use Carbon\Carbon;
-
 use Flux;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
 
 class PlannerCard extends Component
 {
     public Project $project;
-    public $task_date = NULL;
+
+    public $task_date = null;
 
     protected $listeners = ['refreshComponent' => '$refresh', 'render'];
     // public $draft = '';
@@ -43,7 +41,7 @@ class PlannerCard extends Component
         $task = Task::where('belongs_to_vendor_id', auth()->user()->vendor->id)->findOrFail($key);
 
         //If this task does not belong to this project
-        if($task->project->isNot($this->project)){
+        if ($task->project->isNot($this->project)) {
             $task->displace();
 
             //transfer ownership of task
@@ -53,10 +51,10 @@ class PlannerCard extends Component
         $task->start_date = $this->task_date;
         $task_days_count = $task->duration;
 
-        if(in_array($task_days_count, [0, 1])){
+        if (in_array($task_days_count, [0, 1])) {
             $task->end_date = $task->start_date;
             $task->duration = 1;
-        }else{
+        } else {
             $task->end_date = Carbon::parse($task->start_date)->addDays($task_days_count - 1)->format('Y-m-d');
         }
 
@@ -80,12 +78,13 @@ class PlannerCard extends Component
     public function tasks()
     {
         $task_date = Carbon::parse($this->task_date);
+
         //where $this->task_date is between start_date and end_date on this task
         // return $this->query()->whereDate('start_date', '>=', $this->task_date)->whereDate('end_date', '<=', $this->task_date)->get();
-        return $this->query()->get()->filter(function($item) use($task_date){
-            if(is_null($item->start_date) && $this->task_date == NULL){
+        return $this->query()->get()->filter(function ($item) use ($task_date) {
+            if (is_null($item->start_date) && $this->task_date == null) {
                 return $item;
-            }elseif($task_date->between($item->start_date, $item->end_date) && $this->task_date != NULL) {
+            } elseif ($task_date->between($item->start_date, $item->end_date) && $this->task_date != null) {
                 // if(isset($item->options['include_weekend_days'])){
                 //     if($task_date->isSaturday() && $item->options['include_weekend_days']['saturday'] == true){
                 //         return $item;
@@ -120,4 +119,3 @@ class PlannerCard extends Component
         return view('livewire.tasks.planner-card');
     }
 }
-

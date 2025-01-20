@@ -2,26 +2,28 @@
 
 namespace App\Livewire\LineItems;
 
+use App\Livewire\Forms\EstimateLineItemForm;
+use App\Livewire\Projects\ProjectFinances;
 use App\Models\Estimate;
 use App\Models\LineItem;
-
-use App\Livewire\Projects\ProjectFinances;
-
-use Livewire\Component;
 use Livewire\Attributes\Computed;
-
-use App\Livewire\Forms\EstimateLineItemForm;
+use Livewire\Component;
 
 class EstimateLineItemCreate extends Component
 {
     public Estimate $estimate;
+
     public EstimateLineItemForm $form;
 
-    public $section_id = NULL;
-    public $line_item_id = NULL;
-    public $edit_line_item = FALSE;
+    public $section_id = null;
+
+    public $line_item_id = null;
+
+    public $edit_line_item = false;
+
     public $estimate_line_item = [];
-    public $section_item_count = NULL;
+
+    public $section_item_count = null;
 
     public $view_text = [
         'card_title' => 'Add Line Item',
@@ -40,12 +42,12 @@ class EstimateLineItemCreate extends Component
 
     public function updated($field, $value)
     {
-        if($field === 'line_item_id'){
+        if ($field === 'line_item_id') {
             $this->selected_line_item($value);
         }
 
         $this->validateOnly($field);
-        if(in_array($field, ['form.quantity', 'form.cost'])){
+        if (in_array($field, ['form.quantity', 'form.cost'])) {
             $this->form->total = $this->getTotalLineItemProperty();
         }
     }
@@ -68,20 +70,20 @@ class EstimateLineItemCreate extends Component
         // $total = 0;
         // $total +=
         // dd(isset($this->form->quantity));
-        if($this->form->quantity == 0){
+        if ($this->form->quantity == 0) {
             $quantity = 0;
-        }else{
+        } else {
             $quantity = $this->form->quantity;
         }
 
-        if($this->form->cost == 0){
+        if ($this->form->cost == 0) {
             $cost = 0;
-        }else{
+        } else {
             $cost = $this->form->cost;
         }
 
         $total = $quantity * $cost;
-        $total = number_format((float)$total, 2, '.', '');
+        $total = number_format((float) $total, 2, '.', '');
 
         return $total;
     }
@@ -111,7 +113,7 @@ class EstimateLineItemCreate extends Component
         ];
 
         $this->section_id = $this->estimate_line_item->section->id;
-        $this->edit_line_item = TRUE;
+        $this->edit_line_item = true;
         $this->modal('estimate_line_item_form_modal')->show();
 
         $this->dispatch('refresh')->to(ProjectFinances::class);
@@ -121,9 +123,9 @@ class EstimateLineItemCreate extends Component
     {
         $section = $this->estimate->estimate_sections()->findOrFail($section_id);
         $this->section_item_count = $section->estimate_line_items->count();
-        $this->edit_line_item = FALSE;
-        $this->estimate_line_item = NULL;
-        $this->line_item_id = NULL;
+        $this->edit_line_item = false;
+        $this->estimate_line_item = null;
+        $this->line_item_id = null;
         $this->form->reset();
 
         $this->view_text = [
@@ -151,7 +153,7 @@ class EstimateLineItemCreate extends Component
         $this->form->store();
 
         $this->modal('estimate_line_item_form_modal')->close();
-        $this->section_item_count = NULL;
+        $this->section_item_count = null;
         $this->dispatch('refreshComponent')->to('estimates.estimate-show');
         $this->dispatch('refresh')->to(ProjectFinances::class);
     }

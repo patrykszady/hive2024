@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Scopes\VendorDocScope;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,7 +15,7 @@ class VendorDoc extends Model
 
     protected $casts = [
         'effective_date' => 'date:Y-m-d',
-        'expiration_date' => 'date:Y-m-d'
+        'expiration_date' => 'date:Y-m-d',
     ];
 
     protected static function booted()

@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Bank;
+use App\Models\Scopes\BankAccountScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-use App\Models\Scopes\BankAccountScope;
 
 class BankAccount extends Model
 {
@@ -42,7 +39,7 @@ class BankAccount extends Model
 
     public function getNameAndType()
     {
-        return $this->bank->name . ' | ' . $this->type;
+        return $this->bank->name.' | '.$this->type;
     }
 
     //4-11-2022 accout_number setter... if 3 digits, add 0 in front, if 4 ignore

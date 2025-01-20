@@ -1,89 +1,65 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\MoveController;
+use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\VendorDocsController;
-use App\Http\Controllers\LeadController;
 use App\Http\Controllers\WebhookController;
-
-
-use App\Livewire\Banks\BankShow;
 use App\Livewire\Banks\BankIndex;
-
-use App\Livewire\Leads\LeadsIndex;
-
-use App\Livewire\CompanyEmails\CompanyEmailsIndex;
+use App\Livewire\Banks\BankShow;
+use App\Livewire\BulkMatch\BulkMatchIndex;
+use App\Livewire\Categories\CategoriesIndex;
+use App\Livewire\Checks\CheckShow;
 // use App\Livewire\CompanyEmails\CompanyEmailsForm;
 
 // use App\Livewire\Users\UsersShow;
-use App\Livewire\Test\Playground;
-use App\Livewire\Test\Sorting;
-
-use App\Livewire\Vendors\VendorsIndex;
-use App\Livewire\Vendors\VendorPaymentCreate;
-use App\Livewire\Vendors\VendorShow;
-use App\Livewire\Vendors\VendorSheetsTypeIndex;
-
-use App\Livewire\VendorDocs\VendorDocsIndex;
-use App\Livewire\VendorDocs\AuditShow;
-
-use App\Livewire\Categories\CategoriesIndex;
-
-use App\Livewire\Planner\PlannerIndex;
-
-use App\Livewire\Tasks\Planner;
-use App\Livewire\Tasks\PlannerList;
-
-use App\Livewire\Distributions\DistributionsIndex;
-// use App\Http\Livewire\Distributions\DistributionsForm;
-use App\Livewire\Distributions\DistributionsShow;
-
+use App\Livewire\Checks\ChecksIndex;
 use App\Livewire\Clients\ClientsIndex;
 use App\Livewire\Clients\ClientsShow;
-
-use App\Livewire\Timesheets\TimesheetsIndex;
-use App\Livewire\Timesheets\TimesheetCreate;
-use App\Livewire\Timesheets\TimesheetShow;
-use App\Livewire\Timesheets\TimesheetPaymentCreate;
-use App\Livewire\Timesheets\TimesheetPaymentIndex;
-
-use App\Livewire\Estimates\EstimatesIndex;
-use App\Livewire\Estimates\EstimateCreate;
-use App\Livewire\Estimates\EstimateShow;
-
-use App\Livewire\LineItems\LineItemsIndex;
-
-use App\Livewire\Hours\HourCreate;
-
-use App\Livewire\Users\AdminLoginAsUser;
-use App\Livewire\Users\UserShow;
-
-use App\Livewire\Entry\VendorSelection;
+use App\Livewire\CompanyEmails\CompanyEmailsIndex;
+use App\Livewire\Dashboard\DashboardShow;
+use App\Livewire\Distributions\DistributionsIndex;
+use App\Livewire\Distributions\DistributionsShow;
 use App\Livewire\Entry\Registration;
 use App\Livewire\Entry\VendorRegistration;
-
-use App\Livewire\Transactions\MatchVendor;
-use App\Livewire\BulkMatch\BulkMatchIndex;
-
+use App\Livewire\Entry\VendorSelection;
+use App\Livewire\Estimates\EstimateCreate;
+use App\Livewire\Estimates\EstimateShow;
+use App\Livewire\Estimates\EstimatesIndex;
+// use App\Http\Livewire\Distributions\DistributionsForm;
 use App\Livewire\Expenses\ExpenseIndex;
 use App\Livewire\Expenses\ExpenseShow;
-
-use App\Livewire\Checks\ChecksIndex;
-use App\Livewire\Checks\CheckShow;
-
-use App\Livewire\Projects\ProjectsIndex;
-use App\Livewire\Projects\ProjectShow;
-
-use App\Livewire\Sheets\SheetsIndex;
-use App\Livewire\Sheets\SheetShow;
-
-use App\Livewire\Payments\PaymentsIndex;
+use App\Livewire\Hours\HourCreate;
+use App\Livewire\Leads\LeadsIndex;
+use App\Livewire\LineItems\LineItemsIndex;
 use App\Livewire\Payments\PaymentCreate;
+use App\Livewire\Payments\PaymentsIndex;
+use App\Livewire\Planner\PlannerIndex;
+use App\Livewire\Projects\ProjectShow;
+use App\Livewire\Projects\ProjectsIndex;
+use App\Livewire\Sheets\SheetShow;
+use App\Livewire\Sheets\SheetsIndex;
+use App\Livewire\Tasks\Planner;
+use App\Livewire\Tasks\PlannerList;
+use App\Livewire\Test\Playground;
+use App\Livewire\Test\Sorting;
+use App\Livewire\Timesheets\TimesheetCreate;
+use App\Livewire\Timesheets\TimesheetPaymentCreate;
+use App\Livewire\Timesheets\TimesheetPaymentIndex;
+use App\Livewire\Timesheets\TimesheetShow;
+use App\Livewire\Timesheets\TimesheetsIndex;
+use App\Livewire\Transactions\MatchVendor;
+use App\Livewire\Users\AdminLoginAsUser;
+use App\Livewire\Users\UserShow;
+use App\Livewire\VendorDocs\AuditShow;
+use App\Livewire\VendorDocs\VendorDocsIndex;
+use App\Livewire\Vendors\VendorPaymentCreate;
+use App\Livewire\Vendors\VendorSheetsTypeIndex;
+use App\Livewire\Vendors\VendorShow;
+use App\Livewire\Vendors\VendorsIndex;
+use Illuminate\Support\Facades\Route;
 
-use App\Livewire\Dashboard\DashboardShow;
 // use App\Models\Expense;
 // use Illuminate\Http\Request;
 
@@ -92,7 +68,7 @@ use App\Livewire\Dashboard\DashboardShow;
 // });
 
 //if guests go to '/', if logged in go to dashboard (or to /vendor_selection if not set and User has multiple)
-Route::middleware('guest')->group(function(){
+Route::middleware('guest')->group(function () {
     Route::get('/', function () {
         return view('welcome');
     })->name('welcome');
@@ -174,7 +150,7 @@ Route::get('transactions/bulk_match', BulkMatchIndex::class)->name('transactions
 // Route::post('plaid_webhooks', 'TransactionController@plaid_webhooks');
 // Route::get('fire_webhook', 'TransactionController@fire_webhook');
 
-Route::middleware(['auth', 'user.vendor'])->group(function(){
+Route::middleware(['auth', 'user.vendor'])->group(function () {
     //DASHBOARD/ PRIMARY VENDOR
     Route::get('/dashboard', DashboardShow::class)->name('dashboard');
 
@@ -183,9 +159,9 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/test/sorting', Sorting::class)->name('test.sorting');
     //USERS
     // Route::get('/users/{user}', UsersShow::class)->name('users.show');
-        //Log In As User for Admins (User id # 1 right now only)
-        //Only User #1 / Patryk can access this route / middleware
-        Route::get('/users/admin_login_as_user', AdminLoginAsUser::class)->name('admin_login_as_user');
+    //Log In As User for Admins (User id # 1 right now only)
+    //Only User #1 / Patryk can access this route / middleware
+    Route::get('/users/admin_login_as_user', AdminLoginAsUser::class)->name('admin_login_as_user');
 
     //EXPENSES
     Route::get('/expenses', ExpenseIndex::class)->name('expenses.index');
@@ -277,5 +253,3 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
 });
 
 require __DIR__.'/auth.php';
-
-

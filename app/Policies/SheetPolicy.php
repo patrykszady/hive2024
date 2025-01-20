@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Sheet;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SheetPolicy
 {
@@ -13,9 +12,9 @@ class SheetPolicy
      */
     public function viewAny(User $user): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -25,9 +24,9 @@ class SheetPolicy
      */
     public function view(User $user, Sheet $sheet): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }

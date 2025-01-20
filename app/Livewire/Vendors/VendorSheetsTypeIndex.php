@@ -4,15 +4,15 @@ namespace App\Livewire\Vendors;
 
 use App\Models\Category;
 use App\Models\Vendor;
-
 use Livewire\Component;
 
 class VendorSheetsTypeIndex extends Component
 {
     public $vendors = [];
+
     public $categories = [];
 
-    protected $listeners = [ 'refreshComponent' => '$refresh' ];
+    protected $listeners = ['refreshComponent' => '$refresh'];
 
     protected function rules()
     {
@@ -28,8 +28,7 @@ class VendorSheetsTypeIndex extends Component
     {
         $this->categories = Category::all();
         $this->vendors =
-            Vendor::
-                where('business_type', 'Retail')
+            Vendor::where('business_type', 'Retail')
                 // ->where('id', 8)
                 ->with('expenses')
                 // ->with(['expenses' => function($query){
@@ -53,7 +52,6 @@ class VendorSheetsTypeIndex extends Component
     //     // $vendor->sheets_type = $value == "" ? NULL : $value;
     //     // $vendor->save();
 
-
     // }
 
     public function save_vendor_categories($vendor_index)
@@ -61,7 +59,7 @@ class VendorSheetsTypeIndex extends Component
         $vendor = Vendor::find($this->vendors[$vendor_index]->id);
         //vendor sheets_type if isset
         // $vendor = $vendor->except(['categories']);
-        if($this->vendors[$vendor_index]->permanent_category_id == true){
+        if ($this->vendors[$vendor_index]->permanent_category_id == true) {
             // $vendor->updateOnly(['sheets_type' => $vendor->sheets_type]);
             // $vendor->categories = NULL;
             // $vendor = $vendor->makeHidden(['categories']);
@@ -74,17 +72,17 @@ class VendorSheetsTypeIndex extends Component
         // $vendor->sheets_type = $vendor->sheets_type;
         // $vendor->update(['sheets_type' => $vendor->sheets_type]);
 
-        if($this->vendors[$vendor_index]->categories){
+        if ($this->vendors[$vendor_index]->categories) {
             //foreach vendor->categories where CHECKED change all expenses to that category
-            foreach($this->vendors[$vendor_index]->categories as $category_id => $category){
-                if($category == true){
-                    if(empty($category_id)){
-                        $category_id = NULL;
+            foreach ($this->vendors[$vendor_index]->categories as $category_id => $category) {
+                if ($category == true) {
+                    if (empty($category_id)) {
+                        $category_id = null;
                     }
 
                     $expenses = $vendor->expenses->where('category_id', $category_id);
                     // dd($expenses);
-                    foreach($expenses as $expense){
+                    foreach ($expenses as $expense) {
                         $expense->timestamps = false;
                         $expense->category_id = $this->vendors[$vendor_index]->category_id;
                         $expense->save();
@@ -105,10 +103,9 @@ class VendorSheetsTypeIndex extends Component
 
         $this->dispatch('notify',
             type: 'success',
-            content: $vendor->name . ' Changed'
+            content: $vendor->name.' Changed'
         );
         // $vendor->sheets_type = $value == "" ? NULL : $value;
-
 
         // dd(collect($vendor->categories)->first());
         // dd('in save_vendor_categories');

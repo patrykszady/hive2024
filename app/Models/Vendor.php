@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\VendorScope;
 use App\Models\Scopes\ClientScope;
-
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Scopes\VendorScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
 
 class Vendor extends Model
@@ -26,7 +24,7 @@ class Vendor extends Model
     //Searchable / Typesense
     public function toSearchableArray(): array
     {
-        return array_merge($this->toArray(),[
+        return array_merge($this->toArray(), [
             'id' => (string) $this->id,
             'business_name' => $this->business_name,
             'business_type' => $this->business_type,
@@ -168,8 +166,8 @@ class Vendor extends Model
         $value = json_decode($value, true);
         $status_array = ['registered', 'vendor_info', 'team_members', 'user_registered', 'banks_registered', 'emails_registered'];
 
-        foreach($status_array as $status){
-            if(!isset($value[$status])){
+        foreach ($status_array as $status) {
+            if (! isset($value[$status])) {
                 $value[$status] = false;
             }
         }
@@ -179,12 +177,12 @@ class Vendor extends Model
 
     public function getFullAddressAttribute()
     {
-        if($this->address_2){
-            $address = $this->address . '<br>' . $this->address_2 . '<br>' . $this->city . ', ' . $this->state . ' ' . $this->zip_code;
-        }elseif($this->address){
-            $address = $this->address . '<br>' . $this->city . ', ' . $this->state . ' ' . $this->zip_code;
-        }else{
-            $address = NULL;
+        if ($this->address_2) {
+            $address = $this->address.'<br>'.$this->address_2.'<br>'.$this->city.', '.$this->state.' '.$this->zip_code;
+        } elseif ($this->address) {
+            $address = $this->address.'<br>'.$this->city.', '.$this->state.' '.$this->zip_code;
+        } else {
+            $address = null;
         }
 
         return $address;
@@ -192,33 +190,35 @@ class Vendor extends Model
 
     public function getBusienssNameAttribute()
     {
-        if(is_null($this->business_name)){
+        if (is_null($this->business_name)) {
             return 'NO VENDOR';
-        }else{
+        } else {
             return $this->business_name;
         }
     }
 
     public function getNameAttribute()
     {
-        if(is_null($this->business_name)){
+        if (is_null($this->business_name)) {
             return 'NO VENDOR';
-        }elseif($this->biz_type == 4 AND !is_null($this->users()->first())){
-            $name = $this->users()->first()->first_name . ' ' . $this->users()->first()->last_name;
+        } elseif ($this->biz_type == 4 and ! is_null($this->users()->first())) {
+            $name = $this->users()->first()->first_name.' '.$this->users()->first()->last_name;
+
             return $name;
-        }else{
+        } else {
             //delete. INC, DBA..and if it's too long
-            $name = explode(",",$this->business_name);
+            $name = explode(',', $this->business_name);
+
             return $name[0];
         }
     }
 
     public function getAddressMapURI()
     {
-        $url = 'https://maps.apple.com/?q=' . $this->address . ', ' . $this->city . ', ' . $this->state . ', ' . $this->zip_code;
+        $url = 'https://maps.apple.com/?q='.$this->address.', '.$this->city.', '.$this->state.', '.$this->zip_code;
+
         return $url;
     }
-
 
     public function scopeHiveVendors($query)
     {

@@ -3,12 +3,8 @@
 namespace App\Models;
 
 use App\Models\Scopes\BankScope;
-
-use App\Models\Vendor;
-use App\Models\BankAccount;
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Bank extends Model
 {
@@ -42,9 +38,9 @@ class Bank extends Model
 
     public function getPlaidOptionsAttribute($value)
     {
-        if($value == NULL){
-            $plaid_options = NULL;
-        }else{
+        if ($value == null) {
+            $plaid_options = null;
+        } else {
             $plaid_options = json_decode($value);
         }
 

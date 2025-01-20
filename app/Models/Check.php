@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
+use App\Observers\CheckObserver;
 use App\Scopes\CheckScope;
-
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-use App\Observers\CheckObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 #[ObservedBy([CheckObserver::class])]
 class Check extends Model
@@ -69,7 +66,7 @@ class Check extends Model
     protected function checkNumber(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->check_type === 'Check' ? $value : '# ' . $this->id,
+            get: fn ($value) => $this->check_type === 'Check' ? $value : '# '.$this->id,
         );
         //->shouldCache();
     }
@@ -77,18 +74,18 @@ class Check extends Model
     public function getOwnerAttribute()
     {
         //$vendor_id = belongs_to_user ($user_id) //distribution of user that belongs to vendor_id
-        if($this->vendor_id && $this->user_id){
+        if ($this->vendor_id && $this->user_id) {
             $owner = $this->user->full_name;
-        }elseif($this->vendor_id){
-            if($this->vendor){
+        } elseif ($this->vendor_id) {
+            if ($this->vendor) {
                 $owner = $this->vendor->business_name;
-            }else{
+            } else {
                 $owner = $this->vendor_id;
             }
-        }elseif($this->user_id){
+        } elseif ($this->user_id) {
             $owner = $this->user->full_name;
-        }else{
-            $owner = NULL;
+        } else {
+            $owner = null;
         }
 
         return $owner;

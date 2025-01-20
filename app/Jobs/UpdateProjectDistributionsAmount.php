@@ -13,7 +13,9 @@ class UpdateProjectDistributionsAmount implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $project;
+
     protected $distribution_ids;
+
     /**
      * Create a new job instance.
      */
@@ -31,8 +33,8 @@ class UpdateProjectDistributionsAmount implements ShouldQueue
         $profit = $this->project->finances['profit'];
 
         //where in $distribution_ids. $distribution_ids = requesting Vendor all distribution ids
-        foreach($this->project->distributions()->whereIn('distributions.id', $this->distribution_ids)->get() as $distribution){
-            $percent = '.' . $distribution->pivot->percent;
+        foreach ($this->project->distributions()->whereIn('distributions.id', $this->distribution_ids)->get() as $distribution) {
+            $percent = '.'.$distribution->pivot->percent;
             $amount = round($profit * $percent, 2);
 
             $this->project->distributions()->updateExistingPivot($distribution, ['amount' => $amount], true);

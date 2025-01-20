@@ -3,26 +3,24 @@
 namespace App\Mail;
 
 use App\Models\Estimate;
-
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
-
-use Spatie\Browsershot\Browsershot;
-use Rmunate\Utilities\SpellNumber;
 
 class InitialEstimate extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $estimate;
+
     public $sections;
+
     public $type;
+
     /**
      * Create a new message instance.
      */
@@ -40,7 +38,7 @@ class InitialEstimate extends Mailable
     {
         return new Envelope(
             from: new Address('support@hive.contractors', 'Hive Contractors'),
-            subject: $this->estimate->vendor->name . ' | ' . $this->estimate->client->name . ' | Estimate',
+            subject: $this->estimate->vendor->name.' | '.$this->estimate->client->name.' | Estimate',
         );
     }
 

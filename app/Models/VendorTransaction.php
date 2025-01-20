@@ -16,7 +16,8 @@ class VendorTransaction extends Model
         return $this->belongsTo(Vendor::class)->withoutGlobalScopes();
     }
 
-    public function setDescAttribute($value) {
-        $this->attributes['desc'] = trim(addcslashes($value, "/"));
+    public function setDescAttribute($value)
+    {
+        $this->attributes['desc'] = trim(addcslashes($value, '/'));
     }
 }

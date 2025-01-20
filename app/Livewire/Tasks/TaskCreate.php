@@ -2,26 +2,25 @@
 
 namespace App\Livewire\Tasks;
 
-use App\Models\Task;
-
-use Livewire\Component;
 use App\Livewire\Forms\TaskForm;
 use App\Livewire\Planner\PlannerIndex;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-use Flux;
+use App\Models\Task;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
+use Flux;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class TaskCreate extends Component
 {
     use AuthorizesRequests;
 
     public TaskForm $form;
+
     //$projects & $vendors & $employees come from the Planner Component
     public $projects = [];
+
     public $vendors = [];
+
     public $employees = [];
 
     public $view_text = [
@@ -34,12 +33,12 @@ class TaskCreate extends Component
 
     public function updated($field, $value)
     {
-        if(!is_null($this->form->start_date)){
+        if (! is_null($this->form->start_date)) {
             $startDate = Carbon::parse($this->form->start_date);
             $endDate = Carbon::parse($this->form->end_date);
 
-            $excludeSaturdays = !isset($this->form->include_weekend_days['saturday']) || $this->form->include_weekend_days['saturday'] === false;
-            $excludeSundays = !isset($this->form->include_weekend_days['sunday']) || $this->form->include_weekend_days['sunday'] === false;
+            $excludeSaturdays = ! isset($this->form->include_weekend_days['saturday']) || $this->form->include_weekend_days['saturday'] === false;
+            $excludeSundays = ! isset($this->form->include_weekend_days['sunday']) || $this->form->include_weekend_days['sunday'] === false;
             $duration = $this->countDaysBetweenDates($startDate, $endDate, $excludeSaturdays, $excludeSundays);
 
             $this->form->duration = $duration;
@@ -51,7 +50,8 @@ class TaskCreate extends Component
     //Copilot help
     //2024-12-10 SAME ON PlannerIndex
     //count days between dates and ignore weekend days if checkbox true
-    function countDaysBetweenDates($startDate, $endDate, $excludeSaturdays = true, $excludeSundays = true) {
+    public function countDaysBetweenDates($startDate, $endDate, $excludeSaturdays = true, $excludeSundays = true)
+    {
         // Include the first day in the count if not saturday or sunday
         $daysCount = ($startDate->isSaturday() && $excludeSaturdays === true) || ($startDate->isSunday() && $excludeSundays === true) ? 0 : 1;
 
@@ -73,7 +73,7 @@ class TaskCreate extends Component
         return $daysCount;
     }
 
-    public function addTask($project_id, $date = NULL)
+    public function addTask($project_id, $date = null)
     {
         $this->form->reset();
         $this->resetErrorBag();
@@ -84,9 +84,9 @@ class TaskCreate extends Component
             'form_submit' => 'save',
         ];
 
-        if($date){
+        if ($date) {
             $this->form->dates = [Carbon::parse($date)->format('m/d/Y')];
-        }else{
+        } else {
             $this->form->dates = [];
         }
 
@@ -131,16 +131,16 @@ class TaskCreate extends Component
     {
         $this->form->dates = $dates;
 
-        if(count($dates) > 1){
+        if (count($dates) > 1) {
             $start = Carbon::parse($dates[0]);
             $end = Carbon::parse($dates[1]);
 
             $duration = $end->diff($start)->days + 1;
 
             $this->form->duration = $duration;
-        }elseif(empty($dates[0])){
+        } elseif (empty($dates[0])) {
             $this->form->duration = 0;
-        }else{
+        } else {
             $this->form->duration = 1;
         }
     }

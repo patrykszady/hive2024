@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Traits\Sortable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use App\Models\Traits\Sortable;
-
 class EstimateLineItem extends Pivot
-// class EstimateLineItem extends Model
+    // class EstimateLineItem extends Model
 {
     use HasFactory, SoftDeletes, Sortable;
+
     //via_vendor
     // public function via_vendor()
     // {

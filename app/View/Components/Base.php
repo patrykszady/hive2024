@@ -9,7 +9,7 @@ class Base extends Component
 {
     public function render(): View
     {
-         // Update the name of your view.
+        // Update the name of your view.
         return view('mails.base');
     }
 }

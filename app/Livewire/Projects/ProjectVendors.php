@@ -43,7 +43,7 @@ class ProjectVendors extends Component
 
         if (! $vendor->projects->contains($this->project->id)) {
             $vendor->projects()->attach($this->project->id, ['client_id' => $client->id]);
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->add_project_status(
                     $this->project->id,
                     $vendor->id,

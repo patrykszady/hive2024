@@ -59,7 +59,7 @@ class InitialEstimate extends Mailable
      */
     public function attachments(): array
     {
-        $data = app('App\Livewire\Estimates\EstimateShow')
+        $data = app(\App\Livewire\Estimates\EstimateShow::class)
             ->create_pdf(
                 $this->estimate,
                 $this->sections,

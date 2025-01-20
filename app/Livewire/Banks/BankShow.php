@@ -107,7 +107,7 @@ class BankShow extends Component
         }
 
         //run / execute plaid_item_status
-        app('App\Http\Controllers\TransactionController')->plaid_item_status();
+        app(\App\Http\Controllers\TransactionController::class)->plaid_item_status();
         sleep(5);
         $this->render();
         $this->dispatch('confirmProcessStep', 'banks_registered')->to('entry.vendor-registration');

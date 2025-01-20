@@ -194,7 +194,7 @@ class TimesheetPaymentForm extends Form
         if (isset($via_vendor)) {
             if ($via_vendor->registration) {
                 if ($via_vendor->registration['registered']) {
-                    app('App\Http\Controllers\VendorRegisteredController')
+                    app(\App\Http\Controllers\VendorRegisteredController::class)
                         ->create_payment_from_check(
                             $check,
                             $check->timesheets,

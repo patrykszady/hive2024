@@ -167,7 +167,7 @@ class VendorRegistration extends Component
             }
 
             $project->vendors()->attach($vendor_id, ['client_id' => $client_id]);
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->add_project_status(
                     $project->id,
                     $vendor_id,
@@ -187,7 +187,7 @@ class VendorRegistration extends Component
 
         foreach ($checks as $check) {
             //check->expenses
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->create_payment_from_check(
                     $check,
                     $check->expenses,
@@ -195,7 +195,7 @@ class VendorRegistration extends Component
                 );
 
             //check->timesheets
-            app('App\Http\Controllers\VendorRegisteredController')
+            app(\App\Http\Controllers\VendorRegisteredController::class)
                 ->create_payment_from_check(
                     $check,
                     $check->timesheets,

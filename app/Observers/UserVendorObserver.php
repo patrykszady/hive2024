@@ -9,8 +9,6 @@ class UserVendorObserver
 {
     /**
      * Handle the UserVendor "created" event.
-     *
-     * @return void
      */
     public function created(UserVendor $userVendor): void
     {
@@ -32,15 +30,11 @@ class UserVendorObserver
 
     /**
      * Handle the UserVendor "updated" event.
-     *
-     * @return void
      */
     public function updated(UserVendor $userVendor): void {}
 
     /**
      * Handle the UserVendor "deleted" event.
-     *
-     * @return void
      */
     public function deleted(UserVendor $userVendor): void
     {
@@ -49,8 +43,6 @@ class UserVendorObserver
 
     /**
      * Handle the UserVendor "restored" event.
-     *
-     * @return void
      */
     public function restored(UserVendor $userVendor): void
     {
@@ -59,8 +51,6 @@ class UserVendorObserver
 
     /**
      * Handle the UserVendor "force deleted" event.
-     *
-     * @return void
      */
     public function forceDeleted(UserVendor $userVendor): void
     {

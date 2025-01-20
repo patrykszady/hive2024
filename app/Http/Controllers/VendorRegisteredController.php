@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Models\Payment;
 use App\Models\ProjectStatus;
 use App\Models\Vendor;
@@ -14,34 +12,34 @@ class VendorRegisteredController extends Controller
     // ?? payments/expenses / paid_by employee
     public function create_payment_from_check($check, $check_expenses, $vendor)
     {
-        if(isset($check['paid_by'])){
+        if (isset($check['paid_by'])) {
             $check_info = $check['invoice'];
-        }elseif($check['check_type'] == 'Check'){
+        } elseif ($check['check_type'] == 'Check') {
             $check_info = $check['check_number'];
-        }else{
+        } else {
             $check_info = $check['check_type'];
         }
 
         //if payment with this check already exists...
         $existing_payment = Payment::withoutGlobalScopes()->where('check_id', $check->id)->where('belongs_to_vendor_id', $vendor->id)->get();
 
-        foreach($check_expenses as $key => $expense){
-            if($key == 0){
-                if($existing_payment->isEmpty()){
-                    $parent_payment_id = NULL;
-                }else{
+        foreach ($check_expenses as $key => $expense) {
+            if ($key == 0) {
+                if ($existing_payment->isEmpty()) {
+                    $parent_payment_id = null;
+                } else {
                     $parent_payment_id = $existing_payment->first()->id;
                 }
-            }else{
+            } else {
                 $parent_payment_id = $parent_payment;
             }
 
             //project vs distribution
-            if(!is_null($expense['project_id'])){
+            if (! is_null($expense['project_id'])) {
                 $project_id = $expense['project_id'];
-                $distribution_id = NULL;
-            }else{
-                $project_id = NULL;
+                $distribution_id = null;
+            } else {
+                $project_id = null;
                 $distribution_id = $expense['distribution_id'];
             }
 
@@ -57,24 +55,24 @@ class VendorRegisteredController extends Controller
                 'check_id' => $check->id,
             ]);
 
-            if($key == 0 AND is_null($parent_payment_id)){
+            if ($key == 0 and is_null($parent_payment_id)) {
                 $parent_payment = $payment->id;
-            }else{
+            } else {
                 $parent_payment = $parent_payment_id;
             }
 
-            if(!is_null($expense->project->belongs_to_vendor_id)){
-                if($expense->project->belongs_to_vendor_id != $vendor->id){
+            if (! is_null($expense->project->belongs_to_vendor_id)) {
+                if ($expense->project->belongs_to_vendor_id != $vendor->id) {
                     //if not duplicate
                     $project_vendor = $expense->project->vendors()->where('vendors.id', $vendor->id)->get();
 
-                    if($project_vendor->isEmpty()){
+                    if ($project_vendor->isEmpty()) {
                         $expense->project->vendors()->attach($vendor->id,
                             ['client_id' => Vendor::where('id', $expense->project->belongs_to_vendor_id)
                                 ->first()
                                 ->client()
                                 ->withoutGlobalScopes()
-                                ->first()->id
+                                ->first()->id,
                             ]);
 
                         $this->add_project_status($expense->project->id, $vendor->id, 'Active');
@@ -90,7 +88,7 @@ class VendorRegisteredController extends Controller
             'project_id' => $project_id,
             'belongs_to_vendor_id' => $vendor_id,
             'title' => $title,
-            'start_date' => today()->format('Y-m-d')
+            'start_date' => today()->format('Y-m-d'),
         ]);
     }
 }

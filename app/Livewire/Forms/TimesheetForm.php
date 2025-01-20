@@ -2,13 +2,11 @@
 
 namespace App\Livewire\Forms;
 
-use App\Models\Timesheet;
-use App\Models\Project;
-
-use Livewire\Form;
-
 use App\Jobs\UpdateProjectDistributionsAmount;
+use App\Models\Project;
+use App\Models\Timesheet;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Form;
 
 class TimesheetForm extends Form
 {
@@ -42,7 +40,7 @@ class TimesheetForm extends Form
         //change $hourly for User under this Vendor
         $this->component->user->vendor->users()->updateExistingPivot($this->component->user->id, ['hourly_rate' => $hourly]);
 
-        foreach($weekly_projects as $project_id => $project_weekly_hours){
+        foreach ($weekly_projects as $project_id => $project_weekly_hours) {
             $project = Project::findOrFail($project_id);
             // UpdateProjectDistributionsAmount::dispatch($project, $project->distributions->pluck('id')->toArray());
 
@@ -59,7 +57,7 @@ class TimesheetForm extends Form
             ]);
 
             //get $weekly_hours->pluck('id') and associate $timesheet->id with each...
-            foreach($project_weekly_hours as $hour){
+            foreach ($project_weekly_hours as $hour) {
                 $hour->timesheet()->associate($timesheet)->save();
             }
         }

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-
 use App\Models\Lead;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
@@ -21,21 +20,21 @@ class WebhookController extends Controller
 
         $inputs = ['phone', 'name', 'address', 'email', 'message'];
 
-        foreach($inputs as $input){
-            if($input === 'name'){
+        foreach ($inputs as $input) {
+            if ($input === 'name') {
                 //concat first and last name as $name
-                $lead_data[$input] = $data['FirstName'] . ' ' . $data['LastName'];
-            }elseif($input === 'address'){
+                $lead_data[$input] = $data['FirstName'].' '.$data['LastName'];
+            } elseif ($input === 'address') {
                 //concat first and last name as $name
-                $lead_data[$input] = $data['PostalAddress']['AddressFirstLine'] . ', ' . $data['PostalAddress']['City'] . ', ' . $data['PostalAddress']['State'] . ' ' . $data['PostalAddress']['PostalCode'];
-            }elseif($input === 'phone'){
+                $lead_data[$input] = $data['PostalAddress']['AddressFirstLine'].', '.$data['PostalAddress']['City'].', '.$data['PostalAddress']['State'].' '.$data['PostalAddress']['PostalCode'];
+            } elseif ($input === 'phone') {
                 //concat first and last name as $name
                 $lead_data[$input] = $data['PhoneNumber'];
-            }elseif($input === 'email'){
+            } elseif ($input === 'email') {
                 //concat first and last name as $name
                 $lead_data[$input] = $data['Email'];
                 $lead_data['reply_to_email'] = $data['Email'];
-            }elseif($input === 'message'){
+            } elseif ($input === 'message') {
                 //concat first and last name as $name
                 $lead_data[$input] = $data['Description'];
             }
@@ -63,11 +62,11 @@ class WebhookController extends Controller
         $user = User::where('cell_phone', $lead_data['phone'])->first();
         // dd($user);
 
-        if($user){
+        if ($user) {
             $user_id = $user->id;
-        }else{
+        } else {
             //create from data
-            if(isset($lead_data['phone']) && isset($lead_data['email']) && isset($lead_data['name'])){
+            if (isset($lead_data['phone']) && isset($lead_data['email']) && isset($lead_data['name'])) {
                 $name = $lead_data['name'];
                 $nameParts = explode(' ', $name);
                 $lastName = array_pop($nameParts);
@@ -81,8 +80,8 @@ class WebhookController extends Controller
                 ]);
 
                 $user_id = $user->id;
-            }else{
-                $user_id = NULL;
+            } else {
+                $user_id = null;
             }
         }
 
@@ -95,17 +94,18 @@ class WebhookController extends Controller
             // 'created_by_user_id' => auth()->user()->id
             // 'ALAccountId' => '28134960', = GS Construction Angi ID
             'belongs_to_vendor_id' => 1,
-            'created_by_user_id' => 1
+            'created_by_user_id' => 1,
         ]);
 
         //2024-12-30 MOVE TO Observer because it repeats and always gets called with creating a Lead
         $lead->statuses()->create([
             'title' => 'New',
             'belongs_to_vendor_id' => $lead->belongs_to_vendor_id,
-            'created_at' => $lead_data['date']
+            'created_at' => $lead_data['date'],
         ]);
 
         Log::channel('angi_webhook_results')->info($lead_data);
+
         return response()->json(['message' => 'success'], 200);
     }
 }

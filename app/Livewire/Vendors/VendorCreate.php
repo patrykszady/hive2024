@@ -2,22 +2,17 @@
 
 namespace App\Livewire\Vendors;
 
+use App\Livewire\Forms\VendorForm;
 use App\Models\User;
 use App\Models\Vendor;
-use App\Models\Client;
-
-use App\Livewire\Forms\VendorForm;
-
-use Livewire\Component;
-
-use Illuminate\Validation\Rule;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
 use Flux;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class VendorCreate extends Component
 {
     use AuthorizesRequests;
+
     public VendorForm $form;
 
     public $view_text = [
@@ -27,21 +22,30 @@ class VendorCreate extends Component
     ];
 
     public Vendor $vendor;
-    public $user = NULL;
-    public $vendor_add_type = NULL;
 
-    public $via_vendor = NULL;
+    public $user = null;
 
-    public $address = NULL;
+    public $vendor_add_type = null;
+
+    public $via_vendor = null;
+
+    public $address = null;
+
     public $team_member = '';
-    public $user_vendors = NULL;
-    public $vendor_id = NULL;
-    public $user_vendor_id = NULL;
 
-    public $business_name_text = NULL;
-    public $existing_vendors = NULL;
-    public $add_vendors_vendor = NULL;
-    public $open_vendor_form = FALSE;
+    public $user_vendors = null;
+
+    public $vendor_id = null;
+
+    public $user_vendor_id = null;
+
+    public $business_name_text = null;
+
+    public $existing_vendors = null;
+
+    public $add_vendors_vendor = null;
+
+    public $open_vendor_form = false;
 
     protected $listeners =
         [
@@ -57,7 +61,7 @@ class VendorCreate extends Component
 
     public function mount()
     {
-        if(isset($this->vendor->id)){
+        if (isset($this->vendor->id)) {
             $this->vendor = $this->vendor;
             $this->vendor_add_type = $this->vendor_id;
             // $this->view_text = [
@@ -65,7 +69,7 @@ class VendorCreate extends Component
             //     'button_text' => 'Update Vendor',
             //     'form_submit' => 'update',
             // ];
-        }else{
+        } else {
             $this->vendor = Vendor::make();
             $this->vendor_add_type = 'NEW';
             // $this->view_text = [
@@ -76,7 +80,7 @@ class VendorCreate extends Component
         }
     }
 
-    public function vendorModal($team_member = NULL)
+    public function vendorModal($team_member = null)
     {
         // $this->form->reset();
         // $this->business_name_text = NULL;
@@ -123,9 +127,9 @@ class VendorCreate extends Component
         $this->form->user_role = 1;
 
         $this->user_vendors = $this->user->vendors()->unique()->get();
-        $this->address = TRUE;
+        $this->address = true;
 
-        $this->via_vendor = TRUE;
+        $this->via_vendor = true;
 
         $this->modal('vendors_form_modal')->show();
     }
@@ -139,9 +143,9 @@ class VendorCreate extends Component
         $this->form->setVendor($this->vendor);
         $this->user = $this->vendor->users()->first();
         $this->business_name_text = $vendor->business_name;
-        $this->open_vendor_form = TRUE;
-        if($this->vendor->business_type != 'Retail'){
-           $this->address = TRUE;
+        $this->open_vendor_form = true;
+        if ($this->vendor->business_type != 'Retail') {
+            $this->address = true;
         }
 
         $this->view_text = [
@@ -175,27 +179,27 @@ class VendorCreate extends Component
 
         $this->form->reset();
         $this->form->business_name = $value;
-        $this->open_vendor_form = FALSE;
+        $this->open_vendor_form = false;
     }
 
     public function updated($field)
     {
         $this->validateOnly($field);
 
-        if($field == 'vendor.business_type'){
-            if(in_array($this->vendor->business_type, ['Sub', '1099', 'DBA'])){
-                if(isset($this->user->id)){
-                    $this->address = TRUE;
+        if ($field == 'vendor.business_type') {
+            if (in_array($this->vendor->business_type, ['Sub', '1099', 'DBA'])) {
+                if (isset($this->user->id)) {
+                    $this->address = true;
                 }
                 // $this->user = $this->user;
-            // }elseif($this->vendor->business_type == 'Retail'){
-            //     $this->user = NULL;
-            }elseif($this->vendor->business_type == 'Retail'){
-                $this->user = NULL;
-                $this->address = NULL;
-                $this->user_vendors = NULL;
-            }else{
-                $this->address = NULL;
+                // }elseif($this->vendor->business_type == 'Retail'){
+                //     $this->user = NULL;
+            } elseif ($this->vendor->business_type == 'Retail') {
+                $this->user = null;
+                $this->address = null;
+                $this->user_vendors = null;
+            } else {
+                $this->address = null;
             }
         }
     }
@@ -206,13 +210,13 @@ class VendorCreate extends Component
         $this->form->reset();
         $this->vendor = Vendor::make();
         // $this->vendor->business_name = NULL;
-        $this->business_name_text = NULL;
+        $this->business_name_text = null;
         $this->modal('vendors_form_modal')->show();
-        $this->user = NULL;
-        $this->address = NULL;
-        $this->user_vendors = NULL;
-        $this->vendor_id = NULL;
-        $this->user_vendor_id = NULL;
+        $this->user = null;
+        $this->address = null;
+        $this->user_vendors = null;
+        $this->vendor_id = null;
+        $this->user_vendor_id = null;
     }
 
     public function newVendor()
@@ -245,7 +249,7 @@ class VendorCreate extends Component
         $this->dispatch('notify',
             type: 'success',
             content: 'Vendor Added',
-            route: 'vendors/' . $vendor_id
+            route: 'vendors/'.$vendor_id
         );
     }
 
@@ -257,7 +261,7 @@ class VendorCreate extends Component
         $this->form->user_role = $user_info['role'];
 
         $this->user_vendors = $this->user->vendors()->get()->unique('id');
-        $this->address = TRUE;
+        $this->address = true;
     }
 
     public function edit()
@@ -272,24 +276,24 @@ class VendorCreate extends Component
         $this->dispatch('notify',
             type: 'success',
             content: 'Vendor Updated',
-            route: 'vendors/' . $vendor->id
+            route: 'vendors/'.$vendor->id
         );
     }
 
     public function store()
     {
-        if(isset($this->vendor->id)){
+        if (isset($this->vendor->id)) {
             //attach vendor to auth->user->vendor (logged in/working vendor)
             $vendor = $this->vendor;
             auth()->user()->vendor->vendors()->attach($vendor);
-        }else{
+        } else {
             $vendor = $this->form->store();
             //NEW VENDOR
 
             //Add existing Vendor to the logged-in-vendor || add $vendor to currently logged in vendor
             auth()->user()->vendor->vendors()->attach($vendor->id);
 
-            if($vendor->business_type != 'Retail'){
+            if ($vendor->business_type != 'Retail') {
                 $user = $this->user;
 
                 // attach to new $vendor with role_id of 1/admin (default on Model)
@@ -297,13 +301,13 @@ class VendorCreate extends Component
                     $vendor->id, [
                         'role_id' => $this->form->user_role, //default on Model table
                         'hourly_rate' => $this->form->user_hourly_rate,
-                        'start_date' => today()->format('Y-m-d')
+                        'start_date' => today()->format('Y-m-d'),
                     ]
                 );
             }
         }
 
-        if($this->via_vendor){
+        if ($this->via_vendor) {
             //dispatch back to UserCreate
             $this->dispatch('ViaVendorId', via_vendor_id: $vendor->id)->to('users.user-create');
         }

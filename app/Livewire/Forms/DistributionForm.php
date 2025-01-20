@@ -12,17 +12,17 @@ class DistributionForm extends Form
     public $users = [];
 
     #[Rule('required|integer')]
-    public $user_id = NULL;
+    public $user_id = null;
 
     #[Rule('required|min:3')]
-    public $name = NULL;
+    public $name = null;
 
     public function store()
     {
         $distribution = Distribution::create([
             'vendor_id' => auth()->user()->vendor->id,
             'name' => $this->name,
-            'user_id' => $this->user_id
+            'user_id' => $this->user_id,
         ]);
 
         return $distribution;

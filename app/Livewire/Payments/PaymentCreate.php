@@ -2,32 +2,31 @@
 
 namespace App\Livewire\Payments;
 
-use App\Models\Project;
+use App\Livewire\Forms\PaymentForm;
 use App\Models\Client;
 use App\Models\Payment;
-
-use Livewire\Component;
+use App\Models\Project;
+use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Title;
-
-use App\Livewire\Forms\PaymentForm;
-
-use Carbon\Carbon;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class PaymentCreate extends Component
 {
     use AuthorizesRequests;
 
     public PaymentForm $form;
+
     public Payment $payment;
 
-    public $client = NULL;
-    public $client_id = NULL;
+    public $client = null;
+
+    public $client_id = null;
+
     public $projects = [];
 
-    public $view = FALSE;
+    public $view = false;
 
     public $view_text = [
         'card_title' => 'Create Client Payment',
@@ -91,20 +90,20 @@ class PaymentCreate extends Component
         return Client::withWhereHas('projects', function ($query) {
             //->where('projects.created_at', '>=', $YTD)
             $query->whereHas('statuses', function ($query) {
-                    return $query->where('title', '=', 'Active');
-                });
+                return $query->where('title', '=', 'Active');
+            });
         })
-        ->orderBy('created_at', 'DESC')
-        ->get();
+            ->orderBy('created_at', 'DESC')
+            ->get();
     }
 
     public function getClientPaymentSumProperty()
     {
-        return collect($this->projects)->where('amount', '!=', NULL)->sum('amount');
+        return collect($this->projects)->where('amount', '!=', null)->sum('amount');
     }
 
     // 8-31-2022 | 9-10-2023 similar on VendorPaymentForm
-    public function addProject(Client $client = NULL)
+    public function addProject(?Client $client = null)
     {
         $this->view_text = [
             'card_title' => 'Create Client Payment',
@@ -112,12 +111,12 @@ class PaymentCreate extends Component
             'form_submit' => 'save',
         ];
 
-        if(isset($client->id)){
-            $this->view = TRUE;
+        if (isset($client->id)) {
+            $this->view = true;
             $this->client_id = $client->id;
             $this->updatedClientId($client);
-        }else{
-            $this->client_id = NULL;
+        } else {
+            $this->client_id = null;
         }
 
         $this->modal('payment_form_modal')->show();
@@ -136,9 +135,9 @@ class PaymentCreate extends Component
     {
         //validate payment total is greater than $0
         //if less than or equal to 0... send back with error
-        if($this->getClientPaymentSumProperty() === 0){
+        if ($this->getClientPaymentSumProperty() === 0) {
             return $this->addError('payment_total_min', 'Payment total needs to include at least 1 project and not equal $0.00');
-        }else{
+        } else {
             $payment = $this->form->store();
         }
 

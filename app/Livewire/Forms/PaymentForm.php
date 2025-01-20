@@ -3,11 +3,9 @@
 namespace App\Livewire\Forms;
 
 use App\Models\Payment;
-
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Rule;
 use Livewire\Form;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class PaymentForm extends Form
 {
@@ -16,31 +14,31 @@ class PaymentForm extends Form
     public ?Payment $payment;
 
     #[Rule('required|date|before_or_equal:today|after:2017-01-01')]
-    public $date = NULL;
+    public $date = null;
 
     #[Rule('required')]
-    public $invoice = NULL;
+    public $invoice = null;
 
     #[Rule('nullable')]
-    public $note = NULL;
+    public $note = null;
 
     public function setPayment(Payment $payment)
     {
         $this->payment = $payment;
 
-        if($this->payment->payments_grouped->isEmpty()){
+        if ($this->payment->payments_grouped->isEmpty()) {
             // $payments = $this->payment->payments_grouped;
             // $payments->push($this->payment);
             $parent_payment = Payment::where('parent_client_payment_id', $this->payment->id)->get();
             $parent_payment->push($this->payment);
             $payments->push($parent_payment);
-        }else{
+        } else {
             $payments = $this->payment->payments_grouped;
         }
 
         dd($payments);
         // $this->payment = $payment;
-        dd("in past");
+        dd('in past');
 
         $this->date = $this->payment->date->format('Y-m-d');
         $this->invoice = $this->payment->reference;
@@ -51,11 +49,11 @@ class PaymentForm extends Form
     {
         $this->validate();
 
-        $parent_payment_id = NULL;
-        foreach($this->component->projects->where('amount', '!=', NULL) as $key => $project){
-            if($key == 0){
-                $parent_payment_id = NULL;
-            }else{
+        $parent_payment_id = null;
+        foreach ($this->component->projects->where('amount', '!=', null) as $key => $project) {
+            if ($key == 0) {
+                $parent_payment_id = null;
+            } else {
                 $parent_payment_id = $parent_payment_id;
             }
 

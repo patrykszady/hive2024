@@ -2,9 +2,8 @@
 
 namespace App\Livewire\Categories;
 
-use Livewire\Component;
-
 use App\Models\Vendor;
+use Livewire\Component;
 
 class CategoriesIndex extends Component
 {
@@ -18,7 +17,7 @@ class CategoriesIndex extends Component
         //->with('vendor_categories')
         $this->vendors =
             Vendor::where('business_type', 'Retail')
-                ->whereHas('expenses', function ($query){
+                ->whereHas('expenses', function ($query) {
                     $query->whereYear('date', 2023);
                 })
                 ->orderBy('business_name', 'ASC')

@@ -51,11 +51,10 @@
 
 // ];
 
-
-return array(
-    'pdf' => array(
+return [
+    'pdf' => [
         'enabled' => true,
-        'binary'  => base_path('vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64'),
+        'binary' => base_path('vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltopdf-amd64'),
         'timeout' => false,
         // 'options' => array(),
         'options' => [
@@ -63,13 +62,13 @@ return array(
             'encoding' => 'UTF-8',
             'keep-relative-links' => true,
         ],
-        'env'     => array(),
-    ),
-    'image' => array(
+        'env' => [],
+    ],
+    'image' => [
         'enabled' => true,
-        'binary'  => base_path('vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltoimage-amd64'),
+        'binary' => base_path('vendor/h4cc/wkhtmltopdf-amd64/bin/wkhtmltoimage-amd64'),
         'timeout' => false,
-        'options' => array(),
-        'env'     => array(),
-    ),
-);
+        'options' => [],
+        'env' => [],
+    ],
+];

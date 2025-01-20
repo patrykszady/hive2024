@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Scopes\ProjectScope;
-
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 class Project extends Model
 {
@@ -20,28 +24,28 @@ class Project extends Model
         static::addGlobalScope(new ProjectScope);
     }
 
-    public function distributions()
+    public function distributions(): BelongsToMany
     {
         return $this->belongsToMany(Distribution::class)->withPivot('percent', 'amount', 'created_at')->withTimestamps();
     }
 
-    public function expenses()
+    public function expenses(): HasMany
     {
         return $this->hasMany(Expense::class);
     }
 
-    public function bids()
+    public function bids(): HasMany
     {
         return $this->hasMany(Bid::class);
     }
 
     //projects many to many vendors
-    public function vendors()
+    public function vendors(): BelongsToMany
     {
         return $this->belongsToMany(Vendor::class)->withPivot('client_id')->withTimestamps();
     }
 
-    public function vendor()
+    public function vendor(): BelongsTo
     {
         // dd($this);
         //project has one vendor via the project_vendor pivot table
@@ -54,19 +58,19 @@ class Project extends Model
         return $this->vendor()->first();
     }
 
-    public function expenseSplits()
+    public function expenseSplits(): HasMany
     {
         return $this->hasMany(ExpenseSplits::class);
     }
 
-    public function clients()
+    public function clients(): BelongsToMany
     {
         //through project_vendor->client_id
 
         return $this->belongsToMany(Client::class, 'project_vendor')->withPivot('vendor_id')->withTimestamps();
     }
 
-    public function client()
+    public function client(): HasOneThrough
     {
         //project has one client via the project_vendor pivot table client_id
         // return $this->hasOneThrough(Client::class, 'project_vendor_pivot', 'project_id', 'client_id');
@@ -79,41 +83,43 @@ class Project extends Model
         return $this->client()->wherePivot('vendor_id', $this->vendor->id)->first();
     }
 
-    public function estimates()
+    public function estimates(): HasMany
     {
         return $this->hasMany(Estimate::class);
     }
 
-    public function hours()
+    public function hours(): HasMany
     {
         return $this->hasMany(Hour::class);
     }
 
-    public function tasks()
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function timesheets()
+    public function timesheets(): HasMany
     {
         return $this->hasMany(Timesheet::class);
     }
 
-    public function payments()
+    public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
     }
 
-    public function statuses()
+    public function statuses(): HasMany
     {
         return $this->hasMany(ProjectStatus::class);
     }
 
-    public function last_status(){
+    public function last_status(): HasOne
+    {
         return $this->hasOne(ProjectStatus::class)->orderBy('start_date', 'DESC')->latest();
     }
 
-    public function scopeStatus($query, $status){
+    public function scopeStatus($query, $status)
+    {
         // dd($status);
         return $query->with('last_status')->get()->whereIn('last_status.title', $status);
     }
@@ -154,15 +160,15 @@ class Project extends Model
 
     public function getFullAddressAttribute()
     {
-        if ($this->address_2 == NULL) {
+        if ($this->address_2 == null) {
             $address1 = $this->address;
         } else {
-            $address1 = $this->address . '<br>' . $this->address_2;
+            $address1 = $this->address.'<br>'.$this->address_2;
         }
 
-        $address2 = $this->city . ', ' . $this->state . ' ' . $this->zip_code;
+        $address2 = $this->city.', '.$this->state.' '.$this->zip_code;
 
-        return $address1 . '<br>' .  $address2;
+        return $address1.'<br>'.$address2;
     }
 
     public function getFinancesAttribute()
@@ -178,7 +184,7 @@ class Project extends Model
         $finances['expenses'] = $this->expenses->sum('amount') + $this->expenseSplits->sum('amount');
         $finances['timesheets'] = $this->timesheets->sum('amount');
         $finances['total_cost'] = $finances['timesheets'] + $finances['expenses'];
-        $finances['payments'] =  round($this->payments->sum('amount'), 2);
+        $finances['payments'] = round($this->payments->sum('amount'), 2);
         //amount_format(..., 2)
         $finances['profit'] = $finances['payments'] - $finances['total_cost'];
         $finances['balance'] = $finances['total_project'] - $finances['payments'];
@@ -188,19 +194,19 @@ class Project extends Model
 
     public function getAddressMapURI()
     {
-        $url = 'https://maps.apple.com/?q=' . $this->address . ', ' . $this->city . ', ' . $this->state . ', ' . $this->zip_code;
+        $url = 'https://maps.apple.com/?q='.$this->address.', '.$this->city.', '.$this->state.', '.$this->zip_code;
 
         return $url;
     }
 
     public function getNameAttribute()
     {
-        if($this->project_name == 'EXPENSE SPLIT' || $this->project_name == 'NO PROJECT'){
+        if ($this->project_name == 'EXPENSE SPLIT' || $this->project_name == 'NO PROJECT') {
             $name = $this->project_name;
-        }elseif($this->distribution == TRUE){
+        } elseif ($this->distribution == true) {
             $name = $this->project_name;
-        }else{
-            $name = $this->address . ' | ' . $this->project_name;
+        } else {
+            $name = $this->address.' | '.$this->project_name;
         }
 
         return $name;

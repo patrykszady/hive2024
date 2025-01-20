@@ -2,38 +2,32 @@
 
 namespace App\Livewire\Estimates;
 
-use App\Models\Estimate;
-use App\Models\EstimateSection;
-use App\Models\EstimateLineItem;
-
+use App\Jobs\SendInitialEstimateEmail;
 use App\Livewire\Projects\ProjectFinances;
+use App\Models\Estimate;
+use App\Models\EstimateLineItem;
 // use App\Livewire\Estimates\EstimatesIndex;
 
-use App\Jobs\SendInitialEstimateEmail;
-
-use Spatie\Browsershot\Browsershot;
-use Rmunate\Utilities\SpellNumber;
-use Illuminate\Support\Facades\Response;
-
+use App\Models\EstimateSection;
 use Flux;
-
-use Livewire\Component;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Response;
 use Livewire\Attributes\Title;
-
-use Spatie\SimpleExcel\SimpleExcelWriter;
-use OpenSpout\Common\Entity\Style\Color;
-use OpenSpout\Common\Entity\Style\CellAlignment;
-use OpenSpout\Common\Entity\Style\Style;
+use Livewire\Component;
 use OpenSpout\Common\Entity\Style\Border;
 use OpenSpout\Common\Entity\Style\BorderPart;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use OpenSpout\Common\Entity\Style\Color;
+use OpenSpout\Common\Entity\Style\Style;
+use Rmunate\Utilities\SpellNumber;
+use Spatie\Browsershot\Browsershot;
+use Spatie\SimpleExcel\SimpleExcelWriter;
 
 class EstimateShow extends Component
 {
     use AuthorizesRequests;
 
     public Estimate $estimate;
+
     public $sections = [];
 
     protected $listeners = ['refreshComponent' => '$refresh'];
@@ -50,13 +44,13 @@ class EstimateShow extends Component
     {
         $this->sections =
             $this->estimate->estimate_sections;
-                // ->each(function ($item, $key) {
-                //     $item->items_rearrange = FALSE;
-                // });
+        // ->each(function ($item, $key) {
+        //     $item->items_rearrange = FALSE;
+        // });
 
         //11-1-2023 MOVE to EstiamteCreate
         //start with one section and an ADD card/button for line items
-        if($this->sections->isEmpty()){
+        if ($this->sections->isEmpty()) {
             $this->create_new_section();
             $this->estimate_refresh();
         }
@@ -68,14 +62,14 @@ class EstimateShow extends Component
         $this->sections = $this->estimate->estimate_sections;
     }
 
-    public function create_new_section($name = NULL)
+    public function create_new_section($name = null)
     {
         return EstimateSection::create([
             'estimate_id' => $this->estimate->id,
             'index' => $this->sections->isEmpty() ? 0 : $this->sections->max('index') + 1,
             'name' => $name,
             'total' => 0.00,
-            'deleted_at' => NULL
+            'deleted_at' => null,
         ]);
     }
 
@@ -95,7 +89,7 @@ class EstimateShow extends Component
         $section = $this->sections[$section_index];
         $estimate_line_items = $this->estimate->estimate_line_items()->where('section_id', $section->id)->get();
 
-        foreach($estimate_line_items as $estimate_line_item){
+        foreach ($estimate_line_items as $estimate_line_item) {
             $estimate_line_item->delete();
         }
 
@@ -108,7 +102,7 @@ class EstimateShow extends Component
             variant: 'success',
             heading: 'Section Removed',
             // route / href / wire:click
-            text: 'Section ' . $section->name,
+            text: 'Section '.$section->name,
         );
 
         //dispatch to refresh on project finances
@@ -120,7 +114,7 @@ class EstimateShow extends Component
         $section = EstimateSection::findOrFail($this->sections[$section_index]['id']);
         $section->name = $this->sections[$section_index]['name'];
         //ignore 'bid_index' attribute when saving
-            //OR put    // public $items_rearrange; on Model
+        //OR put    // public $items_rearrange; on Model
         // $section->offsetUnset('items_rearrange');
         $section->save();
         $this->estimate_refresh();
@@ -131,7 +125,7 @@ class EstimateShow extends Component
             variant: 'success',
             heading: 'Section Name Updated',
             // route / href / wire:click
-            text: 'Section ' . $section->name,
+            text: 'Section '.$section->name,
         );
     }
 
@@ -152,10 +146,10 @@ class EstimateShow extends Component
         $line_items = $this->estimate->estimate_line_items()->where('section_id', $section->id)->get();
         $section_to_duplicate = $this->estimate->estimate_sections()->where('id', $section->id)->first();
 
-        $section = $this->create_new_section($section_to_duplicate->name . ' -Copy');
+        $section = $this->create_new_section($section_to_duplicate->name.' -Copy');
 
         //create new estimate section
-        foreach($line_items as $duplicate_section_line){
+        foreach ($line_items as $duplicate_section_line) {
             EstimateLineItem::create([
                 'estimate_id' => $this->estimate->id,
                 'line_item_id' => $duplicate_section_line->line_item_id,
@@ -181,7 +175,7 @@ class EstimateShow extends Component
             variant: 'success',
             heading: 'Section Duplicated',
             // route / href / wire:click
-            text: 'Section ' . $section->name,
+            text: 'Section '.$section->name,
         );
     }
 
@@ -194,12 +188,13 @@ class EstimateShow extends Component
     public function print($type)
     {
         $headers =
-            array(
+            [
                 'Content-Type: application/pdf',
-            );
+            ];
 
         $data = $this->create_pdf($this->estimate, $this->sections, $type);
-        return Response::download($data[0], $data[1] . '.pdf', $headers);
+
+        return Response::download($data[0], $data[1].'.pdf', $headers);
 
         //2024-12-25
         // if($type == 'estimate'){
@@ -220,11 +215,11 @@ class EstimateShow extends Component
 
         $payments = $estimate->project->payments->where('belongs_to_vendor_id', $estimate->vendor->id);
 
-        $title = $estimate->client->name . ' | ' . $type . ' | ' . $estimate->project->project_name . ' | ' . $estimate->number;
-        $title_file = $estimate->client->name . ' - ' . $type . ' - ' . $estimate->project->project_name . ' - ' . $estimate->number;
+        $title = $estimate->client->name.' | '.$type.' | '.$estimate->project->project_name.' | '.$estimate->number;
+        $title_file = $estimate->client->name.' - '.$type.' - '.$estimate->project->project_name.' - '.$estimate->number;
 
         $view = view('misc.estimate', compact(['estimate', 'sections', 'payments', 'title', 'estimate_total', 'estimate_total_words', 'type']))->render();
-        $location = storage_path('files/pdfs/' . $title_file . '.pdf');
+        $location = storage_path('files/pdfs/'.$title_file.'.pdf');
 
         Browsershot::html($view)
             ->newHeadless()
@@ -253,7 +248,7 @@ class EstimateShow extends Component
                 new BorderPart(Border::BOTTOM, Color::BLACK, Border::WIDTH_THIN, Border::STYLE_SOLID)
             );
 
-            $writer = SimpleExcelWriter::streamDownload($this->estimate->client->name . ' - Estimate - ' . $this->estimate->project->project_name . ' - ' . $this->estimate->number . '.xlsx')
+            $writer = SimpleExcelWriter::streamDownload($this->estimate->client->name.' - Estimate - '.$this->estimate->project->project_name.' - '.$this->estimate->number.'.xlsx')
                 ->addHeader([
                     '',
                     'title',
@@ -262,26 +257,26 @@ class EstimateShow extends Component
                     'quantity',
                     'unit',
                     'cost',
-                    'total'
+                    'total',
                 ]);
 
             $writer->addRow([]);
 
-            foreach($this->estimate->estimate_sections as $index => $section){
+            foreach ($this->estimate->estimate_sections as $index => $section) {
                 $writer->addRow([
                     'title' => $section->name,
                     '',
-                    'category' => NULL,
-                    'sub_category' => NULL,
-                    'quantity' => NULL,
-                    'unit' => NULL,
-                    'cost' => NULL,
+                    'category' => null,
+                    'sub_category' => null,
+                    'quantity' => null,
+                    'unit' => null,
+                    'cost' => null,
                     'total' => $section->total,
-                ], (new Style())->setFontBold()->setBorder($border));
+                ], (new Style)->setFontBold()->setBorder($border));
 
-                foreach($section->estimate_line_items as $line_item){
+                foreach ($section->estimate_line_items as $line_item) {
                     $writer->addRow([
-                        '' => $index + 1 . '.' . $line_item->order + 1,
+                        '' => $index + 1 .'.'.$line_item->order + 1,
                         'title' => $line_item->name,
                         'category' => $line_item->category,
                         'sub_category' => $line_item->sub_category,
@@ -295,7 +290,7 @@ class EstimateShow extends Component
                 $writer->addRow([]);
             }
 
-        }, $this->estimate->client->name . ' - Estimate - ' . $this->estimate->project->project_name . ' - ' . $this->estimate->number . '.xlsx', [
+        }, $this->estimate->client->name.' - Estimate - '.$this->estimate->project->project_name.' - '.$this->estimate->number.'.xlsx', [
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         ]);
 
@@ -324,6 +319,7 @@ class EstimateShow extends Component
     public function render()
     {
         $this->authorize('view', $this->estimate);
+
         return view('livewire.estimates.show');
     }
 }

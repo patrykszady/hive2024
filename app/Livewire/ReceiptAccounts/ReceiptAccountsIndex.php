@@ -4,9 +4,8 @@ namespace App\Livewire\ReceiptAccounts;
 
 use App\Models\Distribution;
 use App\Models\Vendor;
-use App\Models\ReceiptAccount;
-use Livewire\Component;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Component;
 
 class ReceiptAccountsIndex extends Component
 {
@@ -15,11 +14,15 @@ class ReceiptAccountsIndex extends Component
     protected $listeners = ['refreshComponent' => '$refresh', 'addVendorToVendor'];
 
     public $vendor_keys = [];
+
     public $vendors = [];
+
     public $auth_vendor;
+
     public $distributions = [];
+
     // public $vendor_key = NULL;
-    public $view = NULL;
+    public $view = null;
 
     protected function rules()
     {
@@ -43,27 +46,26 @@ class ReceiptAccountsIndex extends Component
                 // whereHas('receipt_accounts', function ($query) use ($auth_vendor) {
                 //     return $query->where('belongs_to_vendor_id', $auth_vendor->id);
                 //     })
-                ->with(['receipts', 'receipt_account'])
-
-                ->orderBy('business_name')
-                ->get()
-                ->each(function ($vendor, $key){
-                    if(!isset($vendor->receipt_account)){
-                        $vendor->type = "Not Connected";
-                        $vendor->status = "Yellow";
-                    }elseif($vendor->receipts->first()->from_type == 4){
-                        if(isset($vendor->receipt_account->options['errors'])){
-                            $vendor->type = "ERROR";
-                            $vendor->status = "Disabled";
-                        }else{
-                            $vendor->type = "Login";
-                            $vendor->status = "Active";
+                    ->with(['receipts', 'receipt_account'])
+                    ->orderBy('business_name')
+                    ->get()
+                    ->each(function ($vendor, $key) {
+                        if (! isset($vendor->receipt_account)) {
+                            $vendor->type = 'Not Connected';
+                            $vendor->status = 'Yellow';
+                        } elseif ($vendor->receipts->first()->from_type == 4) {
+                            if (isset($vendor->receipt_account->options['errors'])) {
+                                $vendor->type = 'ERROR';
+                                $vendor->status = 'Disabled';
+                            } else {
+                                $vendor->type = 'Login';
+                                $vendor->status = 'Active';
+                            }
+                        } else {
+                            $vendor->type = 'Email';
+                            $vendor->status = 'Active';
                         }
-                    }else{
-                        $vendor->type = "Email";
-                        $vendor->status = "Active";
-                    }
-                });
+                    });
         // dd($this->vendors);
         // dd($this->vendors->first()->receipt_accounts->first()->distribution ? $this->vendors->first()->receipt_accounts->first()->distribution->name : 'NO PROJECT');
 
@@ -71,7 +73,7 @@ class ReceiptAccountsIndex extends Component
     }
 
     //add Existing Vendor to auth->user->vendor
-        //6-16-2023 also used in VendorsForm ... COMBINE
+    //6-16-2023 also used in VendorsForm ... COMBINE
     public function addVendorToVendor($vendor_id)
     {
         //Add existing Vendor to the logged-in-vendor
@@ -85,7 +87,7 @@ class ReceiptAccountsIndex extends Component
         $this->dispatchBrowserEvent('notify', [
             'type' => 'success',
             'content' => 'Vendor Added',
-            'route' => 'vendors/' . $vendor_id
+            'route' => 'vendors/'.$vendor_id,
         ]);
     }
 
@@ -105,5 +107,4 @@ class ReceiptAccountsIndex extends Component
     {
         return view('livewire.receipt-accounts.index');
     }
-
 }

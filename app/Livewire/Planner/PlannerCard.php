@@ -2,26 +2,28 @@
 
 namespace App\Livewire\Planner;
 
-use Livewire\Component;
-use Livewire\Attributes\Computed;
 use App\Livewire\Forms\TaskForm;
-
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\Vendor;
-
 use Carbon\Carbon;
 use Flux;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
 
 class PlannerCard extends Component
 {
     public Project $project;
+
     public TaskForm $form;
-    public $task_date = NULL;
+
+    public $task_date = null;
 
     //comes from PlannerIndex
     public $projects = [];
+
     public $vendors = [];
+
     public $employees = [];
 
     public $view_text = [
@@ -48,14 +50,14 @@ class PlannerCard extends Component
 
     public function form_modal(Task $task)
     {
-        if($task->id){
+        if ($task->id) {
             $this->form->setTask($task);
             $this->view_text = [
                 'card_title' => 'Edit Task',
                 'button_text' => 'Update',
                 'form_submit' => 'edit',
             ];
-        }else{
+        } else {
             $this->view_text = [
                 'card_title' => 'Create Task',
                 'button_text' => 'Create',
@@ -71,7 +73,7 @@ class PlannerCard extends Component
         $task = Task::findOrFail($key);
 
         // If this Task does not belong to this Project,
-        if($task->project->isNot($this->project)) {
+        if ($task->project->isNot($this->project)) {
             $task->displace();
             $task->project()->associate($this->project);
         }
@@ -79,10 +81,10 @@ class PlannerCard extends Component
         $task->start_date = $this->task_date;
         $task_days_count = $task->duration;
 
-        if(in_array($task_days_count, [0, 1])){
+        if (in_array($task_days_count, [0, 1])) {
             $task->end_date = $task->start_date;
             $task->duration = 1;
-        }else{
+        } else {
             $task->end_date = Carbon::parse($task->start_date)->addDays($task_days_count - 1)->format('Y-m-d');
         }
 
@@ -105,10 +107,10 @@ class PlannerCard extends Component
         // return $this->query()->get();
         $task_date = Carbon::parse($this->task_date);
 
-        return $this->query()->get()->filter(function($item) use($task_date){
-            if(is_null($item->start_date) && $this->task_date == NULL){
+        return $this->query()->get()->filter(function ($item) use ($task_date) {
+            if (is_null($item->start_date) && $this->task_date == null) {
                 return $item;
-            }elseif($task_date->between($item->start_date, $item->end_date) && $this->task_date != NULL) {
+            } elseif ($task_date->between($item->start_date, $item->end_date) && $this->task_date != null) {
                 // dd(is_null($item->options->));
                 // dd($item->start_date->isSaturday());
                 // if(isset($item->options['include_weekend_days'])){

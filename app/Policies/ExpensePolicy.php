@@ -10,7 +10,7 @@ class ExpensePolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
         // if($user->vendor->user_role == 'Admin'){
@@ -21,18 +21,16 @@ class ExpensePolicy
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Expense  $expense
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Expense $expense)
+    public function view(User $user, Expense $expense): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        //if expense paid_by user
-        }elseif($expense->belongs_to_vendor_id == $user->primary_vendor_id && $expense->paid_by == $user->id){
+            //if expense paid_by user
+        } elseif ($expense->belongs_to_vendor_id == $user->primary_vendor_id && $expense->paid_by == $user->id) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -40,12 +38,11 @@ class ExpensePolicy
     /**
      * Determine whether the user can create models.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
         }
     }
@@ -53,13 +50,11 @@ class ExpensePolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Expense  $expense
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Expense $expense)
+    public function update(User $user, Expense $expense): bool
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
         }
     }
@@ -67,11 +62,9 @@ class ExpensePolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Expense  $expense
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Expense $expense)
+    public function delete(User $user, Expense $expense): bool
     {
         return false;
     }
@@ -79,11 +72,9 @@ class ExpensePolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Expense  $expense
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Expense $expense)
+    public function restore(User $user, Expense $expense): bool
     {
         return false;
     }
@@ -91,11 +82,9 @@ class ExpensePolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Expense  $expense
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Expense $expense)
+    public function forceDelete(User $user, Expense $expense): bool
     {
         return false;
     }

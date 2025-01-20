@@ -2,21 +2,19 @@
 
 namespace App\Livewire\LineItems;
 
+use App\Livewire\Forms\LineItemForm;
 use App\Models\Estimate;
 use App\Models\LineItem;
 use Livewire\Attributes\Computed;
-use App\Models\EstimateLineItem;
-
 use Livewire\Component;
-use App\Livewire\Forms\LineItemForm;
-
 
 class LineItemCreate extends Component
 {
     public ?Estimate $estimate;
+
     public LineItemForm $form;
 
-    public $existing_line_item_id = NULL;
+    public $existing_line_item_id = null;
 
     public $view_text = [
         'card_title' => 'Add Line Item',
@@ -35,8 +33,8 @@ class LineItemCreate extends Component
 
     public function updated($field)
     {
-        if($field === 'form.name'){
-            $this->existing_line_item_id = NULL;
+        if ($field === 'form.name') {
+            $this->existing_line_item_id = null;
         }
     }
 
@@ -44,16 +42,16 @@ class LineItemCreate extends Component
     {
         $this->form->reset();
         $this->resetValidation();
-        $this->existing_line_item_id = NULL;
+        $this->existing_line_item_id = null;
     }
 
     #[Computed]
     public function line_items()
     {
         return LineItem::orderBy('created_at', 'DESC')
-            ->where('name', 'like', '%' . $this->form->name . '%')
-            ->orWhere('desc', 'like', '%' . $this->form->name . '%')
-            ->orWhere('notes', 'like', '%' . $this->form->name . '%')
+            ->where('name', 'like', '%'.$this->form->name.'%')
+            ->orWhere('desc', 'like', '%'.$this->form->name.'%')
+            ->orWhere('notes', 'like', '%'.$this->form->name.'%')
             ->get();
     }
 
@@ -72,7 +70,7 @@ class LineItemCreate extends Component
     public function editItem(LineItem $line_item)
     {
         $this->resetModal();
-        $this->existing_line_item_id = "NEW";
+        $this->existing_line_item_id = 'NEW';
         $this->view_text = [
             'card_title' => 'Edit Line Item',
             'button_text' => 'Edit Item',

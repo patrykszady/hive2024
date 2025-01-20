@@ -2,23 +2,19 @@
 
 namespace App\Livewire\Timesheets;
 
-use Livewire\Component;
-
 use App\Models\Hour;
 use App\Models\Timesheet;
-
-use Livewire\WithPagination;
+use Carbon\Carbon;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Livewire\Attributes\Lazy;
 use Livewire\Attributes\Title;
-
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-use Carbon\Carbon;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 #[Lazy]
 class TimesheetsIndex extends Component
 {
-    use WithPagination, AuthorizesRequests;
+    use AuthorizesRequests, WithPagination;
 
     public $amount = '';
     // public $weekly_hours_to_confirm = [];
@@ -32,7 +28,6 @@ class TimesheetsIndex extends Component
         //01-04-2023 if user is Admin for user->vendor, show all, otherview if NOT Admin, only show User hours/timesheets
         //group by USER and WEEK
 
-
         // dd($this->weekly_hours_to_confirm);
     }
 
@@ -42,16 +37,15 @@ class TimesheetsIndex extends Component
         $this->authorize('viewAny', Timesheet::class);
 
         $weekly_hours_to_confirm =
-            Hour::
-                orderBy('date', 'DESC')
+            Hour::orderBy('date', 'DESC')
                 // ->where('user_id', auth()->user()->id)
                 ->whereNull('timesheet_id')
                 ->get()
-                ->groupBy(function($item) {
+                ->groupBy(function ($item) {
                     return $item->user->first_name;
                 })->toBase()
-                ->transform(function($item, $k) {
-                    return $item->groupBy(function($item) {
+                ->transform(function ($item, $k) {
+                    return $item->groupBy(function ($item) {
                         return Carbon::parse($item->date)->startOfWeek()->toFormattedDateString();
                     })->each(function ($group) {
                         // $group->sum_amount = $group->sum('amount');
@@ -61,17 +55,16 @@ class TimesheetsIndex extends Component
                 });
 
         $timesheets =
-            Timesheet::
-                orderBy('date', 'DESC')
+            Timesheet::orderBy('date', 'DESC')
                 ->with('user')
                 // ->where('user_id', auth()->user()->id)
                 // ->withCount('hours')
                 ->get()
-                ->groupBy(function($item) {
+                ->groupBy(function ($item) {
                     return $item->date->format('m/d/Y');
                 })
-                ->transform(function($item, $k) {
-                    return $item->groupBy(function($item) {
+                ->transform(function ($item, $k) {
+                    return $item->groupBy(function ($item) {
                         return $item->user->first_name;
                     })->each(function ($group) {
                         $group->timesheet_id = $group->first()->id;

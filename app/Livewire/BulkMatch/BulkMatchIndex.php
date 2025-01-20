@@ -7,24 +7,27 @@ namespace App\Livewire\BulkMatch;
 // use App\Models\Transaction;
 use App\Models\Distribution;
 use App\Models\TransactionBulkMatch;
-
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
-use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class BulkMatchIndex extends Component
 {
     use AuthorizesRequests;
 
     public $distributions = [];
+
     public $bulk_matches = [];
 
-    public $vendor = NULL;
-    public $vendor_id = NULL;
+    public $vendor = null;
+
+    public $vendor_id = null;
+
     public $vendor_amount_group = [];
-    public $vendor_transactions = NULL;
-    public $vendor_expenses = NULL;
+
+    public $vendor_transactions = null;
+
+    public $vendor_expenses = null;
 
     protected $listeners = ['refreshComponent' => '$refresh', 'manualMatch', 'bulkSplits', 'addSplit', 'removeSplit'];
 
@@ -34,7 +37,7 @@ class BulkMatchIndex extends Component
         $this->bulk_matches =
             TransactionBulkMatch::with(['vendor', 'distribution'])
                 ->get()
-                ->sortBy(function($item, $key) {
+                ->sortBy(function ($item, $key) {
                     return $item->vendor->business_name;
                 });
     }
@@ -75,26 +78,26 @@ class BulkMatchIndex extends Component
 
     public function manualMatch()
     {
-        if(empty($this->distribution_id)){
+        if (empty($this->distribution_id)) {
             //Does Not reset $this->payment_projects.*.AMOUNT
             $this->addError('distribution_id', 'Distribution is required.');
-        }else{
+        } else {
             $manual_transactions = [];
-            foreach($this->vendor_transactions as $key => $transaction){
-                if(in_array($key, array_keys($this->vendor_amount_group))){
+            foreach ($this->vendor_transactions as $key => $transaction) {
+                if (in_array($key, array_keys($this->vendor_amount_group))) {
                     array_push($manual_transactions, $transaction);
                 }
             }
 
-            foreach($manual_transactions as $amount_transactions){
-                foreach($amount_transactions as $amount_transaction){
+            foreach ($manual_transactions as $amount_transactions) {
+                foreach ($amount_transactions as $amount_transaction) {
                     $transaction = Transaction::findOrFail($amount_transaction['id']);
 
                     //create expene from transaction
                     $expense = Expense::create([
                         'amount' => $transaction->amount,
                         'date' => $transaction->transaction_date,
-                        'project_id' => NULL,
+                        'project_id' => null,
                         'distribution_id' => $this->distribution_id,
                         'vendor_id' => $transaction->vendor_id,
                         'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
@@ -109,7 +112,7 @@ class BulkMatchIndex extends Component
             //refresh component
             $this->dispatch('refreshComponent');
             $this->vendor_amount_group = [];
-            $this->vendor_transactions = NULL;
+            $this->vendor_transactions = null;
             // $this->distribution_id = NULL;
             //send notification
         }
@@ -126,33 +129,34 @@ class BulkMatchIndex extends Component
     {
         $this->authorize('viewAny', TransactionBulkMatch::class);
 
-        if($this->vendor){
+        if ($this->vendor) {
             //transactions groupBy amount
 
             //02-24-2024 sortBy/orderBy count of transactions per amount/groupBy
             $this->vendor_transactions =
                 $this->vendor->transactions()
-                ->whereDoesntHave('expense')
-                ->whereDoesntHave('check')
-                ->orderBy('amount', 'DESC')
-                ->get()
-                ->groupBy('amount')
-                ->values()
+                    ->whereDoesntHave('expense')
+                    ->whereDoesntHave('check')
+                    ->orderBy('amount', 'DESC')
+                    ->get()
+                    ->groupBy('amount')
+                    ->values()
                 //converts to array?
-                ->toBase();
+                    ->toBase();
             // dd($this->vendor_transactions);
 
             $this->vendor_expenses =
                 $this->vendor->expenses()
-                ->whereDoesntHave('splits')
-                ->where('project_id', "0")
-                ->whereNull('distribution_id')
-                ->orderBy('amount', 'DESC')
-                ->get()
-                ->groupBy('amount')
-                ->toBase();
+                    ->whereDoesntHave('splits')
+                    ->where('project_id', '0')
+                    ->whereNull('distribution_id')
+                    ->orderBy('amount', 'DESC')
+                    ->get()
+                    ->groupBy('amount')
+                    ->toBase();
             // dd($this->vendor_expenses);
         }
+
         return view('livewire.transactions.bulk-match', [
             // 'transactions' => $transactions,
             // 'vendors' => $vendors,

@@ -4,11 +4,9 @@ namespace App\Livewire\Timesheets;
 
 use App\Models\Hour;
 use App\Models\Timesheet;
-
-use Livewire\Component;
-use Livewire\Attributes\Title;
-
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 class TimesheetShow extends Component
 {
@@ -22,8 +20,7 @@ class TimesheetShow extends Component
         $this->authorize('view', $this->timesheet);
 
         $weekly_hours =
-            Timesheet::
-                with('check')
+            Timesheet::with('check')
                 ->orderBy('date', 'DESC')
                 ->where('date', $this->timesheet->date->format('Y-m-d'))
                 ->where('user_id', $this->timesheet->user_id)
@@ -33,8 +30,7 @@ class TimesheetShow extends Component
         $timesheet_ids = $weekly_hours->pluck('id')->toArray();
 
         $daily_hours =
-            Hour::
-                orderBy('date', 'ASC')
+            Hour::orderBy('date', 'ASC')
                 ->whereIn('timesheet_id', $timesheet_ids)
                 ->get()
                 ->groupBy('date');

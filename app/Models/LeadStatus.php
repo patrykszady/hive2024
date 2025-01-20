@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LeadStatus extends Model
 {
@@ -11,11 +12,14 @@ class LeadStatus extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'created_at' => 'date:Y-m-d',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'created_at' => 'date:Y-m-d',
+        ];
+    }
 
-    public function lead()
+    public function lead(): BelongsTo
     {
         return $this->belongsTo(Lead::class);
     }

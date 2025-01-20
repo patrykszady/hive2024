@@ -13,10 +13,9 @@ class TimesheetPolicy
     /**
      * Determine whether the user can view any models.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return true;
     }
@@ -24,11 +23,9 @@ class TimesheetPolicy
     /**
      * Determine whether the user can view the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Timesheet $timesheet)
+    public function view(User $user, Timesheet $timesheet): bool
     {
         // dd($timesheet->user->vendors()->where('vendors.id', 1)->first()->pivot->user_id);
         // dd($timesheet->user->id);
@@ -37,9 +34,9 @@ class TimesheetPolicy
         //$user->vendor->user_role == 'Admin'
 
         // dd($user->vendors()->where('vendors.id', $timesheet->vendor_id)->first()->pivot->user_id);
-        if($timesheet->user_id == $user->id || $user->primary_vendor->pivot->role_id == 1){
+        if ($timesheet->user_id == $user->id || $user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
         // if($timesheet->user_id == $user->id){
@@ -51,9 +48,9 @@ class TimesheetPolicy
 
     public function viewPayment(User $user)
     {
-        if($user->primary_vendor->pivot->role_id == 1){
+        if ($user->primary_vendor->pivot->role_id == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -61,10 +58,9 @@ class TimesheetPolicy
     /**
      * Determine whether the user can create models.
      *
-     * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return false;
     }
@@ -72,11 +68,9 @@ class TimesheetPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Timesheet $timesheet)
+    public function update(User $user, Timesheet $timesheet): bool
     {
         //
     }
@@ -84,11 +78,9 @@ class TimesheetPolicy
     /**
      * Determine whether the user can delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Timesheet $timesheet)
+    public function delete(User $user, Timesheet $timesheet): bool
     {
         //
     }
@@ -96,11 +88,9 @@ class TimesheetPolicy
     /**
      * Determine whether the user can restore the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Timesheet $timesheet)
+    public function restore(User $user, Timesheet $timesheet): bool
     {
         //
     }
@@ -108,11 +98,9 @@ class TimesheetPolicy
     /**
      * Determine whether the user can permanently delete the model.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Timesheet  $timesheet
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Timesheet $timesheet)
+    public function forceDelete(User $user, Timesheet $timesheet): bool
     {
         //
     }

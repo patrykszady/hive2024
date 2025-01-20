@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
+use File;
 use Ilovepdf\Ilovepdf;
 use Intervention\Image\Facades\Image;
-
-use File;
 use Response;
 
 class VendorDocsController extends Controller
 {
     public function audit_docs_pdf($files)
     {
-        $filename = 'audit-' . auth()->user()->vendor->id . '-' . date('Y-m-d-h-m-s');
+        $filename = 'audit-'.auth()->user()->vendor->id.'-'.date('Y-m-d-h-m-s');
 
         //10-15-2023 Create cover page
         ///////cover page here/// use audit view? csv? table?
@@ -24,8 +21,8 @@ class VendorDocsController extends Controller
         $myTaskMerge = $ilovepdf->newTask('merge');
 
         // Add files to task for upload
-        foreach($files as $key => $file){
-            ${'merged_' . $key} = $myTaskMerge->addFile($file);
+        foreach ($files as $key => $file) {
+            ${'merged_'.$key} = $myTaskMerge->addFile($file);
         }
 
         // dd($myTaskMerge);
@@ -39,7 +36,7 @@ class VendorDocsController extends Controller
         $myTaskMerge->download(storage_path('files/vendor_docs/'));
 
         // //stream/download
-        $path = storage_path('files/vendor_docs/' . $filename . '.pdf');
+        $path = storage_path('files/vendor_docs/'.$filename.'.pdf');
         // $response = Response::make(file_get_contents($path), 200, [
         //     'Content-Type' => 'application/pdf'
         // ]);
@@ -54,13 +51,13 @@ class VendorDocsController extends Controller
     //PUBLIC AS FUCK! BE CAREFUL!
     public function document($filename)
     {
-        $path = storage_path('files/vendor_docs/' . $filename);
+        $path = storage_path('files/vendor_docs/'.$filename);
 
-        if(File::extension($filename) == 'pdf'){
+        if (File::extension($filename) == 'pdf') {
             $response = Response::make(file_get_contents($path), 200, [
-                'Content-Type' => 'application/pdf'
+                'Content-Type' => 'application/pdf',
             ]);
-        }else{
+        } else {
             $response = Image::make($path)->response();
         }
 

@@ -1354,6 +1354,7 @@ class TransactionController extends Controller
                 ->whereNull('deleted_at')
                 ->where('date', '>', '2021-01-01')
                 ->orderBy('date', 'DESC')
+
                 // ->where('id', 3244)
                 ->get();
 

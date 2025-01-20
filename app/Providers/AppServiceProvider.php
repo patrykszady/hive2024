@@ -2,14 +2,43 @@
 
 namespace App\Providers;
 
+use App\Models\Bid;
+use App\Models\Client;
+use App\Models\EstimateLineItem;
+use App\Models\Expense;
+use App\Models\LineItem;
+use App\Models\Project;
+use App\Models\UserVendor;
+use App\Models\Vendor;
+use App\Observers\BidObserver;
+use App\Observers\ClientObserver;
+use App\Observers\EstimateLineItemObserver;
+use App\Observers\ExpenseObserver;
+use App\Observers\LineItemObserver;
+use App\Observers\ProjectObserver;
+use App\Observers\UserVendorObserver;
+use App\Observers\VendorObserver;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Opcodes\LogViewer\Facades\LogViewer;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * The path to the "home" route for your application.
+     *
+     * This is used by Laravel authentication to redirect users after login.
+     *
+     * @var string
+     */
+    public const HOME = '/dashboard';
+
     /**
      * Register any application services.
      *
@@ -60,5 +89,29 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Blade::component('mails.base', \App\View\Components\Base::class);
+
+        $this->bootEvent();
+        $this->bootRoute();
+    }
+
+    public function bootEvent()
+    {
+        Bid::observe(BidObserver::class);
+        Client::observe(ClientObserver::class);
+        Expense::observe(ExpenseObserver::class);
+        EstimateLineItem::observe(EstimateLineItemObserver::class);
+        LineItem::observe(LineItemObserver::class);
+        Project::observe(ProjectObserver::class);
+        UserVendor::observe(UserVendorObserver::class);
+        Vendor::observe(VendorObserver::class);
+    }
+
+    public function bootRoute()
+    {
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+
     }
 }

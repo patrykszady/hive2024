@@ -14,11 +14,12 @@ class Estimate extends Model
 
     protected $fillable = ['project_id', 'options', 'belongs_to_vendor_id', 'created_at', 'updated_at'];
 
-    protected $casts = [
-        'options' => 'array',
-        // 'options.start_date' => 'date:Y-m-d',
-        // 'options.end_date' => 'date:Y-m-d',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'options' => 'array',
+        ];
+    }
 
     protected static function booted()
     {

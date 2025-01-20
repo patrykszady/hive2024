@@ -13,9 +13,12 @@ class Hour extends Model
 
     protected $fillable = ['date', 'hours', 'project_id', 'user_id', 'vendor_id', 'timesheet_id', 'created_by_user_id', 'note', 'created_at', 'updated_at', 'deleted_at'];
 
-    protected $casts = [
-        'date' => 'date:Y-m-d',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date:Y-m-d',
+        ];
+    }
 
     protected static function booted()
     {

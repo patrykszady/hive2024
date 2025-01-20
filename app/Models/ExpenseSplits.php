@@ -18,9 +18,12 @@ class ExpenseSplits extends Model
     // protected $dates = ['date', 'deleted_at'];
     protected $appends = ['date', 'vendor_id'];
 
-    protected $casts = [
-        'receipt_items' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'receipt_items' => 'array',
+        ];
+    }
 
     protected static function booted()
     {

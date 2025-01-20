@@ -13,11 +13,14 @@ class Lead extends Model
 
     protected $fillable = ['date', 'origin', 'notes', 'user_id', 'lead_data', 'belongs_to_vendor_id', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
 
-    protected $casts = [
-        'date' => 'date:Y-m-d H:i:s',
-        'deleted_at' => 'date:Y-m-d',
-        'lead_data' => AsArrayObject::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date:Y-m-d H:i:s',
+            'deleted_at' => 'date:Y-m-d',
+            'lead_data' => AsArrayObject::class,
+        ];
+    }
 
     public function user()
     {

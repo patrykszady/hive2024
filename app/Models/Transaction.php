@@ -16,12 +16,15 @@ class Transaction extends Model
 
     protected $guarded = [];
 
-    protected $casts = [
-        'date' => 'date:Y-m-d',
-        'transaction_date' => 'date:Y-m-d',
-        'posted_date' => 'date:Y-m-d',
-        'details' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date:Y-m-d',
+            'transaction_date' => 'date:Y-m-d',
+            'posted_date' => 'date:Y-m-d',
+            'details' => 'array',
+        ];
+    }
 
     protected static function booted()
     {

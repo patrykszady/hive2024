@@ -14,9 +14,12 @@ class TransactionBulkMatch extends Model
 
     protected $fillable = ['amount', 'vendor_id', 'distribution_id', 'belongs_to_vendor_id', 'created_at', 'updated_at', 'options'];
 
-    protected $casts = [
-        'options' => AsArrayObject::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'options' => AsArrayObject::class,
+        ];
+    }
 
     public function distribution()
     {
